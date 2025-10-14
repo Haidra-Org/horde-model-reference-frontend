@@ -1,0 +1,151 @@
+<div class="model-list-container">
+  <div class="header">
+    <div>
+      <h1>{{ category() }}</h1>
+      <p class="subtitle">{{ filteredModels().length }} models</p>
+    </div>
+    @if (writable()) {
+      <button class="btn btn-primary" (click)="createModel()">+ Create Model</button>
+    }
+  </div>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search models..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="searchTerm.set($event)"
+    />
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Loading models...</div>
+  } @else if (filteredModels().length === 0) {
+    <div class="empty-state">
+      @if (searchTerm()) {
+        No models match your search
+      } @else {
+        No models in this category
+      }
+    </div>
+  } @else {
+    <div class="model-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            @if (isImageGeneration()) {
+              <th>Baseline</th>
+              <th>Inpainting</th>
+              <th>Tags</th>
+              <th>Version</th>
+            }
+            @if (isTextGeneration()) {
+              <th>Parameters</th>
+              <th>Baseline</th>
+              <th>Display Name</th>
+            }
+            @if (isClip()) {
+              <th>Pretrained Name</th>
+              <th>Type</th>
+            }
+            <th>NSFW</th>
+            <th>Config</th>
+            @if (writable()) {
+              <th>Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (model of filteredModels(); track model.name) {
+            <tr>
+              <td class="model-name">{{ model.name }}</td>
+              <td class="model-description">{{ model.description || '-' }}</td>
+
+              @if (isImageGeneration() && isStableDiffusionRecord(model)) {
+                <td>{{ baselineDisplayMap[model.baseline] || model.baseline }}</td>
+                <td>
+                  @if (model.inpainting) {
+                    <span class="badge badge-success">Yes</span>
+                  } @else {
+                    <span class="badge badge-secondary">No</span>
+                  }
+                </td>
+                <td class="tags-cell">
+                  @if (model.tags && model.tags.length > 0) {
+                    <span class="tags-preview">{{ model.tags.slice(0, 3).join(', ') }}
+                      @if (model.tags.length > 3) {
+                        <span class="more-count">+{{ model.tags.length - 3 }}</span>
+                      }
+                    </span>
+                  } @else {
+                    -
+                  }
+                </td>
+                <td>{{ model.version || '-' }}</td>
+              }
+
+              @if (isTextGeneration() && isTextGenerationRecord(model)) {
+                <td>{{ model.parameters?.toLocaleString() || '-' }}</td>
+                <td>{{ model.baseline || '-' }}</td>
+                <td>{{ model.display_name || '-' }}</td>
+              }
+
+              @if (isClip() && isClipRecord(model)) {
+                <td>{{ model.pretrained_name || '-' }}</td>
+                <td>{{ model.type || '-' }}</td>
+              }
+
+              <td>
+                @if (model.nsfw) {
+                  <span class="badge badge-warning">Yes</span>
+                } @else if (model.nsfw === false) {
+                  <span class="badge badge-success">No</span>
+                } @else {
+                  <span class="badge badge-secondary">Unknown</span>
+                }
+              </td>
+
+              <td>
+                @if (getDownloadCount(model) > 0) {
+                  <span class="badge badge-info">{{ getDownloadCount(model) }} files</span>
+                } @else {
+                  <span class="badge badge-secondary">None</span>
+                }
+              </td>
+
+              @if (writable()) {
+                <td class="actions">
+                  <button class="btn btn-small btn-edit" (click)="editModel(model.name)">
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-small btn-delete"
+                    (click)="confirmDelete(model.name)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (modelToDelete()) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>Confirm Delete</h2>
+      <p>Are you sure you want to delete "{{ modelToDelete() }}"?</p>
+      <p class="warning">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button class="btn btn-danger" (click)="deleteModel(modelToDelete()!)">Delete</button>
+      </div>
+    </div>
+  </div>
+}

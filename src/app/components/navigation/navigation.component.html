@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="nav-content">
+    <button class="nav-brand" (click)="goHome()">Horde Model Reference</button>
+
+    <div class="nav-status">
+      @if (api.backendCapabilities().mode !== 'UNKNOWN') {
+        <span
+          class="status-badge"
+          [class.writable]="api.backendCapabilities().writable"
+          [class.readonly]="!api.backendCapabilities().writable"
+        >
+          {{ api.backendCapabilities().mode }}
+          @if (api.backendCapabilities().writable) {
+            (Writable)
+          } @else {
+            (Read-only)
+          }
+        </span>
+      }
+    </div>
+  </div>
+</nav>

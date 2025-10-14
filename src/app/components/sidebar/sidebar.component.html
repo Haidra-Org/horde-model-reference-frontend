@@ -1,0 +1,26 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>Model Categories</h2>
+  </div>
+
+  @if (loading()) {
+    <div class="sidebar-loading">Loading...</div>
+  } @else if (categories().length === 0) {
+    <div class="sidebar-empty">No categories available</div>
+  } @else {
+    <nav class="sidebar-nav">
+      @for (category of categories(); track category) {
+        <button
+          class="category-item"
+          [class.active]="currentCategory() === category"
+          (click)="selectCategory(category)"
+        >
+          <span class="category-name">{{ category }}</span>
+          @if (currentCategory() === category) {
+            <span class="category-indicator">›</span>
+          }
+        </button>
+      }
+    </nav>
+  }
+</aside>

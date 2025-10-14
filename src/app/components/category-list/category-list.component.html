@@ -1,0 +1,18 @@
+<div class="category-list-container">
+  <h1>Model Categories</h1>
+
+  @if (loading()) {
+    <div class="loading">Loading categories...</div>
+  } @else if (categories().length === 0) {
+    <div class="empty-state">No categories available</div>
+  } @else {
+    <div class="category-grid">
+      @for (category of categories(); track category) {
+        <button class="category-card" (click)="selectCategory(category)">
+          <h2>{{ category }}</h2>
+          <span class="arrow">→</span>
+        </button>
+      }
+    </div>
+  }
+</div>

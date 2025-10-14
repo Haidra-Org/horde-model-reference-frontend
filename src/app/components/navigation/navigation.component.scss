@@ -1,0 +1,48 @@
+.navbar {
+  background: #1976d2;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-content {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.nav-status {
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.writable {
+      background: rgba(76, 175, 80, 0.2);
+      color: #c8e6c9;
+    }
+
+    &.readonly {
+      background: rgba(255, 152, 0, 0.2);
+      color: #ffe0b2;
+    }
+  }
+}
