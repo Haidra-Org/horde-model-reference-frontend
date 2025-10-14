@@ -7,6 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CONTROLNETSTYLE } from './cONTROLNETSTYLE';
+import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 
 export interface Style {}

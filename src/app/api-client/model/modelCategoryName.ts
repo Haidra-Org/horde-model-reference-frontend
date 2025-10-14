@@ -7,6 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MODELREFERENCECATEGORY } from './mODELREFERENCECATEGORY';
+import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 export interface ModelCategoryName {}

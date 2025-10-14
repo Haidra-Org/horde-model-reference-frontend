@@ -7,6 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MODELDOMAIN } from './mODELDOMAIN';
+import { MODEL_DOMAIN } from './mODELDOMAIN';
 
 export interface Domain {}

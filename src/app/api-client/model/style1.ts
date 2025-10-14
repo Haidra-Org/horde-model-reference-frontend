@@ -7,6 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MODELSTYLE } from './mODELSTYLE';
+import { MODEL_STYLE } from './mODELSTYLE';
 
 export interface Style1 {}

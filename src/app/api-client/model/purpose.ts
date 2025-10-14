@@ -7,6 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MODELPURPOSE } from './mODELPURPOSE';
+import { MODEL_PURPOSE } from './mODELPURPOSE';
 
 export interface Purpose {}

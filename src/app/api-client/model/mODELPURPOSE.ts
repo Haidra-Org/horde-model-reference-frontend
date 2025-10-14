@@ -11,7 +11,7 @@
 /**
  * The primary purpose of a model, for example, image generation or feature extraction.
  */
-export const MODELPURPOSE = {
+export const MODEL_PURPOSE = {
   Generation: 'generation',
   PostProcessing: 'post_processing',
   AuxiliaryOrPatch: 'auxiliary_or_patch',
@@ -19,4 +19,4 @@ export const MODELPURPOSE = {
   SafetyChecker: 'safety_checker',
   Miscellaneous: 'miscellaneous',
 } as const;
-export type MODELPURPOSE = (typeof MODELPURPOSE)[keyof typeof MODELPURPOSE];
+export type MODEL_PURPOSE = (typeof MODEL_PURPOSE)[keyof typeof MODEL_PURPOSE];

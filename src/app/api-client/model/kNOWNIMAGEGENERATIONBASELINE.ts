@@ -11,7 +11,7 @@
 /**
  * An enum of all the image generation baselines.
  */
-export const KNOWNIMAGEGENERATIONBASELINE = {
+export const KNOWN_IMAGE_GENERATION_BASELINE = {
   Infer: 'infer',
   StableDiffusion1: 'stable_diffusion_1',
   StableDiffusion2768: 'stable_diffusion_2_768',
@@ -22,5 +22,5 @@ export const KNOWNIMAGEGENERATIONBASELINE = {
   FluxSchnell: 'flux_schnell',
   FluxDev: 'flux_dev',
 } as const;
-export type KNOWNIMAGEGENERATIONBASELINE =
-  (typeof KNOWNIMAGEGENERATIONBASELINE)[keyof typeof KNOWNIMAGEGENERATIONBASELINE];
+export type KNOWN_IMAGE_GENERATION_BASELINE =
+  (typeof KNOWN_IMAGE_GENERATION_BASELINE)[keyof typeof KNOWN_IMAGE_GENERATION_BASELINE];

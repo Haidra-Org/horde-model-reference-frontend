@@ -11,11 +11,11 @@
 /**
  * The domain of a model, i.e., what it pertains to (image, text, video, etc.).
  */
-export const MODELDOMAIN = {
+export const MODEL_DOMAIN = {
   Image: 'image',
   Text: 'text',
   Video: 'video',
   Audio: 'audio',
   Rendered3d: 'rendered_3d',
 } as const;
-export type MODELDOMAIN = (typeof MODELDOMAIN)[keyof typeof MODELDOMAIN];
+export type MODEL_DOMAIN = (typeof MODEL_DOMAIN)[keyof typeof MODEL_DOMAIN];

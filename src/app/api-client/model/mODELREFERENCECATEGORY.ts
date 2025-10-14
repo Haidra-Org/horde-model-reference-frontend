@@ -11,7 +11,7 @@
 /**
  * The categories of model reference entries.
  */
-export const MODELREFERENCECATEGORY = {
+export const MODEL_REFERENCE_CATEGORY = {
   Blip: 'blip',
   Clip: 'clip',
   Codeformer: 'codeformer',
@@ -25,5 +25,5 @@ export const MODELREFERENCECATEGORY = {
   AudioGeneration: 'audio_generation',
   Miscellaneous: 'miscellaneous',
 } as const;
-export type MODELREFERENCECATEGORY =
-  (typeof MODELREFERENCECATEGORY)[keyof typeof MODELREFERENCECATEGORY];
+export type MODEL_REFERENCE_CATEGORY =
+  (typeof MODEL_REFERENCE_CATEGORY)[keyof typeof MODEL_REFERENCE_CATEGORY];

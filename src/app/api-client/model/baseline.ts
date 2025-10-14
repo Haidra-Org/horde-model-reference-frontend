@@ -7,6 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { KNOWNIMAGEGENERATIONBASELINE } from './kNOWNIMAGEGENERATIONBASELINE';
+import { KNOWN_IMAGE_GENERATION_BASELINE } from './kNOWNIMAGEGENERATIONBASELINE';
 
 export interface Baseline {}

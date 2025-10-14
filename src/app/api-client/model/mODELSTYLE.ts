@@ -11,7 +11,7 @@
 /**
  * An enum of all the model styles.
  */
-export const MODELSTYLE = {
+export const MODEL_STYLE = {
   Generalist: 'generalist',
   Anime: 'anime',
   Furry: 'furry',
@@ -19,4 +19,4 @@ export const MODELSTYLE = {
   Other: 'other',
   Realistic: 'realistic',
 } as const;
-export type MODELSTYLE = (typeof MODELSTYLE)[keyof typeof MODELSTYLE];
+export type MODEL_STYLE = (typeof MODEL_STYLE)[keyof typeof MODEL_STYLE];

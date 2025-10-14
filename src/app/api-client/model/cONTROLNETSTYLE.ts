@@ -11,7 +11,7 @@
 /**
  * An enum of all the ControlNet \'styles\' - the process that defines the model\'s behavior.  Examples include canny, depth, and openpose.
  */
-export const CONTROLNETSTYLE = {
+export const CONTROLNET_STYLE = {
   ControlSeg: 'control_seg',
   ControlScribble: 'control_scribble',
   ControlFakescribbles: 'control_fakescribbles',
@@ -25,4 +25,4 @@ export const CONTROLNETSTYLE = {
   ControlQr: 'control_qr',
   ControlQrXl: 'control_qr_xl',
 } as const;
-export type CONTROLNETSTYLE = (typeof CONTROLNETSTYLE)[keyof typeof CONTROLNETSTYLE];
+export type CONTROLNET_STYLE = (typeof CONTROLNET_STYLE)[keyof typeof CONTROLNET_STYLE];

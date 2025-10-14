@@ -29,7 +29,7 @@ import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
-import { MODELREFERENCECATEGORY } from '../model/mODELREFERENCECATEGORY';
+import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
 // @ts-ignore
 import { ReadLegacyReferenceNamesModelReferencesV1ModelCategoriesGet200ResponseInner } from '../model/readLegacyReferenceNamesModelReferencesV1ModelCategoriesGet200ResponseInner';
 // @ts-ignore
@@ -65,7 +65,7 @@ export class ModelReferenceV2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public createModelModelReferencesV2ModelCategoryNameAddPost(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     requestBody: RequestBody,
     observe?: 'body',
     reportProgress?: boolean,
@@ -76,7 +76,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<ResponseCreateModelModelReferencesV2ModelCategoryNameAddPost>;
   public createModelModelReferencesV2ModelCategoryNameAddPost(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     requestBody: RequestBody,
     observe?: 'response',
     reportProgress?: boolean,
@@ -87,7 +87,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpResponse<ResponseCreateModelModelReferencesV2ModelCategoryNameAddPost>>;
   public createModelModelReferencesV2ModelCategoryNameAddPost(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     requestBody: RequestBody,
     observe?: 'events',
     reportProgress?: boolean,
@@ -98,7 +98,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpEvent<ResponseCreateModelModelReferencesV2ModelCategoryNameAddPost>>;
   public createModelModelReferencesV2ModelCategoryNameAddPost(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     requestBody: RequestBody,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -150,7 +150,7 @@ export class ModelReferenceV2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODELREFERENCECATEGORY', dataFormat: undefined })}/add`;
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/add`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<ResponseCreateModelModelReferencesV2ModelCategoryNameAddPost>(
       'post',
@@ -177,7 +177,7 @@ export class ModelReferenceV2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public deleteModelModelReferencesV2ModelCategoryNameModelNameDelete(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -188,7 +188,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<any>;
   public deleteModelModelReferencesV2ModelCategoryNameModelNameDelete(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -199,7 +199,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpResponse<any>>;
   public deleteModelModelReferencesV2ModelCategoryNameModelNameDelete(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -210,7 +210,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpEvent<any>>;
   public deleteModelModelReferencesV2ModelCategoryNameModelNameDelete(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -254,7 +254,7 @@ export class ModelReferenceV2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODELREFERENCECATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
@@ -275,7 +275,7 @@ export class ModelReferenceV2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getReferenceByCategoryModelReferencesV2ModelCategoryNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -287,7 +287,7 @@ export class ModelReferenceV2Service extends BaseService {
     [key: string]: ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue;
   }>;
   public getReferenceByCategoryModelReferencesV2ModelCategoryNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -301,7 +301,7 @@ export class ModelReferenceV2Service extends BaseService {
     }>
   >;
   public getReferenceByCategoryModelReferencesV2ModelCategoryNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -315,7 +315,7 @@ export class ModelReferenceV2Service extends BaseService {
     }>
   >;
   public getReferenceByCategoryModelReferencesV2ModelCategoryNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -353,7 +353,7 @@ export class ModelReferenceV2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODELREFERENCECATEGORY', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<{
       [key: string]: ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue;
@@ -370,7 +370,7 @@ export class ModelReferenceV2Service extends BaseService {
 
   /**
    * Get Reference Info
-   * Info about the legacy model reference API, as follows.  This is the  model reference API, which uses the new format established by horde_model_reference.
+   * The v2 model reference API, which uses the new format established by horde_model_reference.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -539,7 +539,7 @@ export class ModelReferenceV2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getSingleModelModelReferencesV2ModelCategoryNameModelNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -550,7 +550,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<{ [key: string]: any }>;
   public getSingleModelModelReferencesV2ModelCategoryNameModelNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -561,7 +561,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpResponse<{ [key: string]: any }>>;
   public getSingleModelModelReferencesV2ModelCategoryNameModelNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -572,7 +572,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpEvent<{ [key: string]: any }>>;
   public getSingleModelModelReferencesV2ModelCategoryNameModelNameGet(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -616,7 +616,7 @@ export class ModelReferenceV2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODELREFERENCECATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<{ [key: string]: any }>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
@@ -639,7 +639,7 @@ export class ModelReferenceV2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public updateModelModelReferencesV2ModelCategoryNameModelNamePut(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     requestBody: { [key: string]: any },
     observe?: 'body',
@@ -651,7 +651,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<{ [key: string]: any }>;
   public updateModelModelReferencesV2ModelCategoryNameModelNamePut(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     requestBody: { [key: string]: any },
     observe?: 'response',
@@ -663,7 +663,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpResponse<{ [key: string]: any }>>;
   public updateModelModelReferencesV2ModelCategoryNameModelNamePut(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     requestBody: { [key: string]: any },
     observe?: 'events',
@@ -675,7 +675,7 @@ export class ModelReferenceV2Service extends BaseService {
     },
   ): Observable<HttpEvent<{ [key: string]: any }>>;
   public updateModelModelReferencesV2ModelCategoryNameModelNamePut(
-    modelCategoryName: MODELREFERENCECATEGORY,
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
     requestBody: { [key: string]: any },
     observe: any = 'body',
@@ -733,7 +733,7 @@ export class ModelReferenceV2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODELREFERENCECATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<{ [key: string]: any }>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
