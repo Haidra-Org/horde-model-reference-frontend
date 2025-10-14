@@ -1,5 +1,5 @@
 <div class="model-list-container">
-  <div class="header">
+  <div class="page-header">
     <div>
       <h1>{{ category() }}</h1>
       <p class="subtitle">{{ filteredModels().length }} models</p>
@@ -9,9 +9,10 @@
     }
   </div>
 
-  <div class="search-bar">
+  <div class="mb-md">
     <input
       type="text"
+      class="search-input"
       placeholder="Search models..."
       [(ngModel)]="searchTerm"
       (ngModelChange)="searchTerm.set($event)"
@@ -19,7 +20,7 @@
   </div>
 
   @if (loading()) {
-    <div class="loading">Loading models...</div>
+    <div class="loading-state">Loading models...</div>
   } @else if (filteredModels().length === 0) {
     <div class="empty-state">
       @if (searchTerm()) {
@@ -29,7 +30,7 @@
       }
     </div>
   } @else {
-    <div class="model-table">
+    <div class="data-table">
       <table>
         <thead>
           <tr>
@@ -117,13 +118,15 @@
               </td>
 
               @if (writable()) {
-                <td class="actions">
-                  <button class="btn btn-small btn-edit" (click)="editModel(model.name)">
-                    Edit
-                  </button>
-                  <button class="btn btn-small btn-delete" (click)="confirmDelete(model.name)">
-                    Delete
-                  </button>
+                <td>
+                  <div class="actions-group">
+                    <button class="btn btn-small btn-edit" (click)="editModel(model.name)">
+                      Edit
+                    </button>
+                    <button class="btn btn-small btn-delete" (click)="confirmDelete(model.name)">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               }
             </tr>
@@ -136,14 +139,14 @@
 
 @if (modelToDelete()) {
   <div class="modal-overlay" (click)="cancelDelete()">
-    <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
       <h2>Confirm Delete</h2>
       <p>
         Are you sure you want to delete <strong>{{ modelToDelete() }}</strong
         >?
       </p>
-      <p class="warning">This action cannot be undone.</p>
-      <div class="confirmation-input">
+      <p class="warning-text">This action cannot be undone.</p>
+      <div class="field-group mt-md">
         <label for="delete-confirm">Type the model name to confirm:</label>
         <input
           id="delete-confirm"

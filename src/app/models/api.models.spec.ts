@@ -24,7 +24,16 @@ import {
   isInEnum,
   OpenApiSchema,
   OpenApiSchemaDefinition,
-} from './test-helpers/openapi-validation.helpers';
+  TEST_MODEL_NAMES,
+  TEST_URLS,
+  TEST_FILE_NAMES,
+  TEST_DESCRIPTIONS,
+  TEST_PARAMETERS,
+  TEST_PRETRAINED_NAMES,
+  REPLICATE_MODES,
+  CANONICAL_FORMATS,
+  SCHEMA_NAMES,
+} from './test-helpers';
 
 /**
  * Configuration for the API validation tests.
@@ -91,7 +100,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'ContainsMessage');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.CONTAINS_MESSAGE);
       expect(schema).toBeDefined();
 
       // Validate structure
@@ -114,7 +123,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const replicateModeSchema = getSchemaDefinition(openApiSchema, 'ReplicateMode');
+      const replicateModeSchema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.REPLICATE_MODE);
       expect(replicateModeSchema).toBeDefined();
 
       const mockCapabilities: BackendCapabilities = {
@@ -123,8 +132,8 @@ describe('API Models - OpenAPI Schema Validation', () => {
         canonicalFormat: 'legacy',
       };
 
-      expect(['PRIMARY', 'REPLICA', 'UNKNOWN']).toContain(mockCapabilities.mode);
-      expect(['legacy', 'v2', 'UNKNOWN']).toContain(mockCapabilities.canonicalFormat);
+      expect(REPLICATE_MODES).toContain(mockCapabilities.mode);
+      expect(CANONICAL_FORMATS).toContain(mockCapabilities.canonicalFormat);
 
       // Verify enum values if available in schema
       if (replicateModeSchema) {
@@ -139,7 +148,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'ErrorResponse');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.ERROR_RESPONSE);
       expect(schema).toBeDefined();
 
       const mockError: ErrorResponse = {
@@ -185,7 +194,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         path: '/path/to/file',
         md5sum: 'abc123',
         sha256sum: 'def456',
-        file_type: 'ckpt',
+        file_type: TEST_FILE_NAMES.SAFETENSORS,
       };
 
       expect(mockConfigFile.path).toBeDefined();
@@ -205,9 +214,9 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       const mockDownload: LegacyConfigDownload = {
-        file_name: 'model.ckpt',
-        file_path: '/path/to/model.ckpt',
-        file_url: 'https://example.com/model.ckpt',
+        file_name: TEST_FILE_NAMES.SAFETENSORS,
+        file_path: '/path/to/model.safetensors',
+        file_url: TEST_URLS.MODEL_SAFETENSORS,
       };
 
       expect(mockDownload.file_name === null || typeof mockDownload.file_name === 'string').toBe(
@@ -228,9 +237,9 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       const mockRecord: LegacyGenericRecord = {
-        name: 'test-model',
+        name: TEST_MODEL_NAMES.DEFAULT,
         type: 'model',
-        description: 'A test model',
+        description: TEST_DESCRIPTIONS.GENERIC_MODEL,
       };
 
       expect(mockRecord.name).toBeDefined();
@@ -247,14 +256,14 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'ImageGenerationModelRecord-Output');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION_OUTPUT);
       expect(schema).toBeDefined();
 
       const mockRecord: LegacyStableDiffusionRecord = {
-        name: 'stable-diffusion-v1-5',
+        name: TEST_MODEL_NAMES.STABLE_DIFFUSION,
         inpainting: false,
         baseline: 'stable_diffusion_1',
-        description: 'Stable Diffusion v1.5',
+        description: TEST_DESCRIPTIONS.STABLE_DIFFUSION,
         tags: ['generalist'],
         showcases: [],
         trigger: [],
@@ -266,7 +275,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
       expect(typeof mockRecord.baseline).toBe('string');
 
       // Verify the baseline enum
-      const baselineSchema = getSchemaDefinition(openApiSchema, 'KNOWN_IMAGE_GENERATION_BASELINE');
+      const baselineSchema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE);
       if (baselineSchema) {
         expect(isInEnum(baselineSchema, 'stable_diffusion_1')).toBe(true);
         expect(isInEnum(baselineSchema, 'stable_diffusion_2_768')).toBe(true);
@@ -280,15 +289,15 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'TextGenerationModelRecord-Output');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION_OUTPUT);
       expect(schema).toBeDefined();
 
       const mockRecord: LegacyTextGenerationRecord = {
-        name: 'llama-7b',
-        model_name: 'llama-7b',
+        name: TEST_MODEL_NAMES.LLAMA,
+        model_name: TEST_MODEL_NAMES.LLAMA,
         baseline: 'llama',
-        parameters: 7000000000,
-        display_name: 'Llama 7B',
+        parameters: TEST_PARAMETERS.LLAMA_7B,
+        display_name: TEST_DESCRIPTIONS.LLAMA,
         tags: ['generalist'],
       };
 
@@ -307,8 +316,8 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       const mockRecord: LegacyClipRecord = {
-        name: 'clip-vit-large',
-        pretrained_name: 'openai/clip-vit-large-patch14',
+        name: TEST_MODEL_NAMES.CLIP,
+        pretrained_name: TEST_PRETRAINED_NAMES.CLIP_VIT_LARGE,
         description: 'CLIP model',
       };
 
@@ -326,7 +335,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       const mockRecord: LegacyStableDiffusionRecord = {
-        name: 'test-model',
+        name: TEST_MODEL_NAMES.DEFAULT,
         inpainting: false,
         baseline: 'stable_diffusion_1',
         requirements: {
@@ -380,14 +389,14 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       const mockResponse: LegacyModelsResponse = {
-        'sd-model': {
-          name: 'sd-model',
+        [TEST_MODEL_NAMES.IMAGE]: {
+          name: TEST_MODEL_NAMES.IMAGE,
           inpainting: false,
           baseline: 'stable_diffusion_1',
         },
-        'text-model': {
-          name: 'text-model',
-          parameters: 7000000000,
+        [TEST_MODEL_NAMES.TEXT]: {
+          name: TEST_MODEL_NAMES.TEXT,
+          parameters: TEST_PARAMETERS.LLAMA_7B,
         },
       };
 
@@ -408,7 +417,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'MODEL_REFERENCE_CATEGORY');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.MODEL_REFERENCE_CATEGORY);
       expect(schema).toBeDefined();
 
       if (schema) {
@@ -429,7 +438,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'KNOWN_IMAGE_GENERATION_BASELINE');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE);
       expect(schema).toBeDefined();
 
       if (schema) {
@@ -450,7 +459,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'MODEL_STYLE');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.MODEL_STYLE);
       expect(schema).toBeDefined();
 
       if (schema) {
@@ -471,7 +480,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, 'CONTROLNET_STYLE');
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.CONTROLNET_STYLE);
       expect(schema).toBeDefined();
 
       if (schema) {
@@ -540,14 +549,14 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       // Check for key model record schemas
-      expect(hasSchema(openApiSchema, 'ImageGenerationModelRecord-Input')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ImageGenerationModelRecord-Output')).toBe(true);
-      expect(hasSchema(openApiSchema, 'TextGenerationModelRecord-Input')).toBe(true);
-      expect(hasSchema(openApiSchema, 'TextGenerationModelRecord-Output')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ControlNetModelRecord-Input')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ControlNetModelRecord-Output')).toBe(true);
-      expect(hasSchema(openApiSchema, 'GenericModelRecord-Input')).toBe(true);
-      expect(hasSchema(openApiSchema, 'GenericModelRecord-Output')).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION_INPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION_OUTPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION_INPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION_OUTPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTROLNET_INPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTROLNET_OUTPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_INPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_OUTPUT)).toBe(true);
     });
 
     it('should have all expected metadata schemas', () => {
@@ -556,10 +565,10 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      expect(hasSchema(openApiSchema, 'GenericModelRecordMetadata')).toBe(true);
-      expect(hasSchema(openApiSchema, 'GenericModelRecordConfig')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ModelClassification')).toBe(true);
-      expect(hasSchema(openApiSchema, 'DownloadRecord')).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_METADATA)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_CONFIG)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_CLASSIFICATION)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.DOWNLOAD_RECORD)).toBe(true);
     });
 
     it('should have all expected enum schemas', () => {
@@ -568,13 +577,13 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      expect(hasSchema(openApiSchema, 'MODEL_REFERENCE_CATEGORY')).toBe(true);
-      expect(hasSchema(openApiSchema, 'MODEL_DOMAIN')).toBe(true);
-      expect(hasSchema(openApiSchema, 'MODEL_PURPOSE')).toBe(true);
-      expect(hasSchema(openApiSchema, 'MODEL_STYLE')).toBe(true);
-      expect(hasSchema(openApiSchema, 'CONTROLNET_STYLE')).toBe(true);
-      expect(hasSchema(openApiSchema, 'KNOWN_IMAGE_GENERATION_BASELINE')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ReplicateMode')).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_REFERENCE_CATEGORY)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_DOMAIN)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_PURPOSE)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_STYLE)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTROLNET_STYLE)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.REPLICATE_MODE)).toBe(true);
     });
 
     it('should have all expected response schemas', () => {
@@ -583,12 +592,12 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      expect(hasSchema(openApiSchema, 'ContainsMessage')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ContainsStatus')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ErrorResponse')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ErrorDetail')).toBe(true);
-      expect(hasSchema(openApiSchema, 'HTTPValidationError')).toBe(true);
-      expect(hasSchema(openApiSchema, 'ValidationError')).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTAINS_MESSAGE)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTAINS_STATUS)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.ERROR_RESPONSE)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.ERROR_DETAIL)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.HTTP_VALIDATION_ERROR)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.VALIDATION_ERROR)).toBe(true);
     });
   });
 });

@@ -1,19 +1,21 @@
 .key-value-editor {
-  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
 }
 
 .kv-label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
   font-weight: 600;
-  color: #333;
+  color: #444;
+  font-size: 0.8125rem;
 }
 
 .kv-pairs {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.625rem;
 }
 
 .kv-pair {
@@ -21,19 +23,24 @@
   grid-template-columns: 1fr 2fr auto auto;
   gap: 0.5rem;
   align-items: center;
+  padding: 0.5rem;
+  background: #fafafa;
+  border-radius: 4px;
 }
 
 .kv-key,
 .kv-value {
-  padding: 0.5rem;
-  border: 2px solid #e0e0e0;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid #d0d0d0;
   border-radius: 4px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-family: 'Courier New', monospace;
+  background: white;
 
   &:focus {
     outline: none;
     border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
   }
 
   &:read-only {
@@ -43,10 +50,10 @@
 
 .kv-type-badge {
   padding: 0.25rem 0.5rem;
-  background: #e0e0e0;
+  background: #e8e8e8;
   border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 600;
   color: #666;
   text-transform: uppercase;
 }
@@ -56,9 +63,9 @@
   color: white;
   border: none;
   border-radius: 4px;
-  width: 32px;
-  height: 32px;
-  font-size: 1.25rem;
+  width: 28px;
+  height: 28px;
+  font-size: 1.125rem;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -75,33 +82,37 @@
   grid-template-columns: 1fr 2fr auto auto;
   gap: 0.5rem;
   align-items: center;
-  padding-top: 0.5rem;
+  padding: 0.625rem 0.5rem 0 0.5rem;
+  margin-top: 0.5rem;
   border-top: 1px solid #e0e0e0;
 }
 
 .kv-input {
-  padding: 0.5rem;
-  border: 2px solid #e0e0e0;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid #d0d0d0;
   border-radius: 4px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  background: white;
 
   &:focus {
     outline: none;
     border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
   }
 }
 
 .kv-type-select {
-  padding: 0.5rem;
-  border: 2px solid #e0e0e0;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid #d0d0d0;
   border-radius: 4px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   background: white;
   cursor: pointer;
 
   &:focus {
     outline: none;
     border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
   }
 }
 

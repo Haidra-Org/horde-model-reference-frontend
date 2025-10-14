@@ -1,11 +1,11 @@
 import {
-  MODELREFERENCECATEGORY,
+  MODEL_REFERENCE_CATEGORY,
   ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue,
 } from '../api-client';
 
 // Type aliases for convenience
 export type ModelRecord = ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue;
-export type ModelReferenceCategory = MODELREFERENCECATEGORY;
+export type ModelReferenceCategory = MODEL_REFERENCE_CATEGORY;
 
 // Custom response types
 export interface CategoryModelsResponse {
@@ -89,4 +89,4 @@ export interface LegacyModelsResponse {
   [modelName: string]: LegacyRecordUnion;
 }
 
-type LegacyRequirementValue = number | string | boolean | number[] | string[];
+export type LegacyRequirementValue = number | string | boolean | number[] | string[];

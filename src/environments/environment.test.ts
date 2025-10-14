@@ -13,7 +13,7 @@ export const testEnvironment = {
    * When true: Uses remoteApiUrl
    * When false: Uses localApiUrl
    */
-  useRemoteSchema: true,
+  useRemoteSchema: false,
 
   /**
    * Base URL for remote horde-model-reference API service

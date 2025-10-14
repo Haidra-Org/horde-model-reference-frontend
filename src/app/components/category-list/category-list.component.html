@@ -1,8 +1,10 @@
 <div class="category-list-container">
-  <h1>Model Categories</h1>
+  <div class="page-header mb-md">
+    <h1>Model Categories</h1>
+  </div>
 
   @if (loading()) {
-    <div class="loading">Loading categories...</div>
+    <div class="loading-state">Loading categories...</div>
   } @else if (categories().length === 0) {
     <div class="empty-state">No categories available</div>
   } @else {

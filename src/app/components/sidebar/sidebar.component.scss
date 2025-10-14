@@ -1,5 +1,5 @@
 .sidebar {
-  width: 280px;
+  width: 240px;
   height: 100vh;
   background: white;
   border-right: 1px solid #e0e0e0;
@@ -10,13 +10,13 @@
 }
 
 .sidebar-header {
-  padding: 1.5rem;
+  padding: 0.875rem 1rem;
   border-bottom: 1px solid #e0e0e0;
-  background: #f9f9f9;
+  background: #fafafa;
 
   h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #333;
   }
@@ -24,16 +24,16 @@
 
 .sidebar-loading,
 .sidebar-empty {
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   color: #666;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
 }
 
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem 0;
+  padding: 0;
 }
 
 .category-item {
@@ -41,14 +41,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.875rem 1.5rem;
+  padding: 0.625rem 1rem;
   background: none;
   border: none;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
   color: #333;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   border-left: 3px solid transparent;
 
   &:hover {
@@ -58,8 +58,8 @@
   &.active {
     background: #e3f2fd;
     border-left-color: #2196f3;
-    color: #1976d2;
-    font-weight: 500;
+    color: #1565c0;
+    font-weight: 600;
 
     .category-indicator {
       color: #2196f3;
@@ -73,9 +73,9 @@
   }
 
   .category-indicator {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
-    color: #2196f3;
+    color: #90caf9;
     margin-left: 0.5rem;
   }
 }

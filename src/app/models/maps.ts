@@ -15,16 +15,16 @@ export const BASELINE_NORMALIZATION_MAP: Record<string, string> = {
 };
 
 export const RECORD_DISPLAY_MAP: Record<string, string> = {
-    blip: 'BLIP',
-    clip: 'CLIP',
-    codeformer: 'CodeFormer',
-    controlnet: 'ControlNet',
-    esrgan: 'ESRGAN',
-    gfpgan: 'GFPGAN',
-    safety_checker: 'Safety Checker',
-    image_generation: 'Image Generation',
-    text_generation: 'Text Generation',
-    video_generation: 'Video Generation',
-    audio_generation: 'Audio Generation',
-    miscellaneous: 'Miscellaneous',
-}
+  blip: 'BLIP',
+  clip: 'CLIP',
+  codeformer: 'CodeFormer',
+  controlnet: 'ControlNet',
+  esrgan: 'ESRGAN',
+  gfpgan: 'GFPGAN',
+  safety_checker: 'Safety Checker',
+  image_generation: 'Image Generation',
+  text_generation: 'Text Generation',
+  video_generation: 'Video Generation',
+  audio_generation: 'Audio Generation',
+  miscellaneous: 'Miscellaneous',
+};

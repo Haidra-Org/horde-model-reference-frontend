@@ -1,5 +1,6 @@
-import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, output, signal, ChangeDetectionStrategy, OnInit, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../services/notification.service';
 
 type ValueType = number | string | boolean | number[] | string[];
 
@@ -16,10 +17,12 @@ interface KeyValuePair {
   styleUrl: './key-value-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KeyValueEditorComponent {
+export class KeyValueEditorComponent implements OnInit, OnChanges {
   readonly label = input<string>('');
   readonly values = input<Record<string, ValueType>>({});
   readonly valuesChange = output<Record<string, ValueType>>();
+
+  private readonly notification = inject(NotificationService);
 
   readonly pairs = signal<KeyValuePair[]>([]);
   readonly newKey = signal('');
@@ -51,39 +54,59 @@ export class KeyValueEditorComponent {
     return 'string';
   }
 
+  private parseValue(
+    valueStr: string,
+    valueType: 'string' | 'number' | 'boolean' | 'array',
+  ): { success: true; value: ValueType } | { success: false; error: string } {
+    switch (valueType) {
+      case 'number': {
+        const num = parseFloat(valueStr);
+        if (isNaN(num)) {
+          return { success: false, error: `Invalid number: "${valueStr}"` };
+        }
+        return { success: true, value: num };
+      }
+      case 'boolean':
+        // preserve existing behaviour: any non-"true" value becomes false
+        return { success: true, value: valueStr.toLowerCase() === 'true' };
+      case 'array':
+        try {
+          const parsed = JSON.parse(valueStr);
+          if (!Array.isArray(parsed)) {
+            return { success: false, error: 'Parsed value is not an array' };
+          }
+          return { success: true, value: parsed as ValueType };
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          return { success: false, error: `Invalid JSON: ${message}` };
+        }
+      default:
+        return { success: true, value: valueStr };
+    }
+  }
+
   addPair(): void {
     const key = this.newKey().trim();
     const valueStr = this.newValue().trim();
 
-    if (!key || !valueStr) return;
-
-    let value: ValueType;
-    const valueType = this.newValueType();
-
-    try {
-      switch (valueType) {
-        case 'number':
-          value = parseFloat(valueStr);
-          if (isNaN(value)) return;
-          break;
-        case 'boolean':
-          value = valueStr.toLowerCase() === 'true';
-          break;
-        case 'array':
-          value = JSON.parse(valueStr);
-          if (!Array.isArray(value)) return;
-          break;
-        default:
-          value = valueStr;
-      }
-
-      const updated = { ...this.values(), [key]: value };
-      this.valuesChange.emit(updated);
-      this.newKey.set('');
-      this.newValue.set('');
-    } catch (error) {
+    if (!key || !valueStr) {
+      this.notification.error('Key and value are required.');
       return;
     }
+
+    const valueType = this.newValueType();
+    const parsed = this.parseValue(valueStr, valueType);
+    if (!parsed.success) {
+      this.notification.error(parsed.error);
+      console.error(parsed.error);
+      return;
+    }
+
+    const value = parsed.value;
+    const updated = { ...this.values(), [key]: value };
+    this.valuesChange.emit(updated);
+    this.newKey.set('');
+    this.newValue.set('');
   }
 
   removePair(key: string): void {
@@ -98,34 +121,21 @@ export class KeyValueEditorComponent {
     newValue: string,
     valueType: 'string' | 'number' | 'boolean' | 'array',
   ): void {
-    let value: ValueType;
-
-    try {
-      switch (valueType) {
-        case 'number':
-          value = parseFloat(newValue);
-          if (isNaN(value)) return;
-          break;
-        case 'boolean':
-          value = newValue.toLowerCase() === 'true';
-          break;
-        case 'array':
-          value = JSON.parse(newValue);
-          if (!Array.isArray(value)) return;
-          break;
-        default:
-          value = newValue;
-      }
-
-      const updated = { ...this.values() };
-      if (oldKey !== newKey) {
-        delete updated[oldKey];
-      }
-      updated[newKey] = value;
-      this.valuesChange.emit(updated);
-    } catch (error) {
+    const parsed = this.parseValue(newValue, valueType);
+    if (!parsed.success) {
+      this.notification.error(parsed.error);
+      console.error(parsed.error);
       return;
     }
+
+    const value = parsed.value;
+
+    const updated = { ...this.values() };
+    if (oldKey !== newKey) {
+      delete updated[oldKey];
+    }
+    updated[newKey] = value;
+    this.valuesChange.emit(updated);
   }
 
   getValueAsString(value: ValueType): string {

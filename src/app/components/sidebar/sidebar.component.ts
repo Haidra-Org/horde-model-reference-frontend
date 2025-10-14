@@ -34,11 +34,16 @@ export class SidebarComponent implements OnInit {
   // Sorted categories with generation types first
   readonly sortedCategories = computed(() => {
     const cats = this.categories();
-    const generationOrder = ['text_generation', 'image_generation', 'video_generation', 'audio_generation'];
-    
-    const generationCats = generationOrder.filter(cat => cats.includes(cat));
-    const otherCats = cats.filter(cat => !generationOrder.includes(cat)).sort();
-    
+    const generationOrder = [
+      'text_generation',
+      'image_generation',
+      'video_generation',
+      'audio_generation',
+    ];
+
+    const generationCats = generationOrder.filter((cat) => cats.includes(cat));
+    const otherCats = cats.filter((cat) => !generationOrder.includes(cat)).sort();
+
     return [...generationCats, ...otherCats];
   });
 

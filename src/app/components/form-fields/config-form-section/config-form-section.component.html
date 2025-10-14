@@ -1,5 +1,14 @@
 <div class="config-section">
-  <div class="config-header" (click)="toggleExpanded()">
+  <div 
+    class="config-header" 
+    (click)="toggleExpanded()"
+    (keyup.enter)="toggleExpanded()"
+    (keyup.space)="toggleExpanded()"
+    tabindex="0"
+    role="button"
+    [attr.aria-expanded]="isExpanded()"
+    aria-label="Toggle configuration section"
+  >
     <h3>Configuration</h3>
     <span class="expand-icon">{{ isExpanded() ? '▼' : '▶' }}</span>
   </div>
@@ -20,18 +29,21 @@
               <div class="file-item">
                 <div class="file-fields">
                   <div class="field-group">
-                    <label>Path *</label>
+                    <label for="file-{{$index}}-path">Path *</label>
                     <input
+                      id="file-{{$index}}-path"
                       type="text"
                       [value]="file.path"
                       (blur)="updateFile($index, 'path', $any($event.target).value)"
                       placeholder="/path/to/file.ckpt"
+                      aria-required="true"
                     />
                   </div>
 
                   <div class="field-group">
-                    <label>SHA256 Sum</label>
+                    <label for="file-{{$index}}-sha256">SHA256 Sum</label>
                     <input
+                      id="file-{{$index}}-sha256"
                       type="text"
                       [value]="file.sha256sum || ''"
                       (blur)="updateFile($index, 'sha256sum', $any($event.target).value)"
@@ -40,8 +52,9 @@
                   </div>
 
                   <div class="field-group">
-                    <label>MD5 Sum</label>
+                    <label for="file-{{$index}}-md5">MD5 Sum</label>
                     <input
+                      id="file-{{$index}}-md5"
                       type="text"
                       [value]="file.md5sum || ''"
                       (blur)="updateFile($index, 'md5sum', $any($event.target).value)"
@@ -50,8 +63,9 @@
                   </div>
 
                   <div class="field-group">
-                    <label>File Type</label>
+                    <label for="file-{{$index}}-type">File Type</label>
                     <input
+                      id="file-{{$index}}-type"
                       type="text"
                       [value]="file.file_type || ''"
                       (blur)="updateFile($index, 'file_type', $any($event.target).value)"
@@ -90,28 +104,33 @@
               <div class="download-item">
                 <div class="download-fields">
                   <div class="field-group">
-                    <label>File Name *</label>
+                    <label for="download-{{$index}}-name">File Name *</label>
                     <input
+                      id="download-{{$index}}-name"
                       type="text"
                       [value]="download.file_name || ''"
                       (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
                       placeholder="model.ckpt"
+                      aria-required="true"
                     />
                   </div>
 
                   <div class="field-group">
-                    <label>File URL *</label>
+                    <label for="download-{{$index}}-url">File URL *</label>
                     <input
+                      id="download-{{$index}}-url"
                       type="text"
                       [value]="download.file_url || ''"
                       (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
                       placeholder="https://..."
+                      aria-required="true"
                     />
                   </div>
 
                   <div class="field-group">
-                    <label>File Path (usually empty)</label>
+                    <label for="download-{{$index}}-path">File Path (usually empty)</label>
                     <input
+                      id="download-{{$index}}-path"
                       type="text"
                       [value]="download.file_path || ''"
                       (blur)="updateDownload($index, 'file_path', $any($event.target).value)"

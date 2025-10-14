@@ -15,6 +15,8 @@ export class TagInputComponent {
   readonly valuesChange = output<string[]>();
 
   readonly newValue = signal('');
+  // unique id used to associate the label with the input for accessibility
+  readonly inputId = `tag-input-${Math.random().toString(36).slice(2, 9)}`;
 
   addValue(): void {
     const value = this.newValue().trim();

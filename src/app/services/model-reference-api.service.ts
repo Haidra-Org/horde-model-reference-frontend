@@ -5,7 +5,7 @@ import {
   DefaultService,
   ModelReferenceV1Service,
   ModelReferenceV2Service,
-  MODELREFERENCECATEGORY,
+  MODEL_REFERENCE_CATEGORY,
   ModelCategoryName,
 } from '../api-client';
 import {
@@ -69,7 +69,7 @@ export class ModelReferenceApiService {
   getModelsInCategory(category: string): Observable<CategoryModelsResponse> {
     return this.v2Service
       .getReferenceByCategoryModelReferencesV2ModelCategoryNameGet(
-        category as MODELREFERENCECATEGORY,
+        category as MODEL_REFERENCE_CATEGORY,
       )
       .pipe(
         map((response) => {
@@ -135,7 +135,7 @@ export class ModelReferenceApiService {
 
     return this.legacyService
       .createLegacyModelModelReferencesV1ModelCategoryNameModelNamePost(
-        category as MODELREFERENCECATEGORY,
+        category as MODEL_REFERENCE_CATEGORY,
         modelName,
         payload,
       )
@@ -166,7 +166,7 @@ export class ModelReferenceApiService {
 
     return this.legacyService
       .updateLegacyModelModelReferencesV1ModelCategoryNameModelNamePut(
-        category as MODELREFERENCECATEGORY,
+        category as MODEL_REFERENCE_CATEGORY,
         modelName,
         payload,
       )
@@ -188,7 +188,7 @@ export class ModelReferenceApiService {
 
     return this.legacyService
       .deleteLegacyModelModelReferencesV1ModelCategoryNameModelNameDelete(
-        category as MODELREFERENCECATEGORY,
+        category as MODEL_REFERENCE_CATEGORY,
         modelName,
       )
       .pipe(

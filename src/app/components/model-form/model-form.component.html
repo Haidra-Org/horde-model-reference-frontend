@@ -1,16 +1,16 @@
 <div class="model-form-container">
-  <div class="header-section">
+  <div class="page-header">
     <div>
       <h1>{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
       <p class="subtitle">Category: {{ category() }}</p>
     </div>
-    <button type="button" class="btn btn-secondary view-toggle" (click)="toggleViewMode()">
+    <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
       Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
     </button>
   </div>
 
   @if (loading()) {
-    <div class="loading">Loading model data...</div>
+    <div class="loading-state">Loading model data...</div>
   } @else {
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-group name-field">
@@ -142,10 +142,10 @@
         </button>
       </div>
       @if (hasErrors()) {
-        <div class="form-error-hint">Please fix validation errors before submitting</div>
+        <div class="alert alert-error">Please fix validation errors before submitting</div>
       }
       @if (!hasErrors() && groupedIssues().warnings.length > 0) {
-        <div class="form-warning-hint">
+        <div class="alert alert-warning">
           You have {{ groupedIssues().warnings.length }} warning(s), but you can still submit
         </div>
       }
