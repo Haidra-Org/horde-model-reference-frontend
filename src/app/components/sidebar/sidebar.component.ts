@@ -10,6 +10,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { RECORD_DISPLAY_MAP } from '../../models/maps';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,6 +29,18 @@ export class SidebarComponent implements OnInit {
   readonly currentCategory = signal<string | null>(null);
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
+  readonly recordDisplayMap = RECORD_DISPLAY_MAP;
+
+  // Sorted categories with generation types first
+  readonly sortedCategories = computed(() => {
+    const cats = this.categories();
+    const generationOrder = ['text_generation', 'image_generation', 'video_generation', 'audio_generation'];
+    
+    const generationCats = generationOrder.filter(cat => cats.includes(cat));
+    const otherCats = cats.filter(cat => !generationOrder.includes(cat)).sort();
+    
+    return [...generationCats, ...otherCats];
+  });
 
   ngOnInit(): void {
     this.loadCategories();
@@ -53,16 +66,14 @@ export class SidebarComponent implements OnInit {
   }
 
   private trackCurrentCategory(): void {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        const urlSegments = this.router.url.split('/');
-        if (urlSegments[1] === 'categories' && urlSegments[2]) {
-          this.currentCategory.set(urlSegments[2]);
-        } else {
-          this.currentCategory.set(null);
-        }
-      });
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      const urlSegments = this.router.url.split('/');
+      if (urlSegments[1] === 'categories' && urlSegments[2]) {
+        this.currentCategory.set(urlSegments[2]);
+      } else {
+        this.currentCategory.set(null);
+      }
+    });
 
     const urlSegments = this.router.url.split('/');
     if (urlSegments[1] === 'categories' && urlSegments[2]) {

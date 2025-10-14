@@ -1,0 +1,35 @@
+<div class="tag-input-container">
+  @if (label()) {
+    <label class="tag-label">{{ label() }}</label>
+  }
+
+  <div class="tag-list">
+    @for (value of values(); track $index) {
+      <div class="tag-item">
+        <span class="tag-text">{{ value }}</span>
+        <button type="button" class="tag-remove" (click)="removeValue($index)" title="Remove">
+          ×
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="tag-input-row">
+    <input
+      type="text"
+      class="tag-input"
+      [placeholder]="placeholder()"
+      [(ngModel)]="newValue"
+      (ngModelChange)="newValue.set($event)"
+      (keypress)="handleKeyPress($event)"
+    />
+    <button
+      type="button"
+      class="btn btn-small btn-add"
+      (click)="addValue()"
+      [disabled]="!newValue().trim()"
+    >
+      Add
+    </button>
+  </div>
+</div>

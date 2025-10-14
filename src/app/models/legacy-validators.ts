@@ -40,11 +40,15 @@ export function validateConfigFile(file: LegacyConfigFile): ValidationIssue[] {
     return issues;
   }
 
-  if (!file.path.includes('.ckpt')) {
+  if (
+    !file.path.endsWith('.ckpt') &&
+    !file.path.endsWith('.safetensors') &&
+    !file.path.endsWith('.pt')
+  ) {
     issues.push({
       field: 'config.files[].path',
-      message: 'Config file has an invalid path',
-      severity: 'error',
+      message: 'Config file might have an invalid path',
+      severity: 'warning',
     });
   }
 

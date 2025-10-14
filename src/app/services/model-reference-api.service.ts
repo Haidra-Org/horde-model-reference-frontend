@@ -1,23 +1,28 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
-import { environment } from '../../environments/environment';
 import {
-  ApiInfoResponse,
+  DefaultService,
+  ModelReferenceV1Service,
+  ModelReferenceV2Service,
+  MODELREFERENCECATEGORY,
+  ModelCategoryName,
+} from '../api-client';
+import {
   BackendCapabilities,
   CategoryModelsResponse,
-  ModelRecord,
-  LegacyRecordUnion,
   LegacyModelsResponse,
-  ModelReferenceCategory,
+  LegacyRecordUnion,
+  ModelRecord,
 } from '../models/api.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ModelReferenceApiService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiBaseUrl;
+  private readonly defaultService = inject(DefaultService);
+  private readonly legacyService = inject(ModelReferenceV1Service);
+  private readonly v2Service = inject(ModelReferenceV2Service);
 
   readonly backendCapabilities = signal<BackendCapabilities>({
     writable: false,
@@ -26,16 +31,13 @@ export class ModelReferenceApiService {
   });
 
   detectBackendCapabilities(): Observable<BackendCapabilities> {
-    return this.http.get<ApiInfoResponse>(`${this.baseUrl}/info`).pipe(
-      map((response) => {
-        const message = response.message.toLowerCase();
-        const isLegacy = message.includes('legacy');
-        const isPrimary = message.includes('primary');
-
+    return this.defaultService.replicateModeReplicateModeGet().pipe(
+      map((mode) => {
+        const isPrimary = mode === 'PRIMARY';
         const capabilities: BackendCapabilities = {
-          writable: isLegacy && isPrimary,
+          writable: isPrimary,
           mode: isPrimary ? 'PRIMARY' : 'REPLICA',
-          canonicalFormat: isLegacy ? 'legacy' : 'v2',
+          canonicalFormat: 'legacy',
         };
 
         return capabilities;
@@ -49,26 +51,59 @@ export class ModelReferenceApiService {
         };
         this.backendCapabilities.set(defaultCapabilities);
         return of(defaultCapabilities);
-      })
+      }),
     );
   }
 
   getCategories(): Observable<string[]> {
-    return this.http
-      .get<string[]>(`${this.baseUrl}/model_categories`)
-      .pipe(catchError(this.handleError));
+    return this.legacyService.readLegacyReferenceNamesModelReferencesV1ModelCategoriesGet().pipe(
+      map((categories) =>
+        categories.map((category) =>
+          typeof category === 'string' ? category : String(category as unknown),
+        ),
+      ),
+      catchError(this.handleError),
+    );
   }
 
   getModelsInCategory(category: string): Observable<CategoryModelsResponse> {
-    return this.http
-      .get<CategoryModelsResponse>(`${this.baseUrl}/${category}`)
-      .pipe(catchError(this.handleError));
+    return this.v2Service
+      .getReferenceByCategoryModelReferencesV2ModelCategoryNameGet(
+        category as MODELREFERENCECATEGORY,
+      )
+      .pipe(
+        map((response) => {
+          const result: CategoryModelsResponse = {};
+          if (!response) {
+            return result;
+          }
+
+          Object.entries(response).forEach(([name, data]) => {
+            const recordData = (data ?? {}) as ModelRecord;
+            const potentialName = recordData.name;
+            const recordName = typeof potentialName === 'string' ? potentialName : name;
+
+            result[name] = {
+              ...recordData,
+              name: recordName,
+            } as ModelRecord;
+          });
+
+          return result;
+        }),
+        catchError(this.handleError),
+      );
   }
 
   getLegacyModelsInCategory(category: string): Observable<LegacyModelsResponse> {
-    return this.http
-      .get<LegacyModelsResponse>(`${this.baseUrl}/${category}`)
-      .pipe(catchError(this.handleError));
+    return this.legacyService
+      .readLegacyReferenceModelReferencesV1ModelCategoryNameGet(
+        category as unknown as ModelCategoryName,
+      )
+      .pipe(
+        map((response) => response as LegacyModelsResponse),
+        catchError(this.handleError),
+      );
   }
 
   getLegacyModelsAsArray(category: string): Observable<LegacyRecordUnion[]> {
@@ -77,100 +112,89 @@ export class ModelReferenceApiService {
         Object.entries(response).map(([name, data]) => ({
           ...data,
           name,
-        }))
-      )
+        })),
+      ),
     );
-  }
-
-  createModel(
-    category: string,
-    modelName: string,
-    modelData: ModelRecord
-  ): Observable<ModelRecord> {
-    if (!this.backendCapabilities().writable) {
-      return throwError(
-        () =>
-          new Error(
-            'Backend does not support write operations (REPLICA mode or wrong format)'
-          )
-      );
-    }
-
-    return this.http
-      .post<ModelRecord>(`${this.baseUrl}/${category}/${modelName}`, modelData)
-      .pipe(catchError(this.handleError));
   }
 
   createLegacyModel(
     category: string,
     modelName: string,
-    modelData: LegacyRecordUnion
+    modelData: LegacyRecordUnion,
   ): Observable<LegacyRecordUnion> {
     if (!this.backendCapabilities().writable) {
       return throwError(
-        () =>
-          new Error(
-            'Backend does not support write operations (REPLICA mode or wrong format)'
-          )
+        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
       );
     }
 
-    return this.http
-      .post<LegacyRecordUnion>(`${this.baseUrl}/${category}/${modelName}`, modelData)
-      .pipe(catchError(this.handleError));
-  }
+    const payload = {
+      ...modelData,
+      name: modelData.name ?? modelName,
+    } as Record<string, unknown>;
 
-  updateModel(
-    category: string,
-    modelName: string,
-    modelData: ModelRecord
-  ): Observable<ModelRecord> {
-    if (!this.backendCapabilities().writable) {
-      return throwError(
-        () =>
-          new Error(
-            'Backend does not support write operations (REPLICA mode or wrong format)'
-          )
+    return this.legacyService
+      .createLegacyModelModelReferencesV1ModelCategoryNameModelNamePost(
+        category as MODELREFERENCECATEGORY,
+        modelName,
+        payload,
+      )
+      .pipe(
+        map((response) => ({
+          ...(response as LegacyRecordUnion),
+          name: (response as LegacyRecordUnion)?.name ?? modelName,
+        })),
+        catchError(this.handleError),
       );
-    }
-
-    return this.http
-      .put<ModelRecord>(`${this.baseUrl}/${category}/${modelName}`, modelData)
-      .pipe(catchError(this.handleError));
   }
 
   updateLegacyModel(
     category: string,
     modelName: string,
-    modelData: Partial<LegacyRecordUnion>
+    modelData: Partial<LegacyRecordUnion>,
   ): Observable<LegacyRecordUnion> {
     if (!this.backendCapabilities().writable) {
       return throwError(
-        () =>
-          new Error(
-            'Backend does not support write operations (REPLICA mode or wrong format)'
-          )
+        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
       );
     }
 
-    return this.http
-      .put<LegacyRecordUnion>(`${this.baseUrl}/${category}/${modelName}`, modelData)
-      .pipe(catchError(this.handleError));
+    const payload = {
+      ...modelData,
+      name: modelName,
+    } as Record<string, unknown>;
+
+    return this.legacyService
+      .updateLegacyModelModelReferencesV1ModelCategoryNameModelNamePut(
+        category as MODELREFERENCECATEGORY,
+        modelName,
+        payload,
+      )
+      .pipe(
+        map((response) => ({
+          ...(response as LegacyRecordUnion),
+          name: (response as LegacyRecordUnion)?.name ?? modelName,
+        })),
+        catchError(this.handleError),
+      );
   }
 
   deleteModel(category: string, modelName: string): Observable<void> {
     if (!this.backendCapabilities().writable) {
       return throwError(
-        () =>
-          new Error(
-            'Backend does not support write operations (REPLICA mode or wrong format)'
-          )
+        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
       );
     }
 
-    return this.http
-      .delete<void>(`${this.baseUrl}/${category}/${modelName}`)
-      .pipe(catchError(this.handleError));
+    return this.legacyService
+      .deleteLegacyModelModelReferencesV1ModelCategoryNameModelNameDelete(
+        category as MODELREFERENCECATEGORY,
+        modelName,
+      )
+      .pipe(
+        map(() => undefined),
+        catchError(this.handleError),
+      );
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

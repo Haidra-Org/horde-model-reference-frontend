@@ -1,12 +1,19 @@
 <div class="model-form-container">
-  <h1>{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
-  <p class="subtitle">Category: {{ category() }}</p>
+  <div class="header-section">
+    <div>
+      <h1>{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
+      <p class="subtitle">Category: {{ category() }}</p>
+    </div>
+    <button type="button" class="btn btn-secondary view-toggle" (click)="toggleViewMode()">
+      Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
+    </button>
+  </div>
 
   @if (loading()) {
     <div class="loading">Loading model data...</div>
   } @else {
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-group">
+      <div class="form-group name-field">
         <label for="name">
           Model Name *
           @if (isEditMode()) {
@@ -33,25 +40,54 @@
         }
       </div>
 
-      <div class="form-group">
-        <label for="jsonData">
-          Model Data (JSON) *
-          <span class="hint">Name field will be added automatically</span>
-        </label>
-        <textarea
-          id="jsonData"
-          formControlName="jsonData"
-          rows="20"
-          placeholder='{"description": "...", "config": {...}}'
-          [class.error]="form.get('jsonData')?.invalid && form.get('jsonData')?.touched"
-        ></textarea>
-        @if (form.get('jsonData')?.hasError('required') && form.get('jsonData')?.touched) {
-          <span class="error-message">Model data is required</span>
-        }
-        <span class="help-text"
-          >Enter valid JSON. Common fields: description, config, baseline, nsfw, etc.</span
-        >
-      </div>
+      @if (viewMode() === 'form') {
+        <div class="form-fields-container">
+          <app-common-fields [data]="commonData()" (dataChange)="onCommonDataChange($event)" />
+
+          @if (isImageGeneration()) {
+            <app-stable-diffusion-fields
+              [data]="stableDiffusionData()"
+              (dataChange)="onStableDiffusionDataChange($event)"
+            />
+          }
+
+          @if (isTextGeneration()) {
+            <app-text-generation-fields
+              [data]="textGenerationData()"
+              (dataChange)="onTextGenerationDataChange($event)"
+            />
+          }
+
+          @if (isClip()) {
+            <app-clip-fields [data]="clipData()" (dataChange)="onClipDataChange($event)" />
+          }
+
+          <app-config-form-section
+            [config]="configData()"
+            (configChange)="onConfigDataChange($event)"
+          />
+        </div>
+      } @else {
+        <div class="form-group">
+          <label for="jsonData">
+            Model Data (JSON) *
+            <span class="hint">Name field will be added automatically</span>
+          </label>
+          <textarea
+            id="jsonData"
+            formControlName="jsonData"
+            rows="20"
+            placeholder='{"description": "...", "config": {...}}'
+            [class.error]="form.get('jsonData')?.invalid && form.get('jsonData')?.touched"
+          ></textarea>
+          @if (form.get('jsonData')?.hasError('required') && form.get('jsonData')?.touched) {
+            <span class="error-message">Model data is required</span>
+          }
+          <span class="help-text"
+            >Enter valid JSON. Common fields: description, config, baseline, nsfw, etc.</span
+          >
+        </div>
+      }
 
       @if (validationIssues().length > 0) {
         <div class="validation-panel">

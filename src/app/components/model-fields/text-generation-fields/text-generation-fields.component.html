@@ -1,0 +1,76 @@
+<div class="text-generation-fields">
+  <h3 class="section-title">Text Generation Fields</h3>
+
+  <div class="field-row">
+    <div class="field-group">
+      <label for="parameters">Parameters *</label>
+      <input
+        id="parameters"
+        type="number"
+        [value]="data().parameters || ''"
+        (blur)="onParametersChange($any($event.target).value)"
+        placeholder="e.g., 7000000000"
+      />
+      <span class="help-text">Number of model parameters (required)</span>
+    </div>
+
+    <div class="field-group">
+      <label for="model_name">Model Name</label>
+      <input
+        id="model_name"
+        type="text"
+        [value]="data().model_name || ''"
+        (blur)="onModelNameChange($any($event.target).value)"
+        placeholder="e.g., gpt2"
+      />
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-group">
+      <label for="baseline">Baseline</label>
+      <input
+        id="baseline"
+        type="text"
+        [value]="data().baseline || ''"
+        (blur)="onBaselineChange($any($event.target).value)"
+        placeholder="e.g., llama, gpt"
+      />
+    </div>
+
+    <div class="field-group">
+      <label for="display_name">Display Name</label>
+      <input
+        id="display_name"
+        type="text"
+        [value]="data().display_name || ''"
+        (blur)="onDisplayNameChange($any($event.target).value)"
+        placeholder="Human-friendly name"
+      />
+    </div>
+  </div>
+
+  <div class="field-group">
+    <label for="url">URL</label>
+    <input
+      id="url"
+      type="url"
+      [value]="data().url || ''"
+      (blur)="onUrlChange($any($event.target).value)"
+      placeholder="https://..."
+    />
+  </div>
+
+  <app-tag-input
+    label="Tags"
+    placeholder="Add tag..."
+    [values]="data().tags || []"
+    (valuesChange)="onTagsChange($event)"
+  />
+
+  <app-key-value-editor
+    label="Settings"
+    [values]="data().settings || {}"
+    (valuesChange)="onSettingsChange($event)"
+  />
+</div>

@@ -1,0 +1,140 @@
+<div class="config-section">
+  <div class="config-header" (click)="toggleExpanded()">
+    <h3>Configuration</h3>
+    <span class="expand-icon">{{ isExpanded() ? '▼' : '▶' }}</span>
+  </div>
+
+  @if (isExpanded()) {
+    <div class="config-content">
+      <div class="config-subsection">
+        <div class="subsection-header">
+          <h4>Files</h4>
+          <button type="button" class="btn btn-small btn-add" (click)="addFile()">
+            + Add File
+          </button>
+        </div>
+
+        @if (config()?.files && config()!.files!.length > 0) {
+          <div class="files-list">
+            @for (file of config()!.files!; track $index) {
+              <div class="file-item">
+                <div class="file-fields">
+                  <div class="field-group">
+                    <label>Path *</label>
+                    <input
+                      type="text"
+                      [value]="file.path"
+                      (blur)="updateFile($index, 'path', $any($event.target).value)"
+                      placeholder="/path/to/file.ckpt"
+                    />
+                  </div>
+
+                  <div class="field-group">
+                    <label>SHA256 Sum</label>
+                    <input
+                      type="text"
+                      [value]="file.sha256sum || ''"
+                      (blur)="updateFile($index, 'sha256sum', $any($event.target).value)"
+                      placeholder="64-character hash"
+                    />
+                  </div>
+
+                  <div class="field-group">
+                    <label>MD5 Sum</label>
+                    <input
+                      type="text"
+                      [value]="file.md5sum || ''"
+                      (blur)="updateFile($index, 'md5sum', $any($event.target).value)"
+                      placeholder="32-character hash"
+                    />
+                  </div>
+
+                  <div class="field-group">
+                    <label>File Type</label>
+                    <input
+                      type="text"
+                      [value]="file.file_type || ''"
+                      (blur)="updateFile($index, 'file_type', $any($event.target).value)"
+                      placeholder="e.g., ckpt, safetensors"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-remove"
+                  (click)="removeFile($index)"
+                  title="Remove file"
+                >
+                  ×
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty-message">No files configured</p>
+        }
+      </div>
+
+      <div class="config-subsection">
+        <div class="subsection-header">
+          <h4>Downloads</h4>
+          <button type="button" class="btn btn-small btn-add" (click)="addDownload()">
+            + Add Download
+          </button>
+        </div>
+
+        @if (config()?.download && config()!.download!.length > 0) {
+          <div class="downloads-list">
+            @for (download of config()!.download!; track $index) {
+              <div class="download-item">
+                <div class="download-fields">
+                  <div class="field-group">
+                    <label>File Name *</label>
+                    <input
+                      type="text"
+                      [value]="download.file_name || ''"
+                      (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
+                      placeholder="model.ckpt"
+                    />
+                  </div>
+
+                  <div class="field-group">
+                    <label>File URL *</label>
+                    <input
+                      type="text"
+                      [value]="download.file_url || ''"
+                      (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
+                      placeholder="https://..."
+                    />
+                  </div>
+
+                  <div class="field-group">
+                    <label>File Path (usually empty)</label>
+                    <input
+                      type="text"
+                      [value]="download.file_path || ''"
+                      (blur)="updateDownload($index, 'file_path', $any($event.target).value)"
+                      placeholder=""
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-remove"
+                  (click)="removeDownload($index)"
+                  title="Remove download"
+                >
+                  ×
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty-message">No downloads configured</p>
+        }
+      </div>
+    </div>
+  }
+</div>

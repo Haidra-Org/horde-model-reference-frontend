@@ -15,8 +15,8 @@ import {
   isLegacyStableDiffusionRecord,
   isLegacyTextGenerationRecord,
   isLegacyClipRecord,
-  BASELINE_DISPLAY_MAP,
 } from '../../models';
+import { BASELINE_DISPLAY_MAP } from '../../models/maps';
 
 @Component({
   selector: 'app-model-list',
@@ -36,8 +36,12 @@ export class ModelListComponent implements OnInit {
   readonly loading = signal(true);
   readonly searchTerm = signal('');
   readonly modelToDelete = signal<string | null>(null);
+  readonly deleteConfirmationInput = signal('');
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
+  readonly deleteAllowed = computed(
+    () => this.deleteConfirmationInput().trim() === this.modelToDelete(),
+  );
 
   readonly isImageGeneration = computed(() => this.category() === 'image_generation');
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
@@ -52,7 +56,8 @@ export class ModelListComponent implements OnInit {
         model.name.toLowerCase().includes(search) ||
         model.description?.toLowerCase().includes(search) ||
         (isLegacyStableDiffusionRecord(model) && model.baseline?.toLowerCase().includes(search)) ||
-        (isLegacyStableDiffusionRecord(model) && model.tags?.some(tag => tag.toLowerCase().includes(search)))
+        (isLegacyStableDiffusionRecord(model) &&
+          model.tags?.some((tag) => tag.toLowerCase().includes(search))),
     );
   });
 
@@ -89,18 +94,25 @@ export class ModelListComponent implements OnInit {
 
   cancelDelete(): void {
     this.modelToDelete.set(null);
+    this.deleteConfirmationInput.set('');
   }
 
   deleteModel(modelName: string): void {
+    if (!this.deleteAllowed()) {
+      return;
+    }
+
     this.api.deleteModel(this.category(), modelName).subscribe({
       next: () => {
         this.notification.success(`Model "${modelName}" deleted successfully`);
         this.modelToDelete.set(null);
+        this.deleteConfirmationInput.set('');
         this.loadModels();
       },
       error: (error: Error) => {
         this.notification.error(error.message);
         this.modelToDelete.set(null);
+        this.deleteConfirmationInput.set('');
       },
     });
   }

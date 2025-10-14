@@ -1,5 +1,15 @@
-export interface ApiInfoResponse {
-  message: string;
+import {
+  MODELREFERENCECATEGORY,
+  ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue,
+} from '../api-client';
+
+// Type aliases for convenience
+export type ModelRecord = ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue;
+export type ModelReferenceCategory = MODELREFERENCECATEGORY;
+
+// Custom response types
+export interface CategoryModelsResponse {
+  [modelName: string]: ModelRecord;
 }
 
 export interface BackendCapabilities {
@@ -7,22 +17,6 @@ export interface BackendCapabilities {
   mode: 'PRIMARY' | 'REPLICA' | 'UNKNOWN';
   canonicalFormat: 'legacy' | 'v2' | 'UNKNOWN';
 }
-
-export interface ModelRecord {
-  name: string;
-  description?: string;
-  [key: string]: unknown;
-}
-
-export interface CategoryModelsResponse {
-  [modelName: string]: ModelRecord;
-}
-
-export interface ApiErrorResponse {
-  detail: string;
-}
-
-export type ModelReferenceCategory = 'image_generation' | 'text_generation' | 'clip';
 
 export interface LegacyConfigFile {
   path: string;
@@ -43,8 +37,6 @@ export interface LegacyConfig {
   files?: LegacyConfigFile[];
   download?: LegacyConfigDownload[];
 }
-
-type RequirementsValue = number | string | boolean | number[] | string[];
 
 export interface LegacyGenericRecord {
   name: string;
@@ -70,11 +62,7 @@ export interface LegacyStableDiffusionRecord extends LegacyGenericRecord {
   homepage?: string | null;
   size_on_disk_bytes?: number | null;
   optimization?: string | null;
-  requirements?: Record<string, RequirementsValue> | null;
-}
-
-export interface LegacyClipRecord extends LegacyGenericRecord {
-  pretrained_name?: string | null;
+  requirements?: Record<string, LegacyRequirementValue> | null;
 }
 
 export interface LegacyTextGenerationRecord extends LegacyGenericRecord {
@@ -84,7 +72,11 @@ export interface LegacyTextGenerationRecord extends LegacyGenericRecord {
   display_name?: string | null;
   url?: string | null;
   tags?: string[] | null;
-  settings?: Record<string, RequirementsValue> | null;
+  settings?: Record<string, LegacyRequirementValue> | null;
+}
+
+export interface LegacyClipRecord extends LegacyGenericRecord {
+  pretrained_name?: string | null;
 }
 
 export type LegacyRecordUnion =
@@ -97,18 +89,4 @@ export interface LegacyModelsResponse {
   [modelName: string]: LegacyRecordUnion;
 }
 
-export interface CreateModelRequest {
-  category: ModelReferenceCategory;
-  model_data: LegacyRecordUnion;
-}
-
-export interface UpdateModelRequest {
-  category: ModelReferenceCategory;
-  model_name: string;
-  model_data: Partial<LegacyRecordUnion>;
-}
-
-export interface DeleteModelRequest {
-  category: ModelReferenceCategory;
-  model_name: string;
-}
+type LegacyRequirementValue = number | string | boolean | number[] | string[];

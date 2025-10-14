@@ -74,7 +74,8 @@
                 </td>
                 <td class="tags-cell">
                   @if (model.tags && model.tags.length > 0) {
-                    <span class="tags-preview">{{ model.tags.slice(0, 3).join(', ') }}
+                    <span class="tags-preview"
+                      >{{ model.tags.slice(0, 3).join(', ') }}
                       @if (model.tags.length > 3) {
                         <span class="more-count">+{{ model.tags.length - 3 }}</span>
                       }
@@ -120,10 +121,7 @@
                   <button class="btn btn-small btn-edit" (click)="editModel(model.name)">
                     Edit
                   </button>
-                  <button
-                    class="btn btn-small btn-delete"
-                    (click)="confirmDelete(model.name)"
-                  >
+                  <button class="btn btn-small btn-delete" (click)="confirmDelete(model.name)">
                     Delete
                   </button>
                 </td>
@@ -140,11 +138,32 @@
   <div class="modal-overlay" (click)="cancelDelete()">
     <div class="modal" (click)="$event.stopPropagation()">
       <h2>Confirm Delete</h2>
-      <p>Are you sure you want to delete "{{ modelToDelete() }}"?</p>
+      <p>
+        Are you sure you want to delete <strong>{{ modelToDelete() }}</strong
+        >?
+      </p>
       <p class="warning">This action cannot be undone.</p>
+      <div class="confirmation-input">
+        <label for="delete-confirm">Type the model name to confirm:</label>
+        <input
+          id="delete-confirm"
+          type="text"
+          placeholder="{{ modelToDelete() }}"
+          [(ngModel)]="deleteConfirmationInput"
+          (ngModelChange)="deleteConfirmationInput.set($event)"
+          autocomplete="off"
+        />
+      </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-        <button class="btn btn-danger" (click)="deleteModel(modelToDelete()!)">Delete</button>
+        <button
+          class="btn btn-danger"
+          [class.disabled]="!deleteAllowed()"
+          [disabled]="!deleteAllowed()"
+          (click)="deleteModel(modelToDelete()!)"
+        >
+          Delete
+        </button>
       </div>
     </div>
   </div>

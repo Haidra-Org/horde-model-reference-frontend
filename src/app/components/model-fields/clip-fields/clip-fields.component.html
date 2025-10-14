@@ -1,0 +1,15 @@
+<div class="clip-fields">
+  <h3 class="section-title">CLIP Fields</h3>
+
+  <div class="field-group">
+    <label for="pretrained_name">Pretrained Name</label>
+    <input
+      id="pretrained_name"
+      type="text"
+      [value]="data().pretrained_name || ''"
+      (blur)="onPretrainedNameChange($any($event.target).value)"
+      placeholder="e.g., ViT-L/14"
+    />
+    <span class="help-text">The pretrained CLIP model identifier</span>
+  </div>
+</div>

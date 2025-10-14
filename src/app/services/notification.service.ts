@@ -26,9 +26,7 @@ export class NotificationService {
   }
 
   remove(id: number): void {
-    this.notifications.update((notifications) =>
-      notifications.filter((n) => n.id !== id)
-    );
+    this.notifications.update((notifications) => notifications.filter((n) => n.id !== id));
   }
 
   private addNotification(message: string, type: Notification['type']): void {

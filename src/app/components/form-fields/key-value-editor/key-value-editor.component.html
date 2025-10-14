@@ -1,0 +1,59 @@
+<div class="key-value-editor">
+  @if (label()) {
+    <label class="kv-label">{{ label() }}</label>
+  }
+
+  <div class="kv-pairs">
+    @for (pair of pairs(); track pair.key) {
+      <div class="kv-pair">
+        <input type="text" class="kv-key" [value]="pair.key" readonly placeholder="Key" />
+        <input
+          type="text"
+          class="kv-value"
+          [value]="getValueAsString(pair.value)"
+          (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
+          placeholder="Value"
+        />
+        <span class="kv-type-badge">{{ pair.valueType }}</span>
+        <button type="button" class="btn-remove" (click)="removePair(pair.key)" title="Remove">
+          ×
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="kv-add-section">
+    <input
+      type="text"
+      class="kv-input kv-key"
+      placeholder="Key"
+      [(ngModel)]="newKey"
+      (ngModelChange)="newKey.set($event)"
+    />
+    <input
+      type="text"
+      class="kv-input kv-value"
+      placeholder="Value"
+      [(ngModel)]="newValue"
+      (ngModelChange)="newValue.set($event)"
+    />
+    <select
+      class="kv-type-select"
+      [(ngModel)]="newValueType"
+      (ngModelChange)="newValueType.set($event)"
+    >
+      <option value="string">String</option>
+      <option value="number">Number</option>
+      <option value="boolean">Boolean</option>
+      <option value="array">Array (JSON)</option>
+    </select>
+    <button
+      type="button"
+      class="btn btn-small btn-add"
+      (click)="addPair()"
+      [disabled]="!newKey().trim() || !newValue().trim()"
+    >
+      Add
+    </button>
+  </div>
+</div>

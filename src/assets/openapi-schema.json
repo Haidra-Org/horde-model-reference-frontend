@@ -1,0 +1,2086 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/model_references/v1/info": {
+      "get": {
+        "tags": ["model_reference_v1"],
+        "summary": "Read Legacy Reference Info",
+        "description": "Info about the legacy model reference API, as follows.\n\nThis is the legacy model reference API, which uses the format originally found at the\ngithub repositories, https://github.com/Haidra-Org/AI-Horde-image-model-reference and\nhttps://github.com/Haidra-Org/AI-Horde-text-model-reference.",
+        "operationId": "read_legacy_reference_info_model_references_v1_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainsMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/model_references/v1/model_categories": {
+      "get": {
+        "tags": ["model_reference_v1"],
+        "summary": "Read Legacy Reference Names",
+        "description": "Get all legacy model reference names.",
+        "operationId": "read_legacy_reference_names_model_references_v1_model_categories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "type": "array",
+                  "title": "Response Read Legacy Reference Names Model References V1 Model Categories Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/model_references/v1/{model_category_name}": {
+      "get": {
+        "tags": ["model_reference_v1"],
+        "summary": "Read Legacy Reference",
+        "description": "Get a specific legacy model reference by category name.",
+        "operationId": "read_legacy_reference_model_references_v1__model_category_name__get",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+                },
+                {
+                  "const": "stable_diffusion",
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "title": "Model Category Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Model category not found or empty"
+          },
+          "422": {
+            "description": "Invalid model category"
+          }
+        }
+      }
+    },
+    "/model_references/v1/{model_category_name}/{model_name}": {
+      "post": {
+        "tags": ["model_reference_v1"],
+        "summary": "Create Legacy Model",
+        "description": "Create a new model in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.\n\nArgs:\n    model_category_name: The model reference category.\n    model_name: The name of the model to create. Must match the 'name' field in request body.\n    request_body: The model record data in legacy format.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The created model record data.\n\nRaises:\n    HTTPException: 400 for invalid requests, 409 if model exists, 503 if not in legacy mode.",
+        "operationId": "create_legacy_model_model_references_v1__model_category_name___model_name__post",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Request Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Model created successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "409": {
+            "description": "Model already exists"
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "503": {
+            "description": "Service unavailable (not in legacy canonical mode)"
+          }
+        }
+      },
+      "put": {
+        "tags": ["model_reference_v1"],
+        "summary": "Update Legacy Model",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.\n\nArgs:\n    model_category_name: The model reference category.\n    model_name: The name of the model to update. Must match the 'name' field in request body.\n    request_body: The model record data in legacy format.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The updated model record data.\n\nRaises:\n    HTTPException: 400 for invalid requests, 503 if not in legacy mode.",
+        "operationId": "update_legacy_model_model_references_v1__model_category_name___model_name__put",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Request Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Model updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "201": {
+            "description": "Model created successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "503": {
+            "description": "Service unavailable (not in legacy canonical mode)"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["model_reference_v1"],
+        "summary": "Delete Legacy Model",
+        "description": "Delete a model from legacy format files.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.\n\nArgs:\n    model_category_name: The model reference category.\n    model_name: The name of the model to delete.\n    manager: The model reference manager dependency.\n\nReturns:\n    Response: 204 No Content on success.\n\nRaises:\n    HTTPException: 404 if model not found, 503 if not in legacy mode.",
+        "operationId": "delete_legacy_model_model_references_v1__model_category_name___model_name__delete",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Model deleted successfully"
+          },
+          "404": {
+            "description": "Model not found"
+          },
+          "503": {
+            "description": "Service unavailable (not in legacy canonical mode)"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/info": {
+      "get": {
+        "tags": ["model_reference_v2"],
+        "summary": "Get Reference Info",
+        "description": "Info about the legacy model reference API, as follows.\n\nThis is the  model reference API, which uses the new format established by horde_model_reference.",
+        "operationId": "get_reference_info_model_references_v2_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainsMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/model_references/v2/model_categories": {
+      "get": {
+        "tags": ["model_reference_v2"],
+        "summary": "Get Reference Names",
+        "description": "Get all legacy model reference names.",
+        "operationId": "get_reference_names_model_references_v2_model_categories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "type": "array",
+                  "title": "Response Get Reference Names Model References V2 Model Categories Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/model_references/v2/{model_category_name}": {
+      "get": {
+        "tags": ["model_reference_v2"],
+        "summary": "Get Reference By Category",
+        "description": "Get a specific model reference by category name.",
+        "operationId": "get_reference_by_category_model_references_v2__model_category_name__get",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/ImageGenerationModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/TextGenerationModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ControlNetModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/GenericModelRecord-Output"
+                      }
+                    ],
+                    "description": "A model record conforming to one of the category-specific schemas"
+                  },
+                  "title": "Response Get Reference By Category Model References V2  Model Category Name  Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Model category not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/{model_category_name}/{model_name}": {
+      "get": {
+        "tags": ["model_reference_v2"],
+        "summary": "Get Single Model",
+        "description": "Get a specific model by category and name.\n\nArgs:\n    model_category_name: The model reference category (e.g., image_generation).\n    model_name: The name of the model within the category.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The model record data.\n\nRaises:\n    HTTPException: 404 if category or model not found.",
+        "operationId": "get_single_model_model_references_v2__model_category_name___model_name__get",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Single Model Model References V2  Model Category Name   Model Name  Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Model category or model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["model_reference_v2"],
+        "summary": "Update Model",
+        "description": "Update an existing model or create if it doesn't exist (upsert).\n\nThis endpoint is only available in PRIMARY mode. REPLICA instances will return 503.\n\nIf the model exists:\n- Preserves original `created_at` and `created_by` metadata\n- Updates `updated_at` timestamp\n\nIf the model doesn't exist:\n- Sets `created_at` timestamp\n- Returns 201 Created status\n\nArgs:\n    model_category_name: The model reference category.\n    model_name: The name of the model to update. Must match the 'name' field in request body.\n    request_body: The model record data conforming to the category's schema.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The updated model record data.\n\nRaises:\n    HTTPException: 400 for invalid requests, 422 for validation errors,\n        503 if backend doesn't support writes (REPLICA mode).",
+        "operationId": "update_model_model_references_v2__model_category_name___model_name__put",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Request Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Model updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Update Model Model References V2  Model Category Name   Model Name  Put"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "201": {
+            "description": "Model created successfully"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable (REPLICA mode)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["model_reference_v2"],
+        "summary": "Delete Model",
+        "description": "Delete a model from the specified category.\n\nThis endpoint is only available in PRIMARY mode. REPLICA instances will return 503.\n\nArgs:\n    model_category_name: The model reference category.\n    model_name: The name of the model to delete.\n    manager: The model reference manager dependency.\n\nReturns:\n    Response: 204 No Content on success.\n\nRaises:\n    HTTPException: 404 if model not found, 503 if backend doesn't support writes (REPLICA mode).",
+        "operationId": "delete_model_model_references_v2__model_category_name___model_name__delete",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Model deleted successfully"
+          },
+          "404": {
+            "description": "Model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable (REPLICA mode)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/{model_category_name}/add": {
+      "post": {
+        "tags": ["model_reference_v2"],
+        "summary": "Create Model",
+        "description": "Create a new model in the specified category.\n\nThis endpoint is only available in PRIMARY mode. REPLICA instances will return 503.\n\nArgs:\n    model_category_name (str): The model reference category.\n    model_name (str): The name of the model to create. Must match the 'name' field in request body.\n    request_body (ModelRecordUnion): The model record data conforming to the category's schema.\n    manager (ModelReferenceManager): The model reference manager dependency.\n\nReturns:\n    JSONResponse: The created model record data.\n\nRaises:\n    HTTPException: 400 for invalid requests, 409 if model exists, 422 for validation errors,\n        503 if backend doesn't support writes (REPLICA mode).",
+        "operationId": "create_model_model_references_v2__model_category_name__add_post",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ImageGenerationModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TextGenerationModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ControlNetModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GenericModelRecord-Input"
+                  }
+                ],
+                "description": "A model record conforming to one of the category-specific schemas",
+                "title": "Request Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Model created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ImageGenerationModelRecord-Output"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TextGenerationModelRecord-Output"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ControlNetModelRecord-Output"
+                    },
+                    {
+                      "$ref": "#/components/schemas/GenericModelRecord-Output"
+                    }
+                  ],
+                  "description": "A model record conforming to one of the category-specific schemas",
+                  "title": "Response Create Model Model References V2  Model Category Name  Add Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Model already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable (REPLICA mode)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Read Root",
+        "description": "Root endpoint for the Horde Model Reference API1.",
+        "operationId": "read_root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainsMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/heartbeat": {
+      "get": {
+        "summary": "Heartbeat",
+        "description": "Heartbeat endpoint to check the service status.",
+        "operationId": "heartbeat_heartbeat_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainsStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/replicate_mode": {
+      "get": {
+        "summary": "Replicate Mode",
+        "description": "Endpoint to get the current replication mode.",
+        "operationId": "replicate_mode_replicate_mode_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplicateMode"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CONTROLNET_STYLE": {
+        "type": "string",
+        "enum": [
+          "control_seg",
+          "control_scribble",
+          "control_fakescribbles",
+          "control_openpose",
+          "control_normal",
+          "control_mlsd",
+          "control_hough",
+          "control_hed",
+          "control_canny",
+          "control_depth",
+          "control_qr",
+          "control_qr_xl"
+        ],
+        "title": "CONTROLNET_STYLE",
+        "description": "An enum of all the ControlNet 'styles' - the process that defines the model's behavior.\n\nExamples include canny, depth, and openpose."
+      },
+      "ContainsMessage": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["message"],
+        "title": "ContainsMessage",
+        "description": "A model that contains a message field."
+      },
+      "ContainsStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": ["status"],
+        "title": "ContainsStatus",
+        "description": "A model that contains a status field."
+      },
+      "ControlNetModelRecord-Input": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CONTROLNET_STYLE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Style"
+          }
+        },
+        "type": "object",
+        "required": ["name", "style"],
+        "title": "ControlNetModelRecord",
+        "description": "A ControlNet model entry in the model reference."
+      },
+      "ControlNetModelRecord-Output": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CONTROLNET_STYLE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Style"
+          }
+        },
+        "type": "object",
+        "required": ["name", "style"],
+        "title": "ControlNetModelRecord",
+        "description": "A ControlNet model entry in the model reference."
+      },
+      "DownloadRecord": {
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "file_url": {
+            "type": "string",
+            "title": "File Url"
+          },
+          "sha256sum": {
+            "type": "string",
+            "title": "Sha256Sum",
+            "default": "FIXME"
+          },
+          "file_purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Purpose"
+          },
+          "known_slow_download": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Slow Download"
+          }
+        },
+        "type": "object",
+        "required": ["file_name", "file_url"],
+        "title": "DownloadRecord",
+        "description": "A record of a file to download for a model. Typically a ckpt file."
+      },
+      "ErrorDetail": {
+        "properties": {
+          "loc": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Loc"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Msg"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": ["msg"],
+        "title": "ErrorDetail",
+        "description": "Detail about a specific error."
+      },
+      "ErrorResponse": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ErrorDetail"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": ["detail"],
+        "title": "ErrorResponse",
+        "description": "Standardized error response."
+      },
+      "GenericModelRecord-Input": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": ["name", "model_classification"],
+        "title": "GenericModelRecord",
+        "description": "A generic model reference record."
+      },
+      "GenericModelRecord-Output": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": ["name", "model_classification"],
+        "title": "GenericModelRecord",
+        "description": "A generic model reference record."
+      },
+      "GenericModelRecordConfig": {
+        "properties": {
+          "download": {
+            "items": {
+              "$ref": "#/components/schemas/DownloadRecord"
+            },
+            "type": "array",
+            "title": "Download"
+          }
+        },
+        "type": "object",
+        "title": "GenericModelRecordConfig",
+        "description": "Configuration for a generic model record."
+      },
+      "GenericModelRecordMetadata": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "default": "2.0.0"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          }
+        },
+        "type": "object",
+        "title": "GenericModelRecordMetadata",
+        "description": "Metadata for a generic model record."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImageGenerationModelRecord-Input": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "inpainting": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inpainting",
+            "default": false
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "optimization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Optimization"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags",
+            "default": []
+          },
+          "showcases": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Showcases",
+            "default": []
+          },
+          "min_bridge_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Bridge Version"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trigger",
+            "default": []
+          },
+          "homepage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Homepage"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_STYLE"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "requirements": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "number"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirements"
+          },
+          "size_on_disk_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size On Disk Bytes"
+          }
+        },
+        "type": "object",
+        "required": ["name", "baseline", "nsfw"],
+        "title": "ImageGenerationModelRecord",
+        "description": "A model entry in the model reference."
+      },
+      "ImageGenerationModelRecord-Output": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "inpainting": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inpainting",
+            "default": false
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "optimization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Optimization"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags",
+            "default": []
+          },
+          "showcases": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Showcases",
+            "default": []
+          },
+          "min_bridge_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Bridge Version"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trigger",
+            "default": []
+          },
+          "homepage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Homepage"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_STYLE"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "requirements": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "number"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirements"
+          },
+          "size_on_disk_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size On Disk Bytes"
+          }
+        },
+        "type": "object",
+        "required": ["name", "baseline", "nsfw"],
+        "title": "ImageGenerationModelRecord",
+        "description": "A model entry in the model reference."
+      },
+      "KNOWN_IMAGE_GENERATION_BASELINE": {
+        "type": "string",
+        "enum": [
+          "infer",
+          "stable_diffusion_1",
+          "stable_diffusion_2_768",
+          "stable_diffusion_2_512",
+          "stable_diffusion_xl",
+          "stable_cascade",
+          "flux_1",
+          "flux_schnell",
+          "flux_dev"
+        ],
+        "title": "KNOWN_IMAGE_GENERATION_BASELINE",
+        "description": "An enum of all the image generation baselines."
+      },
+      "MODEL_DOMAIN": {
+        "type": "string",
+        "enum": ["image", "text", "video", "audio", "rendered_3d"],
+        "title": "MODEL_DOMAIN",
+        "description": "The domain of a model, i.e., what it pertains to (image, text, video, etc.)."
+      },
+      "MODEL_PURPOSE": {
+        "type": "string",
+        "enum": [
+          "generation",
+          "post_processing",
+          "auxiliary_or_patch",
+          "feature_extractor",
+          "safety_checker",
+          "miscellaneous"
+        ],
+        "title": "MODEL_PURPOSE",
+        "description": "The primary purpose of a model, for example, image generation or feature extraction."
+      },
+      "MODEL_REFERENCE_CATEGORY": {
+        "type": "string",
+        "enum": [
+          "blip",
+          "clip",
+          "codeformer",
+          "controlnet",
+          "esrgan",
+          "gfpgan",
+          "safety_checker",
+          "image_generation",
+          "text_generation",
+          "video_generation",
+          "audio_generation",
+          "miscellaneous"
+        ],
+        "title": "MODEL_REFERENCE_CATEGORY",
+        "description": "The categories of model reference entries."
+      },
+      "MODEL_STYLE": {
+        "type": "string",
+        "enum": ["generalist", "anime", "furry", "artistic", "other", "realistic"],
+        "title": "MODEL_STYLE",
+        "description": "An enum of all the model styles."
+      },
+      "ModelClassification": {
+        "properties": {
+          "domain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_DOMAIN"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Domain"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_PURPOSE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": ["domain", "purpose"],
+        "title": "ModelClassification",
+        "description": "Contains specific information about how to categorize a model.\n\nThis includes the model's `MODEL_DOMAIN` and `MODEL_PURPOSE`."
+      },
+      "ReplicateMode": {
+        "type": "string",
+        "enum": ["PRIMARY", "REPLICA"],
+        "title": "ReplicateMode",
+        "description": "Indicates if copies of the model reference are canonical or replicated."
+      },
+      "TextGenerationModelRecord-Input": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "parameters": {
+            "type": "integer",
+            "title": "Parameters"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw",
+            "default": false
+          },
+          "style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags",
+            "default": []
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "number"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": ["name", "parameters"],
+        "title": "TextGenerationModelRecord",
+        "description": "A text generation model entry in the model reference."
+      },
+      "TextGenerationModelRecord-Output": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "parameters": {
+            "type": "integer",
+            "title": "Parameters"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw",
+            "default": false
+          },
+          "style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags",
+            "default": []
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "number"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          }
+        },
+        "type": "object",
+        "required": ["name", "parameters"],
+        "title": "TextGenerationModelRecord",
+        "description": "A text generation model entry in the model reference."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

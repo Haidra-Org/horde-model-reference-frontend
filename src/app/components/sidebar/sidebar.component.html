@@ -9,13 +9,13 @@
     <div class="sidebar-empty">No categories available</div>
   } @else {
     <nav class="sidebar-nav">
-      @for (category of categories(); track category) {
+      @for (category of sortedCategories(); track category) {
         <button
           class="category-item"
           [class.active]="currentCategory() === category"
           (click)="selectCategory(category)"
         >
-          <span class="category-name">{{ category }}</span>
+          <span class="category-name">{{ recordDisplayMap[category] || category }}</span>
           @if (currentCategory() === category) {
             <span class="category-indicator">›</span>
           }
