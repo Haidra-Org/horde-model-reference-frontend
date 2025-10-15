@@ -13,7 +13,7 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
   selector: 'app-model-row-fields',
   template: `
     @if (mode() === 'grid') {
-      <div class="grid xl:grid-cols-2 gap-6">
+      <div class="grid xl:grid-cols-2 gap-2">
         <!-- Technical Specifications Card -->
         <div class="card">
           <div class="card-header">
@@ -42,7 +42,7 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
         </div>
 
         <!-- Links & Resources Card -->
-        @if (linkFields().length > 0 || arrayFields().length > 0) {
+        @if (linkFieldsWithValues().length > 0 || arrayFieldsWithValues().length > 0) {
           <div class="card" [class.xl:col-span-2]="!showRequirements()">
             <div class="card-header">
               <h4 class="heading-card flex items-center gap-2">
@@ -53,41 +53,33 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
               </h4>
             </div>
             <div class="card-body space-y-4">
-              @for (field of linkFields(); track field.label) {
+              @for (field of linkFieldsWithValues(); track field.label) {
                 <div>
                   <div class="field-label">{{ field.label }}</div>
                   <div class="field-value">
-                    @if (getValue(field)) {
-                      <a
-                        [href]="getValue(field)"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="link inline-flex items-center gap-1 break-all"
-                      >
-                        {{ getValue(field) }}
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
-                      </a>
-                    } @else {
-                      <span class="text-muted">-</span>
-                    }
+                    <a
+                      [href]="getValue(field)"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="link inline-flex items-center gap-1 break-all"
+                    >
+                      {{ getValue(field) }}
+                      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                    </a>
                   </div>
                 </div>
               }
-              @for (field of arrayFields(); track field.label) {
+              @for (field of arrayFieldsWithValues(); track field.label) {
                 <div>
                   <div class="field-label">{{ field.label }}</div>
                   <div class="field-value">
-                    @if (getArrayValue(field) && getArrayValue(field)!.length > 0) {
-                      <div class="flex flex-wrap gap-1.5">
-                        @for (item of getArrayValue(field); track item) {
-                          <span class="tag tag-success">{{ item }}</span>
-                        }
-                      </div>
-                    } @else {
-                      <span class="text-muted">-</span>
-                    }
+                    <div class="flex flex-wrap gap-1.5">
+                      @for (item of getArrayValue(field); track item) {
+                        <span class="tag tag-success">{{ item }}</span>
+                      }
+                    </div>
                   </div>
                 </div>
               }
@@ -103,7 +95,7 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
                 <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
-                System Requirements
+                Model Parameter Requirements
               </h4>
             </div>
             <div class="card-body">
@@ -122,29 +114,21 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
       </div>
 
       <div class="grid md:grid-cols-2 gap-4">
-        @for (field of detailFields(); track field.label) {
+        @for (field of detailFieldsWithValues(); track field.label) {
           <div [class.md:col-span-2]="field.colspan === 4">
             <div class="field-label">{{ field.label }}</div>
             <div [class]="getValueClass(field)">
               @if (field.type === 'link') {
-                @if (getValue(field)) {
-                  <a
-                    [href]="getValue(field)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="link"
-                  >
-                    {{ getValue(field) }}
-                  </a>
-                } @else {
-                  -
-                }
+                <a
+                  [href]="getValue(field)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link"
+                >
+                  {{ getValue(field) }}
+                </a>
               } @else if (field.type === 'array') {
-                @if (getArrayValue(field) && getArrayValue(field)!.length > 0) {
-                  {{ getArrayValue(field)!.join(', ') }}
-                } @else {
-                  -
-                }
+                {{ getArrayValue(field)!.join(', ') }}
               } @else {
                 {{ getDisplayValue(field) }}
               }
@@ -281,6 +265,33 @@ export class ModelRowFieldsComponent {
   readonly detailFields = computed(() => {
     const allFields = this.fields();
     return allFields.filter((f) => f.type === 'link' || f.type === 'array' || f.colspan === 4);
+  });
+
+  readonly linkFieldsWithValues = computed(() => {
+    return this.linkFields().filter((field) => {
+      const value = this.getValue(field);
+      return value && value.trim() !== '';
+    });
+  });
+
+  readonly arrayFieldsWithValues = computed(() => {
+    return this.arrayFields().filter((field) => {
+      const arrayValue = this.getArrayValue(field);
+      return arrayValue && arrayValue.length > 0;
+    });
+  });
+
+  readonly detailFieldsWithValues = computed(() => {
+    return this.detailFields().filter((field) => {
+      if (field.type === 'link') {
+        const value = this.getValue(field);
+        return value && value.trim() !== '';
+      } else if (field.type === 'array') {
+        const arrayValue = this.getArrayValue(field);
+        return arrayValue && arrayValue.length > 0;
+      }
+      return true;
+    });
   });
 
   getValue(field: ModelFieldConfig): string {

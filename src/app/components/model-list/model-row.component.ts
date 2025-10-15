@@ -5,6 +5,8 @@ import {
   signal,
   computed,
   ChangeDetectionStrategy,
+  OnInit,
+  OnChanges,
 } from '@angular/core';
 import {
   LegacyRecordUnion,
@@ -103,13 +105,13 @@ import { hasShowcases } from './model-row.utils';
     <!-- Expanded Details Row -->
     @if (expanded()) {
       <tr [class]="isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800'">
-        <td [attr.colspan]="writable() ? 7 : 6" class="py-6 px-8">
-          <div class="space-y-6">
+        <td [attr.colspan]="writable() ? 7 : 6">
+          <div class="space-y-3">
             <!-- Overview Header -->
-            <div class="card-overview">
-              <div class="flex items-start justify-between gap-6">
+            <div class="card-overview px-2 py-2">
+              <div class="flex items-start justify-between gap-3">
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-3 mb-2">
+                  <div class="flex items-center gap-2 mb-1">
                     <svg class="card-overview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
@@ -117,11 +119,11 @@ import { hasShowcases } from './model-row.utils';
                       {{ model().name }}
                     </h3>
                   </div>
-                  <p class="card-overview-description">
+                  <p class="card-overview-description mt-0.5 mb-0">
                     {{ model().description || 'No description available' }}
                   </p>
                 </div>
-                <div class="flex flex-col gap-2 items-end flex-shrink-0">
+                <div class="flex flex-col gap-1 items-end flex-shrink-0">
                   @if (model().nsfw === true) {
                     <span class="badge badge-warning">NSFW</span>
                   } @else if (model().nsfw === false) {
@@ -130,7 +132,7 @@ import { hasShowcases } from './model-row.utils';
                     <span class="badge badge-secondary">Unknown</span>
                   }
                   @if (tags().length > 0) {
-                    <div class="flex flex-wrap gap-1 justify-end max-w-xs">
+                    <div class="flex flex-wrap gap-0.5 justify-end max-w-xs">
                       @for (tag of tags(); track tag) {
                         <span class="tag tag-primary">{{ tag }}</span>
                       }
@@ -141,12 +143,14 @@ import { hasShowcases } from './model-row.utils';
             </div>
 
             <!-- Main Content -->
-            <app-model-row-fields [model]="model()" mode="grid" />
+            <div>
+              <app-model-row-fields [model]="model()" mode="grid" />
+            </div>
 
             <!-- Showcases Section -->
             @if (hasShowcases(model())) {
               <div class="card">
-                <div class="card-body">
+                <div class="card-body p-0">
                   <app-model-row-showcases
                     [showcases]="getShowcases()"
                     [modelName]="model().name"
@@ -164,7 +168,7 @@ import { hasShowcases } from './model-row.utils';
   styles: [':host { display: contents; }'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModelRowComponent {
+export class ModelRowComponent implements OnInit, OnChanges {
   readonly model = input.required<LegacyRecordUnion>();
   readonly writable = input<boolean>(false);
   readonly isEven = input<boolean>(false);
