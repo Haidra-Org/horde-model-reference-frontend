@@ -11,9 +11,9 @@ export function assertBidirectionalTypeCompatibility<T1, T2>(): {
   backward: T2 extends T1 ? true : false;
 } {
   // Using type assertions instead of `any` for compile-time checks
-  return { 
-    forward: true as T1 extends T2 ? true : false, 
-    backward: true as T2 extends T1 ? true : false 
+  return {
+    forward: true as T1 extends T2 ? true : false,
+    backward: true as T2 extends T1 ? true : false,
   };
 }
 
@@ -21,9 +21,7 @@ export function assertBidirectionalTypeCompatibility<T1, T2>(): {
  * Type guard to check if verbose testing is enabled
  */
 function isVerboseTestingEnabled(): boolean {
-  return Boolean(
-    (globalThis as { VERBOSE_TESTS?: boolean }).VERBOSE_TESTS
-  );
+  return Boolean((globalThis as { VERBOSE_TESTS?: boolean }).VERBOSE_TESTS);
 }
 
 /**

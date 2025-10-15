@@ -89,12 +89,7 @@ import {
 ### Using Test Constants
 
 ```typescript
-import { 
-  TEST_MODEL_NAMES, 
-  TEST_URLS, 
-  SCHEMA_NAMES, 
-  REPLICATE_MODES 
-} from './test-helpers';
+import { TEST_MODEL_NAMES, TEST_URLS, SCHEMA_NAMES, REPLICATE_MODES } from './test-helpers';
 
 const model = {
   name: TEST_MODEL_NAMES.STABLE_DIFFUSION,
@@ -129,7 +124,7 @@ import { MODEL_REFERENCE_CATEGORY } from '../api-client';
 const result = validateEnumExhaustiveness(
   MODEL_REFERENCE_CATEGORY,
   ALL_MODEL_CATEGORIES as unknown as string[],
-  'MODEL_REFERENCE_CATEGORY'
+  'MODEL_REFERENCE_CATEGORY',
 );
 
 expect(result.countMatches).toBe(true);

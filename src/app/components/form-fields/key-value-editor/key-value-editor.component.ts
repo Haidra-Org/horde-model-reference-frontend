@@ -1,4 +1,13 @@
-import { Component, inject, input, output, signal, ChangeDetectionStrategy, OnInit, OnChanges } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  output,
+  signal,
+  ChangeDetectionStrategy,
+  OnInit,
+  OnChanges,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../../services/notification.service';
 
@@ -14,7 +23,6 @@ interface KeyValuePair {
   selector: 'app-key-value-editor',
   imports: [FormsModule],
   templateUrl: './key-value-editor.component.html',
-  styleUrl: './key-value-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KeyValueEditorComponent implements OnInit, OnChanges {

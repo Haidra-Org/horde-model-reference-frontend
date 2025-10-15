@@ -1,104 +1,123 @@
-<div class="stable-diffusion-fields">
-  <h3 class="section-title">Image Generation (Stable Diffusion) Fields</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+      Image Generation (Stable Diffusion) Fields
+    </h3>
+  </div>
 
-  <div class="field-row">
-    <div class="field-group">
-      <label for="baseline">Baseline *</label>
-      <select
-        id="baseline"
-        [value]="data().baseline"
-        (change)="onBaselineChange($any($event.target).value)"
-      >
-        @for (option of baselineOptions; track option.value) {
-          <option [value]="option.value">{{ option.label }}</option>
-        }
-      </select>
-    </div>
+  <div class="px-6 py-4 space-y-4">
+    <!-- Baseline and Inpainting -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label for="baseline" class="form-label">Baseline *</label>
+        <select
+          id="baseline"
+          class="form-select"
+          [value]="data().baseline"
+          (change)="onBaselineChange($any($event.target).value)"
+        >
+          @for (option of baselineOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
 
-    <div class="field-group">
-      <label for="inpainting">Inpainting Capable</label>
-      <div class="checkbox-wrapper">
-        <input
-          id="inpainting"
-          type="checkbox"
-          [checked]="data().inpainting"
-          (change)="onInpaintingChange($any($event.target).checked)"
-        />
-        <span>Model supports inpainting</span>
+      <div>
+        <label for="inpainting" class="form-label">Inpainting Capable</label>
+        <div class="flex items-center gap-2 mt-2">
+          <input
+            id="inpainting"
+            type="checkbox"
+            class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+            [checked]="data().inpainting"
+            (change)="onInpaintingChange($any($event.target).checked)"
+          />
+          <span class="text-sm text-gray-700 dark:text-gray-300">Model supports inpainting</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="field-row">
-    <div class="field-group">
-      <label for="min_bridge_version">Min Bridge Version</label>
+    <!-- Min Bridge Version, Homepage, Size on Disk -->
+    <div class="grid md:grid-cols-3 gap-4">
+      <div>
+        <label for="min_bridge_version" class="form-label">Min Bridge Version</label>
+        <input
+          id="min_bridge_version"
+          type="number"
+          class="form-input"
+          [value]="data().min_bridge_version || ''"
+          (blur)="onMinBridgeVersionChange($any($event.target).value)"
+          placeholder="e.g., 7"
+        />
+      </div>
+
+      <div>
+        <label for="homepage" class="form-label">Homepage</label>
+        <input
+          id="homepage"
+          type="url"
+          class="form-input"
+          [value]="data().homepage || ''"
+          (blur)="onHomepageChange($any($event.target).value)"
+          placeholder="https://..."
+        />
+      </div>
+
+      <div>
+        <label for="size_on_disk_bytes" class="form-label">Size on Disk (bytes)</label>
+        <input
+          id="size_on_disk_bytes"
+          type="number"
+          class="form-input"
+          [value]="data().size_on_disk_bytes || ''"
+          (blur)="onSizeOnDiskBytesChange($any($event.target).value)"
+          placeholder="e.g., 2000000000"
+        />
+      </div>
+    </div>
+
+    <!-- Optimization -->
+    <div>
+      <label for="optimization" class="form-label">Optimization</label>
       <input
-        id="min_bridge_version"
-        type="number"
-        [value]="data().min_bridge_version || ''"
-        (blur)="onMinBridgeVersionChange($any($event.target).value)"
-        placeholder="e.g., 7"
+        id="optimization"
+        type="text"
+        class="form-input"
+        [value]="data().optimization || ''"
+        (blur)="onOptimizationChange($any($event.target).value)"
+        placeholder="e.g., xformers, sdp"
       />
     </div>
 
-    <div class="field-group">
-      <label for="homepage">Homepage</label>
-      <input
-        id="homepage"
-        type="url"
-        [value]="data().homepage || ''"
-        (blur)="onHomepageChange($any($event.target).value)"
-        placeholder="https://..."
-      />
-    </div>
+    <!-- Tags -->
+    <app-tag-input
+      label="Tags"
+      placeholder="Add tag..."
+      [values]="data().tags || []"
+      (valuesChange)="onTagsChange($event)"
+    />
 
-    <div class="field-group">
-      <label for="size_on_disk_bytes">Size on Disk (bytes)</label>
-      <input
-        id="size_on_disk_bytes"
-        type="number"
-        [value]="data().size_on_disk_bytes || ''"
-        (blur)="onSizeOnDiskBytesChange($any($event.target).value)"
-        placeholder="e.g., 2000000000"
-      />
-    </div>
-  </div>
+    <!-- Trigger Words -->
+    <app-tag-input
+      label="Trigger Words"
+      placeholder="Add trigger word..."
+      [values]="data().trigger || []"
+      (valuesChange)="onTriggerChange($event)"
+    />
 
-  <div class="field-group">
-    <label for="optimization">Optimization</label>
-    <input
-      id="optimization"
-      type="text"
-      [value]="data().optimization || ''"
-      (blur)="onOptimizationChange($any($event.target).value)"
-      placeholder="e.g., xformers, sdp"
+    <!-- Showcases -->
+    <app-tag-input
+      label="Showcases"
+      placeholder="Add showcase URL..."
+      [values]="data().showcases || []"
+      (valuesChange)="onShowcasesChange($event)"
+    />
+
+    <!-- Requirements -->
+    <app-key-value-editor
+      label="Requirements"
+      [values]="data().requirements || {}"
+      (valuesChange)="onRequirementsChange($event)"
     />
   </div>
-
-  <app-tag-input
-    label="Tags"
-    placeholder="Add tag..."
-    [values]="data().tags || []"
-    (valuesChange)="onTagsChange($event)"
-  />
-
-  <app-tag-input
-    label="Trigger Words"
-    placeholder="Add trigger word..."
-    [values]="data().trigger || []"
-    (valuesChange)="onTriggerChange($event)"
-  />
-
-  <app-tag-input
-    label="Showcases"
-    placeholder="Add showcase URL..."
-    [values]="data().showcases || []"
-    (valuesChange)="onShowcasesChange($event)"
-  />
-
-  <app-key-value-editor
-    label="Requirements"
-    [values]="data().requirements || {}"
-    (valuesChange)="onRequirementsChange($event)"
-  />
 </div>

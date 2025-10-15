@@ -192,7 +192,7 @@ export const SCHEMA_NAMES = {
   ERROR_DETAIL: 'ErrorDetail',
   HTTP_VALIDATION_ERROR: 'HTTPValidationError',
   VALIDATION_ERROR: 'ValidationError',
-  
+
   // Model records
   IMAGE_GENERATION_INPUT: 'ImageGenerationModelRecord-Input',
   IMAGE_GENERATION_OUTPUT: 'ImageGenerationModelRecord-Output',
@@ -202,13 +202,13 @@ export const SCHEMA_NAMES = {
   CONTROLNET_OUTPUT: 'ControlNetModelRecord-Output',
   GENERIC_INPUT: 'GenericModelRecord-Input',
   GENERIC_OUTPUT: 'GenericModelRecord-Output',
-  
+
   // Metadata
   GENERIC_METADATA: 'GenericModelRecordMetadata',
   GENERIC_CONFIG: 'GenericModelRecordConfig',
   MODEL_CLASSIFICATION: 'ModelClassification',
   DOWNLOAD_RECORD: 'DownloadRecord',
-  
+
   // Enums
   MODEL_REFERENCE_CATEGORY: 'MODEL_REFERENCE_CATEGORY',
   MODEL_DOMAIN: 'MODEL_DOMAIN',

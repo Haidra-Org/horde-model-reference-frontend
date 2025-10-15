@@ -6,6 +6,26 @@ export const BASELINE_DISPLAY_MAP: Record<string, string> = {
   stable_cascade: 'Stable Cascade',
 };
 
+export const BASELINE_SHORTHAND_MAP: Record<string, string> = {
+  // Underscore format (canonical)
+  infer: 'Auto',
+  stable_diffusion_1: 'SD1',
+  stable_diffusion_2_768: 'SD2',
+  stable_diffusion_2_512: 'SD2-512',
+  stable_diffusion_xl: 'SDXL',
+  stable_cascade: 'Cascade',
+  flux_1: 'f.schnell',
+  flux_dev: 'f.dev',
+  'stable diffusion 1': 'SD1',
+  'stable diffusion 2': 'SD2',
+  'stable diffusion 2 512': 'SD2-512',
+  'stable diffusion xl': 'SDXL',
+  'stable cascade': 'Cascade',
+  'flux 1': 'f.1',
+  'flux dev': 'f.dev',
+
+};
+
 export const BASELINE_NORMALIZATION_MAP: Record<string, string> = {
   'stable diffusion 1': 'stable_diffusion_1',
   'stable diffusion 2': 'stable_diffusion_2_768',

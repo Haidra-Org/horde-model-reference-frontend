@@ -6,7 +6,6 @@ import { LegacyConfig, LegacyConfigFile, LegacyConfigDownload } from '../../../m
   selector: 'app-config-form-section',
   imports: [FormsModule],
   templateUrl: './config-form-section.component.html',
-  styleUrl: './config-form-section.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigFormSectionComponent {

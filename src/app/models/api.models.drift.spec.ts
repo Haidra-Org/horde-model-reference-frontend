@@ -90,7 +90,9 @@ describe('API Models - Drift Detection', () => {
       ]);
 
       // Compile-time check: ModelReferenceCategory must accept all MODEL_REFERENCE_CATEGORY values
-      type AssertExhaustive = MODEL_REFERENCE_CATEGORY extends ModelReferenceCategory ? true : false;
+      type AssertExhaustive = MODEL_REFERENCE_CATEGORY extends ModelReferenceCategory
+        ? true
+        : false;
       const isExhaustive: AssertExhaustive = true;
 
       const allGeneratedCategories = Object.values(MODEL_REFERENCE_CATEGORY);
@@ -114,7 +116,9 @@ describe('API Models - Drift Detection', () => {
       });
 
       expect(isExhaustive).toBe(true);
-      testLogger.logSuccess('All generated categories are compatible with ModelReferenceCategory type');
+      testLogger.logSuccess(
+        'All generated categories are compatible with ModelReferenceCategory type',
+      );
     });
   });
 
@@ -451,7 +455,7 @@ describe('API Models - Drift Detection', () => {
         MODEL_REFERENCE_CATEGORY,
         ALL_MODEL_CATEGORIES as unknown as string[],
         'MODEL_REFERENCE_CATEGORY',
-        !!(globalThis as any).VERBOSE_TESTS
+        !!(globalThis as any).VERBOSE_TESTS,
       );
 
       expect(result.countMatches).toBe(true);
@@ -468,7 +472,7 @@ describe('API Models - Drift Detection', () => {
         KNOWN_IMAGE_GENERATION_BASELINE,
         ALL_BASELINES as unknown as string[],
         'KNOWN_IMAGE_GENERATION_BASELINE',
-        !!(globalThis as any).VERBOSE_TESTS
+        !!(globalThis as any).VERBOSE_TESTS,
       );
 
       expect(result.countMatches).toBe(true);
@@ -480,7 +484,7 @@ describe('API Models - Drift Detection', () => {
         MODEL_STYLE,
         ALL_STYLES as unknown as string[],
         'MODEL_STYLE',
-        !!(globalThis as any).VERBOSE_TESTS
+        !!(globalThis as any).VERBOSE_TESTS,
       );
 
       expect(result.countMatches).toBe(true);
@@ -500,10 +504,10 @@ describe('API Models - Drift Detection', () => {
       const localValues = ALL_MODEL_CATEGORIES;
 
       // Check for values in API but not in local definitions
-      const newInApi = generatedValues.filter(v => !localValues.includes(v as any));
-      
+      const newInApi = generatedValues.filter((v) => !localValues.includes(v as any));
+
       // Check for values in local definitions but not in API
-      const removedFromApi = localValues.filter(v => !generatedValues.includes(v as any));
+      const removedFromApi = localValues.filter((v) => !generatedValues.includes(v as any));
 
       if (newInApi.length > 0) {
         console.warn(`   New MODEL_REFERENCE_CATEGORY values in API:`, newInApi);
@@ -519,7 +523,9 @@ describe('API Models - Drift Detection', () => {
       expect(removedFromApi.length).toBe(0);
       expect(generatedValues.length).toBe(localValues.length);
 
-      testLogger.logSuccess(`MODEL_REFERENCE_CATEGORY: ${generatedValues.length} values match perfectly`);
+      testLogger.logSuccess(
+        `MODEL_REFERENCE_CATEGORY: ${generatedValues.length} values match perfectly`,
+      );
     });
 
     it('should detect new enum values added to KNOWN_IMAGE_GENERATION_BASELINE in the API', () => {
@@ -531,8 +537,8 @@ describe('API Models - Drift Detection', () => {
       const generatedValues = Object.values(KNOWN_IMAGE_GENERATION_BASELINE);
       const localValues = ALL_BASELINES;
 
-      const newInApi = generatedValues.filter(v => !localValues.includes(v as any));
-      const removedFromApi = localValues.filter(v => !generatedValues.includes(v as any));
+      const newInApi = generatedValues.filter((v) => !localValues.includes(v as any));
+      const removedFromApi = localValues.filter((v) => !generatedValues.includes(v as any));
 
       if (newInApi.length > 0) {
         console.warn(`   New KNOWN_IMAGE_GENERATION_BASELINE values in API:`, newInApi);
@@ -549,7 +555,9 @@ describe('API Models - Drift Detection', () => {
       expect(removedFromApi.length).toBe(0);
       expect(generatedValues.length).toBe(localValues.length);
 
-      testLogger.logSuccess(`KNOWN_IMAGE_GENERATION_BASELINE: ${generatedValues.length} values match perfectly`);
+      testLogger.logSuccess(
+        `KNOWN_IMAGE_GENERATION_BASELINE: ${generatedValues.length} values match perfectly`,
+      );
     });
 
     it('should detect new enum values added to MODEL_STYLE in the API', () => {
@@ -561,8 +569,8 @@ describe('API Models - Drift Detection', () => {
       const generatedValues = Object.values(MODEL_STYLE);
       const localValues = ALL_STYLES;
 
-      const newInApi = generatedValues.filter(v => !localValues.includes(v as any));
-      const removedFromApi = localValues.filter(v => !generatedValues.includes(v as any));
+      const newInApi = generatedValues.filter((v) => !localValues.includes(v as any));
+      const removedFromApi = localValues.filter((v) => !generatedValues.includes(v as any));
 
       if (newInApi.length > 0) {
         console.warn(`   New MODEL_STYLE values in API:`, newInApi);
@@ -589,7 +597,7 @@ describe('API Models - Drift Detection', () => {
 
       // Document which enum values are actively used in the UI
       const criticalCategories = ACTIVE_MODEL_CATEGORIES;
-      
+
       const criticalBaselines = [
         KNOWN_IMAGE_GENERATION_BASELINE.StableDiffusion1,
         KNOWN_IMAGE_GENERATION_BASELINE.StableDiffusion2768,
@@ -719,9 +727,7 @@ describe('API Models - Drift Detection', () => {
 
       // This is not ideal but reflects current API client generation
       expect(overBroadModel).toBeDefined();
-      console.warn(
-        'ModelRecord type is over-broad - includes all fields from all model types',
-      );
+      console.warn('ModelRecord type is over-broad - includes all fields from all model types');
     });
   });
 
@@ -753,10 +759,7 @@ describe('API Models - Drift Detection', () => {
 
   describe('Edge Cases', () => {
     it('should handle models with empty arrays', () => {
-      const model = new ImageModelBuilder()
-        .withName(TEST_MODEL_NAMES.TEST)
-        .withTags([])
-        .build();
+      const model = new ImageModelBuilder().withName(TEST_MODEL_NAMES.TEST).withTags([]).build();
 
       expect(model.tags).toEqual([]);
     });
@@ -913,7 +916,9 @@ describe('API Models - Drift Detection', () => {
       expect(requiredFieldsCheck.nsfw).toBeDefined();
 
       const requiredFields: (keyof RequiredImageFields)[] = ['name', 'baseline', 'nsfw'];
-      testLogger.logSuccess(`All ${requiredFields.length} required fields present: ${requiredFields.join(', ')}`);
+      testLogger.logSuccess(
+        `All ${requiredFields.length} required fields present: ${requiredFields.join(', ')}`,
+      );
     });
 
     it('should enforce required fields in TextGenerationModelRecordOutput at compile time', () => {
@@ -940,7 +945,9 @@ describe('API Models - Drift Detection', () => {
       expect(requiredFieldsCheck.parameters).toBeDefined();
 
       const requiredFields: (keyof RequiredTextFields)[] = ['name', 'parameters'];
-      testLogger.logSuccess(`All ${requiredFields.length} required fields present: ${requiredFields.join(', ')}`);
+      testLogger.logSuccess(
+        `All ${requiredFields.length} required fields present: ${requiredFields.join(', ')}`,
+      );
     });
 
     it('should detect if DownloadRecord structure changes', () => {

@@ -52,7 +52,6 @@ import { ConfigFormSectionComponent } from '../form-fields/config-form-section/c
     ConfigFormSectionComponent,
   ],
   templateUrl: './model-form.component.html',
-  styleUrl: './model-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModelFormComponent implements OnInit {

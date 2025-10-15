@@ -1,96 +1,117 @@
-<div class="common-fields">
-  <h3 class="section-title">Common Fields</h3>
-
-  <div class="field-group">
-    <label for="description">Description</label>
-    <textarea
-      id="description"
-      rows="3"
-      [value]="data().description || ''"
-      (blur)="onDescriptionChange($any($event.target).value)"
-      placeholder="Brief description of the model"
-    ></textarea>
+<div class="card">
+  <div class="card-header">
+    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Common Fields</h3>
   </div>
 
-  <div class="field-row">
-    <div class="field-group">
-      <label for="type">Type</label>
-      <input
-        id="type"
-        type="text"
-        [value]="data().type || ''"
-        (blur)="onTypeChange($any($event.target).value)"
-        placeholder="e.g., ckpt"
-      />
+  <div class="px-6 py-4 space-y-4">
+    <!-- Description -->
+    <div>
+      <label for="description" class="form-label">Description</label>
+      <textarea
+        id="description"
+        class="form-textarea"
+        rows="3"
+        [value]="data().description || ''"
+        (blur)="onDescriptionChange($any($event.target).value)"
+        placeholder="Brief description of the model"
+      ></textarea>
     </div>
 
-    <div class="field-group">
-      <label for="version">Version</label>
-      <input
-        id="version"
-        type="text"
-        [value]="data().version || ''"
-        (blur)="onVersionChange($any($event.target).value)"
-        placeholder="e.g., 1.0"
-      />
+    <!-- Type, Version, Style -->
+    <div class="grid md:grid-cols-3 gap-4">
+      <div>
+        <label for="type" class="form-label">Type</label>
+        <input
+          id="type"
+          type="text"
+          class="form-input"
+          [value]="data().type || ''"
+          (blur)="onTypeChange($any($event.target).value)"
+          placeholder="e.g., ckpt"
+        />
+      </div>
+
+      <div>
+        <label for="version" class="form-label">Version</label>
+        <input
+          id="version"
+          type="text"
+          class="form-input"
+          [value]="data().version || ''"
+          (blur)="onVersionChange($any($event.target).value)"
+          placeholder="e.g., 1.0"
+        />
+      </div>
+
+      <div>
+        <label for="style" class="form-label">Style</label>
+        <input
+          id="style"
+          type="text"
+          class="form-input"
+          [value]="data().style || ''"
+          (blur)="onStyleChange($any($event.target).value)"
+          placeholder="e.g., realistic, anime"
+        />
+      </div>
     </div>
 
-    <div class="field-group">
-      <label for="style">Style</label>
-      <input
-        id="style"
-        type="text"
-        [value]="data().style || ''"
-        (blur)="onStyleChange($any($event.target).value)"
-        placeholder="e.g., realistic, anime"
-      />
+    <!-- NSFW, Download All, Available -->
+    <div class="grid md:grid-cols-3 gap-4">
+      <div>
+        <label for="nsfw" class="form-label">NSFW</label>
+        <select
+          id="nsfw"
+          class="form-select"
+          [value]="getNsfwValue()"
+          (change)="onNsfwChange($any($event.target).value)"
+        >
+          <option value="null">Unknown</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="download_all" class="form-label">Download All</label>
+        <select
+          id="download_all"
+          class="form-select"
+          [value]="getDownloadAllValue()"
+          (change)="onDownloadAllChange($any($event.target).value)"
+        >
+          <option value="null">Not Set</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="available" class="form-label">
+          Available
+          <span class="text-xs text-warning-600 dark:text-warning-400 font-normal ml-1">
+            (usually should be unset)
+          </span>
+        </label>
+        <select
+          id="available"
+          class="form-select"
+          [value]="getAvailableValue()"
+          (change)="onAvailableChange($any($event.target).value)"
+        >
+          <option value="null">Not Set</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
     </div>
+
+    <!-- Features Not Supported -->
+    <app-tag-input
+      label="Features Not Supported"
+      placeholder="Add unsupported feature..."
+      [values]="data().features_not_supported || []"
+      (valuesChange)="onFeaturesNotSupportedChange($event)"
+    />
   </div>
-
-  <div class="field-row">
-    <div class="field-group">
-      <label for="nsfw">NSFW</label>
-      <select id="nsfw" [value]="getNsfwValue()" (change)="onNsfwChange($any($event.target).value)">
-        <option value="null">Unknown</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-    </div>
-
-    <div class="field-group">
-      <label for="download_all">Download All</label>
-      <select
-        id="download_all"
-        [value]="getDownloadAllValue()"
-        (change)="onDownloadAllChange($any($event.target).value)"
-      >
-        <option value="null">Not Set</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-    </div>
-
-    <div class="field-group">
-      <label for="available">
-        Available
-        <span class="warning-hint">(usually should be unset)</span>
-      </label>
-      <select
-        id="available"
-        [value]="getAvailableValue()"
-        (change)="onAvailableChange($any($event.target).value)"
-      >
-        <option value="null">Not Set</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-    </div>
-  </div>
-
-  <app-tag-input
-    label="Features Not Supported"
-    placeholder="Add unsupported feature..."
-    [values]="data().features_not_supported || []"
-    (valuesChange)="onFeaturesNotSupportedChange($event)"
-  />
 </div>

@@ -14,7 +14,7 @@ export function validateEnumExhaustiveness<T extends Record<string, string>>(
   enumObj: T,
   expectedValues: string[],
   enumName: string,
-  verbose = false
+  verbose = false,
 ): {
   generatedValues: string[];
   allValuesPresent: boolean;

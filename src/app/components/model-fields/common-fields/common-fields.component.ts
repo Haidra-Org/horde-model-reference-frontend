@@ -17,7 +17,6 @@ export interface CommonFieldsData {
   selector: 'app-common-fields',
   imports: [FormsModule, TagInputComponent],
   templateUrl: './common-fields.component.html',
-  styleUrl: './common-fields.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommonFieldsComponent {

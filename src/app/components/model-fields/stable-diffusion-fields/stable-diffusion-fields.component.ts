@@ -22,7 +22,6 @@ export interface StableDiffusionFieldsData {
   selector: 'app-stable-diffusion-fields',
   imports: [FormsModule, TagInputComponent, KeyValueEditorComponent],
   templateUrl: './stable-diffusion-fields.component.html',
-  styleUrl: './stable-diffusion-fields.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StableDiffusionFieldsComponent {

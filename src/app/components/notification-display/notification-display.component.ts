@@ -5,7 +5,6 @@ import { NotificationService } from '../../services/notification.service';
   selector: 'app-notification-display',
   imports: [],
   templateUrl: './notification-display.component.html',
-  styleUrl: './notification-display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationDisplayComponent {

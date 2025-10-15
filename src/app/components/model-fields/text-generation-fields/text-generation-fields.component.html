@@ -1,76 +1,90 @@
-<div class="text-generation-fields">
-  <h3 class="section-title">Text Generation Fields</h3>
-
-  <div class="field-row">
-    <div class="field-group">
-      <label for="parameters">Parameters *</label>
-      <input
-        id="parameters"
-        type="number"
-        [value]="data().parameters || ''"
-        (blur)="onParametersChange($any($event.target).value)"
-        placeholder="e.g., 7000000000"
-      />
-      <span class="help-text">Number of model parameters (required)</span>
-    </div>
-
-    <div class="field-group">
-      <label for="model_name">Model Name</label>
-      <input
-        id="model_name"
-        type="text"
-        [value]="data().model_name || ''"
-        (blur)="onModelNameChange($any($event.target).value)"
-        placeholder="e.g., gpt2"
-      />
-    </div>
+<div class="card">
+  <div class="card-header">
+    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Text Generation Fields</h3>
   </div>
 
-  <div class="field-row">
-    <div class="field-group">
-      <label for="baseline">Baseline</label>
+  <div class="px-6 py-4 space-y-4">
+    <!-- Parameters and Model Name -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label for="parameters" class="form-label">Parameters *</label>
+        <input
+          id="parameters"
+          type="number"
+          class="form-input"
+          [value]="data().parameters || ''"
+          (blur)="onParametersChange($any($event.target).value)"
+          placeholder="e.g., 7000000000"
+        />
+        <span class="form-hint">Number of model parameters (required)</span>
+      </div>
+
+      <div>
+        <label for="model_name" class="form-label">Model Name</label>
+        <input
+          id="model_name"
+          type="text"
+          class="form-input"
+          [value]="data().model_name || ''"
+          (blur)="onModelNameChange($any($event.target).value)"
+          placeholder="e.g., gpt2"
+        />
+      </div>
+    </div>
+
+    <!-- Baseline and Display Name -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label for="baseline" class="form-label">Baseline</label>
+        <input
+          id="baseline"
+          type="text"
+          class="form-input"
+          [value]="data().baseline || ''"
+          (blur)="onBaselineChange($any($event.target).value)"
+          placeholder="e.g., llama, gpt"
+        />
+      </div>
+
+      <div>
+        <label for="display_name" class="form-label">Display Name</label>
+        <input
+          id="display_name"
+          type="text"
+          class="form-input"
+          [value]="data().display_name || ''"
+          (blur)="onDisplayNameChange($any($event.target).value)"
+          placeholder="Human-friendly name"
+        />
+      </div>
+    </div>
+
+    <!-- URL -->
+    <div>
+      <label for="url" class="form-label">URL</label>
       <input
-        id="baseline"
-        type="text"
-        [value]="data().baseline || ''"
-        (blur)="onBaselineChange($any($event.target).value)"
-        placeholder="e.g., llama, gpt"
+        id="url"
+        type="url"
+        class="form-input"
+        [value]="data().url || ''"
+        (blur)="onUrlChange($any($event.target).value)"
+        placeholder="https://..."
       />
     </div>
 
-    <div class="field-group">
-      <label for="display_name">Display Name</label>
-      <input
-        id="display_name"
-        type="text"
-        [value]="data().display_name || ''"
-        (blur)="onDisplayNameChange($any($event.target).value)"
-        placeholder="Human-friendly name"
-      />
-    </div>
-  </div>
+    <!-- Tags -->
+    <app-tag-input
+      label="Tags"
+      placeholder="Add tag..."
+      [values]="data().tags || []"
+      (valuesChange)="onTagsChange($event)"
+    />
 
-  <div class="field-group">
-    <label for="url">URL</label>
-    <input
-      id="url"
-      type="url"
-      [value]="data().url || ''"
-      (blur)="onUrlChange($any($event.target).value)"
-      placeholder="https://..."
+    <!-- Settings -->
+    <app-key-value-editor
+      label="Settings"
+      [values]="data().settings || {}"
+      (valuesChange)="onSettingsChange($event)"
     />
   </div>
-
-  <app-tag-input
-    label="Tags"
-    placeholder="Add tag..."
-    [values]="data().tags || []"
-    (valuesChange)="onTagsChange($event)"
-  />
-
-  <app-key-value-editor
-    label="Settings"
-    [values]="data().settings || {}"
-    (valuesChange)="onSettingsChange($event)"
-  />
 </div>

@@ -7,7 +7,6 @@ import { NotificationService } from '../../services/notification.service';
   selector: 'app-category-list',
   imports: [],
   templateUrl: './category-list.component.html',
-  styleUrl: './category-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryListComponent implements OnInit {

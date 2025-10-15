@@ -1,23 +1,37 @@
-<aside class="sidebar">
-  <div class="sidebar-header">
-    <h2>Model Categories</h2>
+<aside class="w-64 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+  <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Model Categories</h2>
   </div>
 
   @if (loading()) {
-    <div class="sidebar-loading">Loading...</div>
+    <div class="p-6 text-center text-sm text-gray-500 dark:text-gray-400">Loading...</div>
   } @else if (categories().length === 0) {
-    <div class="sidebar-empty">No categories available</div>
+    <div class="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+      No categories available
+    </div>
   } @else {
-    <nav class="sidebar-nav">
+    <nav class="flex-1 overflow-y-auto">
       @for (category of sortedCategories(); track category) {
         <button
-          class="category-item"
-          [class.active]="currentCategory() === category"
+          class="w-full flex justify-between items-center px-4 py-2.5 text-sm transition-colors border-l-3"
+          [class.bg-primary-50]="currentCategory() === category"
+          [class.dark:bg-primary-900/20]="currentCategory() === category"
+          [class.border-primary-600]="currentCategory() === category"
+          [class.text-primary-700]="currentCategory() === category"
+          [class.dark:text-primary-300]="currentCategory() === category"
+          [class.font-semibold]="currentCategory() === category"
+          [class.border-transparent]="currentCategory() !== category"
+          [class.text-gray-700]="currentCategory() !== category"
+          [class.dark:text-gray-300]="currentCategory() !== category"
+          [class.hover:bg-gray-50]="currentCategory() !== category"
+          [class.dark:hover:bg-gray-700/50]="currentCategory() !== category"
           (click)="selectCategory(category)"
         >
-          <span class="category-name">{{ recordDisplayMap[category] || category }}</span>
+          <span class="capitalize break-words">
+            {{ recordDisplayMap[category] || category }}
+          </span>
           @if (currentCategory() === category) {
-            <span class="category-indicator">›</span>
+            <span class="text-xl font-bold text-primary-400">›</span>
           }
         </button>
       }

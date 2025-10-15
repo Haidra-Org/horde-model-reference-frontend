@@ -1,38 +1,49 @@
-<div class="config-section">
-  <div 
-    class="config-header" 
+<div class="card">
+  <button
+    class="card-header flex justify-between items-center w-full text-left cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
     (click)="toggleExpanded()"
     (keyup.enter)="toggleExpanded()"
     (keyup.space)="toggleExpanded()"
     tabindex="0"
-    role="button"
+    type="button"
     [attr.aria-expanded]="isExpanded()"
     aria-label="Toggle configuration section"
   >
-    <h3>Configuration</h3>
-    <span class="expand-icon">{{ isExpanded() ? '▼' : '▶' }}</span>
-  </div>
+    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Configuration</h3>
+    <span class="text-lg text-gray-500 dark:text-gray-400">{{ isExpanded() ? '▼' : '▶' }}</span>
+  </button>
 
   @if (isExpanded()) {
-    <div class="config-content">
-      <div class="config-subsection">
-        <div class="subsection-header">
-          <h4>Files</h4>
-          <button type="button" class="btn btn-small btn-add" (click)="addFile()">
+    <div class="px-6 py-4 space-y-6">
+      <!-- Files Section -->
+      <div class="space-y-3">
+        <div class="flex justify-between items-center">
+          <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Files</h4>
+          <button type="button" class="btn btn-sm btn-primary" (click)="addFile()">
             + Add File
           </button>
         </div>
 
         @if (config()?.files && config()!.files!.length > 0) {
-          <div class="files-list">
+          <div class="space-y-4">
             @for (file of config()!.files!; track $index) {
-              <div class="file-item">
-                <div class="file-fields">
-                  <div class="field-group">
-                    <label for="file-{{$index}}-path">Path *</label>
+              <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-3 relative">
+                <button
+                  type="button"
+                  class="absolute top-2 right-2 p-2 hover:bg-danger-50 dark:hover:bg-danger-900/20 text-danger-600 dark:text-danger-400 rounded transition-colors text-xl leading-none"
+                  (click)="removeFile($index)"
+                  title="Remove file"
+                >
+                  ×
+                </button>
+
+                <div class="grid md:grid-cols-2 gap-3 pr-10">
+                  <div>
+                    <label for="file-{{ $index }}-path" class="form-label">Path *</label>
                     <input
-                      id="file-{{$index}}-path"
+                      id="file-{{ $index }}-path"
                       type="text"
+                      class="form-input"
                       [value]="file.path"
                       (blur)="updateFile($index, 'path', $any($event.target).value)"
                       placeholder="/path/to/file.ckpt"
@@ -40,74 +51,79 @@
                     />
                   </div>
 
-                  <div class="field-group">
-                    <label for="file-{{$index}}-sha256">SHA256 Sum</label>
+                  <div>
+                    <label for="file-{{ $index }}-type" class="form-label">File Type</label>
                     <input
-                      id="file-{{$index}}-sha256"
+                      id="file-{{ $index }}-type"
                       type="text"
+                      class="form-input"
+                      [value]="file.file_type || ''"
+                      (blur)="updateFile($index, 'file_type', $any($event.target).value)"
+                      placeholder="e.g., ckpt, safetensors"
+                    />
+                  </div>
+
+                  <div>
+                    <label for="file-{{ $index }}-sha256" class="form-label">SHA256 Sum</label>
+                    <input
+                      id="file-{{ $index }}-sha256"
+                      type="text"
+                      class="form-input font-mono text-xs"
                       [value]="file.sha256sum || ''"
                       (blur)="updateFile($index, 'sha256sum', $any($event.target).value)"
                       placeholder="64-character hash"
                     />
                   </div>
 
-                  <div class="field-group">
-                    <label for="file-{{$index}}-md5">MD5 Sum</label>
+                  <div>
+                    <label for="file-{{ $index }}-md5" class="form-label">MD5 Sum</label>
                     <input
-                      id="file-{{$index}}-md5"
+                      id="file-{{ $index }}-md5"
                       type="text"
+                      class="form-input font-mono text-xs"
                       [value]="file.md5sum || ''"
                       (blur)="updateFile($index, 'md5sum', $any($event.target).value)"
                       placeholder="32-character hash"
                     />
                   </div>
-
-                  <div class="field-group">
-                    <label for="file-{{$index}}-type">File Type</label>
-                    <input
-                      id="file-{{$index}}-type"
-                      type="text"
-                      [value]="file.file_type || ''"
-                      (blur)="updateFile($index, 'file_type', $any($event.target).value)"
-                      placeholder="e.g., ckpt, safetensors"
-                    />
-                  </div>
                 </div>
-
-                <button
-                  type="button"
-                  class="btn-remove"
-                  (click)="removeFile($index)"
-                  title="Remove file"
-                >
-                  ×
-                </button>
               </div>
             }
           </div>
         } @else {
-          <p class="empty-message">No files configured</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 italic">No files configured</p>
         }
       </div>
 
-      <div class="config-subsection">
-        <div class="subsection-header">
-          <h4>Downloads</h4>
-          <button type="button" class="btn btn-small btn-add" (click)="addDownload()">
+      <!-- Downloads Section -->
+      <div class="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+          <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Downloads</h4>
+          <button type="button" class="btn btn-sm btn-primary" (click)="addDownload()">
             + Add Download
           </button>
         </div>
 
         @if (config()?.download && config()!.download!.length > 0) {
-          <div class="downloads-list">
+          <div class="space-y-4">
             @for (download of config()!.download!; track $index) {
-              <div class="download-item">
-                <div class="download-fields">
-                  <div class="field-group">
-                    <label for="download-{{$index}}-name">File Name *</label>
+              <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-3 relative">
+                <button
+                  type="button"
+                  class="absolute top-2 right-2 p-2 hover:bg-danger-50 dark:hover:bg-danger-900/20 text-danger-600 dark:text-danger-400 rounded transition-colors text-xl leading-none"
+                  (click)="removeDownload($index)"
+                  title="Remove download"
+                >
+                  ×
+                </button>
+
+                <div class="grid md:grid-cols-2 gap-3 pr-10">
+                  <div>
+                    <label for="download-{{ $index }}-name" class="form-label">File Name *</label>
                     <input
-                      id="download-{{$index}}-name"
+                      id="download-{{ $index }}-name"
                       type="text"
+                      class="form-input"
                       [value]="download.file_name || ''"
                       (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
                       placeholder="model.ckpt"
@@ -115,11 +131,12 @@
                     />
                   </div>
 
-                  <div class="field-group">
-                    <label for="download-{{$index}}-url">File URL *</label>
+                  <div>
+                    <label for="download-{{ $index }}-url" class="form-label">File URL *</label>
                     <input
-                      id="download-{{$index}}-url"
+                      id="download-{{ $index }}-url"
                       type="text"
+                      class="form-input"
                       [value]="download.file_url || ''"
                       (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
                       placeholder="https://..."
@@ -127,31 +144,28 @@
                     />
                   </div>
 
-                  <div class="field-group">
-                    <label for="download-{{$index}}-path">File Path (usually empty)</label>
+                  <div class="md:col-span-2">
+                    <label for="download-{{ $index }}-path" class="form-label">
+                      File Path
+                      <span class="text-xs text-gray-500 dark:text-gray-400 font-normal ml-1">
+                        (usually empty)
+                      </span>
+                    </label>
                     <input
-                      id="download-{{$index}}-path"
+                      id="download-{{ $index }}-path"
                       type="text"
+                      class="form-input"
                       [value]="download.file_path || ''"
                       (blur)="updateDownload($index, 'file_path', $any($event.target).value)"
                       placeholder=""
                     />
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  class="btn-remove"
-                  (click)="removeDownload($index)"
-                  title="Remove download"
-                >
-                  ×
-                </button>
               </div>
             }
           </div>
         } @else {
-          <p class="empty-message">No downloads configured</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 italic">No downloads configured</p>
         }
       </div>
     </div>

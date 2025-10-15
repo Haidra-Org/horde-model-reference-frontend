@@ -9,7 +9,6 @@ import { ModelReferenceApiService } from './services/model-reference-api.service
   selector: 'app-root',
   imports: [RouterOutlet, NavigationComponent, SidebarComponent, NotificationDisplayComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
 })
 export class App implements OnInit {
   private readonly api = inject(ModelReferenceApiService);

@@ -8,9 +8,7 @@ export type ModelRecord = ResponseGetReferenceByCategoryModelReferencesV2ModelCa
 export type ModelReferenceCategory = MODEL_REFERENCE_CATEGORY;
 
 // Custom response types
-export interface CategoryModelsResponse {
-  [modelName: string]: ModelRecord;
-}
+export type CategoryModelsResponse = Record<string, ModelRecord>;
 
 export interface BackendCapabilities {
   writable: boolean;
@@ -85,8 +83,6 @@ export type LegacyRecordUnion =
   | LegacyClipRecord
   | LegacyGenericRecord;
 
-export interface LegacyModelsResponse {
-  [modelName: string]: LegacyRecordUnion;
-}
+export type LegacyModelsResponse = Record<string, LegacyRecordUnion>;
 
 export type LegacyRequirementValue = number | string | boolean | number[] | string[];

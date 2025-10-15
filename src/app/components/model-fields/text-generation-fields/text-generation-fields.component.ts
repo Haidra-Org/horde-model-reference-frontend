@@ -19,7 +19,6 @@ export interface TextGenerationFieldsData {
   selector: 'app-text-generation-fields',
   imports: [FormsModule, TagInputComponent, KeyValueEditorComponent],
   templateUrl: './text-generation-fields.component.html',
-  styleUrl: './text-generation-fields.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextGenerationFieldsComponent {

@@ -16,13 +16,12 @@ import {
   isLegacyTextGenerationRecord,
   isLegacyClipRecord,
 } from '../../models';
-import { BASELINE_DISPLAY_MAP } from '../../models/maps';
+import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 
 @Component({
   selector: 'app-model-list',
   imports: [FormsModule],
   templateUrl: './model-list.component.html',
-  styleUrl: './model-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModelListComponent implements OnInit {
@@ -35,8 +34,10 @@ export class ModelListComponent implements OnInit {
   readonly models = signal<LegacyRecordUnion[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
+  readonly showDetails = signal(false);
   readonly modelToDelete = signal<string | null>(null);
   readonly deleteConfirmationInput = signal('');
+  readonly modelJsonToShow = signal<LegacyRecordUnion | null>(null);
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
   readonly deleteAllowed = computed(
@@ -64,7 +65,7 @@ export class ModelListComponent implements OnInit {
   readonly isStableDiffusionRecord = isLegacyStableDiffusionRecord;
   readonly isTextGenerationRecord = isLegacyTextGenerationRecord;
   readonly isClipRecord = isLegacyClipRecord;
-  readonly baselineDisplayMap = BASELINE_DISPLAY_MAP;
+  readonly baselineDisplayMap = BASELINE_SHORTHAND_MAP;
 
   getDownloadCount(model: LegacyRecordUnion): number {
     return model.config?.download?.length ?? 0;
@@ -95,6 +96,30 @@ export class ModelListComponent implements OnInit {
   cancelDelete(): void {
     this.modelToDelete.set(null);
     this.deleteConfirmationInput.set('');
+  }
+
+  showJson(model: LegacyRecordUnion): void {
+    this.modelJsonToShow.set(model);
+  }
+
+  closeJsonModal(): void {
+    this.modelJsonToShow.set(null);
+  }
+
+  getFormattedJson(model: LegacyRecordUnion): string {
+    return JSON.stringify(model, null, 2);
+  }
+
+  copyJsonToClipboard(model: LegacyRecordUnion): void {
+    const json = this.getFormattedJson(model);
+    navigator.clipboard.writeText(json).then(
+      () => {
+        this.notification.success('JSON copied to clipboard');
+      },
+      () => {
+        this.notification.error('Failed to copy JSON to clipboard');
+      },
+    );
   }
 
   deleteModel(modelName: string): void {

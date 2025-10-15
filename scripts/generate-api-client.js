@@ -245,7 +245,9 @@ function validateOutputDirectory() {
   }
 
   if (!markerExists && forceGenerate) {
-    console.log('⚠️  Warning: .generated marker file not found, but --force flag is set. Proceeding...');
+    console.log(
+      '⚠️  Warning: .generated marker file not found, but --force flag is set. Proceeding...',
+    );
   } else {
     console.log('✅ Output directory validated (.generated marker found)');
   }
@@ -294,7 +296,9 @@ async function main() {
     console.log('╚═══════════════════════════════════════════════════════════════╝\n');
 
     console.log('Next steps:');
-    console.log('  1. Run drift detection tests: npm test -- --include=src/app/models/api.models.drift.spec.ts');
+    console.log(
+      '  1. Run drift detection tests: npm test -- --include=src/app/models/api.models.drift.spec.ts',
+    );
     console.log('  2. Review generated files in: ' + OUTPUT_DIR);
     console.log('  3. Update any code that uses changed types\n');
   } catch (error) {

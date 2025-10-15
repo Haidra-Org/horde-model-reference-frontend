@@ -275,7 +275,10 @@ describe('API Models - OpenAPI Schema Validation', () => {
       expect(typeof mockRecord.baseline).toBe('string');
 
       // Verify the baseline enum
-      const baselineSchema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE);
+      const baselineSchema = getSchemaDefinition(
+        openApiSchema,
+        SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE,
+      );
       if (baselineSchema) {
         expect(isInEnum(baselineSchema, 'stable_diffusion_1')).toBe(true);
         expect(isInEnum(baselineSchema, 'stable_diffusion_2_768')).toBe(true);
@@ -438,7 +441,10 @@ describe('API Models - OpenAPI Schema Validation', () => {
         return;
       }
 
-      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE);
+      const schema = getSchemaDefinition(
+        openApiSchema,
+        SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE,
+      );
       expect(schema).toBeDefined();
 
       if (schema) {

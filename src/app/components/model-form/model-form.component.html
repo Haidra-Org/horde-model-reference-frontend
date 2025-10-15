@@ -1,47 +1,61 @@
-<div class="model-form-container">
-  <div class="page-header">
-    <div>
-      <h1>{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
-      <p class="subtitle">Category: {{ category() }}</p>
+<div class="p-4 space-y-4">
+  <!-- Page Header -->
+  <div class="card">
+    <div class="flex justify-between items-start px-6 py-4">
+      <div>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+          {{ isEditMode() ? 'Edit' : 'Create' }} Model
+        </h1>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Category: {{ category() }}</p>
+      </div>
+      <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
+        Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
+      </button>
     </div>
-    <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
-      Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
-    </button>
   </div>
 
   @if (loading()) {
-    <div class="loading-state">Loading model data...</div>
+    <div class="card">
+      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading model data...</div>
+    </div>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="form-group name-field">
-        <label for="name">
-          Model Name *
-          @if (isEditMode()) {
-            <span class="hint">(read-only in edit mode)</span>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+      <!-- Model Name Field -->
+      <div class="card">
+        <div class="px-6 py-4">
+          <label for="name" class="form-label">
+            Model Name *
+            @if (isEditMode()) {
+              <span class="text-xs text-gray-500 dark:text-gray-400 font-normal ml-2">
+                (read-only in edit mode)
+              </span>
+            }
+          </label>
+          <input
+            id="name"
+            type="text"
+            class="form-input"
+            formControlName="name"
+            placeholder="my-model-name"
+            [class.border-danger-500]="form.get('name')?.invalid && form.get('name')?.touched"
+          />
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+            <span class="form-error">Model name is required</span>
           }
-        </label>
-        <input
-          id="name"
-          type="text"
-          formControlName="name"
-          placeholder="my-model-name"
-          [class.error]="form.get('name')?.invalid && form.get('name')?.touched"
-        />
-        @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-          <span class="error-message">Model name is required</span>
-        }
-        @if (form.get('name')?.hasError('pattern') && form.get('name')?.touched) {
-          <span class="error-message"
-            >Only alphanumeric characters, hyphens, and underscores allowed</span
-          >
-        }
-        @if (!isEditMode()) {
-          <span class="help-text">Use lowercase, numbers, hyphens, or underscores</span>
-        }
+          @if (form.get('name')?.hasError('pattern') && form.get('name')?.touched) {
+            <span class="form-error">
+              Only alphanumeric characters, hyphens, and underscores allowed
+            </span>
+          }
+          @if (!isEditMode()) {
+            <span class="form-hint">Use lowercase, numbers, hyphens, or underscores</span>
+          }
+        </div>
       </div>
 
+      <!-- Form or JSON View -->
       @if (viewMode() === 'form') {
-        <div class="form-fields-container">
+        <div class="space-y-4">
           <app-common-fields [data]="commonData()" (dataChange)="onCommonDataChange($event)" />
 
           @if (isImageGeneration()) {
@@ -68,81 +82,107 @@
           />
         </div>
       } @else {
-        <div class="form-group">
-          <label for="jsonData">
-            Model Data (JSON) *
-            <span class="hint">Name field will be added automatically</span>
-          </label>
-          <textarea
-            id="jsonData"
-            formControlName="jsonData"
-            rows="20"
-            placeholder='{"description": "...", "config": {...}}'
-            [class.error]="form.get('jsonData')?.invalid && form.get('jsonData')?.touched"
-          ></textarea>
-          @if (form.get('jsonData')?.hasError('required') && form.get('jsonData')?.touched) {
-            <span class="error-message">Model data is required</span>
-          }
-          <span class="help-text"
-            >Enter valid JSON. Common fields: description, config, baseline, nsfw, etc.</span
-          >
+        <div class="card">
+          <div class="px-6 py-4">
+            <label for="jsonData" class="form-label">
+              Model Data (JSON) *
+              <span class="text-xs text-gray-500 dark:text-gray-400 font-normal ml-2">
+                Name field will be added automatically
+              </span>
+            </label>
+            <textarea
+              id="jsonData"
+              class="form-textarea font-mono text-sm"
+              formControlName="jsonData"
+              rows="20"
+              placeholder='{"description": "...", "config": {...}}'
+              [class.border-danger-500]="
+                form.get('jsonData')?.invalid && form.get('jsonData')?.touched
+              "
+            ></textarea>
+            @if (form.get('jsonData')?.hasError('required') && form.get('jsonData')?.touched) {
+              <span class="form-error">Model data is required</span>
+            }
+            <span class="form-hint">
+              Enter valid JSON. Common fields: description, config, baseline, nsfw, etc.
+            </span>
+          </div>
         </div>
       }
 
+      <!-- Validation Results -->
       @if (validationIssues().length > 0) {
-        <div class="validation-panel">
-          <h3>Validation Results</h3>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Validation Results
+            </h3>
+          </div>
+          <div class="card-body space-y-4">
+            @if (groupedIssues().errors.length > 0) {
+              <div class="space-y-2">
+                <h4 class="text-sm font-semibold text-danger-700 dark:text-danger-400">
+                  Errors ({{ groupedIssues().errors.length }})
+                </h4>
+                <ul class="space-y-1">
+                  @for (issue of groupedIssues().errors; track $index) {
+                    <li class="text-sm text-danger-600 dark:text-danger-400">
+                      @if (issue.field) {
+                        <strong class="font-medium">{{ issue.field }}:</strong>
+                      }
+                      {{ issue.message }}
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
 
-          @if (groupedIssues().errors.length > 0) {
-            <div class="validation-section errors">
-              <h4>Errors ({{ groupedIssues().errors.length }})</h4>
-              <ul>
-                @for (issue of groupedIssues().errors; track $index) {
-                  <li class="validation-error">
-                    @if (issue.field) {
-                      <strong>{{ issue.field }}:</strong>
-                    }
-                    {{ issue.message }}
-                  </li>
-                }
-              </ul>
-            </div>
-          }
+            @if (groupedIssues().warnings.length > 0) {
+              <div class="space-y-2">
+                <h4 class="text-sm font-semibold text-warning-700 dark:text-warning-400">
+                  Warnings ({{ groupedIssues().warnings.length }})
+                </h4>
+                <ul class="space-y-1">
+                  @for (issue of groupedIssues().warnings; track $index) {
+                    <li class="text-sm text-warning-600 dark:text-warning-400">
+                      @if (issue.field) {
+                        <strong class="font-medium">{{ issue.field }}:</strong>
+                      }
+                      {{ issue.message }}
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
 
-          @if (groupedIssues().warnings.length > 0) {
-            <div class="validation-section warnings">
-              <h4>Warnings ({{ groupedIssues().warnings.length }})</h4>
-              <ul>
-                @for (issue of groupedIssues().warnings; track $index) {
-                  <li class="validation-warning">
-                    @if (issue.field) {
-                      <strong>{{ issue.field }}:</strong>
-                    }
-                    {{ issue.message }}
-                  </li>
-                }
-              </ul>
-            </div>
-          }
-
-          @if (groupedIssues().errors.length === 0 && groupedIssues().warnings.length === 0) {
-            <div class="validation-success">No validation issues found</div>
-          }
+            @if (groupedIssues().errors.length === 0 && groupedIssues().warnings.length === 0) {
+              <div class="text-sm text-success-600 dark:text-success-400 font-medium">
+                No validation issues found
+              </div>
+            }
+          </div>
         </div>
       }
 
-      <div class="form-actions">
-        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="submitting() || form.invalid || hasErrors()"
-        >
-          {{ submitting() ? 'Saving...' : isEditMode() ? 'Update Model' : 'Create Model' }}
-        </button>
+      <!-- Form Actions -->
+      <div class="card">
+        <div class="card-footer">
+          <div class="flex justify-end gap-3">
+            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="submitting() || form.invalid || hasErrors()"
+            >
+              {{ submitting() ? 'Saving...' : isEditMode() ? 'Update Model' : 'Create Model' }}
+            </button>
+          </div>
+        </div>
       </div>
+
+      <!-- Status Messages -->
       @if (hasErrors()) {
-        <div class="alert alert-error">Please fix validation errors before submitting</div>
+        <div class="alert alert-danger">Please fix validation errors before submitting</div>
       }
       @if (!hasErrors() && groupedIssues().warnings.length > 0) {
         <div class="alert alert-warning">

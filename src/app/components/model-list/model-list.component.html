@@ -1,41 +1,57 @@
-<div class="model-list-container">
-  <div class="page-header">
-    <div>
-      <h1>{{ category() }}</h1>
-      <p class="subtitle">{{ filteredModels().length }} models</p>
+<div class="p-4 space-y-4">
+  <!-- Page Header -->
+  <div class="card">
+    <div class="flex justify-between items-start px-6 py-4">
+      <div>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 capitalize">
+          {{ category() }}
+        </h1>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          {{ filteredModels().length }} models
+        </p>
+      </div>
+      @if (writable()) {
+        <button class="btn btn-primary" (click)="createModel()">+ Create Model</button>
+      }
     </div>
-    @if (writable()) {
-      <button class="btn btn-primary" (click)="createModel()">+ Create Model</button>
-    }
   </div>
 
-  <div class="mb-md">
+  <!-- Search -->
+  <div class="w-full max-w-2xl">
+    <label for="model-search" class="form-label w-64">Search models</label>
     <input
-      type="text"
-      class="search-input"
-      placeholder="Search models..."
+      id="model-search"
+      type="search"
+      class="form-input w-64  text-gray-400"
+      placeholder="Enter a name, description, or tag"
       [(ngModel)]="searchTerm"
       (ngModelChange)="searchTerm.set($event)"
     />
   </div>
 
+  <!-- Loading/Empty States -->
   @if (loading()) {
-    <div class="loading-state">Loading models...</div>
+    <div class="card">
+      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading models...</div>
+    </div>
   } @else if (filteredModels().length === 0) {
-    <div class="empty-state">
-      @if (searchTerm()) {
-        No models match your search
-      } @else {
-        No models in this category
-      }
+    <div class="card">
+      <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+        @if (searchTerm()) {
+          No models match your search
+        } @else {
+          No models in this category
+        }
+      </div>
     </div>
   } @else {
+    <!-- Data Table -->
     <div class="data-table">
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Description</th>
+            <th class="w-auto">Name</th>
+            <th class="w-1/3">Description</th>
             @if (isImageGeneration()) {
               <th>Baseline</th>
               <th>Inpainting</th>
@@ -61,8 +77,10 @@
         <tbody>
           @for (model of filteredModels(); track model.name) {
             <tr>
-              <td class="model-name">{{ model.name }}</td>
-              <td class="model-description">{{ model.description || '-' }}</td>
+              <td class="font-medium text-gray-900 dark:text-gray-100">{{ model.name }}</td>
+              <td class="text-gray-600 dark:text-gray-400 max-w-md truncate">
+                {{ model.description || '-' }}
+              </td>
 
               @if (isImageGeneration() && isStableDiffusionRecord(model)) {
                 <td>{{ baselineDisplayMap[model.baseline] || model.baseline }}</td>
@@ -73,12 +91,14 @@
                     <span class="badge badge-secondary">No</span>
                   }
                 </td>
-                <td class="tags-cell">
+                <td class="max-w-xs">
                   @if (model.tags && model.tags.length > 0) {
-                    <span class="tags-preview"
-                      >{{ model.tags.slice(0, 3).join(', ') }}
+                    <span class="text-sm text-gray-600 dark:text-gray-400">
+                      {{ model.tags.slice(0, 3).join(', ') }}
                       @if (model.tags.length > 3) {
-                        <span class="more-count">+{{ model.tags.length - 3 }}</span>
+                        <span class="text-gray-400 italic ml-1">
+                          +{{ model.tags.length - 3 }}
+                        </span>
                       }
                     </span>
                   } @else {
@@ -119,11 +139,14 @@
 
               @if (writable()) {
                 <td>
-                  <div class="actions-group">
-                    <button class="btn btn-small btn-edit" (click)="editModel(model.name)">
+                  <div class="flex gap-2 whitespace-nowrap">
+                    <button class="btn btn-sm btn-secondary" (click)="showJson(model)">
+                      Json
+                    </button>
+                    <button class="btn btn-sm btn-primary" (click)="editModel(model.name)">
                       Edit
                     </button>
-                    <button class="btn btn-small btn-delete" (click)="confirmDelete(model.name)">
+                    <button class="btn btn-sm btn-danger" (click)="confirmDelete(model.name)">
                       Delete
                     </button>
                   </div>
@@ -137,36 +160,82 @@
   }
 </div>
 
+<!-- Delete Confirmation Modal -->
 @if (modelToDelete()) {
-  <div class="modal-overlay" (click)="cancelDelete()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
-      <h2>Confirm Delete</h2>
-      <p>
-        Are you sure you want to delete <strong>{{ modelToDelete() }}</strong
-        >?
-      </p>
-      <p class="warning-text">This action cannot be undone.</p>
-      <div class="field-group mt-md">
-        <label for="delete-confirm">Type the model name to confirm:</label>
-        <input
-          id="delete-confirm"
-          type="text"
-          placeholder="{{ modelToDelete() }}"
-          [(ngModel)]="deleteConfirmationInput"
-          (ngModelChange)="deleteConfirmationInput.set($event)"
-          autocomplete="off"
-        />
+  <div
+    class="modal-overlay"
+    tabindex="0"
+    (click)="cancelDelete()"
+    (keydown)="($event.key === 'Enter' || $event.key === ' ') && cancelDelete()"
+    aria-label="Close modal"
+  >
+    <div
+      class="modal-dialog"
+      tabindex="0"
+      (click)="$event.stopPropagation()"
+      (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()"
+      aria-modal="true"
+      role="dialog"
+    >
+      <h2 class="modal-title">Confirm Delete</h2>
+      <div class="modal-content space-y-3">
+        <p>
+          Are you sure you want to delete <strong>{{ modelToDelete() }}</strong>?
+        </p>
+        <p class="text-danger-600 dark:text-danger-400 font-medium">
+          This action cannot be undone.
+        </p>
+        <div>
+          <label for="delete-confirm" class="form-label">Type the model name to confirm:</label>
+          <input
+            id="delete-confirm"
+            type="text"
+            class="form-input"
+            placeholder="{{ modelToDelete() }}"
+            [(ngModel)]="deleteConfirmationInput"
+            (ngModelChange)="deleteConfirmationInput.set($event)"
+            autocomplete="off"
+          />
+        </div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
         <button
           class="btn btn-danger"
-          [class.disabled]="!deleteAllowed()"
           [disabled]="!deleteAllowed()"
           (click)="deleteModel(modelToDelete()!)"
         >
           Delete
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- JSON Display Modal -->
+@if (modelJsonToShow()) {
+  <div
+    class="modal-overlay"
+    tabindex="0"
+    (click)="closeJsonModal()"
+    (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeJsonModal()"
+    aria-label="Close modal"
+  >
+    <div
+      class="modal-dialog max-w-4xl"
+      tabindex="0"
+      (click)="$event.stopPropagation()"
+      (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()"
+      aria-modal="true"
+      role="dialog"
+    >
+      <h2 class="modal-title">Model JSON: {{ modelJsonToShow()!.name }}</h2>
+      <div class="modal-content">
+        <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ getFormattedJson(modelJsonToShow()!) }}</code></pre>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">Copy</button>
+        <button class="btn btn-primary" (click)="closeJsonModal()">Close</button>
       </div>
     </div>
   </div>

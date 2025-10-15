@@ -1,18 +1,35 @@
-<div class="category-list-container">
-  <div class="page-header mb-md">
-    <h1>Model Categories</h1>
+<div class="p-4 space-y-4">
+  <div class="card">
+    <div class="px-6 py-4">
+      <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Model Categories</h1>
+    </div>
   </div>
 
   @if (loading()) {
-    <div class="loading-state">Loading categories...</div>
+    <div class="card">
+      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading categories...</div>
+    </div>
   } @else if (categories().length === 0) {
-    <div class="empty-state">No categories available</div>
+    <div class="card">
+      <div class="text-center py-12 text-gray-500 dark:text-gray-400">No categories available</div>
+    </div>
   } @else {
-    <div class="category-grid">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (category of categories(); track category) {
-        <button class="category-card" (click)="selectCategory(category)">
-          <h2>{{ category }}</h2>
-          <span class="arrow">→</span>
+        <button
+          class="card hover:shadow-lg transition-all duration-200 group"
+          (click)="selectCategory(category)"
+        >
+          <div class="flex justify-between items-center px-6 py-4">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
+              {{ category }}
+            </h2>
+            <span
+              class="text-2xl text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform"
+            >
+              →
+            </span>
+          </div>
         </button>
       }
     </div>

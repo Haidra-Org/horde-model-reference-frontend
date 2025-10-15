@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-tag-input',
   imports: [FormsModule],
   templateUrl: './tag-input.component.html',
-  styleUrl: './tag-input.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TagInputComponent {

@@ -1,44 +1,61 @@
-<fieldset class="key-value-editor">
+<fieldset class="space-y-3">
   @if (label()) {
-    <legend class="kv-label">{{ label() }}</legend>
+    <legend class="form-label">{{ label() }}</legend>
   }
 
-  <div class="kv-pairs">
-    @for (pair of pairs(); track pair.key) {
-      <div class="kv-pair">
-        <input type="text" class="kv-key" [value]="pair.key" readonly placeholder="Key" />
-        <input
-          type="text"
-          class="kv-value"
-          [value]="getValueAsString(pair.value)"
-          (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
-          placeholder="Value"
-        />
-        <span class="kv-type-badge">{{ pair.valueType }}</span>
-        <button type="button" class="btn-remove" (click)="removePair(pair.key)" title="Remove">
-          ×
-        </button>
-      </div>
-    }
-  </div>
+  @if (pairs().length > 0) {
+    <div class="space-y-2">
+      @for (pair of pairs(); track pair.key) {
+        <div class="flex gap-2 items-center">
+          <input
+            type="text"
+            class="form-input w-1/3"
+            [value]="pair.key"
+            readonly
+            placeholder="Key"
+          />
+          <input
+            type="text"
+            class="form-input flex-1"
+            [value]="getValueAsString(pair.value)"
+            (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
+            placeholder="Value"
+          />
+          <span class="badge badge-secondary text-xs">{{ pair.valueType }}</span>
+          <button
+            type="button"
+            class="p-2 hover:bg-danger-50 dark:hover:bg-danger-900/20 text-danger-600 dark:text-danger-400 rounded transition-colors"
+            (click)="removePair(pair.key)"
+            title="Remove"
+          >
+            ×
+          </button>
+        </div>
+      }
+    </div>
+  }
 
-  <div class="kv-add-section">
-    <input
-      type="text"
-      class="kv-input kv-key"
-      placeholder="Key"
-      [(ngModel)]="newKey"
-      (ngModelChange)="newKey.set($event)"
-    />
-    <input
-      type="text"
-      class="kv-input kv-value"
-      placeholder="Value"
-      [(ngModel)]="newValue"
-      (ngModelChange)="newValue.set($event)"
-    />
+  <div class="flex gap-2 items-end">
+    <div class="flex-1">
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Key"
+        [(ngModel)]="newKey"
+        (ngModelChange)="newKey.set($event)"
+      />
+    </div>
+    <div class="flex-1">
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Value"
+        [(ngModel)]="newValue"
+        (ngModelChange)="newValue.set($event)"
+      />
+    </div>
     <select
-      class="kv-type-select"
+      class="form-select"
       [(ngModel)]="newValueType"
       (ngModelChange)="newValueType.set($event)"
     >
@@ -49,7 +66,7 @@
     </select>
     <button
       type="button"
-      class="btn btn-small btn-add"
+      class="btn btn-sm btn-primary"
       (click)="addPair()"
       [disabled]="!newKey().trim() || !newValue().trim()"
     >

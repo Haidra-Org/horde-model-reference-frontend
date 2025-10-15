@@ -9,7 +9,6 @@ export interface ClipFieldsData {
   selector: 'app-clip-fields',
   imports: [FormsModule],
   templateUrl: './clip-fields.component.html',
-  styleUrl: './clip-fields.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClipFieldsComponent {
