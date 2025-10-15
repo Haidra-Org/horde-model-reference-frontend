@@ -22,10 +22,11 @@ import {
   RECORD_DISPLAY_MAP,
   CATEGORY_STATS_CONFIG,
 } from '../../models/maps';
+import { ModelRowComponent } from './model-row.component';
 
 @Component({
   selector: 'app-model-list',
-  imports: [FormsModule],
+  imports: [FormsModule, ModelRowComponent],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -490,6 +491,18 @@ export class ModelListComponent implements OnInit {
       !!model.showcases &&
       model.showcases.length > 0
     );
+  }
+
+  toggleShowDetails(): void {
+    const newShowDetails = !this.showDetails();
+    this.showDetails.set(newShowDetails);
+
+    if (newShowDetails) {
+      const allModelNames = new Set(this.filteredModels().map((m) => m.name));
+      this.expandedModels.set(allModelNames);
+    } else {
+      this.expandedModels.set(new Set());
+    }
   }
 
   onImageError(event: Event): void {
