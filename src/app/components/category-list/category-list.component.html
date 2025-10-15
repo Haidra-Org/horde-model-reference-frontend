@@ -1,17 +1,17 @@
 <div class="p-4 space-y-4">
   <div class="card">
-    <div class="px-6 py-4">
-      <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Model Categories</h1>
+    <div class="card-body">
+      <h1 class="heading-page">Model Categories</h1>
     </div>
   </div>
 
   @if (loading()) {
     <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading categories...</div>
+      <div class="text-center py-12 text-muted">Loading categories...</div>
     </div>
   } @else if (categories().length === 0) {
     <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">No categories available</div>
+      <div class="text-center py-12 text-muted">No categories available</div>
     </div>
   } @else {
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -20,7 +20,7 @@
           class="card hover:shadow-lg transition-all duration-200 group"
           (click)="selectCategory(category)"
         >
-          <div class="flex justify-between items-center px-6 py-4">
+          <div class="card-body flex justify-between items-center">
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
               {{ category }}
             </h2>

@@ -1,11 +1,9 @@
 <div class="card">
   <div class="card-header">
-    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
-      Image Generation (Stable Diffusion) Fields
-    </h3>
+    <h3 class="heading-card">Image Generation (Stable Diffusion) Fields</h3>
   </div>
 
-  <div class="px-6 py-4 space-y-4">
+  <div class="card-body space-y-4">
     <!-- Baseline and Inpainting -->
     <div class="grid md:grid-cols-2 gap-4">
       <div>
@@ -28,11 +26,11 @@
           <input
             id="inpainting"
             type="checkbox"
-            class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600"
+            class="form-checkbox"
             [checked]="data().inpainting"
             (change)="onInpaintingChange($any($event.target).checked)"
           />
-          <span class="text-sm text-gray-700 dark:text-gray-300">Model supports inpainting</span>
+          <span class="checkbox-label">Model supports inpainting</span>
         </div>
       </div>
     </div>

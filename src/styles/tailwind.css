@@ -278,8 +278,9 @@
   }
 
   .data-table tbody tr {
-    @apply hover:bg-gray-50 transition-colors;
-    @apply dark:hover:bg-gray-700;
+    @apply transition-colors;
+    @apply even:bg-gray-50 hover:bg-gray-100;
+    @apply dark:even:bg-gray-700/30 dark:hover:bg-gray-700;
   }
 
   /* Modal */
@@ -289,8 +290,16 @@
   }
 
   .modal-dialog {
-    @apply bg-white rounded-xl shadow-xl max-w-lg w-full p-6;
+    @apply bg-white rounded-xl shadow-xl p-6;
+    min-width: 20rem;            /* never too narrow */
+    width: fit-content;          /* shrink to content when small */
+    max-width: clamp(20rem, 90vw, 56rem); /* but never exceed viewport or large cap */
     @apply dark:bg-gray-800;
+  }
+
+  /* Extra-wide modal variant for heavy content (e.g., JSON) */
+  .modal-dialog--xl {
+    max-width: clamp(20rem, 90vw, 80rem);
   }
 
   .modal-title {
@@ -305,6 +314,88 @@
 
   .modal-actions {
     @apply flex gap-3 justify-end;
+  }
+
+  /* Tags (smaller, outline-style badges for inline use) */
+  .tag {
+    @apply text-xs px-2 py-0.5 rounded border;
+  }
+
+  .tag-primary {
+    @apply bg-primary-50 text-primary-700 border-primary-300;
+    @apply dark:bg-primary-950 dark:text-primary-300 dark:border-primary-700;
+  }
+
+  .tag-success {
+    @apply bg-success-50 text-success-700 border-success-300;
+    @apply dark:bg-success-950 dark:text-success-300 dark:border-success-700;
+  }
+
+  .tag-info {
+    @apply bg-info-50 text-info-700 border-info-300;
+    @apply dark:bg-info-950 dark:text-info-300 dark:border-info-700;
+  }
+
+  /* Field labels and values for detail views */
+  .field-label {
+    @apply font-medium text-gray-700 mb-0.5;
+    @apply dark:text-gray-300;
+  }
+
+  .field-value {
+    @apply text-gray-600;
+    @apply dark:text-gray-400;
+  }
+
+  /* Links */
+  .link {
+    @apply text-primary-600 hover:underline;
+    @apply dark:text-primary-400;
+  }
+
+  /* Muted/helper text */
+  .text-muted {
+    @apply text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  /* Headings */
+  .heading-page {
+    @apply text-2xl font-semibold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  .heading-section {
+    @apply text-lg font-semibold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  .heading-card {
+    @apply text-base font-semibold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  /* Inline label annotations */
+  .label-hint {
+    @apply text-xs text-gray-500 font-normal ml-2;
+    @apply dark:text-gray-400;
+  }
+
+  .label-warning {
+    @apply text-xs text-warning-600 font-normal ml-1;
+    @apply dark:text-warning-400;
+  }
+
+  /* Checkbox */
+  .form-checkbox {
+    @apply w-4 h-4 text-primary-600 bg-white border-gray-300 rounded;
+    @apply focus:ring-2 focus:ring-primary-500;
+    @apply dark:bg-gray-800 dark:border-gray-600;
+  }
+
+  .checkbox-label {
+    @apply text-sm text-gray-700;
+    @apply dark:text-gray-300;
   }
 
   /* Alert */

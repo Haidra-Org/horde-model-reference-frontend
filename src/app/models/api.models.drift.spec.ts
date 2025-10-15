@@ -670,13 +670,13 @@ describe('API Models - Drift Detection', () => {
     it('CategoryModelsResponse should handle polymorphic generated model records', () => {
       // The API returns different model types (Image, Text, Generic) in the same response
       // ModelRecord type should be a union that accepts all of them
-      type GeneratedCategoryResponse = {
-        [key: string]:
-          | ImageGenerationModelRecordOutput
-          | TextGenerationModelRecordOutput
-          | GenericModelRecordOutput
-          | ControlNetModelRecordOutput;
-      };
+      type GeneratedCategoryResponse = Record<
+        string,
+        | ImageGenerationModelRecordOutput
+        | TextGenerationModelRecordOutput
+        | GenericModelRecordOutput
+        | ControlNetModelRecordOutput
+      >;
 
       const generatedResponse: GeneratedCategoryResponse = {
         'image-model': new ImageModelBuilder()
@@ -957,13 +957,13 @@ describe('API Models - Drift Detection', () => {
         'New required fields are added',
       ]);
 
-      type DownloadRecordFields = {
+      interface DownloadRecordFields {
         file_name: string;
         file_url: string;
         sha256sum?: string;
         file_purpose?: string | null;
         known_slow_download?: boolean | null;
-      };
+      }
 
       type AssertDownloadRecordMatches = DownloadRecordFields extends {
         file_name: string;
@@ -987,10 +987,10 @@ describe('API Models - Drift Detection', () => {
         'Existing fields are removed',
       ]);
 
-      type ExpectedStructure = {
+      interface ExpectedStructure {
         domain: string;
         purpose: string;
-      };
+      }
 
       type AssertStructure = ExpectedStructure extends {
         domain: string;
@@ -1011,12 +1011,12 @@ describe('API Models - Drift Detection', () => {
         'API changes from Record<string, Model> to Model[]',
       ]);
 
-      type ResponseStructure = {
-        [key: string]:
-          | ImageGenerationModelRecordOutput
-          | TextGenerationModelRecordOutput
-          | GenericModelRecordOutput;
-      };
+      type ResponseStructure = Record<
+        string,
+        | ImageGenerationModelRecordOutput
+        | TextGenerationModelRecordOutput
+        | GenericModelRecordOutput
+      >;
 
       const response: ResponseStructure = {
         'image-model': new ImageModelBuilder().withName('image-model').build(),

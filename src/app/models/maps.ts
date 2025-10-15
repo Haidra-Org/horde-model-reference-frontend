@@ -23,7 +23,6 @@ export const BASELINE_SHORTHAND_MAP: Record<string, string> = {
   'stable cascade': 'Cascade',
   'flux 1': 'f.1',
   'flux dev': 'f.dev',
-
 };
 
 export const BASELINE_NORMALIZATION_MAP: Record<string, string> = {
@@ -47,4 +46,21 @@ export const RECORD_DISPLAY_MAP: Record<string, string> = {
   video_generation: 'Video Generation',
   audio_generation: 'Audio Generation',
   miscellaneous: 'Miscellaneous',
+};
+
+export type CategoryStatType = 'baseline' | 'tags' | 'nsfw' | 'size' | 'parameters' | 'requirements';
+
+export const CATEGORY_STATS_CONFIG: Record<string, CategoryStatType[]> = {
+  image_generation: ['baseline', 'tags', 'nsfw', 'size', 'requirements'],
+  text_generation: ['tags', 'nsfw', 'parameters'],
+  blip: ['nsfw'],
+  clip: ['nsfw'],
+  codeformer: ['nsfw'],
+  controlnet: ['nsfw'],
+  esrgan: ['nsfw'],
+  gfpgan: ['nsfw'],
+  safety_checker: ['nsfw'],
+  video_generation: ['nsfw'],
+  audio_generation: ['nsfw'],
+  miscellaneous: ['nsfw'],
 };

@@ -3,9 +3,7 @@
   <div class="card">
     <div class="flex justify-between items-start px-6 py-4">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-          {{ isEditMode() ? 'Edit' : 'Create' }} Model
-        </h1>
+        <h1 class="heading-page">{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Category: {{ category() }}</p>
       </div>
       <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
@@ -26,9 +24,7 @@
           <label for="name" class="form-label">
             Model Name *
             @if (isEditMode()) {
-              <span class="text-xs text-gray-500 dark:text-gray-400 font-normal ml-2">
-                (read-only in edit mode)
-              </span>
+              <span class="label-hint"> (read-only in edit mode) </span>
             }
           </label>
           <input
@@ -86,9 +82,7 @@
           <div class="px-6 py-4">
             <label for="jsonData" class="form-label">
               Model Data (JSON) *
-              <span class="text-xs text-gray-500 dark:text-gray-400 font-normal ml-2">
-                Name field will be added automatically
-              </span>
+              <span class="label-hint"> Name field will be added automatically </span>
             </label>
             <textarea
               id="jsonData"
@@ -114,9 +108,7 @@
       @if (validationIssues().length > 0) {
         <div class="card">
           <div class="card-header">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Validation Results
-            </h3>
+            <h3 class="heading-section">Validation Results</h3>
           </div>
           <div class="card-body space-y-4">
             @if (groupedIssues().errors.length > 0) {

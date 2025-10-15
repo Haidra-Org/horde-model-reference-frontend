@@ -4,22 +4,21 @@
   </div>
 
   @if (loading()) {
-    <div class="p-6 text-center text-sm text-gray-500 dark:text-gray-400">Loading...</div>
+    <div class="p-6 text-center text-sm text-muted">Loading...</div>
   } @else if (categories().length === 0) {
-    <div class="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+    <div class="p-6 text-center text-sm text-muted">
       No categories available
     </div>
   } @else {
     <nav class="flex-1 overflow-y-auto">
       @for (category of sortedCategories(); track category) {
         <button
-          class="w-full flex justify-between items-center px-4 py-2.5 text-sm transition-colors border-l-3"
+          class="w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3"
           [class.bg-primary-50]="currentCategory() === category"
           [class.dark:bg-primary-900/20]="currentCategory() === category"
           [class.border-primary-600]="currentCategory() === category"
           [class.text-primary-700]="currentCategory() === category"
           [class.dark:text-primary-300]="currentCategory() === category"
-          [class.font-semibold]="currentCategory() === category"
           [class.border-transparent]="currentCategory() !== category"
           [class.text-gray-700]="currentCategory() !== category"
           [class.dark:text-gray-300]="currentCategory() !== category"
@@ -30,9 +29,12 @@
           <span class="capitalize break-words">
             {{ recordDisplayMap[category] || category }}
           </span>
-          @if (currentCategory() === category) {
-            <span class="text-xl font-bold text-primary-400">›</span>
-          }
+          <span
+            class="text-xl font-bold transition-opacity"
+            [class.text-primary-400]="currentCategory() === category"
+            [class.opacity-100]="currentCategory() === category"
+            [class.opacity-0]="currentCategory() !== category"
+          >›</span>
         </button>
       }
     </nav>
