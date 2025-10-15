@@ -5,46 +5,40 @@ import { onImageError } from './model-row.utils';
   selector: 'app-model-row-showcases',
   template: `
     @if (showcases() && showcases()!.length > 0) {
-      <div [class.col-span-4]="layout() === 'grid'" [class.md:col-span-2]="layout() === 'card'">
-        <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="heading-card flex items-center gap-2">
+            <svg class="w-5 h-5 text-info-600 dark:text-info-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Showcases
+            <span class="badge badge-info ml-2">{{ showcases()!.length }}</span>
+          </h4>
           <button
             type="button"
-            class="text-sm link flex items-center gap-1"
+            class="btn btn-sm btn-secondary flex items-center gap-1.5"
             (click)="toggleExpanded()"
           >
             @if (expanded()) {
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 15l7-7 7 7"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
               </svg>
-              Hide {{ layout() === 'grid' ? 'Showcases' : 'Images' }}
+              Hide
             } @else {
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
-              Show {{ layout() === 'grid' ? 'Showcases' : 'Images' }}
+              Show
             }
           </button>
         </div>
         @if (expanded()) {
-          <div class="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
             @for (showcase of showcases(); track showcase; let idx = $index) {
-              <div
-                class="group relative aspect-square overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800"
-              >
+              <div class="card-showcase">
                 <img
                   [src]="showcase"
                   [alt]="'Showcase ' + (idx + 1) + ' for ' + modelName()"
-                  class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
                   loading="lazy"
                   (error)="handleImageError($event)"
                 />
@@ -52,15 +46,9 @@ import { onImageError } from './model-row.utils';
                   [href]="showcase"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
                   [attr.aria-label]="'Open showcase ' + (idx + 1) + ' in new tab'"
                 >
-                  <svg
-                    class="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -69,6 +57,9 @@ import { onImageError } from './model-row.utils';
                     ></path>
                   </svg>
                 </a>
+                <div>
+                  <span class="text-white text-xs font-medium">Image {{ idx + 1 }}</span>
+                </div>
               </div>
             }
           </div>

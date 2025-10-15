@@ -103,16 +103,58 @@ import { hasShowcases } from './model-row.utils';
     <!-- Expanded Details Row -->
     @if (expanded()) {
       <tr [class]="isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800'">
-        <td [attr.colspan]="writable() ? 7 : 6" class="py-4 px-6">
-          <div class="space-y-4">
+        <td [attr.colspan]="writable() ? 7 : 6" class="py-6 px-8">
+          <div class="space-y-6">
+            <!-- Overview Header -->
+            <div class="card-overview">
+              <div class="flex items-start justify-between gap-6">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-3 mb-2">
+                    <svg class="card-overview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <h3 class="card-overview-title">
+                      {{ model().name }}
+                    </h3>
+                  </div>
+                  <p class="card-overview-description">
+                    {{ model().description || 'No description available' }}
+                  </p>
+                </div>
+                <div class="flex flex-col gap-2 items-end flex-shrink-0">
+                  @if (model().nsfw === true) {
+                    <span class="badge badge-warning">NSFW</span>
+                  } @else if (model().nsfw === false) {
+                    <span class="badge badge-success">SFW</span>
+                  } @else {
+                    <span class="badge badge-secondary">Unknown</span>
+                  }
+                  @if (tags().length > 0) {
+                    <div class="flex flex-wrap gap-1 justify-end max-w-xs">
+                      @for (tag of tags(); track tag) {
+                        <span class="tag tag-primary">{{ tag }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
             <app-model-row-fields [model]="model()" mode="grid" />
+
+            <!-- Showcases Section -->
             @if (hasShowcases(model())) {
-              <app-model-row-showcases
-                [showcases]="getShowcases()"
-                [modelName]="model().name"
-                layout="grid"
-                [initiallyExpanded]="isShowcaseExpanded()"
-              />
+              <div class="card">
+                <div class="card-body">
+                  <app-model-row-showcases
+                    [showcases]="getShowcases()"
+                    [modelName]="model().name"
+                    layout="grid"
+                    [initiallyExpanded]="isShowcaseExpanded()"
+                  />
+                </div>
+              </div>
             }
           </div>
         </td>
@@ -144,6 +186,14 @@ export class ModelRowComponent {
       return this.getBaselineDisplay(model.baseline);
     }
     return '';
+  });
+
+  readonly parametersDisplay = computed(() => {
+    const model = this.model();
+    if (isLegacyTextGenerationRecord(model) && model.parameters) {
+      return model.parameters.toLocaleString();
+    }
+    return null;
   });
 
   ngOnInit(): void {

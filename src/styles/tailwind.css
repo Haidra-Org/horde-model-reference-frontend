@@ -247,6 +247,73 @@
     @apply dark:bg-gray-900/50 dark:border-gray-700;
   }
 
+  /* Overview/Hero card with gradient background */
+  .card-overview {
+    @apply bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-6 border border-primary-200;
+    @apply dark:from-primary-900/20 dark:to-primary-800/20 dark:border-primary-700;
+  }
+
+  .card-overview-title {
+    @apply text-lg font-semibold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  .card-overview-icon {
+    @apply w-6 h-6 text-primary-600 flex-shrink-0;
+    @apply dark:text-primary-400;
+  }
+
+  .card-overview-description {
+    @apply text-gray-700 leading-relaxed;
+    @apply dark:text-gray-300;
+  }
+
+  /* Showcase image card with hover effects */
+  .card-showcase {
+    @apply relative aspect-square overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 shadow-sm;
+    @apply hover:shadow-lg hover:border-primary-400 transition-all duration-200;
+    @apply dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-600;
+  }
+
+  .card-showcase img {
+    @apply w-full h-full object-cover transition-transform duration-300;
+  }
+
+  .card-showcase:hover img {
+    @apply scale-110;
+  }
+
+  .card-showcase a {
+    @apply absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity duration-200;
+  }
+
+  .card-showcase:hover a {
+    @apply opacity-100;
+  }
+
+  .card-showcase a svg {
+    @apply w-10 h-10 text-white drop-shadow-lg;
+  }
+
+  .card-showcase > div:last-child {
+    @apply absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity duration-200;
+  }
+
+  .card-showcase:hover > div:last-child {
+    @apply opacity-100;
+  }
+
+  /* Code block for preformatted text */
+  .code-block {
+    @apply bg-gray-50 p-4 rounded-lg border border-gray-200;
+    @apply dark:bg-gray-900 dark:border-gray-700;
+  }
+
+  .code-block pre {
+    @apply whitespace-pre-wrap break-words text-gray-700 font-mono text-xs leading-relaxed;
+    @apply dark:text-gray-300;
+  }
+
   /* Data table */
   .data-table {
     @apply w-full overflow-hidden rounded-xl border border-gray-200;
