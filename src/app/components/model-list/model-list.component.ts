@@ -171,10 +171,10 @@ export class ModelListComponent implements OnInit {
 
     const sorted = Array.from(parameterCounts.entries())
       .map(([params, count]) => ({ params, count }))
-      .sort((a, b) => b.params - a.params);
+      .sort((a, b) => b.count - a.count);
 
-    const topBuckets = sorted.slice(0, 3);
-    const otherCount = sorted.slice(3).reduce((sum, bucket) => sum + bucket.count, 0);
+    const topBuckets = sorted.slice(0, 20);
+    const otherCount = sorted.slice(20).reduce((sum, bucket) => sum + bucket.count, 0);
 
     return { topBuckets, otherCount };
   });
@@ -191,6 +191,18 @@ export class ModelListComponent implements OnInit {
       }
     });
     return modelsWithRequirements;
+  });
+
+  readonly styleStats = computed(() => {
+    const styleCounts = new Map<string, number>();
+    this.filteredModels().forEach((model) => {
+      if (model.style) {
+        styleCounts.set(model.style, (styleCounts.get(model.style) ?? 0) + 1);
+      }
+    });
+    return Array.from(styleCounts.entries())
+      .map(([style, count]) => ({ style, count }))
+      .sort((a, b) => b.count - a.count);
   });
 
   readonly categoryStatsConfig = computed(() => {
@@ -323,6 +335,16 @@ export class ModelListComponent implements OnInit {
     this.statDetailsToShow.set({
       title: `Requirements (${modelsWithReqs.length} model${modelsWithReqs.length === 1 ? '' : 's'})`,
       content: lines.join('\n').trim(),
+    });
+  }
+
+  showStyleDetails(): void {
+    const lines = this.styleStats().map((stat) => {
+      return `${stat.style}: ${stat.count} model${stat.count === 1 ? '' : 's'}`;
+    });
+    this.statDetailsToShow.set({
+      title: 'Style Breakdown',
+      content: lines.join('\n'),
     });
   }
 

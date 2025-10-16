@@ -89,23 +89,22 @@ import { hasShowcases } from './model-row.utils';
           <span class="badge badge-secondary">Unknown</span>
         }
       </td>
-      @if (writable()) {
-        <td (click)="$event.stopPropagation()">
-          <app-model-row-actions
-            [model]="model()"
-            layout="horizontal"
-            (showJson)="showJson.emit($event)"
-            (edit)="edit.emit($event)"
-            (delete)="delete.emit($event)"
-          />
-        </td>
-      }
+      <td (click)="$event.stopPropagation()">
+        <app-model-row-actions
+          [model]="model()"
+          layout="horizontal"
+          [writable]="writable()"
+          (showJson)="showJson.emit($event)"
+          (edit)="edit.emit($event)"
+          (delete)="delete.emit($event)"
+        />
+      </td>
     </tr>
 
     <!-- Expanded Details Row -->
     @if (expanded()) {
       <tr [class]="isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800'">
-        <td [attr.colspan]="writable() ? 7 : 6">
+        <td colspan="7">
           <div class="space-y-3">
             <!-- Overview Header -->
             <div class="card-overview px-2 py-2">

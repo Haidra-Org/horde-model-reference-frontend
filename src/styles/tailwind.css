@@ -165,7 +165,7 @@
 
   /* Badge variants */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wide;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold tracking-wide;
   }
 
   .badge-success {
@@ -185,7 +185,7 @@
 
   .badge-info {
     @apply bg-info-100 text-info-800;
-    @apply dark:bg-info-900/30 dark:text-info-300;
+    @apply dark:bg-gradient-to-t dark:from-info-900 dark:to-info-800 dark:text-info-300;
   }
 
   .badge-secondary {
@@ -357,10 +357,12 @@
   }
 
   .modal-dialog {
-    @apply bg-white rounded-xl shadow-xl p-6;
+    @apply bg-white rounded-xl shadow-xl flex flex-col;
+    @apply p-6;
     min-width: 20rem;            /* never too narrow */
     width: fit-content;          /* shrink to content when small */
     max-width: clamp(20rem, 90vw, 56rem); /* but never exceed viewport or large cap */
+    max-height: 90vh;            /* viewport-sensitive height limit */
     @apply dark:bg-gray-800;
   }
 
@@ -371,16 +373,19 @@
 
   .modal-title {
     @apply text-xl font-semibold text-gray-900 mb-4;
+    @apply flex-shrink-0;
     @apply dark:text-gray-100;
   }
 
   .modal-content {
     @apply text-gray-700 mb-6;
+    @apply overflow-y-auto;
     @apply dark:text-gray-300;
   }
 
   .modal-actions {
     @apply flex gap-3 justify-end;
+    @apply flex-shrink-0;
   }
 
   /* Tags (smaller, outline-style badges for inline use) */
@@ -495,7 +500,7 @@
     @apply inline-flex px-3 py-2 bg-gray-100 rounded-lg border border-gray-200;
     @apply cursor-pointer transition-colors;
     @apply hover:bg-gray-200;
-    @apply dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600;
+    @apply dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-600;
   }
 
   .stat-card--column {

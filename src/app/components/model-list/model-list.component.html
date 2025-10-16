@@ -50,7 +50,7 @@
                   (click)="showTagsDetails()"
                   (keydown)="($event.key === 'Enter' || $event.key === ' ') && showTagsDetails()"
                 >
-                  <span class="badge badge-secondary">
+                  <span class="badge badge-info">
                     {{ tagStats() }} tag{{ tagStats() === 1 ? '' : 's' }}
                   </span>
                 </div>
@@ -107,7 +107,7 @@
                   <div class="stat-card-badges">
                     @for (bucket of parameterBucketStats().topBuckets; track bucket.params) {
                       <span class="badge badge-info">
-                        {{ bucket.count }}x ({{ formatParametersInBillions(bucket.params) }})
+                        {{ bucket.count }}x [{{ formatParametersInBillions(bucket.params) }}]
                       </span>
                     }
                     @if (parameterBucketStats().otherCount > 0) {
@@ -137,6 +137,27 @@
                     }}
                     with requirements
                   </span>
+                </div>
+              }
+              @if (statType === 'style' && styleStats().length > 0) {
+                <div
+                  class="stat-card stat-card--column"
+                  title="Click for detailed style breakdown"
+                  tabindex="0"
+                  role="button"
+                  (click)="showStyleDetails()"
+                  (keydown)="
+                    ($event.key === 'Enter' || $event.key === ' ') && showStyleDetails()
+                  "
+                >
+                  <span class="stat-card-label">Styles</span>
+                  <div class="stat-card-badges">
+                    @for (stat of styleStats(); track stat.style) {
+                      <span class="badge badge-info">
+                        {{ stat.style }}: {{ stat.count }}
+                      </span>
+                    }
+                  </div>
                 </div>
               }
             }
@@ -290,9 +311,7 @@
             <th>Baseline</th>
             <th>Tags</th>
             <th>NSFW</th>
-            @if (writable()) {
-              <th>Actions</th>
-            }
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>

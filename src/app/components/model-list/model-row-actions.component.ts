@@ -6,8 +6,10 @@ import { LegacyRecordUnion } from '../../models';
   template: `
     <div [class]="containerClass()">
       <button class="btn btn-sm btn-secondary" (click)="onShowJson()">Json</button>
-      <button class="btn btn-sm btn-primary" (click)="onEdit()">Edit</button>
-      <button class="btn btn-sm btn-danger" (click)="onDelete()">Delete</button>
+      @if (writable()) {
+        <button class="btn btn-sm btn-primary" (click)="onEdit()">Edit</button>
+        <button class="btn btn-sm btn-danger" (click)="onDelete()">Delete</button>
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,6 +17,7 @@ import { LegacyRecordUnion } from '../../models';
 export class ModelRowActionsComponent {
   readonly model = input.required<LegacyRecordUnion>();
   readonly layout = input<'horizontal' | 'vertical'>('horizontal');
+  readonly writable = input<boolean>(false);
 
   readonly showJson = output<LegacyRecordUnion>();
   readonly edit = output<string>();
