@@ -23,6 +23,7 @@ import {
   groupIssuesBySeverity,
   ValidationIssue,
 } from '../../models/legacy-validators';
+import { applyFixedFields } from '../../models/legacy-fixed-fields.config';
 import {
   CommonFieldsComponent,
   CommonFieldsData,
@@ -61,7 +62,7 @@ export class ModelFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
-  readonly category = signal<string>('');
+  readonly category = signal<ModelReferenceCategory | ''>('');
   readonly modelName = signal<string | null>(null);
   readonly isEditMode = signal(false);
   readonly loading = signal(false);
@@ -292,6 +293,10 @@ export class ModelFormComponent implements OnInit {
         return;
       }
     }
+
+    // Apply fixed field values for legacy compatibility
+    const category = this.category() as ModelReferenceCategory;
+    modelData = applyFixedFields(category, modelData) as LegacyRecordUnion;
 
     const issues = validateLegacyRecord(modelData);
     this.validationIssues.set(issues);

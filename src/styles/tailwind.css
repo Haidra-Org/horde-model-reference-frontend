@@ -83,6 +83,50 @@
   --color-info-900: #164e63;
   --color-info-950: #083344;
 
+  /* Parameter-count heatmap colors (8 buckets).
+     Each bucket gets a light-mode background, a light-mode contrast color,
+     plus a dark-mode background and dark-mode contrast color.
+     Tweak hexes as needed to fit your design. */
+  --heat-1: #dbeafe; /* coolest (light blue) */
+  --heat-1-contrast: #0b1220; /* dark text on light bg */
+  --heat-1-dark: #0b1220; /* dark-mode bg (muted) */
+  --heat-1-contrast-dark: #dbeafe; /* light text on dark bg */
+
+  --heat-2: #bfdbf7; /* cool (blue) */
+  --heat-2-contrast: #06243a;
+  --heat-2-dark: #06243a;
+  --heat-2-contrast-dark: #bfdbf7;
+
+  --heat-3: #a7f3d0; /* cool->mild (mint/green) */
+  --heat-3-contrast: #08331f;
+  --heat-3-dark: #08331f;
+  --heat-3-contrast-dark: #a7f3d0;
+
+  --heat-4: #fde68a; /* mild-warm (yellow) */
+  --heat-4-contrast: #2a2300;
+  --heat-4-dark: #2a2300;
+  --heat-4-contrast-dark: #fde68a;
+
+  --heat-5: #fbbf24; /* warm (amber) */
+  --heat-5-contrast: #3b2a00;
+  --heat-5-dark: #331f00;
+  --heat-5-contrast-dark: #fcd79a;
+
+  --heat-6: #fb923c; /* hotter (orange) */
+  --heat-6-contrast: #2a1200;
+  --heat-6-dark: #2a1200;
+  --heat-6-contrast-dark: #ffccb0;
+
+  --heat-7: #f97373; /* hot (red) */
+  --heat-7-contrast: #2b0a0a;
+  --heat-7-dark: #3b0b0b;
+  --heat-7-contrast-dark: #ffd6d6;
+
+  --heat-8: #ef4444; /* hottest (deep red) */
+  --heat-8-contrast: #2b0a0a;
+  --heat-8-dark: #4a0b0b;
+  --heat-8-contrast-dark: #ffdede;
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -251,6 +295,7 @@
   .card-overview {
     @apply bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-6 border border-primary-200;
     @apply dark:from-primary-900/20 dark:to-primary-800/20 dark:border-primary-700;
+    @apply w-full max-w-screen-md;
   }
 
   .card-overview-title {
@@ -359,11 +404,17 @@
   .modal-dialog {
     @apply bg-white rounded-xl shadow-xl flex flex-col;
     @apply p-6;
-    min-width: 20rem;            /* never too narrow */
-    width: fit-content;          /* shrink to content when small */
+    min-width: 20rem; /* never too narrow */
+    width: fit-content; /* shrink to content when small */
     max-width: clamp(20rem, 90vw, 56rem); /* but never exceed viewport or large cap */
-    max-height: 90vh;            /* viewport-sensitive height limit */
+    max-height: 90vh; /* viewport-sensitive height limit */
     @apply dark:bg-gray-800;
+  }
+
+  /* Large modal variant for parameter tables and similar content */
+  .modal-dialog--lg {
+    width: 50vw;
+    max-width: 90rem;
   }
 
   /* Extra-wide modal variant for heavy content (e.g., JSON) */
@@ -495,24 +546,356 @@
     @apply dark:bg-info-900/90 dark:text-info-100 dark:border-info-700;
   }
 
-  /* Stat cards (category statistics) */
+  /* Stat cards (category statistics) - Modern, accessible design */
   .stat-card {
-    @apply inline-flex px-3 py-2 bg-gray-100 rounded-lg border border-gray-200;
-    @apply cursor-pointer transition-colors;
-    @apply hover:bg-gray-200;
-    @apply dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-600;
+    @apply inline-flex items-center gap-3 px-4 py-3;
+    @apply bg-gradient-to-br from-white to-gray-50;
+    @apply border border-gray-200 rounded-xl shadow-sm;
+    @apply cursor-pointer transition-all duration-200;
+    @apply hover:shadow-md hover:border-primary-300 hover:-translate-y-0.5;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply dark:from-gray-800 dark:to-gray-900 dark:border-gray-700;
+    @apply dark:hover:border-primary-600 dark:hover:shadow-lg dark:hover:shadow-primary-900/20;
+    @apply dark:focus:ring-primary-400 dark:focus:ring-offset-gray-900;
   }
 
   .stat-card--column {
-    @apply flex-col gap-1.5;
+    @apply flex-col items-start gap-2;
+  }
+
+  .stat-card-icon {
+    @apply flex-shrink-0 w-8 h-8 rounded-lg;
+    @apply bg-primary-100 text-primary-600;
+    @apply flex items-center justify-center;
+    @apply transition-colors duration-200;
+    @apply dark:bg-primary-900/30 dark:text-primary-400;
+  }
+
+  .stat-card:hover .stat-card-icon {
+    @apply bg-primary-200 text-primary-700;
+    @apply dark:bg-primary-800/50 dark:text-primary-300;
   }
 
   .stat-card-label {
-    @apply text-xs font-semibold text-gray-600 uppercase tracking-wide;
-    @apply dark:text-gray-300;
+    @apply text-xs font-bold text-gray-500 uppercase tracking-wider;
+    @apply dark:text-gray-400;
+  }
+
+  .stat-card-content {
+    @apply flex-1 min-w-0;
   }
 
   .stat-card-badges {
-    @apply flex flex-wrap gap-1.5;
+    @apply flex flex-wrap gap-2;
+  }
+
+  /* Enhanced stat card variant for single values */
+  .stat-card--compact {
+    @apply gap-2 px-3 py-2;
+  }
+
+  /* Stat table (for inline parameter distributions, etc.) */
+  .stat-table-container {
+    @apply overflow-auto max-h-64 border border-gray-200 rounded-lg;
+    @apply dark:border-gray-700;
+  }
+
+  .stat-table {
+    @apply w-full text-sm;
+  }
+
+  .stat-table thead {
+    @apply bg-gray-50 sticky top-0;
+    @apply dark:bg-gray-900;
+  }
+
+  .stat-table th {
+    @apply px-3 py-2 text-xs font-semibold text-gray-700;
+    @apply dark:text-gray-300;
+  }
+
+  .stat-table tbody {
+    @apply bg-white divide-y divide-gray-200;
+    @apply dark:bg-gray-800 dark:divide-gray-700;
+  }
+
+  .stat-table td {
+    @apply px-3 py-2 text-sm text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  .stat-table tbody tr {
+    @apply hover:bg-gray-50;
+    @apply dark:hover:bg-gray-700/50;
+  }
+
+  /* Table row backgrounds for alternating colors */
+  .table-row-even {
+    @apply bg-gray-50;
+    @apply dark:bg-gray-700/30;
+  }
+
+  .table-row-odd {
+    @apply bg-white;
+    @apply dark:bg-gray-800;
+  }
+
+  /* Expanded detail sections within tables */
+  .detail-section {
+    @apply space-y-3;
+  }
+
+  /* Flex layout utilities for detail headers */
+  .detail-header {
+    @apply flex items-start justify-between gap-3;
+  }
+
+  .detail-header-content {
+    @apply flex-1 min-w-0;
+  }
+
+  .detail-header-meta {
+    @apply flex flex-col gap-1 items-end flex-shrink-0;
+  }
+
+  /* Tag container */
+  .tag-container {
+    @apply flex flex-wrap gap-0.5 justify-end max-w-xs;
+  }
+
+  /* Parameter-count heatmap badges (reusable). */
+  .pc-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold tracking-wide;
+    /* a subtle border helps separate on light backgrounds */
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+  .dark .pc-badge {
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Bucket classes:
+     Names map to the numeric buckets; each sets background + text color.
+     Use together with the base `.pc-badge`. */
+  .pc-0-3b {
+    background-color: var(--heat-1);
+    color: var(--heat-1-contrast);
+  }
+  .dark .pc-0-3b {
+    background-color: var(--heat-1-dark);
+    color: var(--heat-1-contrast-dark);
+  }
+
+  .pc-3-6b {
+    background-color: var(--heat-2);
+    color: var(--heat-2-contrast);
+  }
+  .dark .pc-3-6b {
+    background-color: var(--heat-2-dark);
+    color: var(--heat-2-contrast-dark);
+  }
+
+  .pc-6-9b {
+    background-color: var(--heat-3);
+    color: var(--heat-3-contrast);
+  }
+  .dark .pc-6-9b {
+    background-color: var(--heat-3-dark);
+    color: var(--heat-3-contrast-dark);
+  }
+
+  .pc-9-14b {
+    background-color: var(--heat-4);
+    color: var(--heat-4-contrast);
+  }
+  .dark .pc-9-14b {
+    background-color: var(--heat-4-dark);
+    color: var(--heat-4-contrast-dark);
+  }
+
+  .pc-14-20b {
+    background-color: var(--heat-5);
+    color: var(--heat-5-contrast);
+  }
+  .dark .pc-14-20b {
+    background-color: var(--heat-5-dark);
+    color: var(--heat-5-contrast-dark);
+  }
+
+  .pc-20-70b {
+    background-color: var(--heat-6);
+    color: var(--heat-6-contrast);
+  }
+  .dark .pc-20-70b {
+    background-color: var(--heat-6-dark);
+    color: var(--heat-6-contrast-dark);
+  }
+
+  .pc-70-100b {
+    background-color: var(--heat-7);
+    color: var(--heat-7-contrast);
+  }
+  .dark .pc-70-100b {
+    background-color: var(--heat-7-dark);
+    color: var(--heat-7-contrast-dark);
+  }
+
+  .pc-100b-plus {
+    background-color: var(--heat-8);
+    color: var(--heat-8-contrast);
+  }
+  .dark .pc-100b-plus {
+    background-color: var(--heat-8-dark);
+    color: var(--heat-8-contrast-dark);
+  }
+
+  /* a subtle focus ring for accessibility */
+  .pc-badge:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+
+  /* Form Layout Utilities */
+
+  /* Standard form field wrapper */
+  .form-field {
+    @apply space-y-2;
+  }
+
+  /* Common grid layouts for forms */
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  .form-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+  }
+
+  /* Section header with action button */
+  .section-header {
+    @apply flex justify-between items-center;
+  }
+
+  .section-title {
+    @apply text-xs font-bold text-gray-500 uppercase tracking-wider;
+    @apply dark:text-gray-400;
+  }
+
+  /* Collapsible card header with toggle */
+  .card-header-collapsible {
+    @apply px-4 py-2 border-b border-gray-200;
+    @apply flex justify-between items-center w-full text-left cursor-pointer;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors;
+    @apply dark:border-gray-700;
+  }
+
+  .card-header-collapsible-icon {
+    @apply text-lg text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  /* Form section groupings */
+  .form-section {
+    @apply space-y-3;
+  }
+
+  .form-section-divider {
+    @apply pt-4 border-t border-gray-200;
+    @apply dark:border-gray-700;
+  }
+
+  /* Nested item card (for file/download entries) */
+  .nested-item-card {
+    @apply p-4 bg-gray-50 rounded-lg space-y-3 relative;
+    @apply dark:bg-gray-800;
+  }
+
+  .nested-item-remove-btn {
+    @apply absolute top-2 right-2;
+    @apply px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-150 shadow-sm;
+    @apply bg-danger-600 text-white;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply dark:bg-danger-500;
+  }
+
+  .nested-item-remove-btn:hover:not(:disabled) {
+    @apply shadow-md -translate-y-px;
+    @apply bg-danger-700;
+    @apply dark:bg-danger-600;
+  }
+
+  .nested-item-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-3 pr-10;
+  }
+
+  /* Empty state message */
+  .empty-state {
+    @apply text-gray-500 text-sm italic;
+    @apply dark:text-gray-400;
+  }
+
+  /* Inline item row (for key-value pairs) */
+  .inline-item-row {
+    @apply flex gap-2 items-center;
+  }
+
+  /* Validation issue lists */
+  .validation-section {
+    @apply space-y-2;
+  }
+
+  .validation-heading {
+    @apply text-sm font-semibold;
+  }
+
+  .validation-heading-error {
+    @apply text-sm font-semibold text-danger-700;
+    @apply dark:text-danger-300;
+  }
+
+  .validation-heading-warning {
+    @apply text-sm font-semibold text-warning-700;
+    @apply dark:text-warning-300;
+  }
+
+  .validation-list {
+    @apply space-y-1;
+  }
+
+  .validation-list-item {
+    @apply text-sm;
+  }
+
+  .validation-list-item-error {
+    @apply text-sm text-danger-600;
+    @apply dark:text-danger-400;
+  }
+
+  .validation-list-item-warning {
+    @apply text-sm text-warning-600;
+    @apply dark:text-warning-400;
+  }
+
+  /* Page container with consistent spacing */
+  .page-container {
+    @apply p-4 space-y-4;
+  }
+
+  /* Card section with title and content spacing */
+  .card-section {
+    @apply space-y-4;
+  }
+
+  /* Action buttons container */
+  .form-actions {
+    @apply flex justify-end gap-3;
+  }
+
+  /* Input with inline button */
+  .input-with-button {
+    @apply flex gap-2;
+  }
+
+  .input-with-button input {
+    @apply flex-1;
   }
 }

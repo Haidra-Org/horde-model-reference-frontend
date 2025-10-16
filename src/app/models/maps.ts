@@ -48,7 +48,14 @@ export const RECORD_DISPLAY_MAP: Record<string, string> = {
   miscellaneous: 'Miscellaneous',
 };
 
-export type CategoryStatType = 'baseline' | 'tags' | 'nsfw' | 'size' | 'parameters' | 'requirements' | 'style';
+export type CategoryStatType =
+  | 'baseline'
+  | 'tags'
+  | 'nsfw'
+  | 'size'
+  | 'parameters'
+  | 'requirements'
+  | 'style';
 
 export const CATEGORY_STATS_CONFIG: Record<string, CategoryStatType[]> = {
   image_generation: ['baseline', 'tags', 'nsfw', 'size'],

@@ -12,7 +12,7 @@ import { getDownloadCount } from './model-row.utils';
     @if (mode() === 'compact') {
       <span class="flex items-center gap-2">
         <span>{{ model().name }}</span>
-        @if (model().version) {
+        @if (model().version && !this.isTextGenerationRecord(model())) {
           <span class="text-xs text-gray-400 dark:text-gray-400">{{ model().version }}</span>
         }
       </span>
@@ -86,4 +86,8 @@ export class ModelRowHeaderComponent {
   );
 
   readonly downloadCount = computed(() => getDownloadCount(this.model()));
+
+  readonly isTextGenerationRecord = (model: LegacyRecordUnion): boolean => {
+    return isLegacyTextGenerationRecord(model);
+  };
 }

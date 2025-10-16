@@ -8,6 +8,10 @@ import {
 import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { getFieldsForModel, ModelFieldConfig } from './model-row-field.config';
 import { formatRequirements, hasRequirements, getObjectKeysLength } from './model-row.utils';
+import {
+  getParameterHeatmapClass,
+  formatParametersInBillions,
+} from '../../utils/parameter-heatmap.utils';
 
 @Component({
   selector: 'app-model-row-fields',
@@ -18,8 +22,18 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
         <div class="card">
           <div class="card-header">
             <h4 class="heading-card flex items-center gap-2">
-              <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+              <svg
+                class="w-5 h-5 text-primary-600 dark:text-primary-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                ></path>
               </svg>
               Technical Specifications
             </h4>
@@ -46,8 +60,18 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
           <div class="card" [class.xl:col-span-2]="!showRequirements()">
             <div class="card-header">
               <h4 class="heading-card flex items-center gap-2">
-                <svg class="w-5 h-5 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                <svg
+                  class="w-5 h-5 text-success-600 dark:text-success-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                  ></path>
                 </svg>
                 Links & Resources
               </h4>
@@ -64,8 +88,18 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
                       class="link inline-flex items-center gap-1 break-all"
                     >
                       {{ getValue(field) }}
-                      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      <svg
+                        class="w-4 h-4 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        ></path>
                       </svg>
                     </a>
                   </div>
@@ -92,8 +126,18 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
           <div class="card xl:col-span-2">
             <div class="card-header">
               <h4 class="heading-card flex items-center gap-2">
-                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                <svg
+                  class="w-5 h-5 text-warning-600 dark:text-warning-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  ></path>
                 </svg>
                 Model Parameter Requirements
               </h4>
@@ -119,12 +163,7 @@ import { formatRequirements, hasRequirements, getObjectKeysLength } from './mode
             <div class="field-label">{{ field.label }}</div>
             <div [class]="getValueClass(field)">
               @if (field.type === 'link') {
-                <a
-                  [href]="getValue(field)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="link"
-                >
+                <a [href]="getValue(field)" target="_blank" rel="noopener noreferrer" class="link">
                   {{ getValue(field) }}
                 </a>
               } @else if (field.type === 'array') {
@@ -221,8 +260,8 @@ export class ModelRowFieldsComponent {
       if (model.parameters) {
         result.push({
           label: 'Parameters',
-          value: model.parameters.toLocaleString(),
-          class: 'badge-secondary',
+          value: formatParametersInBillions(model.parameters),
+          class: `pc-badge ${getParameterHeatmapClass(model.parameters)}`,
         });
       }
       if (model.settings) {

@@ -33,7 +33,7 @@ import { hasShowcases } from './model-row.utils';
     <tr
       [class]="
         'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ' +
-        (isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800')
+        (isEven() ? 'table-row-even' : 'table-row-odd')
       "
       (click)="toggleExpansion()"
     >
@@ -56,7 +56,7 @@ import { hasShowcases } from './model-row.utils';
       <td class="font-medium text-gray-900 dark:text-gray-100">
         <app-model-row-header [model]="model()" mode="compact" />
       </td>
-      <td class="text-gray-600 dark:text-gray-400 max-w-md truncate">
+      <td class="field-value max-w-md truncate">
         {{ model().description || '-' }}
       </td>
       <td>
@@ -70,10 +70,10 @@ import { hasShowcases } from './model-row.utils';
       </td>
       <td class="max-w-xs">
         @if (tags().length > 0) {
-          <span class="text-sm text-gray-600 dark:text-gray-400">
+          <span class="text-sm text-muted">
             {{ tags().slice(0, 3).join(', ') }}
             @if (tags().length > 3) {
-              <span class="text-gray-400 italic ml-1"> +{{ tags().length - 3 }} </span>
+              <span class="text-muted italic ml-1"> +{{ tags().length - 3 }} </span>
             }
           </span>
         } @else {
@@ -103,16 +103,31 @@ import { hasShowcases } from './model-row.utils';
 
     <!-- Expanded Details Row -->
     @if (expanded()) {
-      <tr [class]="isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800'">
+      <tr
+        [class]="
+          (isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800') +
+          ' detail-row'
+        "
+      >
         <td colspan="7">
-          <div class="space-y-3">
+          <div class="detail-section">
             <!-- Overview Header -->
-            <div class="card-overview px-2 py-2">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0">
+            <div class="card-overview">
+              <div class="detail-header">
+                <div class="detail-header-content">
                   <div class="flex items-center gap-2 mb-1">
-                    <svg class="card-overview-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    <svg
+                      class="card-overview-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      ></path>
                     </svg>
                     <h3 class="card-overview-title">
                       {{ model().name }}
@@ -122,7 +137,7 @@ import { hasShowcases } from './model-row.utils';
                     {{ model().description || 'No description available' }}
                   </p>
                 </div>
-                <div class="flex flex-col gap-1 items-end flex-shrink-0">
+                <div class="detail-header-meta">
                   @if (model().nsfw === true) {
                     <span class="badge badge-warning">NSFW</span>
                   } @else if (model().nsfw === false) {
@@ -131,7 +146,7 @@ import { hasShowcases } from './model-row.utils';
                     <span class="badge badge-secondary">Unknown</span>
                   }
                   @if (tags().length > 0) {
-                    <div class="flex flex-wrap gap-0.5 justify-end max-w-xs">
+                    <div class="tag-container">
                       @for (tag of tags(); track tag) {
                         <span class="tag tag-primary">{{ tag }}</span>
                       }

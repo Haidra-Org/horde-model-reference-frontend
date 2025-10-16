@@ -1,14 +1,16 @@
-<div class="p-4 space-y-4">
+<div class="page-container">
   <!-- Page Header -->
   <div class="card">
-    <div class="flex justify-between items-start px-6 py-4">
-      <div>
-        <h1 class="heading-page">{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Category: {{ category() }}</p>
+    <div class="card-header">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="heading-page">{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
+          <p class="text-muted text-sm mt-1">Category: {{ category() }}</p>
+        </div>
+        <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
+          Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
+        </button>
       </div>
-      <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
-        Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
-      </button>
     </div>
   </div>
 
@@ -20,7 +22,7 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
       <!-- Model Name Field -->
       <div class="card">
-        <div class="px-6 py-4">
+        <div class="card-body">
           <label for="name" class="form-label">
             Model Name *
             @if (isEditMode()) {
@@ -52,7 +54,11 @@
       <!-- Form or JSON View -->
       @if (viewMode() === 'form') {
         <div class="space-y-4">
-          <app-common-fields [data]="commonData()" (dataChange)="onCommonDataChange($event)" />
+          <app-common-fields
+            [data]="commonData()"
+            [category]="$any(category())"
+            (dataChange)="onCommonDataChange($event)"
+          />
 
           @if (isImageGeneration()) {
             <app-stable-diffusion-fields
@@ -79,7 +85,7 @@
         </div>
       } @else {
         <div class="card">
-          <div class="px-6 py-4">
+          <div class="card-body">
             <label for="jsonData" class="form-label">
               Model Data (JSON) *
               <span class="label-hint"> Name field will be added automatically </span>
@@ -108,17 +114,17 @@
       @if (validationIssues().length > 0) {
         <div class="card">
           <div class="card-header">
-            <h3 class="heading-section">Validation Results</h3>
+            <h3 class="heading-card">Validation Results</h3>
           </div>
-          <div class="card-body space-y-4">
+          <div class="card-body card-section">
             @if (groupedIssues().errors.length > 0) {
-              <div class="space-y-2">
-                <h4 class="text-sm font-semibold text-danger-700 dark:text-danger-400">
+              <div class="validation-section">
+                <h4 class="validation-heading-error">
                   Errors ({{ groupedIssues().errors.length }})
                 </h4>
-                <ul class="space-y-1">
+                <ul class="validation-list">
                   @for (issue of groupedIssues().errors; track $index) {
-                    <li class="text-sm text-danger-600 dark:text-danger-400">
+                    <li class="validation-list-item-error">
                       @if (issue.field) {
                         <strong class="font-medium">{{ issue.field }}:</strong>
                       }
@@ -130,13 +136,13 @@
             }
 
             @if (groupedIssues().warnings.length > 0) {
-              <div class="space-y-2">
-                <h4 class="text-sm font-semibold text-warning-700 dark:text-warning-400">
+              <div class="validation-section">
+                <h4 class="validation-heading-warning">
                   Warnings ({{ groupedIssues().warnings.length }})
                 </h4>
-                <ul class="space-y-1">
+                <ul class="validation-list">
                   @for (issue of groupedIssues().warnings; track $index) {
-                    <li class="text-sm text-warning-600 dark:text-warning-400">
+                    <li class="validation-list-item-warning">
                       @if (issue.field) {
                         <strong class="font-medium">{{ issue.field }}:</strong>
                       }
@@ -148,7 +154,7 @@
             }
 
             @if (groupedIssues().errors.length === 0 && groupedIssues().warnings.length === 0) {
-              <div class="text-sm text-success-600 dark:text-success-400 font-medium">
+              <div class="text-sm text-success-600 dark:text-success-300 font-medium">
                 No validation issues found
               </div>
             }
@@ -159,7 +165,7 @@
       <!-- Form Actions -->
       <div class="card">
         <div class="card-footer">
-          <div class="flex justify-end gap-3">
+          <div class="form-actions">
             <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
             <button
               type="submit"

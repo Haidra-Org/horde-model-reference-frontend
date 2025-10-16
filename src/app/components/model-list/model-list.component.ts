@@ -23,10 +23,20 @@ import {
   CATEGORY_STATS_CONFIG,
 } from '../../models/maps';
 import { ModelRowComponent } from './model-row.component';
+import {
+  getParameterHeatmapClass,
+  formatParametersInBillions,
+} from '../../utils/parameter-heatmap.utils';
+import {
+  StatModalComponent,
+  CountValuePair,
+  CountValueDescriptionTriple,
+  CountValueDetailTriple,
+} from './stat-modal.component';
 
 @Component({
   selector: 'app-model-list',
-  imports: [FormsModule, ModelRowComponent],
+  imports: [FormsModule, ModelRowComponent, StatModalComponent],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -42,7 +52,11 @@ export class ModelListComponent implements OnInit {
   readonly loading = signal(true);
   readonly searchTerm = signal('');
   readonly selectedTags = signal<string[]>([]);
+  readonly tagSearchTerm = signal('');
   readonly tagFilterOpen = signal(false);
+  readonly selectedParameterTags = signal<string[]>([]);
+  readonly parameterTagSearchTerm = signal('');
+  readonly parameterTagFilterOpen = signal(false);
   readonly showDetails = signal(false);
   readonly expandedModels = signal<Set<string>>(new Set());
   readonly expandedShowcases = signal<Set<string>>(new Set());
@@ -50,6 +64,12 @@ export class ModelListComponent implements OnInit {
   readonly deleteConfirmationInput = signal('');
   readonly modelJsonToShow = signal<LegacyRecordUnion | null>(null);
   readonly statDetailsToShow = signal<{ title: string; content: string } | null>(null);
+  readonly showParametersModal = signal(false);
+  readonly showBaselineModal = signal(false);
+  readonly showStyleModal = signal(false);
+  readonly showNsfwModal = signal(false);
+  readonly showTagsModal = signal(false);
+  readonly headerCollapsed = signal(false);
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
   readonly deleteAllowed = computed(
@@ -60,21 +80,71 @@ export class ModelListComponent implements OnInit {
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
   readonly isClip = computed(() => this.category() === 'clip');
 
+  private isParameterTag(tag: string): boolean {
+    // Match patterns like: 33b, 65b, 7B, 13B, 70b, etc.
+    return /^\d+\.?\d*[bB]$/.test(tag);
+  }
+
   readonly availableTags = computed(() => {
     const tagsSet = new Set<string>();
+    const isTextGen = this.isTextGeneration();
     this.models().forEach((model) => {
       if (isLegacyStableDiffusionRecord(model) && model.tags) {
         model.tags.forEach((tag) => tagsSet.add(tag));
       } else if (isLegacyTextGenerationRecord(model) && model.tags) {
-        model.tags.forEach((tag) => tagsSet.add(tag));
+        model.tags.forEach((tag) => {
+          // For text generation, exclude parameter count tags
+          if (!isTextGen || !this.isParameterTag(tag)) {
+            tagsSet.add(tag);
+          }
+        });
       }
     });
     return Array.from(tagsSet).sort();
   });
 
+  readonly availableParameterTags = computed(() => {
+    if (!this.isTextGeneration()) {
+      return [];
+    }
+    const paramTagsSet = new Set<string>();
+    this.models().forEach((model) => {
+      if (isLegacyTextGenerationRecord(model) && model.tags) {
+        model.tags.forEach((tag) => {
+          if (this.isParameterTag(tag)) {
+            paramTagsSet.add(tag);
+          }
+        });
+      }
+    });
+    // Sort parameter tags numerically
+    return Array.from(paramTagsSet).sort((a, b) => {
+      const numA = parseFloat(a);
+      const numB = parseFloat(b);
+      return numA - numB;
+    });
+  });
+
+  readonly filteredAvailableTags = computed(() => {
+    const search = this.tagSearchTerm().toLowerCase();
+    if (!search) {
+      return this.availableTags();
+    }
+    return this.availableTags().filter((tag) => tag.toLowerCase().includes(search));
+  });
+
+  readonly filteredAvailableParameterTags = computed(() => {
+    const search = this.parameterTagSearchTerm().toLowerCase();
+    if (!search) {
+      return this.availableParameterTags();
+    }
+    return this.availableParameterTags().filter((tag) => tag.toLowerCase().includes(search));
+  });
+
   readonly filteredModels = computed(() => {
     const search = this.searchTerm().toLowerCase();
     const selectedTags = this.selectedTags();
+    const selectedParameterTags = this.selectedParameterTags();
     let filtered = this.models();
 
     if (selectedTags.length > 0) {
@@ -83,6 +153,15 @@ export class ModelListComponent implements OnInit {
           return model.tags.some((tag) => selectedTags.includes(tag));
         } else if (isLegacyTextGenerationRecord(model) && model.tags) {
           return model.tags.some((tag) => selectedTags.includes(tag));
+        }
+        return false;
+      });
+    }
+
+    if (selectedParameterTags.length > 0) {
+      filtered = filtered.filter((model) => {
+        if (isLegacyTextGenerationRecord(model) && model.tags) {
+          return model.tags.some((tag) => selectedParameterTags.includes(tag));
         }
         return false;
       });
@@ -173,8 +252,8 @@ export class ModelListComponent implements OnInit {
       .map(([params, count]) => ({ params, count }))
       .sort((a, b) => b.count - a.count);
 
-    const topBuckets = sorted.slice(0, 20);
-    const otherCount = sorted.slice(20).reduce((sum, bucket) => sum + bucket.count, 0);
+    const topBuckets = sorted.slice(0, 100);
+    const otherCount = sorted.slice(100).reduce((sum, bucket) => sum + bucket.count, 0);
 
     return { topBuckets, otherCount };
   });
@@ -209,6 +288,101 @@ export class ModelListComponent implements OnInit {
     return CATEGORY_STATS_CONFIG[this.category()] ?? ['nsfw'];
   });
 
+  readonly hasParametersStats = computed(() => {
+    const config = this.categoryStatsConfig();
+    return config.includes('parameters') && this.parameterBucketStats().topBuckets.length > 0;
+  });
+
+  readonly baselineModalData = computed((): CountValueDescriptionTriple[] => {
+    return this.baselineStats().map((stat) => ({
+      count: stat.count,
+      value: this.getBaselineDisplayName(stat.baseline),
+      wrapperClass: 'badge badge-info',
+      description: this.getBaselineTooltip(stat.baseline),
+    }));
+  });
+
+  readonly styleModalData = computed((): CountValuePair[] => {
+    return this.styleStats().map((stat) => ({
+      count: stat.count,
+      value: stat.style,
+      wrapperClass: 'badge badge-info',
+    }));
+  });
+
+  readonly nsfwModalData = computed((): CountValueDescriptionTriple[] => {
+    const data: CountValueDescriptionTriple[] = [];
+    const stats = this.nsfwStats();
+    if (stats.nsfw > 0) {
+      data.push({
+        count: stats.nsfw,
+        value: 'NSFW',
+        wrapperClass: 'badge badge-warning',
+        description: 'Not Safe For Work',
+      });
+    }
+    if (stats.sfw > 0) {
+      data.push({
+        count: stats.sfw,
+        value: 'SFW',
+        wrapperClass: 'badge badge-success',
+        description: 'Safe For Work',
+      });
+    }
+    if (stats.unknown > 0) {
+      data.push({
+        count: stats.unknown,
+        value: 'Unknown',
+        wrapperClass: 'badge badge-secondary',
+        description: 'Content rating not specified',
+      });
+    }
+    return data;
+  });
+
+  readonly tagsModalData = computed((): CountValuePair[] => {
+    const tagCounts = new Map<string, number>();
+    const isTextGen = this.isTextGeneration();
+    this.filteredModels().forEach((model) => {
+      if (isLegacyStableDiffusionRecord(model) && model.tags) {
+        model.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));
+      } else if (isLegacyTextGenerationRecord(model) && model.tags) {
+        model.tags.forEach((tag) => {
+          // For text generation, exclude parameter count tags
+          if (!isTextGen || !this.isParameterTag(tag)) {
+            tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+          }
+        });
+      }
+    });
+    return Array.from(tagCounts.entries())
+      .map(([tag, count]) => ({
+        count,
+        value: tag,
+        wrapperClass: 'badge badge-primary',
+      }))
+      .sort((a, b) => b.count - a.count);
+  });
+
+  readonly parametersModalData = computed((): CountValueDetailTriple[] => {
+    const { topBuckets, otherCount } = this.parameterBucketStats();
+    const data: CountValueDetailTriple[] = topBuckets.map((bucket) => ({
+      count: bucket.count,
+      value: this.formatParametersInBillions(bucket.params),
+      wrapperClass: `pc-badge ${this.getParameterHeatmapClass(bucket.params)}`,
+      detail: bucket.params.toLocaleString(),
+    }));
+    if (otherCount > 0) {
+      data.push({
+        count: otherCount,
+        value: 'Other parameter counts',
+        detail: '',
+        isOtherRow: true,
+      });
+    }
+    return data;
+  });
+
   readonly allTags = computed(() => {
     const tags = new Set<string>();
     this.filteredModels().forEach((model) => {
@@ -239,9 +413,11 @@ export class ModelListComponent implements OnInit {
   }
 
   formatParametersInBillions(params: number): string {
-    return params >= 1_000_000_000
-      ? `${(params / 1_000_000_000).toFixed(0)}B`
-      : `${(params / 1_000_000).toFixed(0)}M`;
+    return formatParametersInBillions(params);
+  }
+
+  getParameterHeatmapClass(params: number): string {
+    return getParameterHeatmapClass(params);
   }
 
   getBaselineDisplayName(baseline: string): string {
@@ -249,43 +425,15 @@ export class ModelListComponent implements OnInit {
   }
 
   showBaselineDetails(): void {
-    const lines = this.baselineStats().map((stat) => {
-      const fullName = BASELINE_DISPLAY_MAP[stat.baseline] || stat.baseline;
-      const shortName = BASELINE_SHORTHAND_MAP[stat.baseline] || stat.baseline;
-      return `${shortName} = ${fullName}: ${stat.count} model${stat.count === 1 ? '' : 's'}`;
-    });
-    this.statDetailsToShow.set({
-      title: 'Baseline Breakdown',
-      content: lines.join('\n'),
-    });
+    this.showBaselineModal.set(true);
   }
 
   showTagsDetails(): void {
-    const tags = this.allTags();
-    this.statDetailsToShow.set({
-      title: `All Tags (${tags.length})`,
-      content: tags.join(', '),
-    });
+    this.showTagsModal.set(true);
   }
 
   showNsfwDetails(): void {
-    const stats = this.nsfwStats();
-    const lines: string[] = [];
-    if (stats.nsfw > 0) {
-      lines.push(`NSFW: ${stats.nsfw} model${stats.nsfw === 1 ? '' : 's'}`);
-    }
-    if (stats.sfw > 0) {
-      lines.push(`SFW (Safe for Work): ${stats.sfw} model${stats.sfw === 1 ? '' : 's'}`);
-    }
-    if (stats.unknown > 0) {
-      lines.push(
-        `Unknown: ${stats.unknown} model${stats.unknown === 1 ? '' : 's'} (content rating not specified)`,
-      );
-    }
-    this.statDetailsToShow.set({
-      title: 'Content Rating Breakdown',
-      content: lines.join('\n'),
-    });
+    this.showNsfwModal.set(true);
   }
 
   showSizeDetails(): void {
@@ -301,18 +449,7 @@ export class ModelListComponent implements OnInit {
   }
 
   showParametersDetails(): void {
-    const { topBuckets, otherCount } = this.parameterBucketStats();
-    const lines = topBuckets.map((bucket) => {
-      const formatted = this.formatParametersInBillions(bucket.params);
-      return `${formatted} (${bucket.params.toLocaleString()} parameters): ${bucket.count} model${bucket.count === 1 ? '' : 's'}`;
-    });
-    if (otherCount > 0) {
-      lines.push(`Other parameter counts: ${otherCount} model${otherCount === 1 ? '' : 's'}`);
-    }
-    this.statDetailsToShow.set({
-      title: 'Parameter Count Breakdown',
-      content: lines.join('\n'),
-    });
+    this.showParametersModal.set(true);
   }
 
   showRequirementsDetails(): void {
@@ -339,13 +476,7 @@ export class ModelListComponent implements OnInit {
   }
 
   showStyleDetails(): void {
-    const lines = this.styleStats().map((stat) => {
-      return `${stat.style}: ${stat.count} model${stat.count === 1 ? '' : 's'}`;
-    });
-    this.statDetailsToShow.set({
-      title: 'Style Breakdown',
-      content: lines.join('\n'),
-    });
+    this.showStyleModal.set(true);
   }
 
   formatRequirements(requirements: Record<string, unknown>): string {
@@ -471,12 +602,39 @@ export class ModelListComponent implements OnInit {
     this.selectedTags.set([]);
   }
 
+  toggleParameterTag(tag: string): void {
+    const current = this.selectedParameterTags();
+    if (current.includes(tag)) {
+      this.selectedParameterTags.set(current.filter((t) => t !== tag));
+    } else {
+      this.selectedParameterTags.set([...current, tag]);
+    }
+  }
+
+  isParameterTagSelected(tag: string): boolean {
+    return this.selectedParameterTags().includes(tag);
+  }
+
+  clearAllParameterTags(): void {
+    this.selectedParameterTags.set([]);
+  }
+
   toggleTagFilterDropdown(): void {
     this.tagFilterOpen.set(!this.tagFilterOpen());
   }
 
   closeTagFilterDropdown(): void {
     this.tagFilterOpen.set(false);
+    this.tagSearchTerm.set('');
+  }
+
+  toggleParameterTagFilterDropdown(): void {
+    this.parameterTagFilterOpen.set(!this.parameterTagFilterOpen());
+  }
+
+  closeParameterTagFilterDropdown(): void {
+    this.parameterTagFilterOpen.set(false);
+    this.parameterTagSearchTerm.set('');
   }
 
   toggleRowExpansion(modelName: string): void {
@@ -508,11 +666,7 @@ export class ModelListComponent implements OnInit {
   }
 
   hasShowcases(model: LegacyRecordUnion): boolean {
-    return (
-      isLegacyStableDiffusionRecord(model) &&
-      !!model.showcases &&
-      model.showcases.length > 0
-    );
+    return isLegacyStableDiffusionRecord(model) && !!model.showcases && model.showcases.length > 0;
   }
 
   toggleShowDetails(): void {
@@ -525,6 +679,10 @@ export class ModelListComponent implements OnInit {
     } else {
       this.expandedModels.set(new Set());
     }
+  }
+
+  toggleHeaderCollapsed(): void {
+    this.headerCollapsed.set(!this.headerCollapsed());
   }
 
   onImageError(event: Event): void {

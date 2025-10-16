@@ -5,6 +5,7 @@ import {
   isLegacyClipRecord,
 } from '../../models';
 import { formatSizeInGB, getObjectKeysLength } from './model-row.utils';
+import { formatParametersInBillions } from '../../utils/parameter-heatmap.utils';
 
 export type FieldType = 'text' | 'link' | 'array' | 'formatted';
 
@@ -21,8 +22,7 @@ export const STABLE_DIFFUSION_FIELDS: ModelFieldConfig[] = [
   {
     label: 'Baseline',
     type: 'text',
-    getValue: (model) =>
-      isLegacyStableDiffusionRecord(model) ? model.baseline : null,
+    getValue: (model) => (isLegacyStableDiffusionRecord(model) ? model.baseline : null),
   },
   {
     label: 'Model Version',
@@ -37,8 +37,7 @@ export const STABLE_DIFFUSION_FIELDS: ModelFieldConfig[] = [
   {
     label: 'Size',
     type: 'formatted',
-    getValue: (model) =>
-      isLegacyStableDiffusionRecord(model) ? model.size_on_disk_bytes : null,
+    getValue: (model) => (isLegacyStableDiffusionRecord(model) ? model.size_on_disk_bytes : null),
     formatValue: (value) =>
       value && typeof value === 'number' ? `${formatSizeInGB(value)} GB` : '-',
   },
@@ -46,15 +45,13 @@ export const STABLE_DIFFUSION_FIELDS: ModelFieldConfig[] = [
     label: 'Homepage',
     type: 'link',
     colspan: 4,
-    getValue: (model) =>
-      isLegacyStableDiffusionRecord(model) ? model.homepage : null,
+    getValue: (model) => (isLegacyStableDiffusionRecord(model) ? model.homepage : null),
   },
   {
     label: 'Triggers',
     type: 'array',
     colspan: 4,
-    getValue: (model) =>
-      isLegacyStableDiffusionRecord(model) ? model.trigger : null,
+    getValue: (model) => (isLegacyStableDiffusionRecord(model) ? model.trigger : null),
   },
 ];
 
@@ -62,8 +59,7 @@ export const TEXT_GENERATION_FIELDS: ModelFieldConfig[] = [
   {
     label: 'Baseline',
     type: 'text',
-    getValue: (model) =>
-      isLegacyTextGenerationRecord(model) ? model.baseline : null,
+    getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.baseline : null),
   },
   {
     label: 'Model Version',
@@ -73,10 +69,11 @@ export const TEXT_GENERATION_FIELDS: ModelFieldConfig[] = [
   {
     label: 'Parameters',
     type: 'formatted',
-    getValue: (model) =>
-      isLegacyTextGenerationRecord(model) ? model.parameters : null,
+    getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.parameters : null),
     formatValue: (value) =>
-      value && typeof value === 'number' ? value.toLocaleString() : '-',
+      value && typeof value === 'number'
+        ? `${formatParametersInBillions(value)} (${value.toLocaleString()})`
+        : '-',
   },
   {
     label: 'Type',
@@ -86,14 +83,12 @@ export const TEXT_GENERATION_FIELDS: ModelFieldConfig[] = [
   {
     label: 'Display Name',
     type: 'text',
-    getValue: (model) =>
-      isLegacyTextGenerationRecord(model) ? model.display_name : null,
+    getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.display_name : null),
   },
   {
     label: 'Model Name',
     type: 'text',
-    getValue: (model) =>
-      isLegacyTextGenerationRecord(model) ? model.model_name : null,
+    getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.model_name : null),
   },
   {
     label: 'Style',
@@ -104,9 +99,7 @@ export const TEXT_GENERATION_FIELDS: ModelFieldConfig[] = [
     label: 'Settings',
     type: 'formatted',
     getValue: (model) =>
-      isLegacyTextGenerationRecord(model) && model.settings
-        ? JSON.stringify(model.settings)
-        : null,
+      isLegacyTextGenerationRecord(model) && model.settings ? JSON.stringify(model.settings) : null,
     formatValue: (value) => {
       if (!value) return '-';
       try {
@@ -121,8 +114,7 @@ export const TEXT_GENERATION_FIELDS: ModelFieldConfig[] = [
     label: 'URL',
     type: 'link',
     colspan: 4,
-    getValue: (model) =>
-      isLegacyTextGenerationRecord(model) ? model.url : null,
+    getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.url : null),
   },
   {
     label: 'Features Not Supported',
@@ -136,8 +128,7 @@ export const CLIP_FIELDS: ModelFieldConfig[] = [
   {
     label: 'Pretrained Name',
     type: 'text',
-    getValue: (model) =>
-      isLegacyClipRecord(model) ? model.pretrained_name : null,
+    getValue: (model) => (isLegacyClipRecord(model) ? model.pretrained_name : null),
   },
   {
     label: 'Model Version',

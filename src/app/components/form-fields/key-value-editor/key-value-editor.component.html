@@ -1,4 +1,4 @@
-<fieldset class="space-y-3">
+<fieldset class="form-section">
   @if (label()) {
     <legend class="form-label">{{ label() }}</legend>
   }
@@ -6,7 +6,7 @@
   @if (pairs().length > 0) {
     <div class="space-y-2">
       @for (pair of pairs(); track pair.key) {
-        <div class="flex gap-2 items-center">
+        <div class="inline-item-row">
           <input
             type="text"
             class="form-input w-1/3"
@@ -24,7 +24,7 @@
           <span class="badge badge-secondary">{{ pair.valueType }}</span>
           <button
             type="button"
-            class="p-2 hover:bg-danger-50 dark:hover:bg-danger-900/20 text-danger-600 dark:text-danger-400 rounded transition-colors"
+            class="btn btn-sm btn-danger"
             (click)="removePair(pair.key)"
             title="Remove"
           >
@@ -35,7 +35,7 @@
     </div>
   }
 
-  <div class="flex gap-2 items-end">
+  <div class="inline-item-row items-end">
     <div class="flex-1">
       <input
         type="text"
