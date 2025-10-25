@@ -7,20 +7,22 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { GenericModelRecordOutput } from './genericModelRecordOutput';
 import { ImageGenerationModelRecordInputRequirementsValue } from './imageGenerationModelRecordInputRequirementsValue';
 import { ModelClassification } from './modelClassification';
-import { ImageGenerationModelRecordInput } from './imageGenerationModelRecordInput';
-import { Style } from './style';
-import { GenericModelRecordInput } from './genericModelRecordInput';
+import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
-import { TextGenerationModelRecordInput } from './textGenerationModelRecordInput';
-import { ControlNetModelRecordInput } from './controlNetModelRecordInput';
+import { ControlNetModelRecordOutput } from './controlNetModelRecordOutput';
+import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
+import { ImageGenerationModelRecordOutput } from './imageGenerationModelRecordOutput';
+import { TextGenerationModelRecordOutput } from './textGenerationModelRecordOutput';
 
 /**
  * A model record conforming to one of the category-specific schemas
  */
-export interface RequestBody {
+export interface ResponseReadV2ReferenceValue {
+  record_type: MODEL_REFERENCE_CATEGORY;
   name: string;
   description?: string;
   version?: string;
@@ -36,11 +38,13 @@ export interface RequestBody {
   trigger?: Array<string>;
   homepage?: string;
   nsfw: boolean;
-  style: Style;
+  style?: string;
   requirements?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue };
   size_on_disk_bytes?: number;
   parameters: number;
   display_name?: string;
   url?: string;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue };
+  controlnet_style: CONTROLNET_STYLE;
 }
+export namespace ResponseReadV2ReferenceValue {}

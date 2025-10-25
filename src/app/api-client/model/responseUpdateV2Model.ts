@@ -10,17 +10,19 @@
 import { GenericModelRecordOutput } from './genericModelRecordOutput';
 import { ImageGenerationModelRecordInputRequirementsValue } from './imageGenerationModelRecordInputRequirementsValue';
 import { ModelClassification } from './modelClassification';
-import { Style } from './style';
+import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { ControlNetModelRecordOutput } from './controlNetModelRecordOutput';
+import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 import { ImageGenerationModelRecordOutput } from './imageGenerationModelRecordOutput';
 import { TextGenerationModelRecordOutput } from './textGenerationModelRecordOutput';
 
 /**
  * A model record conforming to one of the category-specific schemas
  */
-export interface ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue {
+export interface ResponseUpdateV2Model {
+  record_type: MODEL_REFERENCE_CATEGORY;
   name: string;
   description?: string;
   version?: string;
@@ -36,11 +38,13 @@ export interface ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNam
   trigger?: Array<string>;
   homepage?: string;
   nsfw: boolean;
-  style: Style;
+  style?: string;
   requirements?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue };
   size_on_disk_bytes?: number;
   parameters: number;
   display_name?: string;
   url?: string;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue };
+  controlnet_style: CONTROLNET_STYLE;
 }
+export namespace ResponseUpdateV2Model {}

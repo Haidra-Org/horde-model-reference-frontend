@@ -8,19 +8,22 @@
  * Do not edit the class manually.
  */
 import { ModelClassification } from './modelClassification';
-import { Style } from './style';
+import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
+import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
  * A ControlNet model entry in the model reference.
  */
 export interface ControlNetModelRecordInput {
+  record_type?: MODEL_REFERENCE_CATEGORY;
   name: string;
   description?: string | null;
   version?: string | null;
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
-  style: Style;
+  controlnet_style: CONTROLNET_STYLE;
 }
+export namespace ControlNetModelRecordInput {}

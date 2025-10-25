@@ -34,10 +34,6 @@ export const LEGACY_FIXED_FIELDS: CategoryFixedFields = {
       reason:
         "The 'available' field is deprecated and should not be set by users. It's managed internally by the system.",
     },
-    download_all: {
-      value: false,
-      reason: "The 'download_all' field has a fixed default value of false for clip models.",
-    },
   },
 
   // Category-specific fixed fields
@@ -52,11 +48,24 @@ export const LEGACY_FIXED_FIELDS: CategoryFixedFields = {
         value: null,
         reason:
           "The 'min_bridge_version' field is deprecated and should not be set by users. It's managed internally by the system.",
-      }
+      },
+      download_all: {
+        value: false,
+        reason: "The 'download_all' field has a fixed default value of false.",
+      },
     },
     text_generation: {
+      download_all: {
+        value: false,
+        reason: "The 'download_all' field has a fixed default value of false.",
+      },
     },
-    clip: {},
+    clip: {
+      download_all: {
+        value: false,
+        reason: "The 'download_all' field has a fixed default value of false.",
+      },
+    },
   },
 };
 

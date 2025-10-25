@@ -7,6 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 
-export interface Style {}
+/**
+ * Response for /last_updated endpoint.
+ */
+export interface HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse {
+  last_updated: number | null;
+}

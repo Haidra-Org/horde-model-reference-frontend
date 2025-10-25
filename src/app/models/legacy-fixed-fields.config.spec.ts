@@ -71,7 +71,8 @@ describe('legacy-fixed-fields.config', () => {
       expect(hiddenFields).toContain('available');
       expect(hiddenFields).toContain('type');
       expect(hiddenFields).toContain('download_all');
-      expect(hiddenFields.length).toBe(3);
+      expect(hiddenFields).toContain('min_bridge_version');
+      expect(hiddenFields.length).toBe(4);
     });
 
     it('should return correct hidden field names for text_generation', () => {

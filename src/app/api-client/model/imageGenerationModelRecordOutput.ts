@@ -7,17 +7,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { KNOWN_IMAGE_GENERATION_BASELINE } from './kNOWNIMAGEGENERATIONBASELINE';
 import { ImageGenerationModelRecordInputRequirementsValue } from './imageGenerationModelRecordInputRequirementsValue';
 import { ModelClassification } from './modelClassification';
+import { MODEL_STYLE } from './mODELSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
-import { Baseline } from './baseline';
-import { Style1 } from './style1';
+import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
  * A model entry in the model reference.
  */
 export interface ImageGenerationModelRecordOutput {
+  record_type?: MODEL_REFERENCE_CATEGORY;
   name: string;
   description?: string | null;
   version?: string | null;
@@ -25,7 +27,7 @@ export interface ImageGenerationModelRecordOutput {
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
   inpainting?: boolean | null;
-  baseline: Baseline;
+  baseline: KNOWN_IMAGE_GENERATION_BASELINE;
   optimization?: string | null;
   tags?: Array<string> | null;
   showcases?: Array<string> | null;
@@ -33,7 +35,8 @@ export interface ImageGenerationModelRecordOutput {
   trigger?: Array<string> | null;
   homepage?: string | null;
   nsfw: boolean;
-  style?: Style1 | null;
+  style?: MODEL_STYLE | null;
   requirements?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
   size_on_disk_bytes?: number | null;
 }
+export namespace ImageGenerationModelRecordOutput {}

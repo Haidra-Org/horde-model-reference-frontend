@@ -1,7 +1,11 @@
 export * from './default.service';
 import { DefaultService } from './default.service';
-export * from './modelReferenceV1.service';
-import { ModelReferenceV1Service } from './modelReferenceV1.service';
-export * from './modelReferenceV2.service';
-import { ModelReferenceV2Service } from './modelReferenceV2.service';
-export const APIS = [DefaultService, ModelReferenceV1Service, ModelReferenceV2Service];
+export * from './metadata.service';
+import { MetadataService } from './metadata.service';
+export * from './v1.service';
+import { V1Service } from './v1.service';
+export * from './v1CreateUpdate.service';
+import { V1CreateUpdateService } from './v1CreateUpdate.service';
+export * from './v2.service';
+import { V2Service } from './v2.service';
+export const APIS = [DefaultService, MetadataService, V1Service, V1CreateUpdateService, V2Service];

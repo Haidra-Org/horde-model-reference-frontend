@@ -2,7 +2,6 @@ import { testEnvironment } from '../../environments/environment.test';
 import { ContainsMessage, ErrorResponse } from '../api-client';
 import {
   BackendCapabilities,
-  CategoryModelsResponse,
   LegacyClipRecord,
   LegacyConfigDownload,
   LegacyConfigFile,
@@ -15,7 +14,6 @@ import {
 } from './api.models';
 import {
   fetchOpenApiSchema,
-  getAllPaths,
   getAllSchemaNames,
   getEnumValues,
   getSchemaDefinition,
@@ -23,7 +21,6 @@ import {
   hasSchema,
   isInEnum,
   OpenApiSchema,
-  OpenApiSchemaDefinition,
   TEST_MODEL_NAMES,
   TEST_URLS,
   TEST_FILE_NAMES,

@@ -3,7 +3,15 @@
  * Provides a type-safe way to define form fields with various input types.
  */
 
-export type FormFieldType = 'text' | 'number' | 'url' | 'textarea' | 'select' | 'checkbox' | 'tag-input' | 'key-value';
+export type FormFieldType =
+  | 'text'
+  | 'number'
+  | 'url'
+  | 'textarea'
+  | 'select'
+  | 'checkbox'
+  | 'tag-input'
+  | 'key-value';
 
 export interface SelectOption {
   value: string;
@@ -37,8 +45,12 @@ export interface BaseFieldConfig<T = unknown> {
   wrapperClass?: string;
   /** Additional label text (e.g., warnings or hints) */
   labelSuffix?: string;
+  /** Help text explaining the field's purpose (shown below the input) */
+  helpText?: string;
   /** Function to determine if field should be hidden */
   isHidden?: () => boolean;
+  /** Function to determine if field should be shown (alternative to isHidden) */
+  showWhen?: () => boolean;
   /** Callback when field value changes */
   onChange: (value: T) => void;
 }
@@ -94,7 +106,8 @@ export interface TagInputFieldConfig extends BaseFieldConfig<string[]> {
 /**
  * Configuration for key-value editor fields
  */
-export interface KeyValueFieldConfig extends BaseFieldConfig<Record<string, KeyValueEditorValueType>> {
+export interface KeyValueFieldConfig
+  extends BaseFieldConfig<Record<string, KeyValueEditorValueType>> {
   type: 'key-value';
 }
 
@@ -120,6 +133,12 @@ export interface FormFieldGroup {
   fields: FormFieldConfig[];
   /** CSS grid class for layout (e.g., 'form-grid-2', 'form-grid-3') */
   gridClass?: string;
+  /** Whether this group should be collapsible */
+  collapsible?: boolean;
+  /** Whether this group starts collapsed (only applies if collapsible is true) */
+  defaultCollapsed?: boolean;
+  /** Help text for the entire group */
+  helpText?: string;
 }
 
 /**

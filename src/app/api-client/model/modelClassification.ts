@@ -7,13 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Purpose } from './purpose';
-import { Domain } from './domain';
+import { MODEL_PURPOSE } from './mODELPURPOSE';
+import { MODEL_DOMAIN } from './mODELDOMAIN';
 
 /**
  * Contains specific information about how to categorize a model.  This includes the model\'s `MODEL_DOMAIN` and `MODEL_PURPOSE`.
  */
 export interface ModelClassification {
-  domain: Domain;
-  purpose: Purpose;
+  domain: MODEL_DOMAIN;
+  purpose: MODEL_PURPOSE;
 }
+export namespace ModelClassification {}

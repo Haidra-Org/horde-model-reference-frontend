@@ -11,11 +11,13 @@ import { ImageGenerationModelRecordInputRequirementsValue } from './imageGenerat
 import { ModelClassification } from './modelClassification';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
+import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
  * A text generation model entry in the model reference.
  */
 export interface TextGenerationModelRecordOutput {
+  record_type?: MODEL_REFERENCE_CATEGORY;
   name: string;
   description?: string | null;
   version?: string | null;
@@ -31,3 +33,4 @@ export interface TextGenerationModelRecordOutput {
   tags?: Array<string> | null;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
 }
+export namespace TextGenerationModelRecordOutput {}
