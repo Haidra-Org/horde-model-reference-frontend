@@ -58,6 +58,37 @@ npm run build
 
 Build artifacts will be stored in the `dist/` directory.
 
+## API Client Generation
+
+The TypeScript Angular API client is automatically generated from the OpenAPI schema. To regenerate:
+
+```bash
+# Generate from backend service (must be running)
+npm run generate-client
+
+# Or use cached local schema (offline)
+npm run generate-client:local
+```
+
+The generation script automatically:
+
+- ✅ Discovers all SCREAMING_CASE enum names
+- ✅ Preserves exact enum naming (e.g., `MODEL_REFERENCE_CATEGORY.ts`)
+- ✅ Runs openapi-generator-cli with proper configuration
+- ✅ Formats generated code with Prettier
+
+**Documentation:**
+
+- [API Client Generation Guide](./API_CLIENT_GENERATION.md) - Complete guide
+- [Generation Scripts](./scripts/README.md) - Script documentation
+- [API Models](./src/app/models/README.md) - Using generated types
+
+**When to regenerate:**
+
+- After backend API changes (new endpoints, schemas, enums)
+- After pulling backend updates that affect the API
+- To update generated types to match latest OpenAPI spec
+
 ## Backend Requirements
 
 This frontend requires a running horde-model-reference backend service in PRIMARY mode with `canonical_format='legacy'` to enable write operations (create, update, delete).
@@ -81,7 +112,7 @@ The UI automatically detects the backend mode and adjusts available features acc
 
 ## Project Structure
 
-```
+```bash
 src/
 ├── app/
 │   ├── components/

@@ -164,6 +164,57 @@ function generateModelNameMappings(enumNames) {
 }
 
 /**
+ * Clean *.ts files from api and model folders before generation
+ */
+function cleanOutputFolders() {
+  console.log('\n🧹 Cleaning *.ts files from output folders...');
+  
+  const apiDir = path.join(OUTPUT_DIR, 'api');
+  const modelDir = path.join(OUTPUT_DIR, 'model');
+  
+  let deletedCount = 0;
+  
+  try {
+    // Clean *.ts files from api directory (only at this depth, not recursive)
+    if (fs.existsSync(apiDir)) {
+      const apiFiles = fs.readdirSync(apiDir);
+      for (const file of apiFiles) {
+        if (file.endsWith('.ts')) {
+          const filePath = path.join(apiDir, file);
+          const stats = fs.statSync(filePath);
+          if (stats.isFile()) {
+            fs.unlinkSync(filePath);
+            deletedCount++;
+          }
+        }
+      }
+      console.log(`   ✅ Cleaned ${apiDir}`);
+    }
+    
+    // Clean *.ts files from model directory (only at this depth, not recursive)
+    if (fs.existsSync(modelDir)) {
+      const modelFiles = fs.readdirSync(modelDir);
+      for (const file of modelFiles) {
+        if (file.endsWith('.ts')) {
+          const filePath = path.join(modelDir, file);
+          const stats = fs.statSync(filePath);
+          if (stats.isFile()) {
+            fs.unlinkSync(filePath);
+            deletedCount++;
+          }
+        }
+      }
+      console.log(`   ✅ Cleaned ${modelDir}`);
+    }
+    
+    console.log(`✅ Cleanup complete! (${deletedCount} .ts files removed)`);
+  } catch (error) {
+    console.error('⚠️  Failed to clean output folders:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Run openapi-generator-cli
  */
 function runGenerator(schemaSource, modelNameMappings) {
@@ -282,13 +333,16 @@ async function main() {
     // Step 3: Generate model name mappings
     const modelNameMappings = generateModelNameMappings(enumNames);
 
-    // Step 4: Run openapi-generator
+    // Step 4: Clean output folders
+    cleanOutputFolders();
+
+    // Step 5: Run openapi-generator
     runGenerator(schemaSource, modelNameMappings);
 
-    // Step 5: Run prettier
+    // Step 6: Run prettier
     runPrettier();
 
-    // Step 6: Save schema locally (if fetched from URL)
+    // Step 7: Save schema locally (if fetched from URL)
     saveSchemaLocally(schema);
 
     console.log('\n╔═══════════════════════════════════════════════════════════════╗');
