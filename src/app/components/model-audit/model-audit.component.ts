@@ -524,8 +524,8 @@ export class ModelAuditComponent implements OnInit {
       next: (referenceModels) => {
         const modelsWithParsing = isTextGen
           ? mergeMultipleModels(referenceModels, undefined, undefined, {
-              parseTextModelNames: true,
-            })
+            parseTextModelNames: true,
+          })
           : referenceModels.map((m) => ({ ...m }));
 
         const displayModels = isTextGen

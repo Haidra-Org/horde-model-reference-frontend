@@ -290,6 +290,13 @@ export class ModelFormComponent implements OnInit {
           selectedBackends: preservedBackends,
         });
       }
+
+      // Validate after a microtask to ensure all signals have propagated through child components
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
     } catch {
       this.notification.error('Invalid JSON format - cannot switch to form view');
       this.viewMode.set('json');
@@ -385,45 +392,60 @@ export class ModelFormComponent implements OnInit {
   onCommonDataChange(data: CommonFieldsData): void {
     this.commonData.set(data);
     if (this.viewMode() === 'form') {
-      const modelData = this.buildModelDataFromForm();
-      const issues = validateLegacyRecord(modelData);
-      this.validationIssues.set(issues);
+      // Use setTimeout to ensure signal has propagated through all computed dependencies
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
     }
   }
 
   onStableDiffusionDataChange(data: StableDiffusionFieldsData): void {
     this.stableDiffusionData.set(data);
     if (this.viewMode() === 'form') {
-      const modelData = this.buildModelDataFromForm();
-      const issues = validateLegacyRecord(modelData);
-      this.validationIssues.set(issues);
+      // Use setTimeout to ensure signal has propagated through all computed dependencies
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
     }
   }
 
   onTextGenerationDataChange(data: TextGenerationFieldsData): void {
     this.textGenerationData.set(data);
     if (this.viewMode() === 'form') {
-      const modelData = this.buildModelDataFromForm();
-      const issues = validateLegacyRecord(modelData);
-      this.validationIssues.set(issues);
+      // Use setTimeout to ensure signal has propagated through all computed dependencies
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
     }
   }
 
   onClipDataChange(data: ClipFieldsData): void {
     this.clipData.set(data);
     if (this.viewMode() === 'form') {
-      const modelData = this.buildModelDataFromForm();
-      const issues = validateLegacyRecord(modelData);
-      this.validationIssues.set(issues);
+      // Use setTimeout to ensure signal has propagated through all computed dependencies
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
     }
   }
 
   onSimplifiedDownloadsChange(data: DownloadRecord[]): void {
     this.simplifiedDownloads.set(data);
     if (this.viewMode() === 'form') {
-      const modelData = this.buildModelDataFromForm();
-      const issues = validateLegacyRecord(modelData);
-      this.validationIssues.set(issues);
+      // Use setTimeout to ensure signal has propagated through all computed dependencies
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
     }
   }
 
