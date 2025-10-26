@@ -1,10 +1,11 @@
-import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
   isLegacyTextGenerationRecord,
   isLegacyClipRecord,
 } from '../../models';
+import { UnifiedModelData, hasHordeData } from '../../models/unified-model';
 import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { getFieldsForModel, ModelFieldConfig } from './model-row-field.config';
 import { formatRequirements, hasRequirements, getObjectKeysLength } from './model-row.utils';
@@ -12,9 +13,13 @@ import {
   getParameterHeatmapClass,
   formatParametersInBillions,
 } from '../../utils/parameter-heatmap.utils';
+import { formatAsMegapixelsteps } from '../../utils/pixelstep-formatting.utils';
+import { TooltipDirective } from '../common/tooltip.directive';
+import { HordeApiService } from '../../services/horde-api.service';
 
 @Component({
   selector: 'app-model-row-fields',
+  imports: [TooltipDirective],
   template: `
     @if (mode() === 'grid') {
       <div class="grid xl:grid-cols-2 gap-2">
@@ -55,9 +60,122 @@ import {
           </div>
         </div>
 
+        <!-- Horde Status Card -->
+        @if (showHordeStatus() || isHordeLoading()) {
+          <div class="card">
+            <div class="card-header">
+              <h4 class="heading-card flex items-center gap-2">
+                <svg
+                  class="w-5 h-5 text-info-600 dark:text-info-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  ></path>
+                </svg>
+                Horde Status
+              </h4>
+            </div>
+            <div class="card-body">
+              @if (isHordeLoading()) {
+                <div class="flex items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                  <svg class="animate-spin h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Loading Horde status...</span>
+                </div>
+              } @else {
+              <div class="grid sm:grid-cols-2 gap-x-8 gap-y-4">
+                <div>
+                  <div class="field-label">Active Workers</div>
+                  <div class="field-value">
+                    <span class="badge" [class]="workerCountBadgeClass()">
+                      {{ model().workerCount ?? 0 }}
+                    </span>
+                  </div>
+                </div>
+                @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
+                  <div>
+                    <div class="field-label">Queued Jobs</div>
+                    <div class="field-value">{{ model().queuedJobs }} <span class="text-muted text-sm">{{ queuedJobsUnit() }}</span></div>
+                  </div>
+                }
+                @if (model().performance !== null && model().performance !== undefined) {
+                  <div>
+                    <div class="field-label">Performance</div>
+                    <div class="field-value">
+                      @if (isImageModel()) {
+                        <span [appTooltip]="performanceTooltip()">
+                          {{ performanceDisplay() }}
+                         <span class="text-muted text-sm">megapixelsteps</span>
+                        </span>
+                      } @else {
+                        {{ model().performance?.toFixed(2) }} <span class="text-muted text-sm">tokens/s</span>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (model().eta !== null && model().eta !== undefined) {
+                  <div>
+                    <div class="field-label">Estimated Wait Time</div>
+                    <div class="field-value">{{ etaDisplay() }}</div>
+                  </div>
+                }
+                @if (model().queued !== null && model().queued !== undefined) {
+                  <div>
+                    <div class="field-label">Queued {{ queuedUnit() }}</div>
+                    <div class="field-value">
+                      @if (isImageModel()) {
+                        <span [appTooltip]="queuedTooltip()">
+                          {{ queuedDisplay() }}
+                          <span class="text-muted text-sm">megapixelsteps</span>
+                        </span> 
+                      } @else {
+                        {{ model().queued?.toLocaleString() }} <span class="text-muted text-sm">tokens</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+              @if (model().usageStats) {
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div class="field-label mb-2">Usage Statistics</div>
+                  <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <div class="text-xs text-muted">Last 24h</div>
+                      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        {{ model().usageStats!.day.toLocaleString() }} <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-muted">Last 30d</div>
+                      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        {{ model().usageStats!.month.toLocaleString() }} <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-muted">All Time</div>
+                      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        {{ model().usageStats!.total.toLocaleString() }} <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+              }
+            </div>
+          </div>
+        }
+
         <!-- Links & Resources Card -->
         @if (linkFieldsWithValues().length > 0 || arrayFieldsWithValues().length > 0) {
-          <div class="card" [class.xl:col-span-2]="!showRequirements()">
+          <div class="card" [class.xl:col-span-2]="!showRequirements() && !showHordeStatus()">
             <div class="card-header">
               <h4 class="heading-card flex items-center gap-2">
                 <svg
@@ -189,15 +307,51 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModelRowFieldsComponent {
-  readonly model = input.required<LegacyRecordUnion>();
+  private readonly hordeApi = inject(HordeApiService);
+
+  readonly model = input.required<UnifiedModelData>();
   readonly mode = input<'grid' | 'card'>('grid');
 
-  readonly fields = computed(() => getFieldsForModel(this.model()));
+  readonly fields = computed(() => getFieldsForModel(this.model() as LegacyRecordUnion));
 
-  readonly showRequirements = computed(() => hasRequirements(this.model()));
+  readonly showRequirements = computed(() => hasRequirements(this.model() as LegacyRecordUnion));
+
+  readonly showHordeStatus = computed(() => hasHordeData(this.model()));
+
+  readonly isHordeLoading = computed(() => {
+    // Only show loading if we haven't loaded data yet and it's for a category that has Horde data
+    const hasData = hasHordeData(this.model());
+    const isLoading = this.hordeApi.isLoading();
+    // Show loading only when we're loading and don't have data yet
+    return isLoading && !hasData;
+  });
+
+  readonly workerCountBadgeClass = computed(() => {
+    const count = this.model().workerCount ?? 0;
+    return count > 0 ? 'badge-success' : 'badge-secondary';
+  });
+
+  readonly queuedUnit = computed(() => {
+    const model = this.model();
+    if (isLegacyStableDiffusionRecord(model as LegacyRecordUnion)) {
+      return 'megapixelsteps';
+    }
+    if (isLegacyTextGenerationRecord(model as LegacyRecordUnion)) {
+      return 'tokens';
+    }
+    return 'items';
+  });
+
+  readonly etaDisplay = computed(() => {
+    const eta = this.model().eta;
+    if (eta == null) return '-';
+    if (eta < 60) return `${Math.round(eta)}s`;
+    if (eta < 3600) return `${Math.round(eta / 60)}m`;
+    return `${Math.round(eta / 3600)}h`;
+  });
 
   readonly optimization = computed(() => {
-    const model = this.model();
+    const model = this.model() as LegacyRecordUnion;
     if (isLegacyStableDiffusionRecord(model) && model.optimization) {
       const opt = model.optimization.trim();
       return opt !== '' ? opt : null;
@@ -205,8 +359,52 @@ export class ModelRowFieldsComponent {
     return null;
   });
 
+  readonly isImageModel = computed(() => {
+    return isLegacyStableDiffusionRecord(this.model() as LegacyRecordUnion);
+  });
+
+  readonly performanceDisplay = computed(() => {
+    const performance = this.model().performance;
+    if (performance == null) return '-';
+    if (this.isImageModel()) {
+      return formatAsMegapixelsteps(performance);
+    }
+    return performance.toFixed(2);
+  });
+
+  readonly performanceTooltip = computed(() => {
+    return 'A typical image requires 20 steps on average.';
+  });
+
+  readonly queuedDisplay = computed(() => {
+    const queued = this.model().queued;
+    if (queued == null) return '-';
+    if (this.isImageModel()) {
+      return formatAsMegapixelsteps(queued);
+    }
+    return queued.toLocaleString();
+  });
+
+  readonly queuedTooltip = computed(() => {
+    return 'A megapixel is 1 million pixels (a 1024x1025 pixel image). A typical image requires 20 steps on average. Image generations take time proportional to the number of megapixelsteps times steps.';
+  });
+
+  readonly queuedJobsUnit = computed(() => {
+    if (this.isImageModel()) {
+      return 'images';
+    }
+    return 'requests';
+  });
+
+  readonly usageStatsUnit = computed(() => {
+    if (this.isImageModel()) {
+      return 'images';
+    }
+    return 'requests';
+  });
+
   readonly badges = computed(() => {
-    const model = this.model();
+    const model = this.model() as LegacyRecordUnion;
     const result: { label: string; value: string; class: string }[] = [];
 
     if (isLegacyStableDiffusionRecord(model)) {
@@ -334,13 +532,13 @@ export class ModelRowFieldsComponent {
   });
 
   getValue(field: ModelFieldConfig): string {
-    const value = field.getValue(this.model());
+    const value = field.getValue(this.model() as LegacyRecordUnion);
     if (value == null) return '';
     return String(value);
   }
 
   getArrayValue(field: ModelFieldConfig): string[] | null {
-    const value = field.getValue(this.model());
+    const value = field.getValue(this.model() as LegacyRecordUnion);
     if (Array.isArray(value)) {
       return value;
     }
@@ -348,7 +546,7 @@ export class ModelRowFieldsComponent {
   }
 
   getDisplayValue(field: ModelFieldConfig): string {
-    const rawValue = field.getValue(this.model());
+    const rawValue = field.getValue(this.model() as LegacyRecordUnion);
     if (rawValue == null) return '-';
 
     if (field.formatValue) {
@@ -366,7 +564,7 @@ export class ModelRowFieldsComponent {
   }
 
   getRequirementsText(): string {
-    const model = this.model();
+    const model = this.model() as LegacyRecordUnion;
     if (isLegacyStableDiffusionRecord(model) && model.requirements) {
       return formatRequirements(model.requirements);
     }

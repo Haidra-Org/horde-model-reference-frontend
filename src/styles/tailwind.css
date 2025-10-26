@@ -898,4 +898,88 @@
   .input-with-button input {
     @apply flex-1;
   }
+
+  /* Stat card value display */
+  .stat-card-value {
+    @apply text-2xl font-bold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  /* Help text for form fields */
+  .help-text {
+    @apply text-xs text-gray-500 mt-1;
+    @apply dark:text-gray-400;
+  }
+
+  /* Sticky section header with shadow */
+  .sticky-header {
+    @apply sticky top-0 z-40 flex flex-col gap-2 items-start;
+    @apply bg-gray-50 dark:bg-gray-900 pt-2 pb-4 -mx-4 px-4 shadow-md;
+    @apply before:absolute before:inset-x-0 before:bottom-full before:h-4;
+    @apply before:bg-gray-50 dark:before:bg-gray-900;
+  }
+
+  /* Filter dropdown container */
+  .filter-dropdown {
+    @apply absolute z-50 mt-1 w-64 bg-white dark:bg-gray-800;
+    @apply border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg;
+    @apply max-h-80 flex flex-col;
+  }
+
+  .filter-dropdown-header {
+    @apply p-2 border-b border-gray-200 dark:border-gray-700;
+    @apply flex justify-between items-center;
+  }
+
+  .filter-dropdown-search {
+    @apply p-2 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .filter-dropdown-content {
+    @apply p-2 overflow-y-auto flex-1;
+  }
+
+  .filter-dropdown-item {
+    @apply flex items-center px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer;
+  }
+
+  .filter-dropdown-backdrop {
+    @apply fixed inset-0 z-40;
+  }
+
+  /* Table styling additions */
+  .table {
+    @apply w-full border-collapse;
+  }
+
+  .table thead {
+    @apply bg-gray-50;
+    @apply dark:bg-gray-900;
+  }
+
+  .table th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider;
+    @apply dark:text-gray-300;
+  }
+
+  .table tbody {
+    @apply bg-white divide-y divide-gray-200;
+    @apply dark:bg-gray-800 dark:divide-gray-700;
+  }
+
+  .table td {
+    @apply px-4 py-3 text-sm text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  .table tbody tr {
+    @apply transition-colors;
+    @apply hover:bg-gray-100;
+    @apply dark:hover:bg-gray-700;
+  }
+
+  /* Form input sizing */
+  .form-input-sm {
+    @apply px-2 py-1 text-xs;
+  }
 }

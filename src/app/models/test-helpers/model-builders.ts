@@ -5,6 +5,8 @@
 import {
   ImageGenerationModelRecordOutput,
   TextGenerationModelRecordOutput,
+  KNOWN_IMAGE_GENERATION_BASELINE,
+  ModelClassification,
 } from '../../api-client';
 import { TEST_MODEL_NAMES, TEST_PARAMETERS } from './test-constants';
 
@@ -12,9 +14,9 @@ import { TEST_MODEL_NAMES, TEST_PARAMETERS } from './test-constants';
  * Builder pattern for creating ImageGenerationModelRecordOutput test data
  */
 export class ImageModelBuilder {
-  private model: Partial<ImageGenerationModelRecordOutput> = {
+  private model: ImageGenerationModelRecordOutput = {
     name: TEST_MODEL_NAMES.DEFAULT,
-    baseline: 'stable_diffusion_1',
+    baseline: 'stable_diffusion_1' as KNOWN_IMAGE_GENERATION_BASELINE,
     nsfw: false,
   };
 
@@ -23,7 +25,7 @@ export class ImageModelBuilder {
     return this;
   }
 
-  withBaseline(baseline: string): this {
+  withBaseline(baseline: KNOWN_IMAGE_GENERATION_BASELINE): this {
     this.model.baseline = baseline;
     return this;
   }
@@ -43,8 +45,13 @@ export class ImageModelBuilder {
     return this;
   }
 
+  withModelClassification(classification: ModelClassification): this {
+    this.model.model_classification = classification;
+    return this;
+  }
+
   build(): ImageGenerationModelRecordOutput {
-    return this.model as ImageGenerationModelRecordOutput;
+    return this.model;
   }
 }
 
@@ -52,7 +59,7 @@ export class ImageModelBuilder {
  * Builder pattern for creating TextGenerationModelRecordOutput test data
  */
 export class TextModelBuilder {
-  private model: Partial<TextGenerationModelRecordOutput> = {
+  private model: TextGenerationModelRecordOutput = {
     name: TEST_MODEL_NAMES.DEFAULT,
     parameters: TEST_PARAMETERS.LLAMA_7B,
   };
@@ -77,7 +84,12 @@ export class TextModelBuilder {
     return this;
   }
 
+  withModelClassification(classification: ModelClassification): this {
+    this.model.model_classification = classification;
+    return this;
+  }
+
   build(): TextGenerationModelRecordOutput {
-    return this.model as TextGenerationModelRecordOutput;
+    return this.model;
   }
 }

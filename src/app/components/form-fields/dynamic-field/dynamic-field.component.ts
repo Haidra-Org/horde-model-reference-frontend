@@ -72,10 +72,19 @@ export class DynamicFieldComponent {
   /**
    * Computed signal to determine if the field should be hidden.
    * Using a computed signal instead of a method avoids unnecessary change detection.
+   * A field is hidden if:
+   * - isHidden() returns true, OR
+   * - showWhen() exists and returns false
    */
   readonly isHidden = computed<boolean>(() => {
     const cfg = this.config();
-    return cfg.isHidden ? cfg.isHidden() : false;
+    if (cfg.isHidden && cfg.isHidden()) {
+      return true;
+    }
+    if (cfg.showWhen && !cfg.showWhen()) {
+      return true;
+    }
+    return false;
   });
 
   /**
@@ -124,7 +133,10 @@ export class DynamicFieldComponent {
   /**
    * Handle value changes for key-value editor
    */
-  onKeyValueChange(cfg: KeyValueFieldConfig, values: Record<string, KeyValueEditorValueType>): void {
+  onKeyValueChange(
+    cfg: KeyValueFieldConfig,
+    values: Record<string, KeyValueEditorValueType>,
+  ): void {
     cfg.onChange(values);
   }
 }

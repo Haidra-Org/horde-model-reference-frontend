@@ -40,7 +40,7 @@ export class CommonFieldsComponent {
 
   /**
    * Computed signal that generates all field configurations for the common fields form.
-   * This declaratively defines all fields using the builder pattern.
+   * This declaratively defines all fields using the builder pattern with helpful descriptions.
    */
   readonly fieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
     const category = this.category();
@@ -48,44 +48,52 @@ export class CommonFieldsComponent {
 
     return [
       // Description (full width)
-      FormFieldBuilder.textarea('description', 'Description', currentData.description || null, (value) =>
-        this.updateField('description', value),
+      FormFieldBuilder.textarea(
+        'description',
+        'Description',
+        currentData.description || null,
+        (value) => this.updateField('description', value),
       )
         .rows(3)
-        .placeholder('Brief description of the model')
+        .placeholder('Brief description of the model and its capabilities')
+        .helpText('A concise summary that helps users understand what this model does')
         .build(),
 
-      // Type, Version, Style (3-column grid)
+      // Basic Metadata
       FormFieldBuilder.group(
         [
           FormFieldBuilder.text('type', 'Type', currentData.type || null, (value) =>
             this.updateField('type', value),
           )
             .placeholder('e.g., ckpt')
+            .helpText('Model file type')
             .hideForCategory(category)
             .build(),
 
           FormFieldBuilder.text('version', 'Version', currentData.version || null, (value) =>
             this.updateField('version', value),
           )
-            .placeholder('e.g., 1.0')
+            .placeholder('e.g., 1.0, v2.1')
+            .helpText('Version identifier for this model release')
             .build(),
 
           FormFieldBuilder.text('style', 'Style', currentData.style || null, (value) =>
             this.updateField('style', value),
           )
-            .placeholder('e.g., realistic, anime')
+            .placeholder('e.g., realistic, anime, artistic')
+            .helpText('Visual or output style of the model')
             .build(),
         ],
         'form-grid-3',
       ),
 
-      // NSFW, Download All, Available (3-column grid)
+      // Content & Availability Settings
       FormFieldBuilder.group(
         [
           FormFieldBuilder.triStateBoolean('nsfw', 'NSFW', currentData.nsfw ?? null, (value) =>
             this.updateField('nsfw', value),
           )
+            .helpText('Whether this model is designed for or may generate NSFW content')
             .build(),
 
           FormFieldBuilder.triStateBoolean(
@@ -94,6 +102,7 @@ export class CommonFieldsComponent {
             currentData.download_all ?? null,
             (value) => this.updateField('download_all', value),
           )
+            .helpText('Whether to download all model variants')
             .hideForCategory(category)
             .build(),
 
@@ -104,21 +113,39 @@ export class CommonFieldsComponent {
             (value) => this.updateField('available', value),
           )
             .labelSuffix(' (usually should be unset)')
+            .helpText('Model availability status (leave unset to auto-detect)')
             .hideForCategory(category)
             .build(),
         ],
         'form-grid-3',
+        {
+          label: 'Content & Availability',
+          collapsible: true,
+          defaultCollapsed: false,
+        },
       ),
 
-      // Features Not Supported (tag input)
-      FormFieldBuilder.tagInput(
-        'features_not_supported',
-        'Features Not Supported',
-        currentData.features_not_supported || [],
-        (value) => this.updateField('features_not_supported', value.length > 0 ? value : null),
-      )
-        .placeholder('Add unsupported feature...')
-        .build(),
+      // Limitations
+      FormFieldBuilder.group(
+        [
+          FormFieldBuilder.tagInput(
+            'features_not_supported',
+            'Features Not Supported',
+            currentData.features_not_supported || [],
+            (value) => this.updateField('features_not_supported', value.length > 0 ? value : null),
+          )
+            .placeholder('Add unsupported feature...')
+            .helpText('List any features or capabilities that this model does not support')
+            .build(),
+        ],
+        undefined,
+        {
+          label: 'Limitations',
+          collapsible: true,
+          defaultCollapsed: true,
+          helpText: 'Document known limitations or unsupported features',
+        },
+      ),
     ];
   });
 

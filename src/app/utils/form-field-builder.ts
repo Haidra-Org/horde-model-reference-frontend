@@ -213,10 +213,23 @@ export class FormFieldBuilder {
   /**
    * Create a field group with grid layout
    */
-  static group(fields: FormFieldConfig[], gridClass?: string): FormFieldGroup {
+  static group(
+    fields: FormFieldConfig[],
+    gridClass?: string,
+    options?: {
+      label?: string;
+      collapsible?: boolean;
+      defaultCollapsed?: boolean;
+      helpText?: string;
+    },
+  ): FormFieldGroup {
     return {
       fields,
       gridClass,
+      label: options?.label,
+      collapsible: options?.collapsible,
+      defaultCollapsed: options?.defaultCollapsed,
+      helpText: options?.helpText,
     };
   }
 }
@@ -225,7 +238,7 @@ export class FormFieldBuilder {
  * Base builder class with common fluent methods
  */
 abstract class BaseFieldBuilder<T extends FormFieldConfig> {
-  constructor(protected config: T) { }
+  constructor(protected config: T) {}
 
   placeholder(text: string): this {
     this.config.placeholder = text;
@@ -239,6 +252,11 @@ abstract class BaseFieldBuilder<T extends FormFieldConfig> {
 
   labelSuffix(text: string): this {
     this.config.labelSuffix = text;
+    return this;
+  }
+
+  helpText(text: string): this {
+    this.config.helpText = text;
     return this;
   }
 
@@ -263,14 +281,22 @@ abstract class BaseFieldBuilder<T extends FormFieldConfig> {
     return this;
   }
 
+  /**
+   * Show this field only when a condition is true
+   */
+  showWhen(condition: () => boolean): this {
+    this.config.showWhen = condition;
+    return this;
+  }
+
   build(): T {
     return this.config;
   }
 }
 
-class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> { }
+class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> {}
 
-class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> { }
+class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> {}
 
 class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   rows(count: number): this {
@@ -279,7 +305,7 @@ class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   }
 }
 
-class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> { }
+class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> {}
 
 class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   checkboxLabel(text: string): this {
@@ -288,6 +314,6 @@ class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   }
 }
 
-class TagInputFieldBuilder extends BaseFieldBuilder<TagInputFieldConfig> { }
+class TagInputFieldBuilder extends BaseFieldBuilder<TagInputFieldConfig> {}
 
-class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> { }
+class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> {}

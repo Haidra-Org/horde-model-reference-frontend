@@ -6,16 +6,26 @@ import {
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
+import { HordeApiService } from '../../services/horde-api.service';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
   isLegacyTextGenerationRecord,
   isLegacyClipRecord,
 } from '../../models';
+import {
+  UnifiedModelData,
+  mergeMultipleModels,
+  createGroupedTextModels,
+  GroupedTextModel,
+  hasActiveWorkers,
+} from '../../models/unified-model';
+import { HordeModelType } from '../../models/horde-api.models';
 import {
   BASELINE_SHORTHAND_MAP,
   BASELINE_DISPLAY_MAP,
@@ -36,7 +46,7 @@ import {
 
 @Component({
   selector: 'app-model-list',
-  imports: [FormsModule, ModelRowComponent, StatModalComponent],
+  imports: [FormsModule, RouterLink, ModelRowComponent, StatModalComponent],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -44,13 +54,16 @@ export class ModelListComponent implements OnInit {
   readonly recordDisplayMap = RECORD_DISPLAY_MAP;
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
+  private readonly auth = inject(AuthService);
+  private readonly hordeApi = inject(HordeApiService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   readonly category = signal<string>('');
-  readonly models = signal<LegacyRecordUnion[]>([]);
+  readonly models = signal<(UnifiedModelData | GroupedTextModel)[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
+  readonly filterByActive = signal(false);
   readonly selectedTags = signal<string[]>([]);
   readonly tagSearchTerm = signal('');
   readonly tagFilterOpen = signal(false);
@@ -71,7 +84,9 @@ export class ModelListComponent implements OnInit {
   readonly showTagsModal = signal(false);
   readonly headerCollapsed = signal(false);
 
-  readonly writable = computed(() => this.api.backendCapabilities().writable);
+  readonly writable = computed(
+    () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
+  );
   readonly deleteAllowed = computed(
     () => this.deleteConfirmationInput().trim() === this.modelToDelete(),
   );
@@ -89,10 +104,11 @@ export class ModelListComponent implements OnInit {
     const tagsSet = new Set<string>();
     const isTextGen = this.isTextGeneration();
     this.models().forEach((model) => {
-      if (isLegacyStableDiffusionRecord(model) && model.tags) {
-        model.tags.forEach((tag) => tagsSet.add(tag));
-      } else if (isLegacyTextGenerationRecord(model) && model.tags) {
-        model.tags.forEach((tag) => {
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => tagsSet.add(tag));
+      } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => {
           // For text generation, exclude parameter count tags
           if (!isTextGen || !this.isParameterTag(tag)) {
             tagsSet.add(tag);
@@ -109,8 +125,9 @@ export class ModelListComponent implements OnInit {
     }
     const paramTagsSet = new Set<string>();
     this.models().forEach((model) => {
-      if (isLegacyTextGenerationRecord(model) && model.tags) {
-        model.tags.forEach((tag) => {
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => {
           if (this.isParameterTag(tag)) {
             paramTagsSet.add(tag);
           }
@@ -145,14 +162,20 @@ export class ModelListComponent implements OnInit {
     const search = this.searchTerm().toLowerCase();
     const selectedTags = this.selectedTags();
     const selectedParameterTags = this.selectedParameterTags();
+    const activeFilter = this.filterByActive();
     let filtered = this.models();
+
+    if (activeFilter) {
+      filtered = filtered.filter((model) => hasActiveWorkers(model));
+    }
 
     if (selectedTags.length > 0) {
       filtered = filtered.filter((model) => {
-        if (isLegacyStableDiffusionRecord(model) && model.tags) {
-          return model.tags.some((tag) => selectedTags.includes(tag));
-        } else if (isLegacyTextGenerationRecord(model) && model.tags) {
-          return model.tags.some((tag) => selectedTags.includes(tag));
+        const legacyModel = model as LegacyRecordUnion;
+        if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+          return legacyModel.tags.some((tag) => selectedTags.includes(tag));
+        } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+          return legacyModel.tags.some((tag) => selectedTags.includes(tag));
         }
         return false;
       });
@@ -160,8 +183,9 @@ export class ModelListComponent implements OnInit {
 
     if (selectedParameterTags.length > 0) {
       filtered = filtered.filter((model) => {
-        if (isLegacyTextGenerationRecord(model) && model.tags) {
-          return model.tags.some((tag) => selectedParameterTags.includes(tag));
+        const legacyModel = model as LegacyRecordUnion;
+        if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+          return legacyModel.tags.some((tag) => selectedParameterTags.includes(tag));
         }
         return false;
       });
@@ -169,13 +193,17 @@ export class ModelListComponent implements OnInit {
 
     if (search) {
       filtered = filtered.filter(
-        (model) =>
-          model.name.toLowerCase().includes(search) ||
-          model.description?.toLowerCase().includes(search) ||
-          (isLegacyStableDiffusionRecord(model) &&
-            model.baseline?.toLowerCase().includes(search)) ||
-          (isLegacyStableDiffusionRecord(model) &&
-            model.tags?.some((tag) => tag.toLowerCase().includes(search))),
+        (model) => {
+          const legacyModel = model as LegacyRecordUnion;
+          return (
+            model.name.toLowerCase().includes(search) ||
+            (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) ||
+            (isLegacyStableDiffusionRecord(legacyModel) &&
+              legacyModel.baseline?.toLowerCase().includes(search)) ||
+            (isLegacyStableDiffusionRecord(legacyModel) &&
+              legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search)))
+          );
+        }
       );
     }
 
@@ -187,11 +215,12 @@ export class ModelListComponent implements OnInit {
   readonly baselineStats = computed(() => {
     const baselineCounts = new Map<string, number>();
     this.filteredModels().forEach((model) => {
+      const legacyModel = model as LegacyRecordUnion;
       let baseline: string | undefined;
-      if (isLegacyStableDiffusionRecord(model)) {
-        baseline = model.baseline;
-      } else if (isLegacyTextGenerationRecord(model)) {
-        baseline = model.baseline ?? undefined;
+      if (isLegacyStableDiffusionRecord(legacyModel)) {
+        baseline = legacyModel.baseline;
+      } else if (isLegacyTextGenerationRecord(legacyModel)) {
+        baseline = legacyModel.baseline ?? undefined;
       }
       if (baseline) {
         baselineCounts.set(baseline, (baselineCounts.get(baseline) ?? 0) + 1);
@@ -205,10 +234,11 @@ export class ModelListComponent implements OnInit {
   readonly tagStats = computed(() => {
     const uniqueTags = new Set<string>();
     this.filteredModels().forEach((model) => {
-      if (isLegacyStableDiffusionRecord(model) && model.tags) {
-        model.tags.forEach((tag) => uniqueTags.add(tag));
-      } else if (isLegacyTextGenerationRecord(model) && model.tags) {
-        model.tags.forEach((tag) => uniqueTags.add(tag));
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => uniqueTags.add(tag));
+      } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => uniqueTags.add(tag));
       }
     });
     return uniqueTags.size;
@@ -219,9 +249,10 @@ export class ModelListComponent implements OnInit {
     let sfw = 0;
     let unknown = 0;
     this.filteredModels().forEach((model) => {
-      if (model.nsfw === true) {
+      const legacyModel = model as LegacyRecordUnion;
+      if (legacyModel.nsfw === true) {
         nsfw++;
-      } else if (model.nsfw === false) {
+      } else if (legacyModel.nsfw === false) {
         sfw++;
       } else {
         unknown++;
@@ -243,8 +274,9 @@ export class ModelListComponent implements OnInit {
   readonly parameterBucketStats = computed(() => {
     const parameterCounts = new Map<number, number>();
     this.filteredModels().forEach((model) => {
-      if (isLegacyTextGenerationRecord(model) && model.parameters) {
-        parameterCounts.set(model.parameters, (parameterCounts.get(model.parameters) ?? 0) + 1);
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.parameters) {
+        parameterCounts.set(legacyModel.parameters, (parameterCounts.get(legacyModel.parameters) ?? 0) + 1);
       }
     });
 
@@ -275,8 +307,9 @@ export class ModelListComponent implements OnInit {
   readonly styleStats = computed(() => {
     const styleCounts = new Map<string, number>();
     this.filteredModels().forEach((model) => {
-      if (model.style) {
-        styleCounts.set(model.style, (styleCounts.get(model.style) ?? 0) + 1);
+      const legacyModel = model as LegacyRecordUnion;
+      if (legacyModel.style) {
+        styleCounts.set(legacyModel.style, (styleCounts.get(legacyModel.style) ?? 0) + 1);
       }
     });
     return Array.from(styleCounts.entries())
@@ -344,10 +377,11 @@ export class ModelListComponent implements OnInit {
     const tagCounts = new Map<string, number>();
     const isTextGen = this.isTextGeneration();
     this.filteredModels().forEach((model) => {
-      if (isLegacyStableDiffusionRecord(model) && model.tags) {
-        model.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));
-      } else if (isLegacyTextGenerationRecord(model) && model.tags) {
-        model.tags.forEach((tag) => {
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));
+      } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => {
           // For text generation, exclude parameter count tags
           if (!isTextGen || !this.isParameterTag(tag)) {
             tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
@@ -386,10 +420,11 @@ export class ModelListComponent implements OnInit {
   readonly allTags = computed(() => {
     const tags = new Set<string>();
     this.filteredModels().forEach((model) => {
-      if (isLegacyStableDiffusionRecord(model) && model.tags) {
-        model.tags.forEach((tag) => tags.add(tag));
-      } else if (isLegacyTextGenerationRecord(model) && model.tags) {
-        model.tags.forEach((tag) => tags.add(tag));
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => tags.add(tag));
+      } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => tags.add(tag));
       }
     });
     return Array.from(tags).sort();
@@ -691,12 +726,62 @@ export class ModelListComponent implements OnInit {
       'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%272%27%3E%3Crect x=%273%27 y=%273%27 width=%2718%27 height=%2718%27 rx=%272%27/%3E%3Ccircle cx=%278.5%27 cy=%278.5%27 r=%271.5%27/%3E%3Cpath d=%27M21 15l-5-5L5 21%27/%3E%3C/svg%3E';
   }
 
+  private getCategoryHordeType(category: string): HordeModelType | null {
+    if (category === 'image_generation') {
+      return 'image';
+    }
+    if (category === 'text_generation') {
+      return 'text';
+    }
+    return null;
+  }
+
   private loadModels(): void {
     this.loading.set(true);
+    const hordeType = this.getCategoryHordeType(this.category());
+    const isTextGen = this.isTextGeneration();
+
     this.api.getLegacyModelsAsArray(this.category()).subscribe({
-      next: (models) => {
-        this.models.set(models);
+      next: (referenceModels) => {
+        // Parse text model names for text generation category
+        const modelsWithParsing = isTextGen
+          ? mergeMultipleModels(referenceModels, undefined, undefined, {
+            parseTextModelNames: true,
+          })
+          : referenceModels.map((m) => ({ ...m }));
+
+        // Group text models by base name
+        const displayModels = isTextGen
+          ? createGroupedTextModels(modelsWithParsing)
+          : modelsWithParsing;
+
+        // Immediately display reference models
+        this.models.set(displayModels);
         this.loading.set(false);
+
+        // Asynchronously fetch and merge Horde data if applicable
+        if (hordeType) {
+          this.hordeApi.getCombinedModelData(hordeType).subscribe({
+            next: ({ status, stats }) => {
+              const unifiedModels = mergeMultipleModels(
+                referenceModels,
+                status,
+                stats,
+                isTextGen ? { parseTextModelNames: true } : undefined
+              );
+
+              // Re-group text models with updated Horde data
+              const groupedModels = isTextGen
+                ? createGroupedTextModels(unifiedModels)
+                : unifiedModels;
+
+              this.models.set(groupedModels);
+            },
+            error: () => {
+              // Keep displaying reference models even if Horde API fails
+            },
+          });
+        }
       },
       error: (error: Error) => {
         this.notification.error(error.message);

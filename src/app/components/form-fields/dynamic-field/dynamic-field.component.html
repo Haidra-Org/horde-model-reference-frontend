@@ -1,66 +1,117 @@
 @if (!isHidden()) {
-<div class="form-field" [class]="config().wrapperClass">
-  @if (textConfig() || numberConfig() || textareaConfig() || selectConfig()) {
-  <label [for]="config().id" class="form-label">
-    {{ config().label }}
-    @if (config().required) {
-    <span class="text-red-500">*</span>
+  <div class="form-field" [class]="config().wrapperClass">
+    @if (textConfig() || numberConfig() || textareaConfig() || selectConfig()) {
+      <label [for]="config().id" class="form-label">
+        {{ config().label }}
+        @if (config().required) {
+          <span class="text-red-500">*</span>
+        }
+        @if (config().labelSuffix) {
+          <span class="label-warning">{{ config().labelSuffix }}</span>
+        }
+      </label>
     }
-    @if (config().labelSuffix) {
-    <span class="label-warning">{{ config().labelSuffix }}</span>
+
+    <!-- Text Input -->
+    @if (textConfig(); as cfg) {
+      <input
+        [id]="cfg.id"
+        [type]="cfg.type"
+        class="form-input"
+        [value]="cfg.value || ''"
+        [placeholder]="cfg.placeholder || ''"
+        [attr.aria-describedby]="cfg.helpText ? cfg.id + '-help' : null"
+        (blur)="onTextChange(cfg, $any($event.target).value)"
+      />
+      @if (cfg.helpText) {
+        <div [id]="cfg.id + '-help'" class="form-hint">{{ cfg.helpText }}</div>
+      }
     }
-  </label>
-  }
 
-  <!-- Text Input -->
-  @if (textConfig(); as cfg) {
-  <input [id]="cfg.id" [type]="cfg.type" class="form-input" [value]="cfg.value || ''"
-    [placeholder]="cfg.placeholder || ''" (blur)="onTextChange(cfg, $any($event.target).value)" />
-  }
-
-  <!-- Number Input -->
-  @if (numberConfig(); as cfg) {
-  <input [id]="cfg.id" type="number" class="form-input" [value]="cfg.value || ''" [placeholder]="cfg.placeholder || ''"
-    (blur)="onNumberChange(cfg, $any($event.target).value)" />
-  }
-
-  <!-- Textarea -->
-  @if (textareaConfig(); as cfg) {
-  <textarea [id]="cfg.id" class="form-textarea" [rows]="cfg.rows || 3" [value]="cfg.value || ''"
-    [placeholder]="cfg.placeholder || ''" (blur)="onTextareaChange(cfg, $any($event.target).value)"></textarea>
-  }
-
-  <!-- Select -->
-  @if (selectConfig(); as cfg) {
-  <select [id]="cfg.id" class="form-select" [value]="cfg.value"
-    (change)="onSelectChange(cfg, $any($event.target).value)">
-    @for (option of cfg.options; track option.value) {
-    <option [value]="option.value">{{ option.label }}</option>
+    <!-- Number Input -->
+    @if (numberConfig(); as cfg) {
+      <input
+        [id]="cfg.id"
+        type="number"
+        class="form-input"
+        [value]="cfg.value || ''"
+        [placeholder]="cfg.placeholder || ''"
+        [attr.aria-describedby]="cfg.helpText ? cfg.id + '-help' : null"
+        (blur)="onNumberChange(cfg, $any($event.target).value)"
+      />
+      @if (cfg.helpText) {
+        <div [id]="cfg.id + '-help'" class="form-hint">{{ cfg.helpText }}</div>
+      }
     }
-  </select>
-  }
 
-  <!-- Checkbox -->
-  @if (checkboxConfig(); as cfg) {
-  <label [for]="cfg.id" class="form-label">{{ cfg.label }}</label>
-  <div class="flex items-center gap-2 mt-2">
-    <input [id]="cfg.id" type="checkbox" class="form-checkbox" [checked]="cfg.value"
-      (change)="onCheckboxChange(cfg, $any($event.target).checked)" />
-    @if (cfg.checkboxLabel) {
-    <span class="checkbox-label">{{ cfg.checkboxLabel }}</span>
+    <!-- Textarea -->
+    @if (textareaConfig(); as cfg) {
+      <textarea
+        [id]="cfg.id"
+        class="form-textarea"
+        [rows]="cfg.rows || 3"
+        [value]="cfg.value || ''"
+        [placeholder]="cfg.placeholder || ''"
+        [attr.aria-describedby]="cfg.helpText ? cfg.id + '-help' : null"
+        (blur)="onTextareaChange(cfg, $any($event.target).value)"
+      ></textarea>
+      @if (cfg.helpText) {
+        <div [id]="cfg.id + '-help'" class="form-hint">{{ cfg.helpText }}</div>
+      }
+    }
+
+    <!-- Select -->
+    @if (selectConfig(); as cfg) {
+      <select
+        [id]="cfg.id"
+        class="form-select"
+        [value]="cfg.value"
+        [attr.aria-describedby]="cfg.helpText ? cfg.id + '-help' : null"
+        (change)="onSelectChange(cfg, $any($event.target).value)"
+      >
+        @for (option of cfg.options; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+      @if (cfg.helpText) {
+        <div [id]="cfg.id + '-help'" class="form-hint">{{ cfg.helpText }}</div>
+      }
+    }
+
+    <!-- Checkbox -->
+    @if (checkboxConfig(); as cfg) {
+      <label [for]="cfg.id" class="form-label">{{ cfg.label }}</label>
+      <div class="flex items-center gap-2 mt-2">
+        <input
+          [id]="cfg.id"
+          type="checkbox"
+          class="form-checkbox"
+          [checked]="cfg.value"
+          (change)="onCheckboxChange(cfg, $any($event.target).checked)"
+        />
+        @if (cfg.checkboxLabel) {
+          <span class="checkbox-label">{{ cfg.checkboxLabel }}</span>
+        }
+      </div>
+    }
+
+    <!-- Tag Input -->
+    @if (tagInputConfig(); as cfg) {
+      <app-tag-input
+        [label]="cfg.label"
+        [placeholder]="cfg.placeholder || 'Add item...'"
+        [values]="cfg.value"
+        (valuesChange)="onTagInputChange(cfg, $event)"
+      />
+    }
+
+    <!-- Key-Value Editor -->
+    @if (keyValueConfig(); as cfg) {
+      <app-key-value-editor
+        [label]="cfg.label"
+        [values]="cfg.value"
+        (valuesChange)="onKeyValueChange(cfg, $event)"
+      />
     }
   </div>
-  }
-
-  <!-- Tag Input -->
-  @if (tagInputConfig(); as cfg) {
-  <app-tag-input [label]="cfg.label" [placeholder]="cfg.placeholder || 'Add item...'" [values]="cfg.value"
-    (valuesChange)="onTagInputChange(cfg, $event)" />
-  }
-
-  <!-- Key-Value Editor -->
-  @if (keyValueConfig(); as cfg) {
-  <app-key-value-editor [label]="cfg.label" [values]="cfg.value" (valuesChange)="onKeyValueChange(cfg, $event)" />
-  }
-</div>
 }

@@ -1,6 +1,5 @@
 import {
   LegacyRecordUnion,
-  LegacyStableDiffusionRecord,
   isLegacyStableDiffusionRecord,
 } from '../../models';
 

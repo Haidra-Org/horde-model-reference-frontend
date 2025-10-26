@@ -70,3 +70,12 @@ fieldset {
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-gray-500);
 }
+
+/* Tooltip styles */
+.tooltip-trigger {
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}

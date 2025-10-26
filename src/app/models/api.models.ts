@@ -1,10 +1,7 @@
-import {
-  MODEL_REFERENCE_CATEGORY,
-  ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue,
-} from '../api-client';
+import { MODEL_REFERENCE_CATEGORY, ResponseReadV2ReferenceValue } from '../api-client';
 
 // Type aliases for convenience
-export type ModelRecord = ResponseGetReferenceByCategoryModelReferencesV2ModelCategoryNameGetValue;
+export type ModelRecord = ResponseReadV2ReferenceValue;
 export type ModelReferenceCategory = MODEL_REFERENCE_CATEGORY;
 
 // Custom response types

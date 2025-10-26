@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin, Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { LegacyRecordUnion, LegacyConfig, ModelReferenceCategory } from '../../models/api.models';
@@ -40,7 +42,19 @@ import {
   ClipFieldsComponent,
   ClipFieldsData,
 } from '../model-fields/clip-fields/clip-fields.component';
-import { ConfigFormSectionComponent } from '../form-fields/config-form-section/config-form-section.component';
+import { ConfigFormSectionSimplifiedComponent } from '../form-fields/config-form-section/config-form-section-simplified.component';
+import {
+  parseTextModelName,
+  buildTextModelName,
+  getModelNameVariations,
+  extractBackends,
+  TextBackend,
+} from '../../models/text-model-name';
+import { DownloadRecord } from '../../api-client';
+import {
+  legacyConfigToSimplified,
+  simplifiedToLegacyConfig,
+} from '../../utils/config-converter';
 
 @Component({
   selector: 'app-model-form',
@@ -50,7 +64,7 @@ import { ConfigFormSectionComponent } from '../form-fields/config-form-section/c
     StableDiffusionFieldsComponent,
     TextGenerationFieldsComponent,
     ClipFieldsComponent,
-    ConfigFormSectionComponent,
+    ConfigFormSectionSimplifiedComponent,
   ],
   templateUrl: './model-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +82,8 @@ export class ModelFormComponent implements OnInit {
   readonly loading = signal(false);
   readonly submitting = signal(false);
   readonly validationIssues = signal<ValidationIssue[]>([]);
+  // Store config-specific validation errors (e.g., unverified URLs)
+  private readonly configValidationErrors = signal<string[]>([]);
   readonly viewMode = signal<'form' | 'json'>('form');
 
   readonly commonData = signal<CommonFieldsData>({});
@@ -77,14 +93,70 @@ export class ModelFormComponent implements OnInit {
   });
   readonly textGenerationData = signal<TextGenerationFieldsData>({});
   readonly clipData = signal<ClipFieldsData>({});
-  readonly configData = signal<LegacyConfig | null>(null);
+  // Store simplified download records for form editing
+  readonly simplifiedDownloads = signal<DownloadRecord[]>([]);
+  // Store legacy files array to preserve when converting back
+  private readonly legacyFiles = signal<LegacyConfig['files']>([]);
 
   readonly isImageGeneration = computed(() => this.category() === 'image_generation');
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
   readonly isClip = computed(() => this.category() === 'clip');
 
-  readonly groupedIssues = computed(() => groupIssuesBySeverity(this.validationIssues()));
-  readonly hasErrors = computed(() => hasErrorIssues(this.validationIssues()));
+  readonly groupedIssues = computed(() => {
+    const backendIssues = this.validationIssues();
+    const configErrors = this.configValidationErrors();
+
+    // Convert config errors to ValidationIssue format
+    const configIssues: ValidationIssue[] = configErrors.map(error => ({
+      severity: 'error' as const,
+      field: 'config.download',
+      message: error,
+    }));
+
+    return groupIssuesBySeverity([...backendIssues, ...configIssues]);
+  });
+  readonly hasErrors = computed(() => {
+    const backendIssues = this.validationIssues();
+    const configErrors = this.configValidationErrors();
+    return hasErrorIssues(backendIssues) || configErrors.length > 0;
+  });
+
+  /**
+   * For text generation models, compute the model variations based on selected backends
+   */
+  readonly modelVariations = computed<{ name: string; data: LegacyRecordUnion }[]>(() => {
+    if (!this.isTextGeneration()) {
+      return [];
+    }
+
+    const baseModelName = this.form?.getRawValue().name || '';
+    const modelData = this.buildModelDataFromForm();
+    const selectedBackends = this.textGenerationData().selectedBackends || [];
+
+    const variations: { name: string; data: LegacyRecordUnion }[] = [];
+
+    // Always include base model (without backend prefix) if no backends selected
+    if (selectedBackends.length === 0) {
+      variations.push({
+        name: baseModelName,
+        data: { ...modelData, name: baseModelName },
+      });
+    } else {
+      // Create variation for each selected backend
+      for (const backend of selectedBackends) {
+        const variantName = buildTextModelName({
+          backend,
+          ...parseTextModelName(baseModelName),
+        });
+        variations.push({
+          name: variantName,
+          data: { ...modelData, name: variantName },
+        });
+      }
+    }
+
+    return variations;
+  });
 
   form!: FormGroup;
 
@@ -108,15 +180,40 @@ export class ModelFormComponent implements OnInit {
     this.router.navigate(['/categories', this.category()]);
   }
 
+  isBackendSelected(backend: string): boolean {
+    const selectedBackends = this.textGenerationData().selectedBackends || [];
+    return selectedBackends.includes(backend as TextBackend);
+  }
+
+  toggleBackend(backend: string): void {
+    const currentData = this.textGenerationData();
+    const selectedBackends = currentData.selectedBackends || [];
+    const backendValue = backend as TextBackend;
+
+    const newBackends = selectedBackends.includes(backendValue)
+      ? selectedBackends.filter((b) => b !== backendValue)
+      : [...selectedBackends, backendValue];
+
+    this.textGenerationData.set({
+      ...currentData,
+      selectedBackends: newBackends.length > 0 ? newBackends : undefined,
+    });
+  }
+
+  getVariationNames(): string {
+    return this.modelVariations().map((v) => v.name).join(', ');
+  }
+
   validateJson(): void {
     try {
-      const jsonData = JSON.parse(this.form.value.jsonData);
-      const modelName = this.form.value.name || 'new-model';
+      const formValue = this.form.getRawValue();
+      const jsonData = JSON.parse(formValue.jsonData);
+      const modelName = formValue.name || 'new-model';
       const modelData: LegacyRecordUnion = { name: modelName, ...jsonData };
 
       const issues = validateLegacyRecord(modelData);
       this.validationIssues.set(issues);
-    } catch (error) {
+    } catch {
       this.validationIssues.set([
         {
           message: 'Invalid JSON format',
@@ -138,39 +235,86 @@ export class ModelFormComponent implements OnInit {
   }
 
   syncFormToJson(): void {
-    const modelData = this.buildModelDataFromForm();
-    const { name, ...jsonData } = modelData;
-    this.form.patchValue({
-      jsonData: JSON.stringify(jsonData, null, 2),
-    });
-    this.validateJson();
+    if (this.isTextGeneration()) {
+      // For text generation with backend selection, show all variations
+      const variations = this.modelVariations();
+      if (variations.length > 1) {
+        const variationsJson = variations.map((v) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { name, ...jsonData } = v.data;
+          return { name: v.name, ...jsonData };
+        });
+        this.form.patchValue({
+          jsonData: JSON.stringify(variationsJson, null, 2),
+        });
+      } else {
+        const modelData = this.buildModelDataFromForm();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { name, ...jsonData } = modelData;
+        this.form.patchValue({
+          jsonData: JSON.stringify(jsonData, null, 2),
+        });
+      }
+    } else {
+      const modelData = this.buildModelDataFromForm();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { name, ...jsonData } = modelData;
+      this.form.patchValue({
+        jsonData: JSON.stringify(jsonData, null, 2),
+      });
+    }
+    // Delay validation to ensure all signals have propagated
+    setTimeout(() => this.validateJson(), 0);
   }
 
   syncJsonToForm(): void {
     try {
-      const jsonData = JSON.parse(this.form.value.jsonData);
-      const modelName = this.form.value.name || 'new-model';
+      // Preserve UI-only state before syncing
+      const preservedBackends = this.isTextGeneration()
+        ? this.textGenerationData().selectedBackends
+        : undefined;
+
+      const formValue = this.form.getRawValue();
+      const jsonData = JSON.parse(formValue.jsonData);
+      const modelName = formValue.name || 'new-model';
       const modelData: LegacyRecordUnion = { name: modelName, ...jsonData };
       this.populateFormFromModel(modelData);
-    } catch (error) {
+
+      // Restore preserved UI state
+      if (this.isTextGeneration() && preservedBackends) {
+        const currentData = this.textGenerationData();
+        this.textGenerationData.set({
+          ...currentData,
+          selectedBackends: preservedBackends,
+        });
+      }
+    } catch {
       this.notification.error('Invalid JSON format - cannot switch to form view');
       this.viewMode.set('json');
     }
   }
 
   buildModelDataFromForm(): LegacyRecordUnion {
-    const modelName = this.form.value.name;
-    const config = this.configData();
+    const modelName = this.form.getRawValue().name;
+    // Convert simplified downloads back to legacy config format
+    const legacyConfig = simplifiedToLegacyConfig(
+      { download: this.simplifiedDownloads() },
+      this.legacyFiles(),
+    );
+    const hasConfig = (legacyConfig.download?.length ?? 0) > 0 || (legacyConfig.files?.length ?? 0) > 0;
     const base: LegacyRecordUnion = {
       name: modelName,
       ...this.commonData(),
-      config: config !== null ? config : undefined,
+      config: hasConfig ? legacyConfig : undefined,
     };
 
     if (this.isImageGeneration()) {
       return { ...base, ...this.stableDiffusionData() };
     } else if (this.isTextGeneration()) {
-      return { ...base, ...this.textGenerationData() };
+      // Exclude selectedBackends from the model data
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { selectedBackends: _selectedBackends, ...textGenData } = this.textGenerationData();
+      return { ...base, ...textGenData };
     } else if (this.isClip()) {
       return { ...base, ...this.clipData() };
     }
@@ -191,8 +335,15 @@ export class ModelFormComponent implements OnInit {
     };
     this.commonData.set(common);
 
+    // Convert legacy config to simplified downloads for editing
     if (model.config) {
-      this.configData.set(model.config);
+      const simplified = legacyConfigToSimplified(model.config);
+      this.simplifiedDownloads.set(simplified.download);
+      // Preserve legacy files array (usually empty in new format)
+      this.legacyFiles.set(model.config.files || []);
+    } else {
+      this.simplifiedDownloads.set([]);
+      this.legacyFiles.set([]);
     }
 
     if (this.isImageGeneration() && isLegacyStableDiffusionRecord(model)) {
@@ -264,13 +415,17 @@ export class ModelFormComponent implements OnInit {
     }
   }
 
-  onConfigDataChange(data: LegacyConfig | null): void {
-    this.configData.set(data);
+  onSimplifiedDownloadsChange(data: DownloadRecord[]): void {
+    this.simplifiedDownloads.set(data);
     if (this.viewMode() === 'form') {
       const modelData = this.buildModelDataFromForm();
       const issues = validateLegacyRecord(modelData);
       this.validationIssues.set(issues);
     }
+  }
+
+  onConfigValidationErrors(errors: string[]): void {
+    this.configValidationErrors.set(errors);
   }
 
   onSubmit(): void {
@@ -279,16 +434,26 @@ export class ModelFormComponent implements OnInit {
       return;
     }
 
-    const modelName = this.form.value.name;
+    // For text generation with backends, handle multiple model creation
+    if (this.isTextGeneration() && this.viewMode() === 'form') {
+      this.submitTextGenerationWithBackends();
+    } else {
+      this.submitSingleModel();
+    }
+  }
+
+  private submitSingleModel(): void {
+    const formValue = this.form.getRawValue();
+    const modelName = formValue.name;
     let modelData: LegacyRecordUnion;
 
     if (this.viewMode() === 'form') {
       modelData = this.buildModelDataFromForm();
     } else {
       try {
-        const jsonData = JSON.parse(this.form.value.jsonData);
+        const jsonData = JSON.parse(formValue.jsonData);
         modelData = { name: modelName, ...jsonData };
-      } catch (error) {
+      } catch {
         this.notification.error('Invalid JSON format');
         return;
       }
@@ -325,10 +490,118 @@ export class ModelFormComponent implements OnInit {
     });
   }
 
+  private submitTextGenerationWithBackends(): void {
+    const variations = this.modelVariations();
+    const category = this.category() as ModelReferenceCategory;
+
+    // Validate all variations
+    const allIssues: ValidationIssue[] = [];
+    for (const variation of variations) {
+      const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
+      const issues = validateLegacyRecord(modelData);
+      allIssues.push(...issues);
+    }
+
+    this.validationIssues.set(allIssues);
+
+    if (hasErrorIssues(allIssues)) {
+      this.notification.error('Please fix validation errors before submitting');
+      return;
+    }
+
+    this.submitting.set(true);
+
+    if (this.isEditMode()) {
+      // In edit mode, we need to:
+      // 1. Determine which variations existed before
+      // 2. Delete variations that are no longer selected
+      // 3. Update existing variations
+      // 4. Create new variations
+      this.handleEditModeBackendChanges(variations);
+    } else {
+      // Create mode: just create all variations
+      this.createAllVariations(variations);
+    }
+  }
+
+  private createAllVariations(variations: { name: string; data: LegacyRecordUnion }[]): void {
+    const category = this.category() as ModelReferenceCategory;
+    const operations: Observable<unknown>[] = variations.map((variation) => {
+      const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
+      return this.api.createLegacyModel(category, variation.name, modelData);
+    });
+
+    forkJoin(operations).subscribe({
+      next: () => {
+        const count = variations.length;
+        this.notification.success(
+          `Successfully created ${count} model ${count === 1 ? 'entry' : 'entries'}`,
+        );
+        this.router.navigate(['/categories', this.category()]);
+      },
+      error: (error: Error) => {
+        this.notification.error(`Failed to create models: ${error.message}`);
+        this.submitting.set(false);
+      },
+    });
+  }
+
+  private handleEditModeBackendChanges(
+    newVariations: { name: string; data: LegacyRecordUnion }[],
+  ): void {
+    const category = this.category() as ModelReferenceCategory;
+    const baseModelName = this.form.getRawValue().name;
+
+    // First, fetch all existing models to determine what exists
+    this.api.getLegacyModelsInCategory(category).pipe(
+      switchMap((response) => {
+        const allModels = Object.values(response);
+        const variations = getModelNameVariations(baseModelName);
+        const existingVariations = allModels.filter((m) => variations.includes(m.name));
+
+        const existingNames = new Set(existingVariations.map((v) => v.name));
+        const newNames = new Set(newVariations.map((v) => v.name));
+
+        const operations: Observable<unknown>[] = [];
+
+        // Delete variations that no longer exist in selection
+        for (const existing of existingVariations) {
+          if (!newNames.has(existing.name)) {
+            operations.push(this.api.deleteModel(category, existing.name));
+          }
+        }
+
+        // Update or create variations
+        for (const variation of newVariations) {
+          const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
+          if (existingNames.has(variation.name)) {
+            // Update existing
+            operations.push(this.api.updateLegacyModel(category, variation.name, modelData));
+          } else {
+            // Create new
+            operations.push(this.api.createLegacyModel(category, variation.name, modelData));
+          }
+        }
+
+        return operations.length > 0 ? forkJoin(operations) : of([]);
+      }),
+    ).subscribe({
+      next: () => {
+        this.notification.success('Successfully updated model variations');
+        this.router.navigate(['/categories', this.category()]);
+      },
+      error: (error: Error) => {
+        this.notification.error(`Failed to update models: ${error.message}`);
+        this.submitting.set(false);
+      },
+    });
+  }
+
   private initFormForCreate(): void {
     const category = this.category() as ModelReferenceCategory;
     const defaultRecord = createDefaultRecordForCategory(category, 'new-model');
-    const { name, ...jsonData } = defaultRecord;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { name: _name, ...jsonData } = defaultRecord;
 
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_-]+$/)]],
@@ -342,7 +615,9 @@ export class ModelFormComponent implements OnInit {
     });
 
     this.populateFormFromModel(defaultRecord);
-    this.validateJson();
+
+    // Delay validation to allow signals to propagate
+    setTimeout(() => this.validateJson(), 0);
   }
 
   private initFormForEdit(modelName: string): void {
@@ -350,34 +625,108 @@ export class ModelFormComponent implements OnInit {
 
     this.api.getLegacyModelsInCategory(this.category()).subscribe({
       next: (response) => {
-        const model = response[modelName];
-        if (!model) {
-          this.notification.error(`Model "${modelName}" not found`);
-          this.router.navigate(['/categories', this.category()]);
-          return;
+        // For text generation, check if this is a grouped model with backend variations
+        if (this.isTextGeneration()) {
+          this.initFormForEditTextGeneration(modelName, response);
+        } else {
+          this.initFormForEditSingle(modelName, response);
         }
-
-        const { name, ...jsonData } = model;
-
-        this.form = this.fb.group({
-          name: [{ value: name, disabled: true }, Validators.required],
-          jsonData: [JSON.stringify(jsonData, null, 2), Validators.required],
-        });
-
-        this.form.get('jsonData')?.valueChanges.subscribe(() => {
-          if (this.viewMode() === 'json') {
-            this.validateJson();
-          }
-        });
-
-        this.populateFormFromModel(model);
-        this.validateJson();
-        this.loading.set(false);
       },
       error: (error: Error) => {
         this.notification.error(error.message);
         this.router.navigate(['/categories', this.category()]);
       },
     });
+  }
+
+  private initFormForEditSingle(modelName: string, response: Record<string, LegacyRecordUnion>): void {
+    const model = response[modelName];
+    if (!model) {
+      this.notification.error(`Model "${modelName}" not found`);
+      this.router.navigate(['/categories', this.category()]);
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { name: _modelName, ...jsonData } = model;
+
+    this.form = this.fb.group({
+      name: [{ value: model.name, disabled: true }, Validators.required],
+      jsonData: [JSON.stringify(jsonData, null, 2), Validators.required],
+    });
+
+    this.form.get('jsonData')?.valueChanges.subscribe(() => {
+      if (this.viewMode() === 'json') {
+        this.validateJson();
+      }
+    });
+
+    this.populateFormFromModel(model);
+
+    // Delay validation to allow signals to propagate
+    setTimeout(() => {
+      this.validateJson();
+      this.loading.set(false);
+    }, 0);
+  }
+
+  private initFormForEditTextGeneration(
+    modelName: string,
+    response: Record<string, LegacyRecordUnion>,
+  ): void {
+    // Find all variations of this model (with different backend prefixes)
+    const allModels = Object.values(response);
+    const parsed = parseTextModelName(modelName);
+    const baseModelName = buildTextModelName({
+      author: parsed.author,
+      modelName: parsed.modelName,
+    });
+
+    // Find all variations (models with same base name but different backends)
+    const variations = getModelNameVariations(modelName);
+    const existingVariations = allModels.filter((m) => variations.includes(m.name));
+
+    if (existingVariations.length === 0) {
+      this.notification.error(`Model "${modelName}" not found`);
+      this.router.navigate(['/categories', this.category()]);
+      return;
+    }
+
+    // Use the first variation as the primary model data
+    const primaryModel = existingVariations[0];
+
+    // Detect which backends currently exist
+    const existingBackends = extractBackends(existingVariations.map((v) => v.name));
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { name: _modelName, ...jsonData } = primaryModel;
+
+    this.form = this.fb.group({
+      name: [{ value: baseModelName, disabled: true }, Validators.required],
+      jsonData: [JSON.stringify(jsonData, null, 2), Validators.required],
+    });
+
+    this.form.get('jsonData')?.valueChanges.subscribe(() => {
+      if (this.viewMode() === 'json') {
+        this.validateJson();
+      }
+    });
+
+    this.populateFormFromModel(primaryModel);
+
+    // Set the existing backends as selected
+    if (isLegacyTextGenerationRecord(primaryModel)) {
+      const tgData = this.textGenerationData();
+      this.textGenerationData.set({
+        ...tgData,
+        selectedBackends: existingBackends,
+      });
+    }
+
+    // Delay validation to allow signals to propagate
+    setTimeout(() => {
+      this.validateJson();
+      this.loading.set(false);
+    }, 0);
   }
 }

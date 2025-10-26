@@ -1,0 +1,560 @@
+<div class="container mx-auto px-4 py-6">
+  <!-- Breadcrumb -->
+  <nav class="text-sm mb-4">
+    <ol class="flex items-center gap-2 text-muted">
+      <li><a [routerLink]="['/']" class="link">Home</a></li>
+      <li>›</li>
+      <li><a [routerLink]="['/categories', category()]" class="link">{{ recordDisplayName() }}</a></li>
+      <li>›</li>
+      <li class="text-gray-900 dark:text-gray-100">Audit</li>
+    </ol>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        Model Audit: {{ recordDisplayName() }}
+      </h1>
+      <p class="text-muted mt-1">
+        Evaluate model usage, availability, and deletion candidates
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" class="btn btn-secondary" (click)="viewModelList()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        View Full List
+      </button>
+      <button type="button" class="btn btn-primary" (click)="exportToCSV()" [disabled]="filteredCount() === 0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+          </path>
+        </svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="flex items-center justify-center py-16">
+    <svg class="animate-spin h-12 w-12 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
+    </svg>
+    <span class="ml-3 text-lg text-muted">Loading models...</span>
+  </div>
+  } @else {
+  <!-- Summary Dashboard -->
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+    <div class="stat-card stat-card--column">
+      <div class="stat-card-value">{{ totalModels() }}</div>
+      <div class="stat-card-label">Total Models</div>
+    </div>
+
+    <div class="stat-card stat-card--column">
+      <div class="stat-card-value text-success-600 dark:text-success-400">
+        {{ modelsWithWorkers() }}
+        <span class="text-sm text-muted ml-1">({{ ((modelsWithWorkers() / totalModels()) * 100).toFixed(1) }}%)</span>
+      </div>
+      <div class="stat-card-label">With Active Workers</div>
+    </div>
+
+    <div class="stat-card stat-card--column">
+      <div class="stat-card-value text-danger-600 dark:text-danger-400">
+        {{ modelsWithZeroMonthUsage() }}
+        <span class="text-sm text-muted ml-1">({{ ((modelsWithZeroMonthUsage() / totalModels()) * 100).toFixed(1)
+          }}%)</span>
+      </div>
+      <div class="stat-card-label">Zero 30d Usage</div>
+    </div>
+
+    <div class="stat-card stat-card--column">
+      <div class="stat-card-value">{{ averageUsagePercentage().toFixed(3) }}%</div>
+      <div class="stat-card-label">Avg 30d Usage %</div>
+    </div>
+
+    @if (totalDiskSpace() !== null) {
+    <div class="stat-card stat-card--column">
+      <div class="stat-card-value">{{ totalDiskSpace()!.toFixed(1) }} GB</div>
+      <div class="stat-card-label">Total Disk Space</div>
+    </div>
+    }
+
+    @if (flaggedDiskSpace() !== null) {
+    <div class="stat-card stat-card--column">
+      <div class="stat-card-value text-warning-600 dark:text-warning-400">
+        {{ flaggedDiskSpace()!.toFixed(1) }} GB
+      </div>
+      <div class="stat-card-label">Flagged Space</div>
+    </div>
+    }
+  </div>
+
+  <!-- Filter Panel -->
+  <div class="card mb-6">
+    <div class="card-header cursor-pointer" tabindex="0" role="button" (click)="showFilterPanel.set(!showFilterPanel())"
+      (keydown.enter)="showFilterPanel.set(!showFilterPanel())"
+      (keydown.space)="showFilterPanel.set(!showFilterPanel())">
+      <h3 class="heading-card flex items-center justify-between">
+        <span class="flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+            </path>
+          </svg>
+          Filters
+        </span>
+        <span class="text-sm">{{ showFilterPanel() ? '▼' : '▶' }}</span>
+      </h3>
+    </div>
+
+    @if (showFilterPanel()) {
+    <div class="card-body">
+      <!-- Filter Conflict Warning -->
+      @if (hasConflicts()) {
+      <div
+        class="bg-warning-50 dark:bg-warning-900/20 border border-warning-300 dark:border-warning-700 rounded-lg p-3 mb-3">
+        <div class="flex items-start gap-2">
+          <svg class="w-4 h-4 text-warning-600 dark:text-warning-400 flex-shrink-0 mt-0.5" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+            </path>
+          </svg>
+          <div class="flex-1">
+            <h4 class="font-semibold text-warning-900 dark:text-warning-100 text-sm mb-1">Filter Conflicts</h4>
+            <p class="text-xs text-warning-800 dark:text-warning-200">
+              Conflicting min/max values (ignored): {{ hasFilterConflicts().join(', ') }}
+            </p>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Quick Presets -->
+      @if (availablePresets().length > 0) {
+      <div class="mb-4">
+        <div class="form-label mb-1.5">Quick Filters</div>
+        <div class="flex flex-wrap gap-2">
+          @for (preset of availablePresets(); track preset.name) {
+          <button type="button" class="btn btn-sm"
+            [class]="preset.name === 'Show All' ? 'btn-secondary' : 'btn-primary'" (click)="applyPreset(preset.name)"
+            [title]="preset.description">
+            {{ preset.name }}
+          </button>
+          }
+        </div>
+      </div>
+      }
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Usage Percentage (Image Generation) -->
+        @if (availableFilters().includes('usagePercentage')) {
+        <div class="form-field">
+          <div class="form-label mb-1.5 flex items-center gap-2">
+            <input type="checkbox" class="form-checkbox" [ngModel]="enableUsagePercentageFilter()"
+              (ngModelChange)="enableUsagePercentageFilter.set($event)" title="Enable usage percentage filter" />
+            <span>30d Usage %</span>
+          </div>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <input id="min-usage-pct" type="number" class="form-input" [ngModel]="minUsagePercentage() ?? ''"
+                (ngModelChange)="minUsagePercentage.set($event === '' ? null : $event)" step="0.01" min="0" max="100" placeholder="Min"
+                title="Minimum 30-day usage percentage" [disabled]="!enableUsagePercentageFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Min <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMinUsagePercentage()" title="Clear minimum value"><em>(clear)</em></button>
+              </div>
+            </div>
+            <div class="flex-1">
+              <input id="max-usage-pct" type="number" class="form-input" [ngModel]="maxUsagePercentage() ?? ''"
+                (ngModelChange)="maxUsagePercentage.set($event === '' ? null : $event)" step="0.01" min="0" max="100" placeholder="Max"
+                title="Maximum 30-day usage percentage" [disabled]="!enableUsagePercentageFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Max <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMaxUsagePercentage()" title="Clear maximum value"><em>(clear)</em></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Month Usage (Image Generation) -->
+        @if (availableFilters().includes('monthUsage')) {
+        <div class="form-field">
+          <div class="form-label mb-1.5 flex items-center gap-2">
+            <input type="checkbox" class="form-checkbox" [ngModel]="enableMonthUsageFilter()"
+              (ngModelChange)="enableMonthUsageFilter.set($event)" title="Enable month usage filter" />
+            <span>30d Count</span>
+          </div>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <input id="min-month-usage" type="number" class="form-input" [ngModel]="minMonthUsage() ?? ''"
+                (ngModelChange)="minMonthUsage.set($event === '' ? null : $event)" min="0" placeholder="Min" title="Minimum 30-day usage count"
+                [disabled]="!enableMonthUsageFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Min <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMinMonthUsage()" title="Clear minimum value"><em>(clear)</em></button>
+              </div>
+            </div>
+            <div class="flex-1">
+              <input id="max-month-usage" type="number" class="form-input" [ngModel]="maxMonthUsage() ?? ''"
+                (ngModelChange)="maxMonthUsage.set($event === '' ? null : $event)" min="0" placeholder="Max" title="Maximum 30-day usage count"
+                [disabled]="!enableMonthUsageFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Max <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMaxMonthUsage()" title="Clear maximum value"><em>(clear)</em></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Worker Count (Image Generation) -->
+        @if (availableFilters().includes('workerCount')) {
+        <div class="form-field">
+          <div class="form-label mb-1.5 flex items-center gap-2">
+            <input type="checkbox" class="form-checkbox" [ngModel]="enableWorkerCountFilter()"
+              (ngModelChange)="enableWorkerCountFilter.set($event)" title="Enable worker count filter" />
+            <span>Workers</span>
+          </div>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <input id="min-worker-count" type="number" class="form-input" [ngModel]="minWorkerCount() ?? ''"
+                (ngModelChange)="minWorkerCount.set($event === '' ? null : $event)" min="0" placeholder="Min" title="Minimum worker count"
+                [disabled]="!enableWorkerCountFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Min <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMinWorkerCount()" title="Clear minimum value"><em>(clear)</em></button>
+              </div>
+            </div>
+            <div class="flex-1">
+              <input id="max-worker-count" type="number" class="form-input" [ngModel]="maxWorkerCount() ?? ''"
+                (ngModelChange)="maxWorkerCount.set($event === '' ? null : $event)" min="0" placeholder="Max" title="Maximum worker count"
+                [disabled]="!enableWorkerCountFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Max <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMaxWorkerCount()" title="Clear maximum value"><em>(clear)</em></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Total Usage (Text Generation) -->
+        @if (availableFilters().includes('totalUsage')) {
+        <div class="form-field">
+          <div class="form-label mb-1.5 flex items-center gap-2">
+            <input type="checkbox" class="form-checkbox" [ngModel]="enableTotalUsageFilter()"
+              (ngModelChange)="enableTotalUsageFilter.set($event)" title="Enable total usage filter" />
+            <span>Total Usage</span>
+          </div>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <input id="min-total-usage" type="number" class="form-input" [ngModel]="minTotalUsage() ?? ''"
+                (ngModelChange)="minTotalUsage.set($event === '' ? null : $event)" min="0" placeholder="Min"
+                title="Minimum total usage count (all time)" [disabled]="!enableTotalUsageFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Min <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMinTotalUsage()" title="Clear minimum value"><em>(clear)</em></button>
+              </div>
+            </div>
+            <div class="flex-1">
+              <input id="max-total-usage" type="number" class="form-input" [ngModel]="maxTotalUsage() ?? ''"
+                (ngModelChange)="maxTotalUsage.set($event === '' ? null : $event)" min="0" placeholder="Max"
+                title="Maximum total usage count (all time)" [disabled]="!enableTotalUsageFilter()" />
+              <div class="text-xs text-muted mt-0.5">
+                Max <button type="button" class="text-xs cursor-pointer border-0 bg-transparent p-0 hover:underline"
+                  (click)="clearMaxTotalUsage()" title="Clear maximum value"><em>(clear)</em></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- File Hosts, Baselines, and Flagged Only (second row) -->
+        @if (availableFilters().includes('hosts') || availableFilters().includes('baselines') ||
+        availableFilters().includes('flagged')) {
+        <div class="col-span-full grid md:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-4 items-start">
+          <!-- File Hosts -->
+          @if (availableFilters().includes('hosts')) {
+          <div class="form-field">
+            <div class="form-label mb-1.5">File Hosts</div>
+            <div class="flex flex-wrap gap-1.5">
+              @for (host of availableHosts(); track host) {
+              <button type="button" class="badge cursor-pointer badge-sm"
+                [class]="isHostSelected(host) ? getFileHostBadgeClass(host) : 'badge-secondary'"
+                (click)="toggleHostFilter(host)">
+                {{ host }}
+              </button>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- Baselines -->
+          @if (availableFilters().includes('baselines')) {
+          <div class="form-field">
+            <div class="form-label mb-1.5">Baselines</div>
+            <div class="flex flex-wrap gap-1.5">
+              @for (baseline of availableBaselines(); track baseline) {
+              <button type="button" class="badge cursor-pointer badge-sm"
+                [class]="isBaselineSelected(baseline) ? 'badge-info' : 'badge-secondary'"
+                (click)="toggleBaselineFilter(baseline)">
+                {{ getBaselineDisplayName(baseline) }}
+              </button>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- Show Flagged -->
+          @if (availableFilters().includes('flagged')) {
+          <div class="form-field flex items-center">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" [ngModel]="showOnlyFlagged()" (ngModelChange)="showOnlyFlagged.set($event)"
+                class="form-checkbox" />
+              <span class="form-label mb-0 whitespace-nowrap">Flagged Only</span>
+            </label>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <div class="flex justify-end mt-3">
+        <button type="button" class="btn btn-sm btn-secondary" (click)="resetFilters()">
+          Reset All
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Selection Summary -->
+  @if (selectedCount() > 0 || criticalCount() > 0 || warningCount() > 0) {
+  <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 flex items-center justify-between">
+    <div class="flex items-center gap-4 text-sm">
+      <span class="font-semibold text-gray-900 dark:text-gray-100">
+        {{ selectedCount() }} of {{ filteredCount() }} models selected
+      </span>
+      @if (selectedCriticalCount() > 0) {
+      <span class="text-danger-600 dark:text-danger-400">
+        {{ selectedCriticalCount() }} critical
+      </span>
+      }
+      @if (selectedWarningCount() > 0) {
+      <span class="text-warning-600 dark:text-warning-400">
+        {{ selectedWarningCount() }} warnings
+      </span>
+      }
+      <span class="text-muted">|</span>
+      <span class="text-danger-600 dark:text-danger-400">
+        {{ criticalCount() }} critical models
+      </span>
+      <span class="text-warning-600 dark:text-warning-400">
+        {{ warningCount() }} warnings
+      </span>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" class="btn btn-sm btn-secondary" (click)="selectAll()">
+        Select All
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="selectFlagged()">
+        Select Flagged
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="selectNone()">
+        Clear
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- Flag Legend -->
+  <div class="bg-info-50 dark:bg-info-900/20 border border-info-200 dark:border-info-800 rounded-lg p-4 mb-4">
+    <h4 class="font-semibold text-info-900 dark:text-info-100 mb-2">Flag Legend</h4>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">⚠️</span>
+        <span class="text-gray-700 dark:text-gray-300">No active workers</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🚫</span>
+        <span class="text-gray-700 dark:text-gray-300">Zero month usage</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🔗</span>
+        <span class="text-gray-700 dark:text-gray-300">Multiple hosts</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🌐</span>
+        <span class="text-gray-700 dark:text-gray-300">Non-preferred host</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">❓</span>
+        <span class="text-gray-700 dark:text-gray-300">Unknown host</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-lg">📥</span>
+        <span class="text-gray-700 dark:text-gray-300">No download URLs</span>
+      </div>
+    </div>
+    <p class="text-xs text-info-700 dark:text-info-300 mt-2">
+      <strong>Red border:</strong> Critical (zero month usage AND no workers) |
+      <strong>Yellow border:</strong> Warning (low usage, multiple hosts, or non-preferred host)
+    </p>
+  </div>
+
+  <!-- Models Table -->
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="w-12">
+              <input type="checkbox" class="form-checkbox"
+                [checked]="selectedCount() === filteredCount() && filteredCount() > 0"
+                (change)="selectedCount() === filteredCount() ? selectNone() : selectAll()" />
+            </th>
+            <th class="cursor-pointer" (click)="toggleSort('name')">
+              Model Name {{ getSortIcon('name') }}
+            </th>
+            <th class="cursor-pointer" (click)="toggleSort('baseline')">
+              Baseline {{ getSortIcon('baseline') }}
+            </th>
+            <th class="cursor-pointer text-right" (click)="toggleSort('workers')">
+              Workers {{ getSortIcon('workers') }}
+            </th>
+            <th class="cursor-pointer text-right" (click)="toggleSort('usageDay')">
+              Usage (24h) {{ getSortIcon('usageDay') }}
+            </th>
+            <th class="cursor-pointer text-right" (click)="toggleSort('usageMonth')">
+              Usage (30d) {{ getSortIcon('usageMonth') }}
+            </th>
+            <th class="cursor-pointer text-right" (click)="toggleSort('usageTotal')">
+              Usage (Total) {{ getSortIcon('usageTotal') }}
+            </th>
+            <th class="cursor-pointer text-right" (click)="toggleSort('usagePercentage')">
+              30d Usage % {{ getSortIcon('usagePercentage') }}
+            </th>
+            <th>File Hosts</th>
+            @if (isImageGeneration()) {
+            <th class="cursor-pointer text-right" (click)="toggleSort('sizeGB')">
+              Size (GB) {{ getSortIcon('sizeGB') }}
+            </th>
+            }
+            <th class="cursor-pointer text-center" (click)="toggleSort('flags')">
+              Flags {{ getSortIcon('flags') }}
+            </th>
+            <th class="w-32">Notes</th>
+            <th class="w-24">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (sortedFilteredModels().length === 0) {
+          <tr>
+            <td [attr.colspan]="isImageGeneration() ? 13 : 12" class="text-center py-8 text-muted">
+              No models match the current filters
+            </td>
+          </tr>
+          }
+          @for (item of sortedFilteredModels(); track item.model.name) {
+          <tr [class]="getRowClass(item)">
+            <td>
+              <input type="checkbox" class="form-checkbox" [checked]="isModelSelected(item.model.name)"
+                (change)="toggleModelSelection(item.model.name)" />
+            </td>
+            <td>
+              <button type="button" class="link text-left" (click)="editModel(item.model.name)">
+                {{ item.model.name }}
+              </button>
+            </td>
+            <td>
+              <span class="badge badge-info">{{ getBaselineDisplayName(item.baseline) }}</span>
+            </td>
+            <td class="text-right">
+              <span class="badge" [class]="(item.model.workerCount ?? 0) > 0 ? 'badge-success' : 'badge-secondary'">
+                {{ item.model.workerCount ?? 0 }}
+              </span>
+            </td>
+            <td class="text-right">{{ getUsageDay(item) }}</td>
+            <td class="text-right">{{ getUsageMonth(item) }}</td>
+            <td class="text-right">{{ getUsageTotal(item) }}</td>
+            <td class="text-right font-semibold">{{ item.usagePercentage.toFixed(3) }}%</td>
+            <td>
+              <div class="flex flex-wrap gap-1">
+                @for (host of item.fileHosts; track host) {
+                <span class="badge" [class]="getFileHostBadgeClass(host)">{{ host }}</span>
+                }
+                @if (item.fileHosts.length === 0) {
+                <span class="badge badge-secondary">None</span>
+                }
+              </div>
+            </td>
+            @if (isImageGeneration()) {
+            <td class="text-right">{{ item.sizeGB?.toFixed(2) ?? '-' }}</td>
+            }
+            <td class="text-center">
+              <div class="flex items-center justify-center gap-1 text-lg">
+                @if (item.flags.noActiveWorkers) { <span title="No active workers">⚠️</span> }
+                @if (item.flags.zeroUsageMonth) { <span title="Zero month usage">🚫</span> }
+                @if (item.flags.hasMultipleHosts) { <span title="Multiple hosts">🔗</span> }
+                @if (item.flags.hasNonPreferredHost) { <span title="Non-preferred host">🌐</span> }
+                @if (item.flags.hasUnknownHost) { <span title="Unknown host">❓</span> }
+                @if (item.flags.noDownloadUrls) { <span title="No download URLs">📥</span> }
+              </div>
+            </td>
+            <td>
+              <input type="text" class="form-input form-input-sm" placeholder="Coming soon..." disabled
+                title="Model-specific notes will be stored via API in future release" />
+            </td>
+            <td>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="editModel(item.model.name)">
+                Edit
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Help Panel -->
+  <div class="card mt-6">
+    <div class="card-header">
+      <h4 class="heading-card">Audit Criteria & Guidelines</h4>
+    </div>
+    <div class="card-body space-y-4">
+      <div>
+        <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Preferred File Hosts</h5>
+        <p class="text-sm text-muted">
+          Models hosted on HuggingFace (huggingface.co) are preferred for reliability and performance.
+          Models from other hosts may require additional review.
+        </p>
+      </div>
+      <div>
+        <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Deletion Risk Levels</h5>
+        <ul class="text-sm text-muted space-y-1 list-disc list-inside">
+          <li><strong class="text-danger-600 dark:text-danger-400">Critical:</strong> Zero 30-day usage AND no active
+            workers</li>
+          <li><strong class="text-warning-600 dark:text-warning-400">Warning:</strong> Below usage threshold, multiple
+            hosts, or non-preferred host</li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">30-Day Usage Percentage</h5>
+        <p class="text-sm text-muted">
+          Calculated as (model's 30-day usage / category's total 30-day usage) × 100.
+          Shows each model's share of the category's 30-day request volume.
+        </p>
+      </div>
+    </div>
+  </div>
+  }
+</div>

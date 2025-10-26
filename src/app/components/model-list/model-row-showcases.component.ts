@@ -1,4 +1,4 @@
-import { Component, input, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { onImageError } from './model-row.utils';
 
 @Component({
@@ -95,7 +95,7 @@ import { onImageError } from './model-row.utils';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModelRowShowcasesComponent {
+export class ModelRowShowcasesComponent implements OnInit {
   readonly showcases = input<string[] | null | undefined>();
   readonly modelName = input.required<string>();
   readonly layout = input<'grid' | 'card'>('grid');
