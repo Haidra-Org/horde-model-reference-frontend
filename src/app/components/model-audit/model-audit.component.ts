@@ -6,7 +6,9 @@ import {
   computed,
   effect,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
@@ -86,6 +88,7 @@ export class ModelAuditComponent implements OnInit {
   private readonly hordeApi = inject(HordeApiService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   // Expose constant for template
   readonly AUDIT_DEFAULTS_BY_CATEGORY = AUDIT_DEFAULTS_BY_CATEGORY;
@@ -497,7 +500,7 @@ export class ModelAuditComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const category = params['category'];
       if (category) {
         this.category.set(category);
@@ -517,7 +520,7 @@ export class ModelAuditComponent implements OnInit {
     const hordeType = this.getCategoryHordeType(this.category());
     const isTextGen = this.isTextGeneration();
 
-    this.api.getLegacyModelsAsArray(this.category()).subscribe({
+    this.api.getLegacyModelsAsArray(this.category()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (referenceModels) => {
         const modelsWithParsing = isTextGen
           ? mergeMultipleModels(referenceModels, undefined, undefined, {
@@ -533,7 +536,7 @@ export class ModelAuditComponent implements OnInit {
         this.loading.set(false);
 
         if (hordeType) {
-          this.hordeApi.getCombinedModelData(hordeType).subscribe({
+          this.hordeApi.getCombinedModelData(hordeType).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: ({ status, stats }) => {
               const unifiedModels = mergeMultipleModels(
                 referenceModels,

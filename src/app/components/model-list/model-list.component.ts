@@ -5,7 +5,9 @@ import {
   signal,
   computed,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
@@ -58,6 +60,7 @@ export class ModelListComponent implements OnInit {
   private readonly hordeApi = inject(HordeApiService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly category = signal<string>('');
   readonly models = signal<(UnifiedModelData | GroupedTextModel)[]>([]);
@@ -551,7 +554,7 @@ export class ModelListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const category = params['category'];
       if (category) {
         this.category.set(category);
@@ -606,7 +609,7 @@ export class ModelListComponent implements OnInit {
       return;
     }
 
-    this.api.deleteModel(this.category(), modelName).subscribe({
+    this.api.deleteModel(this.category(), modelName).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.notification.success(`Model "${modelName}" deleted successfully`);
         this.modelToDelete.set(null);
@@ -742,7 +745,7 @@ export class ModelListComponent implements OnInit {
     const hordeType = this.getCategoryHordeType(this.category());
     const isTextGen = this.isTextGeneration();
 
-    this.api.getLegacyModelsAsArray(this.category()).subscribe({
+    this.api.getLegacyModelsAsArray(this.category()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (referenceModels) => {
         // Parse text model names for text generation category
         const modelsWithParsing = isTextGen
@@ -762,7 +765,7 @@ export class ModelListComponent implements OnInit {
 
         // Asynchronously fetch and merge Horde data if applicable
         if (hordeType) {
-          this.hordeApi.getCombinedModelData(hordeType).subscribe({
+          this.hordeApi.getCombinedModelData(hordeType).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: ({ status, stats }) => {
               const unifiedModels = mergeMultipleModels(
                 referenceModels,
