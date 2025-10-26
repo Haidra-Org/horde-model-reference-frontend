@@ -1,4 +1,13 @@
-import { Component, input, output, signal, computed, effect, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  computed,
+  effect,
+  ChangeDetectionStrategy,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DownloadRecord } from '../../../api-client';
 import { createEmptyDownloadRecord } from '../../../utils/config-converter';
@@ -86,11 +95,13 @@ export class ConfigFormSectionSimplifiedComponent {
       });
 
       // Only update if states changed
-      if (newStates.size !== states.size ||
+      if (
+        newStates.size !== states.size ||
         Array.from(newStates.entries()).some(([key, val]) => {
           const oldVal = states.get(key);
           return !oldVal || JSON.stringify(oldVal) !== JSON.stringify(val);
-        })) {
+        })
+      ) {
         this.verificationStates.set(newStates);
       }
     });

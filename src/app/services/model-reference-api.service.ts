@@ -29,11 +29,7 @@ import {
   LegacySafetyCheckerRecordOutput,
   LegacyTextGenerationRecordOutput,
 } from '../api-client';
-import {
-  BackendCapabilities,
-  LegacyModelsResponse,
-  LegacyRecordUnion,
-} from '../models/api.models';
+import { BackendCapabilities, LegacyModelsResponse, LegacyRecordUnion } from '../models/api.models';
 
 type LegacyRecordInputUnion =
   | LegacyStableDiffusionRecordInput
@@ -110,9 +106,7 @@ export class ModelReferenceApiService {
     );
   }
 
-  getModelsInCategory(
-    category: string,
-  ): Observable<Record<string, ResponseReadV2ReferenceValue>> {
+  getModelsInCategory(category: string): Observable<Record<string, ResponseReadV2ReferenceValue>> {
     return this.v2Service.readV2Reference(category as MODEL_REFERENCE_CATEGORY).pipe(
       map((response: Record<string, ResponseReadV2ReferenceValue>) => {
         const result: Record<string, ResponseReadV2ReferenceValue> = {};
@@ -326,10 +320,12 @@ export class ModelReferenceApiService {
       );
     }
 
-    return this.v1CreateUpdateService.deleteLegacyModel(category as MODEL_REFERENCE_CATEGORY, modelName).pipe(
-      map(() => undefined),
-      catchError(this.handleError),
-    );
+    return this.v1CreateUpdateService
+      .deleteLegacyModel(category as MODEL_REFERENCE_CATEGORY, modelName)
+      .pipe(
+        map(() => undefined),
+        catchError(this.handleError),
+      );
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

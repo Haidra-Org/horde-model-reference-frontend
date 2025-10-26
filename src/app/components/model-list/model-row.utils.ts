@@ -1,7 +1,4 @@
-import {
-  LegacyRecordUnion,
-  isLegacyStableDiffusionRecord,
-} from '../../models';
+import { LegacyRecordUnion, isLegacyStableDiffusionRecord } from '../../models';
 
 export function getDownloadCount(model: LegacyRecordUnion): number {
   return model.config?.download?.length ?? 0;

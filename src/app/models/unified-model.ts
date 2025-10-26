@@ -164,7 +164,7 @@ export function mergeModelData<T extends { name: string }>(
   referenceData: T,
   hordeStatus?: HordeModelStatus[],
   hordeStats?: HordeModelStatsResponse,
-  options?: { parseTextModelNames?: boolean }
+  options?: { parseTextModelNames?: boolean },
 ): UnifiedModelData {
   const unified: UnifiedModelData = { ...referenceData };
 
@@ -175,7 +175,7 @@ export function mergeModelData<T extends { name: string }>(
 
   if (hordeStatus) {
     const status = hordeStatus.find(
-      (s) => s.name.toLowerCase() === referenceData.name?.toLowerCase()
+      (s) => s.name.toLowerCase() === referenceData.name?.toLowerCase(),
     );
     if (status) {
       unified.workerCount = status.count;
@@ -227,16 +227,14 @@ export function mergeMultipleModels<T extends { name: string }>(
   referenceModels: T[],
   hordeStatus?: HordeModelStatus[],
   hordeStats?: HordeModelStatsResponse,
-  options?: { parseTextModelNames?: boolean }
+  options?: { parseTextModelNames?: boolean },
 ): UnifiedModelData[] {
-  return referenceModels.map((model) =>
-    mergeModelData(model, hordeStatus, hordeStats, options)
-  );
+  return referenceModels.map((model) => mergeModelData(model, hordeStatus, hordeStats, options));
 }
 
 export function sortByWorkerCount(
   models: UnifiedModelData[],
-  descending = true
+  descending = true,
 ): UnifiedModelData[] {
   return [...models].sort((a, b) => {
     const aCount = a.workerCount ?? 0;
@@ -247,7 +245,7 @@ export function sortByWorkerCount(
 
 export function sortByUsageTotal(
   models: UnifiedModelData[],
-  descending = true
+  descending = true,
 ): UnifiedModelData[] {
   return [...models].sort((a, b) => {
     const aTotal = a.usageStats?.total ?? 0;
@@ -258,7 +256,7 @@ export function sortByUsageTotal(
 
 export function filterByMinWorkerCount(
   models: UnifiedModelData[],
-  minCount: number
+  minCount: number,
 ): UnifiedModelData[] {
   return models.filter((m) => (m.workerCount ?? 0) >= minCount);
 }
@@ -273,14 +271,12 @@ export function hasHordeData(model: UnifiedModelData): boolean {
 
 export function getWorkersForModel(
   modelName: string,
-  workers: HordeWorker[]
+  workers: HordeWorker[],
 ): HordeWorkerSummary[] {
   const lowerModelName = modelName.toLowerCase();
 
   return workers
-    .filter((worker) =>
-      worker.models.some((m) => m.toLowerCase() === lowerModelName)
-    )
+    .filter((worker) => worker.models.some((m) => m.toLowerCase() === lowerModelName))
     .map((worker) => ({
       id: worker.id,
       name: worker.name,
@@ -296,7 +292,7 @@ export function associateWorkersWithModels<T extends { name: string }>(
   workers: HordeWorker[],
   hordeStatus?: HordeModelStatus[],
   hordeStats?: HordeModelStatsResponse,
-  options?: { parseTextModelNames?: boolean }
+  options?: { parseTextModelNames?: boolean },
 ): UnifiedModelData[] {
   return referenceModels.map((model) => {
     const unified = mergeModelData(model, hordeStatus, hordeStats, options);
@@ -317,16 +313,12 @@ export function hasActiveWorkers(model: UnifiedModelData): boolean {
   }
 
   // Fall back to checking the detailed workers array if available
-  return (
-    !!model.workers &&
-    model.workers.length > 0 &&
-    model.workers.some((w) => w.online)
-  );
+  return !!model.workers && model.workers.length > 0 && model.workers.some((w) => w.online);
 }
 
 /**
  * Get the base model name for display purposes (without backend prefix)
- * 
+ *
  * @param model The unified model data
  * @returns The base model name to display
  */
@@ -339,20 +331,18 @@ export function getDisplayName(model: UnifiedModelData): string {
 
 /**
  * Group text generation models by their base name (collapsing backend and author variations)
- * 
+ *
  * @param models Array of unified model data
  * @returns Map of base names to arrays of model variations
  */
 export function groupTextModelsByBaseName(
-  models: UnifiedModelData[]
+  models: UnifiedModelData[],
 ): Map<string, UnifiedModelData[]> {
   const groups = new Map<string, UnifiedModelData[]>();
 
   for (const model of models) {
     // Group by just the final model name component (no backend, no author)
-    const baseName = model.parsedName
-      ? getBaseModelName(model.name)
-      : model.name;
+    const baseName = model.parsedName ? getBaseModelName(model.name) : model.name;
 
     if (!groups.has(baseName)) {
       groups.set(baseName, []);
@@ -365,19 +355,17 @@ export function groupTextModelsByBaseName(
 
 /**
  * Get all backend variations available for a text model
- * 
+ *
  * @param models Array of unified model data
  * @param baseModelName The base model name to find variations for
  * @returns Array of models matching the base name
  */
 export function getBackendVariations(
   models: UnifiedModelData[],
-  baseModelName: string
+  baseModelName: string,
 ): UnifiedModelData[] {
   return models.filter((model) => {
-    const modelBaseName = model.parsedName
-      ? getBaseModelName(model.name)
-      : model.name;
+    const modelBaseName = model.parsedName ? getBaseModelName(model.name) : model.name;
     return modelBaseName.toLowerCase() === baseModelName.toLowerCase();
   });
 }
@@ -385,19 +373,17 @@ export function getBackendVariations(
 /**
  * Find a model by checking all possible name variations
  * Useful for finding text models that might have different backend prefixes
- * 
+ *
  * @param models Array of unified model data
  * @param searchName The name to search for (can include or exclude backend)
  * @returns The matching model or undefined
  */
 export function findModelByNameVariation(
   models: UnifiedModelData[],
-  searchName: string
+  searchName: string,
 ): UnifiedModelData | undefined {
   // First try exact match
-  const exactMatch = models.find(
-    (m) => m.name.toLowerCase() === searchName.toLowerCase()
-  );
+  const exactMatch = models.find((m) => m.name.toLowerCase() === searchName.toLowerCase());
   if (exactMatch) {
     return exactMatch;
   }
@@ -429,13 +415,11 @@ export function findModelByNameVariation(
 
 /**
  * Merge stats from multiple backend variations of the same model
- * 
+ *
  * @param models Array of model variations for the same base model
  * @returns Aggregated stats across all variations
  */
-export function aggregateModelVariations(
-  models: UnifiedModelData[]
-): {
+export function aggregateModelVariations(models: UnifiedModelData[]): {
   totalWorkerCount: number;
   totalQueuedJobs: number;
   combinedUsageStats?: HordeModelUsageStats;
@@ -490,12 +474,12 @@ export function aggregateModelVariations(
 
 /**
  * Convert grouped text models into a flat list with aggregated stats
- * 
+ *
  * @param models Array of unified model data
  * @returns Array with grouped models (one per base name) for text models with variations
  */
 export function createGroupedTextModels(
-  models: UnifiedModelData[]
+  models: UnifiedModelData[],
 ): (UnifiedModelData | GroupedTextModel)[] {
   const textModels = models.filter((m) => m.parsedName !== undefined);
   const otherModels = models.filter((m) => m.parsedName === undefined);
@@ -558,13 +542,12 @@ export function createGroupedTextModels(
 
 /**
  * Check if a model is a grouped text model
- * 
+ *
  * @param model The model to check
  * @returns True if the model is a grouped text model
  */
 export function isGroupedTextModel(
-  model: UnifiedModelData | GroupedTextModel
+  model: UnifiedModelData | GroupedTextModel,
 ): model is GroupedTextModel {
   return 'isGrouped' in model && model.isGrouped === true;
 }
-

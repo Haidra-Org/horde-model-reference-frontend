@@ -56,11 +56,7 @@ describe('Unified Model Utilities', () => {
 
   describe('mergeModelData', () => {
     it('should merge reference data with Horde status and stats', () => {
-      const result = mergeModelData(
-        mockReferenceModel,
-        mockHordeStatus,
-        mockHordeStats
-      );
+      const result = mergeModelData(mockReferenceModel, mockHordeStatus, mockHordeStats);
 
       expect(result.name).toBe('AlbedoBase XL (SDXL)');
       expect(result.workerCount).toBe(14);
@@ -89,11 +85,7 @@ describe('Unified Model Utilities', () => {
         name: 'albedobase xl (sdxl)',
       };
 
-      const result = mergeModelData(
-        lowerCaseModel,
-        mockHordeStatus,
-        mockHordeStats
-      );
+      const result = mergeModelData(lowerCaseModel, mockHordeStatus, mockHordeStats);
 
       expect(result.usageStats).toEqual({
         day: 12010,
@@ -109,11 +101,7 @@ describe('Unified Model Utilities', () => {
         nsfw: false,
       };
 
-      const result = mergeModelData(
-        unknownModel,
-        mockHordeStatus,
-        mockHordeStats
-      );
+      const result = mergeModelData(unknownModel, mockHordeStatus, mockHordeStats);
 
       expect(result.usageStats).toBeUndefined();
       expect(result.workerCount).toBeUndefined();
@@ -331,18 +319,14 @@ describe('Unified Model Utilities', () => {
         name: null,
         id: null,
       },
-      bridge_agent:
-        'KoboldCppEmbedWorker:2:https://github.com/LostRuins/koboldcpp',
+      bridge_agent: 'KoboldCppEmbedWorker:2:https://github.com/LostRuins/koboldcpp',
       max_length: 512,
       max_context_length: 2048,
       info: 'hetzner cloud cx32 vm',
     };
 
     it('should find workers serving a specific model', () => {
-      const workers = getWorkersForModel('AlbedoBase XL (SDXL)', [
-        mockImageWorker,
-        mockTextWorker,
-      ]);
+      const workers = getWorkersForModel('AlbedoBase XL (SDXL)', [mockImageWorker, mockTextWorker]);
 
       expect(workers.length).toBe(1);
       expect(workers[0].name).toBe('CausticLogic');
@@ -354,9 +338,7 @@ describe('Unified Model Utilities', () => {
     });
 
     it('should match model names case-insensitively', () => {
-      const workers = getWorkersForModel('albedobase xl (sdxl)', [
-        mockImageWorker,
-      ]);
+      const workers = getWorkersForModel('albedobase xl (sdxl)', [mockImageWorker]);
 
       expect(workers.length).toBe(1);
       expect(workers[0].name).toBe('CausticLogic');
@@ -375,10 +357,7 @@ describe('Unified Model Utilities', () => {
         name: 'AnotherWorker',
       };
 
-      const workers = getWorkersForModel('AlbedoBase XL (SDXL)', [
-        mockImageWorker,
-        anotherWorker,
-      ]);
+      const workers = getWorkersForModel('AlbedoBase XL (SDXL)', [mockImageWorker, anotherWorker]);
 
       expect(workers.length).toBe(2);
       expect(workers[0].name).toBe('CausticLogic');
@@ -429,7 +408,7 @@ describe('Unified Model Utilities', () => {
         models,
         [mockImageWorker],
         mockHordeStatus,
-        mockHordeStats
+        mockHordeStats,
       );
 
       expect(result.length).toBe(1);
@@ -451,9 +430,7 @@ describe('Unified Model Utilities', () => {
         nsfw: false,
       };
 
-      const result = associateWorkersWithModels([unknownModel], [
-        mockImageWorker,
-      ]);
+      const result = associateWorkersWithModels([unknownModel], [mockImageWorker]);
 
       expect(result.length).toBe(1);
       expect(result[0].workers).toBeUndefined();
@@ -466,10 +443,7 @@ describe('Unified Model Utilities', () => {
         nsfw: false,
       };
 
-      const result = associateWorkersWithModels(
-        [mockReferenceModel, ponyModel],
-        [mockImageWorker]
-      );
+      const result = associateWorkersWithModels([mockReferenceModel, ponyModel], [mockImageWorker]);
 
       expect(result.length).toBe(2);
       expect(result[0].workers?.length).toBe(1);
@@ -623,9 +597,7 @@ describe('Unified Model Utilities', () => {
       it('should return full name for unparsed models', () => {
         const model = mergeModelData(textModel3);
 
-        expect(getDisplayName(model)).toBe(
-          'aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B'
-        );
+        expect(getDisplayName(model)).toBe('aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B');
       });
 
       it('should return full name for image models', () => {
@@ -685,12 +657,8 @@ describe('Unified Model Utilities', () => {
         const variations = getBackendVariations(models, 'L3-Super-Nova-RP-8B');
 
         expect(variations.length).toBe(2);
-        expect(variations.map((v) => v.name)).toContain(
-          'L3-Super-Nova-RP-8B'
-        );
-        expect(variations.map((v) => v.name)).toContain(
-          'koboldcpp/L3-Super-Nova-RP-8B'
-        );
+        expect(variations.map((v) => v.name)).toContain('L3-Super-Nova-RP-8B');
+        expect(variations.map((v) => v.name)).toContain('koboldcpp/L3-Super-Nova-RP-8B');
       });
 
       it('should handle case-insensitive matching', () => {
@@ -700,10 +668,7 @@ describe('Unified Model Utilities', () => {
           }),
         ];
 
-        const variations = getBackendVariations(
-          models,
-          'l3-super-nova-rp-8b'
-        );
+        const variations = getBackendVariations(models, 'l3-super-nova-rp-8b');
 
         expect(variations.length).toBe(1);
       });
@@ -734,7 +699,7 @@ describe('Unified Model Utilities', () => {
 
         const found = findModelByNameVariation(
           models,
-          'aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B'
+          'aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B',
         );
 
         expect(found).toBeDefined();
@@ -773,10 +738,7 @@ describe('Unified Model Utilities', () => {
           }),
         ];
 
-        const found = findModelByNameVariation(
-          models,
-          'l3-super-nova-rp-8b'
-        );
+        const found = findModelByNameVariation(models, 'l3-super-nova-rp-8b');
 
         expect(found).toBeDefined();
       });

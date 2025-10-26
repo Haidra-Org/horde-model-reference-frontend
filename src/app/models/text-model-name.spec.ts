@@ -158,7 +158,9 @@ describe('Text Model Name Utilities', () => {
     });
 
     it('should extract base name from full name with all prefixes', () => {
-      expect(getBaseModelName('aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B')).toBe('L3-Super-Nova-RP-8B');
+      expect(getBaseModelName('aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B')).toBe(
+        'L3-Super-Nova-RP-8B',
+      );
     });
   });
 
@@ -293,11 +295,7 @@ describe('Text Model Name Utilities', () => {
     });
 
     it('should return unique backends only', () => {
-      const models = [
-        'aphrodite/Model1',
-        'aphrodite/Model2',
-        'aphrodite/Model3',
-      ];
+      const models = ['aphrodite/Model1', 'aphrodite/Model2', 'aphrodite/Model3'];
 
       const backends = extractBackends(models);
 

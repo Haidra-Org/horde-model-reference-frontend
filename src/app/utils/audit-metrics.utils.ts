@@ -30,16 +30,19 @@ export const AUDIT_DEFAULTS_BY_CATEGORY: Record<string, number> = {
  * These are reasonable starting values when a filter is enabled
  * null means no constraint (filter disabled for that boundary)
  */
-export const AUDIT_FILTER_DEFAULTS: Record<string, {
-  minUsagePercentage?: number | null;
-  maxUsagePercentage?: number | null;
-  minWorkerCount?: number | null;
-  maxWorkerCount?: number | null;
-  minMonthUsage?: number | null;
-  maxMonthUsage?: number | null;
-  minTotalUsage?: number | null;
-  maxTotalUsage?: number | null;
-}> = {
+export const AUDIT_FILTER_DEFAULTS: Record<
+  string,
+  {
+    minUsagePercentage?: number | null;
+    maxUsagePercentage?: number | null;
+    minWorkerCount?: number | null;
+    maxWorkerCount?: number | null;
+    minMonthUsage?: number | null;
+    maxMonthUsage?: number | null;
+    minTotalUsage?: number | null;
+    maxTotalUsage?: number | null;
+  }
+> = {
   image_generation: {
     minUsagePercentage: null,
     maxUsagePercentage: null,
@@ -275,10 +278,7 @@ export function getModelFileHosts(model: UnifiedModelData | GroupedTextModel): s
  * @param categoryTotal The category's total 30-day usage count
  * @returns Percentage of category's 30-day usage (0-100)
  */
-export function calculateUsagePercentage(
-  modelUsage: number,
-  categoryTotal: number,
-): number {
+export function calculateUsagePercentage(modelUsage: number, categoryTotal: number): number {
   if (categoryTotal === 0) return 0;
   return (modelUsage / categoryTotal) * 100;
 }
@@ -313,9 +313,7 @@ export function calculateUsageTrend(usageStats?: {
  * Calculate cost-benefit score (usage per GB)
  * Higher is better - more usage per unit of disk space
  */
-export function getCostBenefitScore(
-  model: UnifiedModelData | GroupedTextModel,
-): number | null {
+export function getCostBenefitScore(model: UnifiedModelData | GroupedTextModel): number | null {
   const legacyModel = model as LegacyRecordUnion;
 
   if (!isLegacyStableDiffusionRecord(legacyModel)) {

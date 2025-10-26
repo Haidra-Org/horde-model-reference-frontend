@@ -25,54 +25,43 @@ export class HordeApiService {
   getModelStatus(
     type: HordeModelType,
     minCount?: number,
-    modelState: HordeModelState = 'known'
+    modelState: HordeModelState = 'known',
   ): Observable<HordeModelStatus[]> {
     this.isLoading.set(true);
 
-    let params = new HttpParams()
-      .set('type', type)
-      .set('model_state', modelState);
+    let params = new HttpParams().set('type', type).set('model_state', modelState);
 
     if (minCount !== undefined) {
       params = params.set('min_count', minCount.toString());
     }
 
-    return this.http
-      .get<HordeModelStatus[]>(`${this.baseUrl}/status/models`, { params })
-      .pipe(
-        tap(() => this.isLoading.set(false)),
-        catchError((error) => {
-          this.isLoading.set(false);
-          this.notificationService.error(
-            `Failed to fetch Horde model status: ${error.message}`
-          );
-          return of([]);
-        })
-      );
+    return this.http.get<HordeModelStatus[]>(`${this.baseUrl}/status/models`, { params }).pipe(
+      tap(() => this.isLoading.set(false)),
+      catchError((error) => {
+        this.isLoading.set(false);
+        this.notificationService.error(`Failed to fetch Horde model status: ${error.message}`);
+        return of([]);
+      }),
+    );
   }
 
   getModelStats(
     type: HordeModelType,
-    modelState: HordeModelState = 'known'
+    modelState: HordeModelState = 'known',
   ): Observable<HordeModelStatsResponse> {
     this.isLoading.set(true);
 
-    const endpoint =
-      type === 'image' ? 'stats/img/models' : 'stats/text/models';
+    const endpoint = type === 'image' ? 'stats/img/models' : 'stats/text/models';
     const params = new HttpParams().set('model_state', modelState);
 
-    return this.http
-      .get<HordeModelStatsResponse>(`${this.baseUrl}/${endpoint}`, { params })
-      .pipe(
-        tap(() => this.isLoading.set(false)),
-        catchError((error) => {
-          this.isLoading.set(false);
-          this.notificationService.error(
-            `Failed to fetch Horde model stats: ${error.message}`
-          );
-          return of({ day: {}, month: {}, total: {} });
-        })
-      );
+    return this.http.get<HordeModelStatsResponse>(`${this.baseUrl}/${endpoint}`, { params }).pipe(
+      tap(() => this.isLoading.set(false)),
+      catchError((error) => {
+        this.isLoading.set(false);
+        this.notificationService.error(`Failed to fetch Horde model stats: ${error.message}`);
+        return of({ day: {}, month: {}, total: {} });
+      }),
+    );
   }
 
   getTotalStats(type: HordeModelType): Observable<HordeTotalStatsResponse> {
@@ -80,29 +69,25 @@ export class HordeApiService {
 
     const endpoint = type === 'image' ? 'stats/img/totals' : 'stats/text/totals';
 
-    return this.http
-      .get<HordeTotalStatsResponse>(`${this.baseUrl}/${endpoint}`)
-      .pipe(
-        tap(() => this.isLoading.set(false)),
-        catchError((error) => {
-          this.isLoading.set(false);
-          this.notificationService.error(
-            `Failed to fetch Horde total stats: ${error.message}`
-          );
-          return of({
-            minute: {},
-            hour: {},
-            day: {},
-            month: {},
-            total: {},
-          });
-        })
-      );
+    return this.http.get<HordeTotalStatsResponse>(`${this.baseUrl}/${endpoint}`).pipe(
+      tap(() => this.isLoading.set(false)),
+      catchError((error) => {
+        this.isLoading.set(false);
+        this.notificationService.error(`Failed to fetch Horde total stats: ${error.message}`);
+        return of({
+          minute: {},
+          hour: {},
+          day: {},
+          month: {},
+          total: {},
+        });
+      }),
+    );
   }
 
   getCombinedModelData(
     type: HordeModelType,
-    minCount?: number
+    minCount?: number,
   ): Observable<{
     status: HordeModelStatus[];
     stats: HordeModelStatsResponse;
@@ -141,10 +126,7 @@ export class HordeApiService {
     });
   }
 
-  getWorkers(options?: {
-    name?: string;
-    type?: HordeModelType;
-  }): Observable<HordeWorker[]> {
+  getWorkers(options?: { name?: string; type?: HordeModelType }): Observable<HordeWorker[]> {
     this.isLoading.set(true);
 
     let params = new HttpParams();
@@ -157,17 +139,13 @@ export class HordeApiService {
       params = params.set('type', options.type);
     }
 
-    return this.http
-      .get<HordeWorker[]>(`${this.baseUrl}/workers`, { params })
-      .pipe(
-        tap(() => this.isLoading.set(false)),
-        catchError((error) => {
-          this.isLoading.set(false);
-          this.notificationService.error(
-            `Failed to fetch Horde workers: ${error.message}`
-          );
-          return of([]);
-        })
-      );
+    return this.http.get<HordeWorker[]>(`${this.baseUrl}/workers`, { params }).pipe(
+      tap(() => this.isLoading.set(false)),
+      catchError((error) => {
+        this.isLoading.set(false);
+        this.notificationService.error(`Failed to fetch Horde workers: ${error.message}`);
+        return of([]);
+      }),
+    );
   }
 }

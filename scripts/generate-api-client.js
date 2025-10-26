@@ -168,12 +168,12 @@ function generateModelNameMappings(enumNames) {
  */
 function cleanOutputFolders() {
   console.log('\n🧹 Cleaning *.ts files from output folders...');
-  
+
   const apiDir = path.join(OUTPUT_DIR, 'api');
   const modelDir = path.join(OUTPUT_DIR, 'model');
-  
+
   let deletedCount = 0;
-  
+
   try {
     // Clean *.ts files from api directory (only at this depth, not recursive)
     if (fs.existsSync(apiDir)) {
@@ -190,7 +190,7 @@ function cleanOutputFolders() {
       }
       console.log(`   ✅ Cleaned ${apiDir}`);
     }
-    
+
     // Clean *.ts files from model directory (only at this depth, not recursive)
     if (fs.existsSync(modelDir)) {
       const modelFiles = fs.readdirSync(modelDir);
@@ -206,7 +206,7 @@ function cleanOutputFolders() {
       }
       console.log(`   ✅ Cleaned ${modelDir}`);
     }
-    
+
     console.log(`✅ Cleanup complete! (${deletedCount} .ts files removed)`);
   } catch (error) {
     console.error('⚠️  Failed to clean output folders:', error.message);

@@ -15,7 +15,7 @@ export interface UrlVerificationResult {
 
 /**
  * Service for verifying download URLs
- * 
+ *
  * Performs HEAD requests to verify URLs are accessible and optionally
  * extracts SHA256 checksum from response headers.
  */
@@ -25,7 +25,7 @@ export interface UrlVerificationResult {
 export class UrlVerificationService {
   /**
    * Verify a download URL by performing a HEAD request
-   * 
+   *
    * @param url The URL to verify
    * @param timeoutMs Timeout in milliseconds (default: 30000)
    * @returns Observable with verification result
@@ -115,13 +115,13 @@ export class UrlVerificationService {
 
   /**
    * Extract SHA256 checksum from response headers
-   * 
+   *
    * Looks for common header names that might contain SHA256:
    * - x-sha256
    * - x-checksum-sha256
    * - x-linked-etag (Huggingface - quoted string)
    * - digest (with SHA-256= prefix)
-   * 
+   *
    * @param headers Response headers
    * @returns SHA256 checksum if found, undefined otherwise
    */
@@ -156,11 +156,14 @@ export class UrlVerificationService {
 
   /**
    * Normalize SHA256 checksum to lowercase hex string
-   * 
+   *
    * @param sha256 SHA256 string (may include whitespace or mixed case)
    * @returns Normalized SHA256 string
    */
   private normalizeSha256(sha256: string): string {
-    return sha256.trim().toLowerCase().replace(/[^a-f0-9]/g, '');
+    return sha256
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-f0-9]/g, '');
   }
 }

@@ -1,8 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { HordeApiService } from './horde-api.service';
 import {
   HordeImageWorker,
@@ -65,7 +62,7 @@ describe('HordeApiService', () => {
           request.url === `${baseUrl}/status/models` &&
           request.params.get('type') === 'image' &&
           request.params.get('min_count') === '10' &&
-          request.params.get('model_state') === 'known'
+          request.params.get('model_state') === 'known',
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
@@ -78,9 +75,7 @@ describe('HordeApiService', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('status/models')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('status/models'));
       req.error(new ProgressEvent('Network error'));
     });
   });
@@ -102,7 +97,7 @@ describe('HordeApiService', () => {
       const req = httpMock.expectOne(
         (request) =>
           request.url === `${baseUrl}/stats/img/models` &&
-          request.params.get('model_state') === 'known'
+          request.params.get('model_state') === 'known',
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
@@ -120,9 +115,7 @@ describe('HordeApiService', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('stats/text/models')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('stats/text/models'));
       req.flush(mockResponse);
     });
 
@@ -132,9 +125,7 @@ describe('HordeApiService', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('stats/img/models')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('stats/img/models'));
       req.error(new ProgressEvent('Network error'));
     });
   });
@@ -205,12 +196,8 @@ describe('HordeApiService', () => {
         done();
       });
 
-      const statusReq = httpMock.expectOne((request) =>
-        request.url.includes('status/models')
-      );
-      const statsReq = httpMock.expectOne((request) =>
-        request.url.includes('stats/img/models')
-      );
+      const statusReq = httpMock.expectOne((request) => request.url.includes('status/models'));
+      const statsReq = httpMock.expectOne((request) => request.url.includes('stats/img/models'));
 
       statusReq.flush(mockStatus);
       statsReq.flush(mockStats);
@@ -262,8 +249,7 @@ describe('HordeApiService', () => {
 
       const req = httpMock.expectOne(
         (request) =>
-          request.url === `${baseUrl}/workers` &&
-          request.params.get('name') === 'CausticLogic'
+          request.url === `${baseUrl}/workers` && request.params.get('name') === 'CausticLogic',
       );
       expect(req.request.method).toBe('GET');
       req.flush([mockImageWorker]);
@@ -294,8 +280,7 @@ describe('HordeApiService', () => {
           name: null,
           id: null,
         },
-        bridge_agent:
-          'KoboldCppEmbedWorker:2:https://github.com/LostRuins/koboldcpp',
+        bridge_agent: 'KoboldCppEmbedWorker:2:https://github.com/LostRuins/koboldcpp',
         max_length: 512,
         max_context_length: 2048,
         info: 'hetzner cloud cx32 vm',
@@ -307,9 +292,7 @@ describe('HordeApiService', () => {
       });
 
       const req = httpMock.expectOne(
-        (request) =>
-          request.url === `${baseUrl}/workers` &&
-          request.params.get('type') === 'text'
+        (request) => request.url === `${baseUrl}/workers` && request.params.get('type') === 'text',
       );
       req.flush([mockTextWorker]);
     });
@@ -355,7 +338,7 @@ describe('HordeApiService', () => {
         (request) =>
           request.url === `${baseUrl}/workers` &&
           !request.params.has('name') &&
-          !request.params.has('type')
+          !request.params.has('type'),
       );
       req.flush(mockWorkers);
     });
@@ -367,9 +350,7 @@ describe('HordeApiService', () => {
         done();
       });
 
-      const req = httpMock.expectOne((request) =>
-        request.url.includes('workers')
-      );
+      const req = httpMock.expectOne((request) => request.url.includes('workers'));
       req.error(new ProgressEvent('Network error'));
     });
   });

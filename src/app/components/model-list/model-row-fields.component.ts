@@ -85,89 +85,108 @@ import { HordeApiService } from '../../services/horde-api.service';
               @if (isHordeLoading()) {
                 <div class="flex items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                   <svg class="animate-spin h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   <span>Loading Horde status...</span>
                 </div>
               } @else {
-              <div class="grid sm:grid-cols-2 gap-x-8 gap-y-4">
-                <div>
-                  <div class="field-label">Active Workers</div>
-                  <div class="field-value">
-                    <span class="badge" [class]="workerCountBadgeClass()">
-                      {{ model().workerCount ?? 0 }}
-                    </span>
-                  </div>
-                </div>
-                @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
+                <div class="grid sm:grid-cols-2 gap-x-8 gap-y-4">
                   <div>
-                    <div class="field-label">Queued Jobs</div>
-                    <div class="field-value">{{ model().queuedJobs }} <span class="text-muted text-sm">{{ queuedJobsUnit() }}</span></div>
-                  </div>
-                }
-                @if (model().performance !== null && model().performance !== undefined) {
-                  <div>
-                    <div class="field-label">Performance</div>
+                    <div class="field-label">Active Workers</div>
                     <div class="field-value">
-                      @if (isImageModel()) {
-                        <span [appTooltip]="performanceTooltip()">
-                          {{ performanceDisplay() }}
-                         <span class="text-muted text-sm">megapixelsteps</span>
-                        </span>
-                      } @else {
-                        {{ model().performance?.toFixed(2) }} <span class="text-muted text-sm">tokens/s</span>
-                      }
+                      <span class="badge" [class]="workerCountBadgeClass()">
+                        {{ model().workerCount ?? 0 }}
+                      </span>
                     </div>
                   </div>
-                }
-                @if (model().eta !== null && model().eta !== undefined) {
-                  <div>
-                    <div class="field-label">Estimated Wait Time</div>
-                    <div class="field-value">{{ etaDisplay() }}</div>
-                  </div>
-                }
-                @if (model().queued !== null && model().queued !== undefined) {
-                  <div>
-                    <div class="field-label">Queued {{ queuedUnit() }}</div>
-                    <div class="field-value">
-                      @if (isImageModel()) {
-                        <span [appTooltip]="queuedTooltip()">
-                          {{ queuedDisplay() }}
-                          <span class="text-muted text-sm">megapixelsteps</span>
-                        </span> 
-                      } @else {
-                        {{ model().queued?.toLocaleString() }} <span class="text-muted text-sm">tokens</span>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-              @if (model().usageStats) {
-                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <div class="field-label mb-2">Usage Statistics</div>
-                  <div class="grid grid-cols-3 gap-4 text-center">
+                  @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
                     <div>
-                      <div class="text-xs text-muted">Last 24h</div>
-                      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {{ model().usageStats!.day.toLocaleString() }} <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      <div class="field-label">Queued Jobs</div>
+                      <div class="field-value">
+                        {{ model().queuedJobs }}
+                        <span class="text-muted text-sm">{{ queuedJobsUnit() }}</span>
                       </div>
                     </div>
+                  }
+                  @if (model().performance !== null && model().performance !== undefined) {
                     <div>
-                      <div class="text-xs text-muted">Last 30d</div>
-                      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {{ model().usageStats!.month.toLocaleString() }} <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      <div class="field-label">Performance</div>
+                      <div class="field-value">
+                        @if (isImageModel()) {
+                          <span [appTooltip]="performanceTooltip()">
+                            {{ performanceDisplay() }}
+                            <span class="text-muted text-sm">megapixelsteps</span>
+                          </span>
+                        } @else {
+                          {{ model().performance?.toFixed(2) }}
+                          <span class="text-muted text-sm">tokens/s</span>
+                        }
                       </div>
                     </div>
+                  }
+                  @if (model().eta !== null && model().eta !== undefined) {
                     <div>
-                      <div class="text-xs text-muted">All Time</div>
-                      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {{ model().usageStats!.total.toLocaleString() }} <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      <div class="field-label">Estimated Wait Time</div>
+                      <div class="field-value">{{ etaDisplay() }}</div>
+                    </div>
+                  }
+                  @if (model().queued !== null && model().queued !== undefined) {
+                    <div>
+                      <div class="field-label">Queued {{ queuedUnit() }}</div>
+                      <div class="field-value">
+                        @if (isImageModel()) {
+                          <span [appTooltip]="queuedTooltip()">
+                            {{ queuedDisplay() }}
+                            <span class="text-muted text-sm">megapixelsteps</span>
+                          </span>
+                        } @else {
+                          {{ model().queued?.toLocaleString() }}
+                          <span class="text-muted text-sm">tokens</span>
+                        }
                       </div>
                     </div>
-                  </div>
+                  }
                 </div>
-              }
+                @if (model().usageStats) {
+                  <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="field-label mb-2">Usage Statistics</div>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div class="text-xs text-muted">Last 24h</div>
+                        <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                          {{ model().usageStats!.day.toLocaleString() }}
+                          <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-xs text-muted">Last 30d</div>
+                        <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                          {{ model().usageStats!.month.toLocaleString() }}
+                          <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-xs text-muted">All Time</div>
+                        <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                          {{ model().usageStats!.total.toLocaleString() }}
+                          <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
               }
             </div>
           </div>

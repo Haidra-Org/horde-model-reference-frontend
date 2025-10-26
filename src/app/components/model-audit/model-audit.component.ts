@@ -291,7 +291,10 @@ export class ModelAuditComponent implements OnInit {
       if (!hasConflict) {
         filtered = filtered.filter((item) => {
           const value = item.usagePercentage;
-          return (minUsagePct === null || value >= minUsagePct) && (maxUsagePct === null || value <= maxUsagePct);
+          return (
+            (minUsagePct === null || value >= minUsagePct) &&
+            (maxUsagePct === null || value <= maxUsagePct)
+          );
         });
       }
     }
@@ -302,7 +305,10 @@ export class ModelAuditComponent implements OnInit {
       if (!hasConflict) {
         filtered = filtered.filter((item) => {
           const value = item.model.workerCount ?? 0;
-          return (minWorkers === null || value >= minWorkers) && (maxWorkers === null || value <= maxWorkers);
+          return (
+            (minWorkers === null || value >= minWorkers) &&
+            (maxWorkers === null || value <= maxWorkers)
+          );
         });
       }
     }
@@ -314,7 +320,9 @@ export class ModelAuditComponent implements OnInit {
         filtered = filtered.filter((item) => {
           const stats = item.model.usageStats as HordeModelUsageStats | undefined;
           const value = stats?.month ?? 0;
-          return (minMonth === null || value >= minMonth) && (maxMonth === null || value <= maxMonth);
+          return (
+            (minMonth === null || value >= minMonth) && (maxMonth === null || value <= maxMonth)
+          );
         });
       }
     }
@@ -326,16 +334,16 @@ export class ModelAuditComponent implements OnInit {
         filtered = filtered.filter((item) => {
           const stats = item.model.usageStats as HordeModelUsageStats | undefined;
           const value = stats?.total ?? 0;
-          return (minTotal === null || value >= minTotal) && (maxTotal === null || value <= maxTotal);
+          return (
+            (minTotal === null || value >= minTotal) && (maxTotal === null || value <= maxTotal)
+          );
         });
       }
     }
 
     // Apply hosts filter (if available)
     if (available.includes('hosts') && hosts.length > 0) {
-      filtered = filtered.filter((item) =>
-        item.fileHosts.some((host) => hosts.includes(host)),
-      );
+      filtered = filtered.filter((item) => item.fileHosts.some((host) => hosts.includes(host)));
     }
 
     // Apply baselines filter (if available)
@@ -513,8 +521,8 @@ export class ModelAuditComponent implements OnInit {
       next: (referenceModels) => {
         const modelsWithParsing = isTextGen
           ? mergeMultipleModels(referenceModels, undefined, undefined, {
-            parseTextModelNames: true,
-          })
+              parseTextModelNames: true,
+            })
           : referenceModels.map((m) => ({ ...m }));
 
         const displayModels = isTextGen

@@ -13,7 +13,12 @@ import {
   isLegacyStableDiffusionRecord,
   isLegacyTextGenerationRecord,
 } from '../../models';
-import { UnifiedModelData, hasActiveWorkers, GroupedTextModel, isGroupedTextModel } from '../../models/unified-model';
+import {
+  UnifiedModelData,
+  hasActiveWorkers,
+  GroupedTextModel,
+  isGroupedTextModel,
+} from '../../models/unified-model';
 import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { ModelRowHeaderComponent } from './model-row-header.component';
 import { ModelRowFieldsComponent } from './model-row-fields.component';
@@ -55,10 +60,7 @@ import { hasShowcases } from './model-row.utils';
         </svg>
       </td>
       <td class="text-center" [title]="workerCountTooltip()">
-        <span
-          class="inline-block w-3 h-3 rounded-full"
-          [class]="activeIndicatorClass()"
-        ></span>
+        <span class="inline-block w-3 h-3 rounded-full" [class]="activeIndicatorClass()"></span>
       </td>
       <td class="font-medium text-gray-900 dark:text-gray-100">
         <app-model-row-header [model]="model()" mode="compact" />
@@ -184,35 +186,53 @@ import { hasShowcases } from './model-row.utils';
                     <table class="w-full text-sm">
                       <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th
+                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
                             Full Name
                           </th>
-                          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th
+                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
                             Backend
                           </th>
-                          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th
+                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
                             Author
                           </th>
-                          <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th
+                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
                             Workers
                           </th>
-                          <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th
+                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
                             Queued
                           </th>
-                          <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th
+                            class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                          >
                             Usage (Total)
                           </th>
                         </tr>
                       </thead>
-                      <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                      <tbody
+                        class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
+                      >
                         @for (variation of groupedModel()!.variations; track variation.name) {
                           <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td class="px-4 py-2 font-mono text-xs text-gray-900 dark:text-gray-100">
+                            <td
+                              class="px-4 py-2 font-mono text-xs text-gray-900 dark:text-gray-100"
+                            >
                               {{ variation.name }}
                             </td>
                             <td class="px-4 py-2">
                               @if (variation.parsedName?.backend) {
-                                <span class="badge badge-info text-xs">{{ variation.parsedName?.backend }}</span>
+                                <span class="badge badge-info text-xs">{{
+                                  variation.parsedName?.backend
+                                }}</span>
                               } @else {
                                 <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
                               }

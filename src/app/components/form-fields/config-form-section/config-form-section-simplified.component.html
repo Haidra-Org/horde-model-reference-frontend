@@ -1,114 +1,150 @@
 <div class="card">
-  <button class="card-header-collapsible" (click)="toggleExpanded()" (keyup.enter)="toggleExpanded()"
-    (keyup.space)="toggleExpanded()" tabindex="0" type="button" [attr.aria-expanded]="isExpanded()"
-    aria-label="Toggle configuration section">
+  <button
+    class="card-header-collapsible"
+    (click)="toggleExpanded()"
+    (keyup.enter)="toggleExpanded()"
+    (keyup.space)="toggleExpanded()"
+    tabindex="0"
+    type="button"
+    [attr.aria-expanded]="isExpanded()"
+    aria-label="Toggle configuration section"
+  >
     <h3 class="heading-card">Downloads</h3>
     <span class="card-header-collapsible-icon">{{ isExpanded() ? '▼' : '▶' }}</span>
   </button>
 
   @if (isExpanded()) {
-  <div class="card-body">
-    <div class="form-section">
-      <div class="section-header">
-        <p class="text-muted mb-4">
-          Configure download locations for model files. Each entry specifies a file name and URL.
-        </p>
-        <button type="button" class="btn btn-sm btn-primary" (click)="addDownload()">
-          + Add Download
-        </button>
-      </div>
-
-      @if (downloads() && downloads().length > 0) {
-      <div class="space-y-4">
-        @for (download of downloads(); track $index) {
-        <div class="nested-item-card">
-          <button type="button" class="nested-item-remove-btn" (click)="removeDownload($index)" title="Remove download">
-            ×
+    <div class="card-body">
+      <div class="form-section">
+        <div class="section-header">
+          <p class="text-muted mb-4">
+            Configure download locations for model files. Each entry specifies a file name and URL.
+          </p>
+          <button type="button" class="btn btn-sm btn-primary" (click)="addDownload()">
+            + Add Download
           </button>
-
-          <div class="nested-item-grid">
-            <div class="form-field">
-              <label for="download-{{ $index }}-name" class="form-label">
-                File Name *
-              </label>
-              <input id="download-{{ $index }}-name" type="text" class="form-input" [value]="download.file_name"
-                (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
-                placeholder="e.g., model.ckpt, model.safetensors" aria-required="true" />
-              <p class="help-text">The name of the file to be downloaded</p>
-            </div>
-
-            <div class="form-field">
-              <label for="download-{{ $index }}-url" class="form-label">
-                File URL *
-              </label>
-              <div class="flex gap-2">
-                <input id="download-{{ $index }}-url" type="url" class="form-input flex-1" [value]="download.file_url"
-                  (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
-                  placeholder="https://example.com/model.ckpt" aria-required="true"
-                  [class.border-danger-500]="getVerificationError($index)"
-                  [class.border-success-500]="isVerified($index)" />
-                <button type="button" class="btn btn-sm"
-                  [class.btn-primary]="!isVerified($index) && !isVerifying($index)"
-                  [class.btn-success]="isVerified($index)" (click)="verifyUrl($index)"
-                  [disabled]="isVerifying($index) || !download.file_url"
-                  [title]="isVerified($index) ? 'URL verified' : 'Verify URL'">
-                  @if (isVerifying($index)) {
-                  <span class="animate-spin">⟳</span>
-                  } @else if (isVerified($index)) {
-                  <span>✓</span>
-                  } @else {
-                  <span>Verify</span>
-                  }
-                </button>
-              </div>
-              @if (getVerificationError($index)) {
-              <p class="text-danger-600 dark:text-danger-400 text-sm mt-1">
-                {{ getVerificationError($index) }}
-              </p>
-              }
-              @if (isVerified($index)) {
-              <p class="text-success-600 dark:text-success-400 text-sm mt-1">
-                ✓ URL verified successfully
-              </p>
-              }
-              @if (!isVerified($index) && !getVerificationError($index) && download.file_url) {
-              <p class="text-warning-600 dark:text-warning-400 text-sm mt-1">
-                ⚠ URL must be verified before submission
-              </p>
-              }
-              <p class="help-text">The URL from which the file can be downloaded</p>
-            </div>
-
-            <div class="form-field md:col-span-2">
-              <label for="download-{{ $index }}-sha256" class="form-label">
-                SHA256 Checksum
-                <span class="label-hint">(auto-populated from URL verification if available)</span>
-              </label>
-              <input id="download-{{ $index }}-sha256" type="text" class="form-input font-mono text-sm"
-                [value]="download.sha256sum || ''"
-                (blur)="updateDownload($index, 'sha256sum', $any($event.target).value)"
-                placeholder="64-character hex string" pattern="[a-fA-F0-9]{64}"
-                [class.border-warning-500]="hasSha256Mismatch($index)" />
-              @if (hasSha256Mismatch($index)) {
-              <p class="text-warning-600 dark:text-warning-400 text-sm mt-1">
-                ⚠ {{ getSha256MismatchWarning($index) }}
-              </p>
-              }
-              <p class="help-text">
-                SHA256 hash of the file. Click "Verify" on the URL to auto-populate if the server provides it.
-              </p>
-            </div>
-          </div>
         </div>
+
+        @if (downloads() && downloads().length > 0) {
+          <div class="space-y-4">
+            @for (download of downloads(); track $index) {
+              <div class="nested-item-card">
+                <button
+                  type="button"
+                  class="nested-item-remove-btn"
+                  (click)="removeDownload($index)"
+                  title="Remove download"
+                >
+                  ×
+                </button>
+
+                <div class="nested-item-grid">
+                  <div class="form-field">
+                    <label for="download-{{ $index }}-name" class="form-label"> File Name * </label>
+                    <input
+                      id="download-{{ $index }}-name"
+                      type="text"
+                      class="form-input"
+                      [value]="download.file_name"
+                      (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
+                      placeholder="e.g., model.ckpt, model.safetensors"
+                      aria-required="true"
+                    />
+                    <p class="help-text">The name of the file to be downloaded</p>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="download-{{ $index }}-url" class="form-label"> File URL * </label>
+                    <div class="flex gap-2">
+                      <input
+                        id="download-{{ $index }}-url"
+                        type="url"
+                        class="form-input flex-1"
+                        [value]="download.file_url"
+                        (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
+                        placeholder="https://example.com/model.ckpt"
+                        aria-required="true"
+                        [class.border-danger-500]="getVerificationError($index)"
+                        [class.border-success-500]="isVerified($index)"
+                      />
+                      <button
+                        type="button"
+                        class="btn btn-sm"
+                        [class.btn-primary]="!isVerified($index) && !isVerifying($index)"
+                        [class.btn-success]="isVerified($index)"
+                        (click)="verifyUrl($index)"
+                        [disabled]="isVerifying($index) || !download.file_url"
+                        [title]="isVerified($index) ? 'URL verified' : 'Verify URL'"
+                      >
+                        @if (isVerifying($index)) {
+                          <span class="animate-spin">⟳</span>
+                        } @else if (isVerified($index)) {
+                          <span>✓</span>
+                        } @else {
+                          <span>Verify</span>
+                        }
+                      </button>
+                    </div>
+                    @if (getVerificationError($index)) {
+                      <p class="text-danger-600 dark:text-danger-400 text-sm mt-1">
+                        {{ getVerificationError($index) }}
+                      </p>
+                    }
+                    @if (isVerified($index)) {
+                      <p class="text-success-600 dark:text-success-400 text-sm mt-1">
+                        ✓ URL verified successfully
+                      </p>
+                    }
+                    @if (
+                      !isVerified($index) && !getVerificationError($index) && download.file_url
+                    ) {
+                      <p class="text-warning-600 dark:text-warning-400 text-sm mt-1">
+                        ⚠ URL must be verified before submission
+                      </p>
+                    }
+                    <p class="help-text">The URL from which the file can be downloaded</p>
+                  </div>
+
+                  <div class="form-field md:col-span-2">
+                    <label for="download-{{ $index }}-sha256" class="form-label">
+                      SHA256 Checksum
+                      <span class="label-hint"
+                        >(auto-populated from URL verification if available)</span
+                      >
+                    </label>
+                    <input
+                      id="download-{{ $index }}-sha256"
+                      type="text"
+                      class="form-input font-mono text-sm"
+                      [value]="download.sha256sum || ''"
+                      (blur)="updateDownload($index, 'sha256sum', $any($event.target).value)"
+                      placeholder="64-character hex string"
+                      pattern="[a-fA-F0-9]{64}"
+                      [class.border-warning-500]="hasSha256Mismatch($index)"
+                    />
+                    @if (hasSha256Mismatch($index)) {
+                      <p class="text-warning-600 dark:text-warning-400 text-sm mt-1">
+                        ⚠ {{ getSha256MismatchWarning($index) }}
+                      </p>
+                    }
+                    <p class="help-text">
+                      SHA256 hash of the file. Click "Verify" on the URL to auto-populate if the
+                      server provides it.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <p>No downloads configured</p>
+            <p class="text-muted mt-2">
+              Add download URLs to specify where model files can be obtained
+            </p>
+          </div>
         }
       </div>
-      } @else {
-      <div class="empty-state">
-        <p>No downloads configured</p>
-        <p class="text-muted mt-2">Add download URLs to specify where model files can be obtained</p>
-      </div>
-      }
     </div>
-  </div>
   }
 </div>

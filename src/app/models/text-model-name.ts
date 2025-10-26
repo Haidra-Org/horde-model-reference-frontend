@@ -1,9 +1,9 @@
 /**
  * Text model naming utilities
- * 
+ *
  * Text models have a dynamic naming structure:
  * [backend/][author/]model-name
- * 
+ *
  * Examples:
  * - "L3-Super-Nova-RP-8B" (just model name)
  * - "Casual-Autopsy/L3-Super-Nova-RP-8B" (author + model name)
@@ -46,7 +46,7 @@ export interface ParsedTextModelName {
 
 /**
  * Parse a text model name into its components
- * 
+ *
  * @param fullName The complete model name string
  * @returns Parsed components of the model name
  */
@@ -125,7 +125,7 @@ export function parseTextModelName(fullName: string): ParsedTextModelName {
 
 /**
  * Build a full model name from parsed components
- * 
+ *
  * @param parsed Parsed model name components
  * @returns The full model name string
  */
@@ -151,7 +151,7 @@ export function buildTextModelName(parsed: Partial<ParsedTextModelName>): string
 
 /**
  * Get the base model name without backend or author prefix
- * 
+ *
  * @param fullName The complete model name string
  * @returns Just the model name component
  */
@@ -161,7 +161,7 @@ export function getBaseModelName(fullName: string): string {
 
 /**
  * Get the model name without backend prefix but with author (if present)
- * 
+ *
  * @param fullName The complete model name string
  * @returns Model name with author but without backend
  */
@@ -175,7 +175,7 @@ export function getNameWithoutBackend(fullName: string): string {
 
 /**
  * Check if a model name has a backend prefix
- * 
+ *
  * @param fullName The complete model name string
  * @returns True if the name includes a backend prefix
  */
@@ -185,7 +185,7 @@ export function hasBackendPrefix(fullName: string): boolean {
 
 /**
  * Get all variations of a model name (with different backend prefixes)
- * 
+ *
  * @param fullName The complete model name string
  * @returns Array of model name variations with all backends
  */
@@ -217,7 +217,7 @@ export function getModelNameVariations(fullName: string): string[] {
 
 /**
  * Group models by their base name (without backend prefix)
- * 
+ *
  * @param modelNames Array of full model names
  * @returns Map of base names to their variations
  */
@@ -242,7 +242,7 @@ export function groupModelsByBaseName(modelNames: string[]): Map<string, string[
 
 /**
  * Extract all unique backends from a list of model names
- * 
+ *
  * @param modelNames Array of full model names
  * @returns Array of unique backends found
  */

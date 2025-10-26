@@ -51,10 +51,7 @@ import {
   TextBackend,
 } from '../../models/text-model-name';
 import { DownloadRecord } from '../../api-client';
-import {
-  legacyConfigToSimplified,
-  simplifiedToLegacyConfig,
-} from '../../utils/config-converter';
+import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../../utils/config-converter';
 
 @Component({
   selector: 'app-model-form',
@@ -107,7 +104,7 @@ export class ModelFormComponent implements OnInit {
     const configErrors = this.configValidationErrors();
 
     // Convert config errors to ValidationIssue format
-    const configIssues: ValidationIssue[] = configErrors.map(error => ({
+    const configIssues: ValidationIssue[] = configErrors.map((error) => ({
       severity: 'error' as const,
       field: 'config.download',
       message: error,
@@ -201,7 +198,9 @@ export class ModelFormComponent implements OnInit {
   }
 
   getVariationNames(): string {
-    return this.modelVariations().map((v) => v.name).join(', ');
+    return this.modelVariations()
+      .map((v) => v.name)
+      .join(', ');
   }
 
   validateJson(): void {
@@ -301,7 +300,8 @@ export class ModelFormComponent implements OnInit {
       { download: this.simplifiedDownloads() },
       this.legacyFiles(),
     );
-    const hasConfig = (legacyConfig.download?.length ?? 0) > 0 || (legacyConfig.files?.length ?? 0) > 0;
+    const hasConfig =
+      (legacyConfig.download?.length ?? 0) > 0 || (legacyConfig.files?.length ?? 0) > 0;
     const base: LegacyRecordUnion = {
       name: modelName,
       ...this.commonData(),
@@ -553,48 +553,51 @@ export class ModelFormComponent implements OnInit {
     const baseModelName = this.form.getRawValue().name;
 
     // First, fetch all existing models to determine what exists
-    this.api.getLegacyModelsInCategory(category).pipe(
-      switchMap((response) => {
-        const allModels = Object.values(response);
-        const variations = getModelNameVariations(baseModelName);
-        const existingVariations = allModels.filter((m) => variations.includes(m.name));
+    this.api
+      .getLegacyModelsInCategory(category)
+      .pipe(
+        switchMap((response) => {
+          const allModels = Object.values(response);
+          const variations = getModelNameVariations(baseModelName);
+          const existingVariations = allModels.filter((m) => variations.includes(m.name));
 
-        const existingNames = new Set(existingVariations.map((v) => v.name));
-        const newNames = new Set(newVariations.map((v) => v.name));
+          const existingNames = new Set(existingVariations.map((v) => v.name));
+          const newNames = new Set(newVariations.map((v) => v.name));
 
-        const operations: Observable<unknown>[] = [];
+          const operations: Observable<unknown>[] = [];
 
-        // Delete variations that no longer exist in selection
-        for (const existing of existingVariations) {
-          if (!newNames.has(existing.name)) {
-            operations.push(this.api.deleteModel(category, existing.name));
+          // Delete variations that no longer exist in selection
+          for (const existing of existingVariations) {
+            if (!newNames.has(existing.name)) {
+              operations.push(this.api.deleteModel(category, existing.name));
+            }
           }
-        }
 
-        // Update or create variations
-        for (const variation of newVariations) {
-          const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
-          if (existingNames.has(variation.name)) {
-            // Update existing
-            operations.push(this.api.updateLegacyModel(category, variation.name, modelData));
-          } else {
-            // Create new
-            operations.push(this.api.createLegacyModel(category, variation.name, modelData));
+          // Update or create variations
+          for (const variation of newVariations) {
+            const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
+            if (existingNames.has(variation.name)) {
+              // Update existing
+              operations.push(this.api.updateLegacyModel(category, variation.name, modelData));
+            } else {
+              // Create new
+              operations.push(this.api.createLegacyModel(category, variation.name, modelData));
+            }
           }
-        }
 
-        return operations.length > 0 ? forkJoin(operations) : of([]);
-      }),
-    ).subscribe({
-      next: () => {
-        this.notification.success('Successfully updated model variations');
-        this.router.navigate(['/categories', this.category()]);
-      },
-      error: (error: Error) => {
-        this.notification.error(`Failed to update models: ${error.message}`);
-        this.submitting.set(false);
-      },
-    });
+          return operations.length > 0 ? forkJoin(operations) : of([]);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.notification.success('Successfully updated model variations');
+          this.router.navigate(['/categories', this.category()]);
+        },
+        error: (error: Error) => {
+          this.notification.error(`Failed to update models: ${error.message}`);
+          this.submitting.set(false);
+        },
+      });
   }
 
   private initFormForCreate(): void {
@@ -639,7 +642,10 @@ export class ModelFormComponent implements OnInit {
     });
   }
 
-  private initFormForEditSingle(modelName: string, response: Record<string, LegacyRecordUnion>): void {
+  private initFormForEditSingle(
+    modelName: string,
+    response: Record<string, LegacyRecordUnion>,
+  ): void {
     const model = response[modelName];
     if (!model) {
       this.notification.error(`Model "${modelName}" not found`);

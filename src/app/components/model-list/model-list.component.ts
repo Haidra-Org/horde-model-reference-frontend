@@ -192,19 +192,17 @@ export class ModelListComponent implements OnInit {
     }
 
     if (search) {
-      filtered = filtered.filter(
-        (model) => {
-          const legacyModel = model as LegacyRecordUnion;
-          return (
-            model.name.toLowerCase().includes(search) ||
-            (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) ||
-            (isLegacyStableDiffusionRecord(legacyModel) &&
-              legacyModel.baseline?.toLowerCase().includes(search)) ||
-            (isLegacyStableDiffusionRecord(legacyModel) &&
-              legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search)))
-          );
-        }
-      );
+      filtered = filtered.filter((model) => {
+        const legacyModel = model as LegacyRecordUnion;
+        return (
+          model.name.toLowerCase().includes(search) ||
+          (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) ||
+          (isLegacyStableDiffusionRecord(legacyModel) &&
+            legacyModel.baseline?.toLowerCase().includes(search)) ||
+          (isLegacyStableDiffusionRecord(legacyModel) &&
+            legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search)))
+        );
+      });
     }
 
     return filtered;
@@ -276,7 +274,10 @@ export class ModelListComponent implements OnInit {
     this.filteredModels().forEach((model) => {
       const legacyModel = model as LegacyRecordUnion;
       if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.parameters) {
-        parameterCounts.set(legacyModel.parameters, (parameterCounts.get(legacyModel.parameters) ?? 0) + 1);
+        parameterCounts.set(
+          legacyModel.parameters,
+          (parameterCounts.get(legacyModel.parameters) ?? 0) + 1,
+        );
       }
     });
 
@@ -746,8 +747,8 @@ export class ModelListComponent implements OnInit {
         // Parse text model names for text generation category
         const modelsWithParsing = isTextGen
           ? mergeMultipleModels(referenceModels, undefined, undefined, {
-            parseTextModelNames: true,
-          })
+              parseTextModelNames: true,
+            })
           : referenceModels.map((m) => ({ ...m }));
 
         // Group text models by base name
@@ -767,7 +768,7 @@ export class ModelListComponent implements OnInit {
                 referenceModels,
                 status,
                 stats,
-                isTextGen ? { parseTextModelNames: true } : undefined
+                isTextGen ? { parseTextModelNames: true } : undefined,
               );
 
               // Re-group text models with updated Horde data

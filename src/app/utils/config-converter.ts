@@ -54,7 +54,9 @@ export function legacyConfigToSimplified(
     // 2. From files array matched by file_name (older legacy format)
     // Priority: download entry takes precedence over files array
     const directSha256sum = legacyDownload['sha256sum'];
-    const filesSha256sum = legacyDownload.file_name ? sha256sumLookup.get(legacyDownload.file_name) : undefined;
+    const filesSha256sum = legacyDownload.file_name
+      ? sha256sumLookup.get(legacyDownload.file_name)
+      : undefined;
 
     const sha256sum = directSha256sum || filesSha256sum;
     if (sha256sum && typeof sha256sum === 'string') {
@@ -114,7 +116,12 @@ export function simplifiedToLegacyConfig(
  * @returns True if valid, false otherwise
  */
 export function isValidDownloadRecord(record: DownloadRecord): boolean {
-  return !!(record.file_name && record.file_name.trim() && record.file_url && record.file_url.trim());
+  return !!(
+    record.file_name &&
+    record.file_name.trim() &&
+    record.file_url &&
+    record.file_url.trim()
+  );
 }
 
 /**
