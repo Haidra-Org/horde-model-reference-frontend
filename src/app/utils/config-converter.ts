@@ -88,17 +88,12 @@ export function simplifiedToLegacyConfig(
   }
 
   const download: LegacyConfigDownload[] = simplified.download.map((simpleDownload) => {
-    const legacyDownload: any = {
+    const legacyDownload: LegacyConfigDownload = {
       file_name: simpleDownload.file_name || null,
       file_path: '', // Always empty string as per legacy format validation
       file_url: simpleDownload.file_url || null,
+      sha256sum: simpleDownload.sha256sum ?? undefined,
     };
-
-    // Preserve sha256sum in the legacy download entry
-    // In legacy format, sha256sum is stored as an additional property in download entries
-    if (simpleDownload.sha256sum) {
-      legacyDownload.sha256sum = simpleDownload.sha256sum;
-    }
 
     return legacyDownload;
   });

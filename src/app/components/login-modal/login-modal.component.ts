@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginModalComponent {
   private readonly authService = inject(AuthService);
 
-  readonly close = output<void>();
+  readonly closed = output<void>();
 
   readonly apiKey = signal('');
   readonly loading = signal(false);
@@ -24,7 +24,7 @@ export class LoginModalComponent {
     this.authService.login(this.apiKey()).subscribe({
       next: () => {
         this.loading.set(false);
-        this.close.emit();
+        this.closed.emit();
       },
       error: (err: Error) => {
         this.loading.set(false);
@@ -34,6 +34,6 @@ export class LoginModalComponent {
   }
 
   onCancel(): void {
-    this.close.emit();
+    this.closed.emit();
   }
 }
