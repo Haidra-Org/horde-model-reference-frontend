@@ -750,8 +750,8 @@ export class ModelListComponent implements OnInit {
         // Parse text model names for text generation category
         const modelsWithParsing = isTextGen
           ? mergeMultipleModels(referenceModels, undefined, undefined, {
-              parseTextModelNames: true,
-            })
+            parseTextModelNames: true,
+          })
           : referenceModels.map((m) => ({ ...m }));
 
         // Group text models by base name

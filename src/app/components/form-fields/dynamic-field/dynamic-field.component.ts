@@ -90,22 +90,22 @@ export class DynamicFieldComponent {
   /**
    * Handle value changes for text inputs
    */
-  onTextChange(cfg: TextFieldConfig, value: string): void {
+  onTextChange(cfg: TextFieldConfig, value: string | null): void {
     cfg.onChange(value || null);
   }
 
   /**
    * Handle value changes for number inputs
    */
-  onNumberChange(cfg: NumberFieldConfig, value: string): void {
-    const numValue = value ? parseFloat(value) : null;
+  onNumberChange(cfg: NumberFieldConfig, value: string | number | null): void {
+    const numValue = typeof value === 'number' ? value : value ? parseFloat(value) : null;
     cfg.onChange(numValue);
   }
 
   /**
    * Handle value changes for textarea inputs
    */
-  onTextareaChange(cfg: TextareaFieldConfig, value: string): void {
+  onTextareaChange(cfg: TextareaFieldConfig, value: string | null): void {
     cfg.onChange(value || null);
   }
 
