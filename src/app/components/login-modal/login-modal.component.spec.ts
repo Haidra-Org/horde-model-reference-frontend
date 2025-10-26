@@ -47,25 +47,25 @@ describe('LoginModalComponent', () => {
   });
 
   it('should emit close event on cancel', () => {
-    spyOn(component.close, 'emit');
+    spyOn(component.closed, 'emit');
 
     component.onCancel();
 
-    expect(component.close.emit).toHaveBeenCalled();
+    expect(component.closed.emit).toHaveBeenCalled();
   });
 
   it('should login successfully and emit close', () => {
     const testKey = 'test-api-key';
     component.apiKey.set(testKey);
     authService.login.and.returnValue(of('testuser'));
-    spyOn(component.close, 'emit');
+    spyOn(component.closed, 'emit');
 
     component.onSubmit();
 
     expect(authService.login).toHaveBeenCalledWith(testKey);
     expect(component.loading()).toBe(false);
     expect(component.error()).toBe(null);
-    expect(component.close.emit).toHaveBeenCalled();
+    expect(component.closed.emit).toHaveBeenCalled();
   });
 
   it('should show error on login failure', () => {
