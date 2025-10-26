@@ -5,7 +5,9 @@ import {
   signal,
   computed,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -72,6 +74,7 @@ export class ModelFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly category = signal<ModelReferenceCategory | ''>('');
   readonly modelName = signal<string | null>(null);
@@ -158,7 +161,7 @@ export class ModelFormComponent implements OnInit {
   form!: FormGroup;
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.category.set(params['category']);
       const modelName = params['modelName'];
 
@@ -477,7 +480,7 @@ export class ModelFormComponent implements OnInit {
       ? this.api.updateLegacyModel(this.category(), modelName, modelData)
       : this.api.createLegacyModel(this.category(), modelName, modelData);
 
-    operation.subscribe({
+    operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         const action = this.isEditMode() ? 'updated' : 'created';
         this.notification.success(`Model "${modelName}" ${action} successfully`);
@@ -531,7 +534,7 @@ export class ModelFormComponent implements OnInit {
       return this.api.createLegacyModel(category, variation.name, modelData);
     });
 
-    forkJoin(operations).subscribe({
+    forkJoin(operations).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         const count = variations.length;
         this.notification.success(
@@ -626,7 +629,7 @@ export class ModelFormComponent implements OnInit {
   private initFormForEdit(modelName: string): void {
     this.loading.set(true);
 
-    this.api.getLegacyModelsInCategory(this.category()).subscribe({
+    this.api.getLegacyModelsInCategory(this.category()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         // For text generation, check if this is a grouped model with backend variations
         if (this.isTextGeneration()) {
