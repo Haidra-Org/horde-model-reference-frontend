@@ -1,26 +1,50 @@
-<div class="modal-overlay" tabindex="0" (click)="onCancel()" (keydown)="$event.key === 'Escape' && onCancel()"
-  aria-label="Close modal">
-  <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" aria-modal="true"
-    role="dialog">
+<div
+  class="modal-overlay"
+  tabindex="0"
+  (click)="onCancel()"
+  (keydown)="$event.key === 'Escape' && onCancel()"
+  aria-label="Close modal"
+>
+  <div
+    class="modal-dialog"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    aria-modal="true"
+    role="dialog"
+  >
     <h2 class="modal-title">Login with API Key</h2>
 
     <div class="modal-content">
       <form (ngSubmit)="onSubmit()" class="space-y-4">
         <div>
           <label for="api-key-input" class="form-label">API Key</label>
-          <input id="api-key-input" type="password" class="form-input" placeholder="Enter your AI Horde API key"
-            [(ngModel)]="apiKey" [disabled]="loading()" name="apikey" autocomplete="off" required />
+          <input
+            id="api-key-input"
+            type="password"
+            class="form-input"
+            placeholder="Enter your AI Horde API key"
+            [(ngModel)]="apiKey"
+            [disabled]="loading()"
+            name="apikey"
+            autocomplete="off"
+            required
+          />
           <p class="form-hint">
             Get your API key from
-            <a href="https://aihorde.net/register" target="_blank" rel="noopener noreferrer"
-              class="link">aihorde.net</a>
+            <a
+              href="https://aihorde.net/register"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link"
+              >aihorde.net</a
+            >
           </p>
         </div>
 
         @if (error()) {
-        <div class="alert alert-danger">
-          {{ error() }}
-        </div>
+          <div class="alert alert-danger">
+            {{ error() }}
+          </div>
         }
       </form>
     </div>
@@ -29,11 +53,16 @@
       <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading()">
         Cancel
       </button>
-      <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || !apiKey().trim()">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="loading() || !apiKey().trim()"
+      >
         @if (loading()) {
-        <span>Verifying...</span>
+          <span>Verifying...</span>
         } @else {
-        <span>Login</span>
+          <span>Login</span>
         }
       </button>
     </div>
