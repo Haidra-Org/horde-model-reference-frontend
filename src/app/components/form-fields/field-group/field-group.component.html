@@ -35,7 +35,7 @@
         @if (group.label) {
         <h4 class="field-group-header-title">
           @if (group.icon) {
-            <span class="mr-1.5">{{ group.icon }}</span>
+          <span class="mr-1.5">{{ group.icon }}</span>
           }
           {{ group.label }}
         </h4>
@@ -47,9 +47,9 @@
     </div>
   </button>
 
-  <!-- Collapsible content with smooth transition -->
+  <!-- Collapsible content -->
   @if (!isCollapsed()) {
-  <div [id]="getContentId(group.label)" class="field-group-content" [@expandCollapse]>
+  <div [id]="getContentId(group.label)" class="field-group-content">
     <div [class]="group.gridClass || 'space-y-4'">
       @for (field of group.fields; track field.id) {
       <app-dynamic-field [config]="field" />

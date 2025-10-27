@@ -11,23 +11,26 @@
       <div class="flex gap-3 items-start">
         <!-- Key Column -->
         <div class="flex-1 min-w-0">
-          <label class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
+          <label class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1"
+            [attr.for]="'pair-key-' + pair.key">
             Key
           </label>
-          <div class="font-mono text-sm text-gray-900 dark:text-gray-100 break-all">
+          <div class="font-mono text-sm text-gray-900 dark:text-gray-100 break-all" [attr.id]="'pair-key-' + pair.key">
             {{ pair.key }}
           </div>
         </div>
 
         <!-- Value Column -->
         <div class="flex-[2] min-w-0">
-          <label class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
+          <label class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1"
+            [attr.for]="'pair-value-' + pair.key">
             Value
             <span class="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700">
               {{ pair.valueType }}
             </span>
           </label>
           <input type="text" class="form-input text-sm" [value]="getValueAsString(pair.value)"
+            [attr.id]="'pair-value-' + pair.key"
             (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
             placeholder="Enter value" />
         </div>
