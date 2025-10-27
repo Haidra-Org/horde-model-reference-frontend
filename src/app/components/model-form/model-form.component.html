@@ -14,9 +14,31 @@
     </div>
   </div>
 
+  <!-- Form Color Legend -->
+  @if (viewMode() === 'form') {
+    <div class="form-legend">
+      <span class="form-legend-item">
+        <span>🔷</span>
+        <span>Core</span>
+      </span>
+      <span class="form-legend-item">
+        <span>🔧</span>
+        <span>Technical</span>
+      </span>
+      <span class="form-legend-item">
+        <span>✅</span>
+        <span>Content</span>
+      </span>
+      <span class="form-legend-item">
+        <span>⚠️</span>
+        <span>Constraints</span>
+      </span>
+    </div>
+  }
+
   @if (loading()) {
     <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading model data...</div>
+      <div class="loading-state">Loading model data...</div>
     </div>
   } @else {
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
@@ -52,15 +74,15 @@
           <!-- Backend Selection for Text Generation -->
           @if (isTextGeneration()) {
             <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <h4 class="form-subsection-header">
                 Backend Selection
               </h4>
-              <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">
+              <p class="form-hint mb-3">
                 Select which backends this model should be available on. Each backend creates a
                 separate model entry with a prefix (e.g., aphrodite/model-name). Leave all unchecked
                 for a base model without backend prefix.
               </p>
-              <div class="flex flex-col gap-2">
+              <div class="checkbox-group">
                 <label class="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -68,9 +90,9 @@
                     [checked]="isBackendSelected('aphrodite')"
                     (change)="toggleBackend('aphrodite')"
                   />
-                  <span class="text-sm text-gray-700 dark:text-gray-300">
+                  <span class="checkbox-label">
                     Aphrodite
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                    <span class="checkbox-hint">
                       - creates aphrodite/[model-name]
                     </span>
                   </span>
@@ -82,19 +104,17 @@
                     [checked]="isBackendSelected('koboldcpp')"
                     (change)="toggleBackend('koboldcpp')"
                   />
-                  <span class="text-sm text-gray-700 dark:text-gray-300">
+                  <span class="checkbox-label">
                     KoboldCpp
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                    <span class="checkbox-hint">
                       - creates koboldcpp/[model-name]
                     </span>
                   </span>
                 </label>
               </div>
               @if (modelVariations().length > 0) {
-                <div
-                  class="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800"
-                >
-                  <p class="text-xs text-blue-700 dark:text-blue-300">
+                <div class="info-box-info mt-3">
+                  <p>
                     <strong
                       >Will create {{ modelVariations().length }} model
                       {{ modelVariations().length === 1 ? 'entry' : 'entries' }}:</strong
@@ -176,7 +196,7 @@
           </div>
           <div class="card-body card-section">
             @if (groupedIssues().errors.length > 0) {
-              <div class="validation-section">
+              <div class="validation-section validation-section-error">
                 <h4 class="validation-heading-error">
                   Errors ({{ groupedIssues().errors.length }})
                 </h4>
@@ -194,7 +214,7 @@
             }
 
             @if (groupedIssues().warnings.length > 0) {
-              <div class="validation-section">
+              <div class="validation-section validation-section-warning">
                 <h4 class="validation-heading-warning">
                   Warnings ({{ groupedIssues().warnings.length }})
                 </h4>
@@ -212,7 +232,7 @@
             }
 
             @if (groupedIssues().errors.length === 0 && groupedIssues().warnings.length === 0) {
-              <div class="text-sm text-success-600 dark:text-success-300 font-medium">
+              <div class="validation-success">
                 No validation issues found
               </div>
             }

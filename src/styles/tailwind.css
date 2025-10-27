@@ -149,10 +149,11 @@
 }
 
 @layer components {
-  /* Button variants */
+  /* Button variants with enhanced focus states */
   .btn {
     @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 shadow-sm;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn:hover:not(:disabled) {
@@ -161,7 +162,8 @@
 
   .btn-primary {
     @apply bg-primary-600 text-white;
-    @apply dark:bg-primary-500;
+    @apply focus:ring-primary-500;
+    @apply dark:bg-primary-500 dark:focus:ring-primary-400;
   }
 
   .btn-primary:hover:not(:disabled) {
@@ -171,7 +173,8 @@
 
   .btn-secondary {
     @apply bg-gray-200 text-gray-900 border border-gray-300;
-    @apply dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600;
+    @apply focus:ring-gray-500;
+    @apply dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:focus:ring-gray-400;
   }
 
   .btn-secondary:hover:not(:disabled) {
@@ -181,7 +184,8 @@
 
   .btn-danger {
     @apply bg-danger-600 text-white;
-    @apply dark:bg-danger-500;
+    @apply focus:ring-danger-500;
+    @apply dark:bg-danger-500 dark:focus:ring-danger-400;
   }
 
   .btn-danger:hover:not(:disabled) {
@@ -191,7 +195,8 @@
 
   .btn-success {
     @apply bg-success-600 text-white;
-    @apply dark:bg-success-500;
+    @apply focus:ring-success-500;
+    @apply dark:bg-success-500 dark:focus:ring-success-400;
   }
 
   .btn-success:hover:not(:disabled) {
@@ -237,15 +242,34 @@
     @apply dark:bg-gray-800 dark:text-gray-300;
   }
 
-  /* Form controls */
+  /* Form controls with enhanced focus and validation states */
   .form-input,
   .form-textarea,
   .form-select {
     @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply transition-all duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
     @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
+    @apply placeholder:italic placeholder:text-gray-400;
     @apply dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100;
-    @apply dark:focus:ring-primary-400 dark:disabled:bg-gray-900;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
+    @apply dark:placeholder:text-gray-500;
+  }
+
+  /* Error state for form inputs */
+  .form-input-error,
+  .form-textarea-error,
+  .form-select-error {
+    @apply border-danger-500 focus:ring-danger-500 focus:border-danger-500;
+    @apply dark:border-danger-400 dark:focus:ring-danger-400 dark:focus:border-danger-400;
+  }
+
+  /* Success state for form inputs */
+  .form-input-success,
+  .form-textarea-success,
+  .form-select-success {
+    @apply border-success-500 focus:ring-success-500 focus:border-success-500;
+    @apply dark:border-success-400 dark:focus:ring-success-400 dark:focus:border-success-400;
   }
 
   .form-label {
@@ -521,6 +545,15 @@
     @apply dark:text-gray-300;
   }
 
+  .checkbox-group {
+    @apply flex flex-col gap-2;
+  }
+
+  .checkbox-hint {
+    @apply text-xs text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
   /* Alert */
   .alert {
     @apply px-4 py-3 rounded-lg text-sm font-medium border;
@@ -544,6 +577,31 @@
   .alert-info {
     @apply bg-info-50 text-info-800 border-info-200;
     @apply dark:bg-info-900/90 dark:text-info-100 dark:border-info-700;
+  }
+
+  /* Info boxes for informational messages */
+  .info-box {
+    @apply p-3 rounded-lg border text-sm;
+  }
+
+  .info-box-primary {
+    @apply bg-primary-50 text-primary-800 border-primary-200;
+    @apply dark:bg-primary-900/20 dark:text-primary-300 dark:border-primary-700;
+  }
+
+  .info-box-success {
+    @apply bg-success-50 text-success-800 border-success-200;
+    @apply dark:bg-success-900/20 dark:text-success-300 dark:border-success-700;
+  }
+
+  .info-box-warning {
+    @apply bg-warning-50 text-warning-800 border-warning-200;
+    @apply dark:bg-warning-900/20 dark:text-warning-300 dark:border-warning-700;
+  }
+
+  .info-box-info {
+    @apply bg-info-50 text-info-800 border-info-200;
+    @apply dark:bg-info-900/20 dark:text-info-300 dark:border-info-700;
   }
 
   /* Stat cards (category statistics) - Modern, accessible design */
@@ -770,6 +828,35 @@
     @apply grid grid-cols-1 md:grid-cols-3 gap-4;
   }
 
+  /* Mobile-optimized form layouts */
+  @media (max-width: 767px) {
+    .form-grid-2,
+    .form-grid-3 {
+      @apply grid-cols-1 gap-3;
+    }
+
+    /* Larger touch targets on mobile */
+    .btn,
+    .field-group-header,
+    .card-header-collapsible {
+      @apply min-h-[44px];
+    }
+
+    /* More compact spacing on mobile */
+    .page-container {
+      @apply p-3 space-y-3;
+    }
+
+    .card-body {
+      @apply p-3;
+    }
+
+    /* Reduce badge padding on mobile */
+    .badge {
+      @apply text-xs px-2 py-0.5;
+    }
+  }
+
   /* Section header with action button */
   .section-header {
     @apply flex justify-between items-center;
@@ -791,6 +878,69 @@
   .card-header-collapsible-icon {
     @apply text-lg text-gray-500;
     @apply dark:text-gray-400;
+  }
+
+  /* Enhanced field group styles with better touch targets */
+  .field-group-collapsible {
+    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+    @apply transition-shadow duration-150;
+  }
+
+  /* Color-coded field group variants */
+  .field-group-collapsible-primary {
+    @apply border-l-4 border-l-primary-500 bg-primary-50/30;
+    @apply dark:border-l-primary-400 dark:bg-primary-900/10;
+  }
+
+  .field-group-collapsible-success {
+    @apply border-l-4 border-l-success-500 bg-success-50/30;
+    @apply dark:border-l-success-400 dark:bg-success-900/10;
+  }
+
+  .field-group-collapsible-info {
+    @apply border-l-4 border-l-info-500 bg-info-50/30;
+    @apply dark:border-l-info-400 dark:bg-info-900/10;
+  }
+
+  .field-group-collapsible-warning {
+    @apply border-l-4 border-l-warning-500 bg-warning-50/30;
+    @apply dark:border-l-warning-400 dark:bg-warning-900/10;
+  }
+
+  /* Spacing between field groups */
+  .card-section > .field-group-collapsible + .field-group-collapsible {
+    @apply mt-4;
+  }
+
+  .field-group-header {
+    @apply w-full text-left px-4 py-3 min-h-[44px];
+    @apply border-b border-gray-200 dark:border-gray-700;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
+    @apply transition-colors duration-150;
+    @apply cursor-pointer;
+  }
+
+  .field-group-header-content {
+    @apply flex items-start gap-3;
+  }
+
+  .field-group-header-icon {
+    @apply text-base text-gray-500 dark:text-gray-400;
+    @apply transition-transform duration-150;
+    @apply flex-shrink-0 mt-0.5;
+  }
+
+  .field-group-header-title {
+    @apply text-base font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .field-group-header-help {
+    @apply text-xs text-gray-500 dark:text-gray-400 mt-1;
+  }
+
+  .field-group-content {
+    @apply px-4 py-4 bg-white dark:bg-gray-800;
   }
 
   /* Form section groupings */
@@ -843,6 +993,16 @@
     @apply space-y-2;
   }
 
+  .validation-section-error {
+    @apply border-l-4 border-l-danger-500 pl-3;
+    @apply dark:border-l-danger-400;
+  }
+
+  .validation-section-warning {
+    @apply border-l-4 border-l-warning-500 pl-3;
+    @apply dark:border-l-warning-400;
+  }
+
   .validation-heading {
     @apply text-sm font-semibold;
   }
@@ -875,6 +1035,34 @@
     @apply dark:text-warning-400;
   }
 
+  /* Form section header for subsections */
+  .form-subsection-header {
+    @apply text-sm font-semibold text-gray-700 mb-2;
+    @apply dark:text-gray-300;
+  }
+
+  /* Validation success message */
+  .validation-success {
+    @apply text-sm text-success-600 font-medium;
+    @apply dark:text-success-300;
+  }
+
+  /* Loading state */
+  .loading-state {
+    @apply text-center py-12 text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  /* Form legend for color coding explanation */
+  .form-legend {
+    @apply flex flex-wrap gap-4 text-xs text-gray-600 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200;
+    @apply dark:text-gray-400 dark:bg-gray-800/50 dark:border-gray-700;
+  }
+
+  .form-legend-item {
+    @apply flex items-center gap-1.5;
+  }
+
   /* Page container with consistent spacing */
   .page-container {
     @apply p-4 space-y-4;
@@ -892,11 +1080,33 @@
 
   /* Input with inline button */
   .input-with-button {
-    @apply flex gap-2;
+    @apply flex gap-2 relative;
   }
 
   .input-with-button input {
     @apply flex-1;
+  }
+
+  /* Autocomplete dropdown for tag inputs */
+  .autocomplete-dropdown {
+    @apply absolute z-50 left-0 right-[88px] mt-1;
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-300 dark:border-gray-600;
+    @apply rounded-lg shadow-lg;
+    @apply max-h-60 overflow-y-auto;
+  }
+
+  .autocomplete-item {
+    @apply w-full text-left px-4 py-2;
+    @apply text-sm text-gray-700 dark:text-gray-300;
+    @apply hover:bg-primary-50 dark:hover:bg-primary-900/30;
+    @apply transition-colors duration-150;
+    @apply focus:outline-none focus:bg-primary-50 dark:focus:bg-primary-900/30;
+  }
+
+  .autocomplete-item-selected {
+    @apply bg-primary-100 dark:bg-primary-900/50;
+    @apply text-primary-900 dark:text-primary-100;
   }
 
   /* Stat card value display */

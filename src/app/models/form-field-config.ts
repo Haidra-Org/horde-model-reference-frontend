@@ -3,6 +3,8 @@
  * Provides a type-safe way to define form fields with various input types.
  */
 
+import { ModelRequirementsConfig } from '../components/form-fields/model-requirements-editor/model-requirements-editor.component';
+
 export type FormFieldType =
   | 'text'
   | 'number'
@@ -11,7 +13,8 @@ export type FormFieldType =
   | 'select'
   | 'checkbox'
   | 'tag-input'
-  | 'key-value';
+  | 'key-value'
+  | 'requirements';
 
 export interface SelectOption {
   value: string;
@@ -101,6 +104,8 @@ export interface CheckboxFieldConfig extends BaseFieldConfig<boolean> {
  */
 export interface TagInputFieldConfig extends BaseFieldConfig<string[]> {
   type: 'tag-input';
+  /** Optional suggestions for autocomplete */
+  suggestions?: readonly string[];
 }
 
 /**
@@ -109,6 +114,16 @@ export interface TagInputFieldConfig extends BaseFieldConfig<string[]> {
 export interface KeyValueFieldConfig
   extends BaseFieldConfig<Record<string, KeyValueEditorValueType>> {
   type: 'key-value';
+}
+
+/**
+ * Configuration for model requirements/settings editor fields
+ */
+export interface RequirementsFieldConfig
+  extends BaseFieldConfig<Record<string, KeyValueEditorValueType>> {
+  type: 'requirements';
+  /** Configuration for which structured fields to show */
+  config?: ModelRequirementsConfig;
 }
 
 /**
@@ -121,7 +136,8 @@ export type FormFieldConfig =
   | SelectFieldConfig
   | CheckboxFieldConfig
   | TagInputFieldConfig
-  | KeyValueFieldConfig;
+  | KeyValueFieldConfig
+  | RequirementsFieldConfig;
 
 /**
  * Groups form fields for layout purposes
@@ -139,6 +155,10 @@ export interface FormFieldGroup {
   defaultCollapsed?: boolean;
   /** Help text for the entire group */
   helpText?: string;
+  /** Color variant for visual distinction (primary, success, info, warning) */
+  colorVariant?: 'primary' | 'success' | 'info' | 'warning';
+  /** Optional icon/emoji to display before the label */
+  icon?: string;
 }
 
 /**

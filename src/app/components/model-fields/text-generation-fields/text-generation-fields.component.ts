@@ -29,10 +29,28 @@ export interface TextGenerationFieldsData {
         <h3 class="heading-card">Text Generation Fields</h3>
       </div>
 
-      <div class="card-body card-section">
-        @for (item of fieldGroups(); track $index) {
-          <app-field-group [item]="item" />
-        }
+      <div class="card-body">
+        <!-- Color Legend -->
+        <div class="form-legend mb-4">
+          <span class="form-legend-item">
+            <span>🔷</span>
+            <span>Core</span>
+          </span>
+          <span class="form-legend-item">
+            <span>✅</span>
+            <span>Content</span>
+          </span>
+          <span class="form-legend-item">
+            <span>⚠️</span>
+            <span>Constraints</span>
+          </span>
+        </div>
+
+        <div class="card-section">
+          @for (item of fieldGroups(); track $index) {
+            <app-field-group [item]="item" />
+          }
+        </div>
       </div>
     </div>
   `,
@@ -82,6 +100,14 @@ export class TextGenerationFieldsComponent {
             .build(),
         ],
         'form-grid-2',
+        {
+          label: 'Core Configuration',
+          collapsible: true,
+          defaultCollapsed: false,
+          helpText: 'Essential model identification and parameters',
+          colorVariant: 'primary',
+          icon: '🔷',
+        },
       ),
 
       // Display & Metadata
@@ -116,14 +142,26 @@ export class TextGenerationFieldsComponent {
           label: 'Display & Metadata',
           collapsible: true,
           defaultCollapsed: false,
+          colorVariant: 'success',
+          icon: '✅',
         },
       ),
 
       // Advanced Settings (collapsible, default collapsed)
       FormFieldBuilder.group(
         [
-          FormFieldBuilder.keyValue('settings', 'Settings', currentData.settings || {}, (value) =>
-            this.updateField('settings', Object.keys(value).length > 0 ? value : null),
+          FormFieldBuilder.requirements(
+            'settings',
+            'Settings',
+            currentData.settings || {},
+            (value) => this.updateField('settings', Object.keys(value).length > 0 ? value : null),
+            {
+              enableMinSteps: false,
+              enableMaxSteps: false,
+              enableCfgScale: false,
+              enableSamplers: false,
+              enableSchedulers: false,
+            },
           )
             .helpText('Model-specific configuration parameters and default values')
             .build(),
@@ -134,6 +172,8 @@ export class TextGenerationFieldsComponent {
           collapsible: true,
           defaultCollapsed: true,
           helpText: 'Optional configuration parameters for this model',
+          colorVariant: 'warning',
+          icon: '⚠️',
         },
       ),
     ];

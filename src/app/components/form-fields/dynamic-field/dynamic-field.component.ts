@@ -9,10 +9,12 @@ import {
   CheckboxFieldConfig,
   TagInputFieldConfig,
   KeyValueFieldConfig,
+  RequirementsFieldConfig,
   KeyValueEditorValueType,
 } from '../../../models/form-field-config';
 import { TagInputComponent } from '../tag-input/tag-input.component';
 import { KeyValueEditorComponent } from '../key-value-editor/key-value-editor.component';
+import { ModelRequirementsEditorComponent } from '../model-requirements-editor/model-requirements-editor.component';
 
 /**
  * Generic form field component that renders different field types
@@ -23,7 +25,7 @@ import { KeyValueEditorComponent } from '../key-value-editor/key-value-editor.co
  */
 @Component({
   selector: 'app-dynamic-field',
-  imports: [FormsModule, TagInputComponent, KeyValueEditorComponent],
+  imports: [FormsModule, TagInputComponent, KeyValueEditorComponent, ModelRequirementsEditorComponent],
   templateUrl: './dynamic-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -67,6 +69,11 @@ export class DynamicFieldComponent {
   readonly keyValueConfig = computed<KeyValueFieldConfig | null>(() => {
     const cfg = this.config();
     return cfg.type === 'key-value' ? (cfg as KeyValueFieldConfig) : null;
+  });
+
+  readonly requirementsConfig = computed<RequirementsFieldConfig | null>(() => {
+    const cfg = this.config();
+    return cfg.type === 'requirements' ? (cfg as RequirementsFieldConfig) : null;
   });
 
   /**
@@ -135,6 +142,16 @@ export class DynamicFieldComponent {
    */
   onKeyValueChange(
     cfg: KeyValueFieldConfig,
+    values: Record<string, KeyValueEditorValueType>,
+  ): void {
+    cfg.onChange(values);
+  }
+
+  /**
+   * Handle value changes for requirements editor
+   */
+  onRequirementsChange(
+    cfg: RequirementsFieldConfig,
     values: Record<string, KeyValueEditorValueType>,
   ): void {
     cfg.onChange(values);

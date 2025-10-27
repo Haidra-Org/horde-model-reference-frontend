@@ -1,43 +1,43 @@
 <div class="form-field">
   @if (label()) {
-    <label class="form-label" [attr.for]="inputId">{{ label() }}</label>
+  <label class="form-label" [attr.for]="inputId">{{ label() }}</label>
   }
 
   @if (values().length > 0) {
-    <div class="flex flex-wrap gap-2">
-      @for (value of values(); track $index) {
-        <span class="badge badge-info">
-          <span>{{ value }}</span>
-          <button
-            type="button"
-            class="hover:bg-info-200 dark:hover:bg-info-800/50 rounded px-1 transition-colors ml-1"
-            (click)="removeValue($index)"
-            title="Remove"
-          >
-            ×
-          </button>
-        </span>
-      }
-    </div>
+  <div class="flex flex-wrap gap-2">
+    @for (value of values(); track $index) {
+    <span class="badge badge-info">
+      <span>{{ value }}</span>
+      <button type="button" class="hover:bg-info-200 dark:hover:bg-info-800/50 rounded px-1 transition-colors ml-1"
+        (click)="removeValue($index)" [attr.aria-label]="'Remove ' + value" title="Remove">
+        ×
+      </button>
+    </span>
+    }
+  </div>
   }
 
-  <div class="input-with-button">
-    <input
-      type="text"
-      class="form-input"
-      [id]="inputId"
-      [placeholder]="placeholder()"
-      [(ngModel)]="newValue"
-      (ngModelChange)="newValue.set($event)"
-      (keypress)="handleKeyPress($event)"
-    />
-    <button
-      type="button"
-      class="btn btn-sm btn-primary"
-      (click)="addValue()"
-      [disabled]="!newValue().trim()"
-    >
+  <div class="input-with-button relative">
+    <input #inputElement type="text" class="form-input" [id]="inputId" [placeholder]="placeholder()"
+      [(ngModel)]="newValue" (ngModelChange)="newValue.set($event)" (input)="handleInput()"
+      (keydown)="handleKeyDown($event)" (blur)="handleBlur()" [attr.aria-controls]="suggestionsId"
+      [attr.aria-expanded]="showSuggestions()" [attr.aria-autocomplete]="suggestions().length > 0 ? 'list' : null"
+      role="combobox" />
+    <button type="button" class="btn btn-sm btn-primary" (click)="addValue()" [disabled]="!newValue().trim()"
+      aria-label="Add item">
       Add
     </button>
+
+    @if (showSuggestions() && filteredSuggestions().length > 0) {
+    <div [id]="suggestionsId" class="autocomplete-dropdown" role="listbox" [attr.aria-label]="label() + ' suggestions'">
+      @for (suggestion of filteredSuggestions(); track suggestion; let idx = $index) {
+      <button type="button" class="autocomplete-item"
+        [class.autocomplete-item-selected]="idx === selectedSuggestionIndex()" (click)="selectSuggestion(suggestion)"
+        role="option" [attr.aria-selected]="idx === selectedSuggestionIndex()">
+        {{ suggestion }}
+      </button>
+      }
+    </div>
+    }
   </div>
 </div>
