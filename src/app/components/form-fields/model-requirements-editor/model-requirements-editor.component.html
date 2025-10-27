@@ -1,0 +1,74 @@
+<fieldset class="form-section">
+  @if (label()) {
+  <legend class="form-label">{{ label() }}</legend>
+  }
+
+  <div class="space-y-6">
+    <!-- Structured Fields Section -->
+    @if (showMinSteps() || showMaxSteps() || showCfgScale() || showSamplers() || showSchedulers()) {
+    <div class="space-y-4">
+      <div
+        class="text-sm font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2">
+        Common Requirements
+      </div>
+
+      <!-- Steps Configuration -->
+      @if (showMinSteps() || showMaxSteps()) {
+      <div class="form-grid-2">
+        @if (showMinSteps()) {
+        <div class="form-field">
+          <label class="form-label" for="min-steps">Min Steps</label>
+          <input id="min-steps" type="number" class="form-input" [value]="minSteps() ?? ''"
+            (blur)="updateMinSteps($any($event.target).value)" placeholder="e.g., 3" min="0" />
+        </div>
+        }
+
+        @if (showMaxSteps()) {
+        <div class="form-field">
+          <label class="form-label" for="max-steps">Max Steps</label>
+          <input id="max-steps" type="number" class="form-input" [value]="maxSteps() ?? ''"
+            (blur)="updateMaxSteps($any($event.target).value)" placeholder="e.g., 150" min="0" />
+        </div>
+        }
+      </div>
+      }
+
+      <!-- CFG Scale -->
+      @if (showCfgScale()) {
+      <div class="form-field">
+        <label class="form-label" for="cfg-scale">CFG Scale</label>
+        <input id="cfg-scale" type="number" class="form-input" [value]="cfgScale() ?? ''"
+          (blur)="updateCfgScale($any($event.target).value)" placeholder="e.g., 7.5" step="0.1" min="0" />
+      </div>
+      }
+
+      <!-- Samplers -->
+      @if (showSamplers()) {
+      <app-tag-input [label]="'Samplers'" [values]="samplers()" [suggestions]="knownSamplers"
+        [placeholder]="'Add sampler...'" (valuesChange)="updateSamplers($event)" />
+      }
+
+      <!-- Schedulers -->
+      @if (showSchedulers()) {
+      <app-tag-input [label]="'Schedulers'" [values]="schedulers()" [suggestions]="knownSchedulers"
+        [placeholder]="'Add scheduler...'" (valuesChange)="updateSchedulers($event)" />
+      }
+    </div>
+    }
+
+    <!-- Custom Fields Section -->
+    <div>
+      @if (showMinSteps() || showMaxSteps() || showCfgScale() || showSamplers() || showSchedulers()) {
+      <div
+        class="text-sm font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
+        Custom Requirements
+        <span class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-2">
+          (Optional - for advanced or uncommon requirements)
+        </span>
+      </div>
+      }
+
+      <app-key-value-editor [label]="''" [values]="customFields()" (valuesChange)="updateCustomFields($event)" />
+    </div>
+  </div>
+</fieldset>

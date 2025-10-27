@@ -70,12 +70,18 @@
   <!-- Tag Input -->
   @if (tagInputConfig(); as cfg) {
   <app-tag-input [label]="cfg.label" [placeholder]="cfg.placeholder || 'Add item...'" [values]="cfg.value"
-    (valuesChange)="onTagInputChange(cfg, $event)" />
+    [suggestions]="cfg.suggestions || []" (valuesChange)="onTagInputChange(cfg, $event)" />
   }
 
   <!-- Key-Value Editor -->
   @if (keyValueConfig(); as cfg) {
   <app-key-value-editor [label]="cfg.label" [values]="cfg.value" (valuesChange)="onKeyValueChange(cfg, $event)" />
+  }
+
+  <!-- Model Requirements Editor -->
+  @if (requirementsConfig(); as cfg) {
+  <app-model-requirements-editor [label]="cfg.label" [values]="cfg.value" [config]="cfg.config || {}"
+    (valuesChange)="onRequirementsChange(cfg, $event)" />
   }
 </div>
 }

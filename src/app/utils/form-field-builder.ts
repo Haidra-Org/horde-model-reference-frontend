@@ -12,12 +12,14 @@ import {
   CheckboxFieldConfig,
   TagInputFieldConfig,
   KeyValueFieldConfig,
+  RequirementsFieldConfig,
   KeyValueEditorValueType,
   SelectOption,
   FormFieldGroup,
 } from '../models/form-field-config';
 import { ModelReferenceCategory } from '../models/api.models';
 import { isFieldHidden } from '../models/legacy-fixed-fields.config';
+import { ModelRequirementsConfig } from '../components/form-fields/model-requirements-editor/model-requirements-editor.component';
 
 /**
  * Builder class for creating form field configurations with a fluent API
@@ -178,6 +180,27 @@ export class FormFieldBuilder {
   }
 
   /**
+   * Create a model requirements/settings editor field with structured fields
+   */
+  static requirements(
+    id: string,
+    label: string,
+    value: Record<string, KeyValueEditorValueType>,
+    onChange: (value: Record<string, KeyValueEditorValueType>) => void,
+    config?: ModelRequirementsConfig,
+  ): RequirementsFieldBuilder {
+    return new RequirementsFieldBuilder({
+      id,
+      name: id,
+      label,
+      type: 'requirements',
+      value,
+      onChange,
+      config,
+    });
+  }
+
+  /**
    * Create a tri-state boolean select (true/false/null)
    */
   static triStateBoolean(
@@ -221,6 +244,8 @@ export class FormFieldBuilder {
       collapsible?: boolean;
       defaultCollapsed?: boolean;
       helpText?: string;
+      colorVariant?: 'primary' | 'success' | 'info' | 'warning';
+      icon?: string;
     },
   ): FormFieldGroup {
     return {
@@ -230,6 +255,8 @@ export class FormFieldBuilder {
       collapsible: options?.collapsible,
       defaultCollapsed: options?.defaultCollapsed,
       helpText: options?.helpText,
+      colorVariant: options?.colorVariant,
+      icon: options?.icon,
     };
   }
 }
@@ -238,7 +265,7 @@ export class FormFieldBuilder {
  * Base builder class with common fluent methods
  */
 abstract class BaseFieldBuilder<T extends FormFieldConfig> {
-  constructor(protected config: T) {}
+  constructor(protected config: T) { }
 
   placeholder(text: string): this {
     this.config.placeholder = text;
@@ -294,9 +321,9 @@ abstract class BaseFieldBuilder<T extends FormFieldConfig> {
   }
 }
 
-class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> {}
+class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> { }
 
-class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> {}
+class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> { }
 
 class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   rows(count: number): this {
@@ -305,7 +332,7 @@ class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   }
 }
 
-class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> {}
+class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> { }
 
 class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   checkboxLabel(text: string): this {
@@ -314,6 +341,24 @@ class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   }
 }
 
-class TagInputFieldBuilder extends BaseFieldBuilder<TagInputFieldConfig> {}
+class TagInputFieldBuilder extends BaseFieldBuilder<TagInputFieldConfig> {
+  /**
+   * Add autocomplete suggestions
+   */
+  suggestions(values: readonly string[]): this {
+    this.config.suggestions = values;
+    return this;
+  }
+}
 
-class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> {}
+class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> { }
+
+class RequirementsFieldBuilder extends BaseFieldBuilder<RequirementsFieldConfig> {
+  /**
+   * Configure which structured fields to show
+   */
+  configure(config: ModelRequirementsConfig): this {
+    this.config.config = config;
+    return this;
+  }
+}

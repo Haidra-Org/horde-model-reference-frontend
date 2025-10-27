@@ -1,8 +1,9 @@
-import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FieldGroupComponent } from '../../form-fields/field-group/field-group.component';
 import { ModelReferenceCategory } from '../../../models/api.models';
 import { FormFieldConfig, FormFieldGroup } from '../../../models/form-field-config';
 import { FormFieldBuilder } from '../../../utils/form-field-builder';
+import { ModelConstantsService } from '../../../services/model-constants.service';
 
 export interface CommonFieldsData {
   description?: string | null;
@@ -24,16 +25,36 @@ export interface CommonFieldsData {
         <h3 class="heading-card">Common Fields</h3>
       </div>
 
-      <div class="card-body card-section">
-        @for (item of fieldGroups(); track $index) {
-          <app-field-group [item]="item" />
-        }
+      <div class="card-body">
+        <!-- Color Legend -->
+        <div class="form-legend mb-4">
+          <span class="form-legend-item">
+            <span>🔷</span>
+            <span>Core</span>
+          </span>
+          <span class="form-legend-item">
+            <span>✅</span>
+            <span>Content</span>
+          </span>
+          <span class="form-legend-item">
+            <span>⚠️</span>
+            <span>Constraints</span>
+          </span>
+        </div>
+
+        <div class="card-section">
+          @for (item of fieldGroups(); track $index) {
+            <app-field-group [item]="item" />
+          }
+        </div>
       </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommonFieldsComponent {
+  private readonly modelConstants = inject(ModelConstantsService);
+
   readonly data = input.required<CommonFieldsData>();
   readonly category = input.required<ModelReferenceCategory>();
   readonly dataChange = output<CommonFieldsData>();
@@ -47,44 +68,57 @@ export class CommonFieldsComponent {
     const currentData = this.data();
 
     return [
-      // Description (full width)
-      FormFieldBuilder.textarea(
-        'description',
-        'Description',
-        currentData.description || null,
-        (value) => this.updateField('description', value),
-      )
-        .rows(3)
-        .placeholder('Brief description of the model and its capabilities')
-        .helpText('A concise summary that helps users understand what this model does')
-        .build(),
-
-      // Basic Metadata
+      // Model Identity - Core information
       FormFieldBuilder.group(
         [
+          FormFieldBuilder.textarea(
+            'description',
+            'Description',
+            currentData.description || null,
+            (value) => this.updateField('description', value),
+          )
+            .rows(3)
+            .placeholder('Brief description of the model and its capabilities')
+            .helpText('A concise summary that helps users understand what this model does')
+            .build(),
+
           FormFieldBuilder.text('type', 'Type', currentData.type || null, (value) =>
             this.updateField('type', value),
           )
-            .placeholder('e.g., ckpt')
-            .helpText('Model file type')
+            .placeholder('e.g., ckpt, safetensors')
+            .helpText('Model file format (e.g., ckpt, safetensors, diffusers)')
             .hideForCategory(category)
             .build(),
 
           FormFieldBuilder.text('version', 'Version', currentData.version || null, (value) =>
             this.updateField('version', value),
           )
-            .placeholder('e.g., 1.0, v2.1')
-            .helpText('Version identifier for this model release')
+            .placeholder('e.g., 1.0, v2.1, fp16')
+            .helpText('Version identifier or variant name for this model release')
             .build(),
 
-          FormFieldBuilder.text('style', 'Style', currentData.style || null, (value) =>
-            this.updateField('style', value),
+          FormFieldBuilder.select(
+            'style',
+            'Style',
+            currentData.style || '',
+            [
+              { value: '', label: '(None)' },
+              ...this.modelConstants.getModelStyles(),
+            ],
+            (value) => this.updateField('style', value || null),
           )
-            .placeholder('e.g., realistic, anime, artistic')
-            .helpText('Visual or output style of the model')
+            .helpText('Visual or output style category of the model')
             .build(),
         ],
         'form-grid-3',
+        {
+          label: 'Model Identity',
+          collapsible: true,
+          defaultCollapsed: false,
+          helpText: 'Basic identifying information about this model',
+          colorVariant: 'primary',
+          icon: '🔷',
+        },
       ),
 
       // Content & Availability Settings
@@ -122,6 +156,8 @@ export class CommonFieldsComponent {
           label: 'Content & Availability',
           collapsible: true,
           defaultCollapsed: false,
+          colorVariant: 'success',
+          icon: '✅',
         },
       ),
 
@@ -135,15 +171,20 @@ export class CommonFieldsComponent {
             (value) => this.updateField('features_not_supported', value.length > 0 ? value : null),
           )
             .placeholder('Add unsupported feature...')
-            .helpText('List any features or capabilities that this model does not support')
+            .suggestions(this.modelConstants.getCommonUnsupportedFeatures())
+            .helpText(
+              'List any features this model does not support (e.g., img2img, controlnet, lora). Start typing for common suggestions.',
+            )
             .build(),
         ],
         undefined,
         {
           label: 'Limitations',
           collapsible: true,
-          defaultCollapsed: true,
+          defaultCollapsed: false,
           helpText: 'Document known limitations or unsupported features',
+          colorVariant: 'warning',
+          icon: '⚠️',
         },
       ),
     ];

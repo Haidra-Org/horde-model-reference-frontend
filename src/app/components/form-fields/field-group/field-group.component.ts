@@ -50,6 +50,17 @@ export class FieldGroupComponent {
   });
 
   /**
+   * Computed signal that returns the color variant class for the group
+   */
+  readonly colorVariantClass = computed<string>(() => {
+    const group = this.asGroup();
+    if (!group || !group.colorVariant) {
+      return '';
+    }
+    return `field-group-collapsible-${group.colorVariant}`;
+  });
+
+  /**
    * Toggle the collapsed state of a collapsible group
    */
   toggleCollapsed(): void {

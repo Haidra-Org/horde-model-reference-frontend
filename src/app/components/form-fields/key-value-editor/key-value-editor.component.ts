@@ -152,4 +152,18 @@ export class KeyValueEditorComponent implements OnInit, OnChanges {
     }
     return String(value);
   }
+
+  getPlaceholderForType(): string {
+    const type = this.newValueType();
+    switch (type) {
+      case 'number':
+        return 'e.g., 8, 3.5, 1024';
+      case 'boolean':
+        return 'true or false';
+      case 'array':
+        return 'e.g., ["item1", "item2"] or [1, 2, 3]';
+      default:
+        return 'Enter text value';
+    }
+  }
 }

@@ -1,59 +1,62 @@
 <!-- Single field -->
 @if (asField(); as field) {
-  <app-dynamic-field [config]="field" />
+<app-dynamic-field [config]="field" />
 }
 
 <!-- Field group with optional grid layout and collapsible support -->
 @if (asGroup(); as group) {
-  <!-- Non-collapsible group -->
-  @if (!group.collapsible) {
-    @if (group.label) {
-      <div class="form-label mb-3">{{ group.label }}</div>
-    }
-    @if (group.helpText) {
-      <div class="form-hint mb-3">{{ group.helpText }}</div>
-    }
-    <div [class]="group.gridClass || ''">
+<!-- Non-collapsible group -->
+@if (!group.collapsible) {
+@if (group.label) {
+<div class="form-label mb-3">{{ group.label }}</div>
+}
+@if (group.helpText) {
+<div class="form-hint mb-3">{{ group.helpText }}</div>
+}
+<div [class]="group.gridClass || ''">
+  @for (field of group.fields; track field.id) {
+  <app-dynamic-field [config]="field" />
+  }
+</div>
+}
+
+<!-- Collapsible group -->
+@if (group.collapsible) {
+<div class="field-group-collapsible" [class]="colorVariantClass()">
+  <!-- Collapsible header with improved touch targets and accessibility -->
+  <button type="button" class="field-group-header" (click)="toggleCollapsed()" [attr.aria-expanded]="!isCollapsed()"
+    [attr.aria-controls]="getContentId(group.label)"
+    [attr.aria-label]="(isCollapsed() ? 'Expand' : 'Collapse') + ' ' + (group.label || 'section')">
+    <div class="field-group-header-content">
+      <span class="field-group-header-icon" aria-hidden="true">
+        {{ isCollapsed() ? '▶' : '▼' }}
+      </span>
+      <div class="flex-1">
+        @if (group.label) {
+        <h4 class="field-group-header-title">
+          @if (group.icon) {
+            <span class="mr-1.5">{{ group.icon }}</span>
+          }
+          {{ group.label }}
+        </h4>
+        }
+        @if (group.helpText && !isCollapsed()) {
+        <div class="field-group-header-help">{{ group.helpText }}</div>
+        }
+      </div>
+    </div>
+  </button>
+
+  <!-- Collapsible content with smooth transition -->
+  @if (!isCollapsed()) {
+  <div [id]="getContentId(group.label)" class="field-group-content" [@expandCollapse]>
+    <div [class]="group.gridClass || 'space-y-4'">
       @for (field of group.fields; track field.id) {
-        <app-dynamic-field [config]="field" />
+      <app-dynamic-field [config]="field" />
       }
     </div>
+  </div>
   }
-
-  <!-- Collapsible group -->
-  @if (group.collapsible) {
-    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-      <!-- Collapsible header -->
-      <button
-        type="button"
-        class="card-header-collapsible"
-        (click)="toggleCollapsed()"
-        [attr.aria-expanded]="!isCollapsed()"
-        [attr.aria-controls]="getContentId(group.label)"
-      >
-        <div class="flex-1">
-          @if (group.label) {
-            <h4 class="heading-card">{{ group.label }}</h4>
-          }
-          @if (group.helpText && !isCollapsed()) {
-            <div class="form-hint mt-1">{{ group.helpText }}</div>
-          }
-        </div>
-        <span class="card-header-collapsible-icon">
-          {{ isCollapsed() ? '▶' : '▼' }}
-        </span>
-      </button>
-
-      <!-- Collapsible content -->
-      @if (!isCollapsed()) {
-        <div [id]="getContentId(group.label)" class="px-4 py-4">
-          <div [class]="group.gridClass || ''">
-            @for (field of group.fields; track field.id) {
-              <app-dynamic-field [config]="field" />
-            }
-          </div>
-        </div>
-      }
-    </div>
-  }
+</div>
+}
 }
