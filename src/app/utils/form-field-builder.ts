@@ -16,6 +16,7 @@ import {
   KeyValueEditorValueType,
   SelectOption,
   FormFieldGroup,
+  FormFieldPriority,
 } from '../models/form-field-config';
 import { ModelReferenceCategory } from '../models/api.models';
 import { isFieldHidden } from '../models/legacy-fixed-fields.config';
@@ -200,6 +201,28 @@ export class FormFieldBuilder {
     });
   }
 
+  static boolean(
+    id: string,
+    label: string,
+    value: boolean,
+    onChange: (value: boolean) => void,
+  ): SelectFieldBuilder {
+    return new SelectFieldBuilder({
+      id,
+      name: id,
+      label,
+      type: 'select',
+      value: value ? 'true' : 'false',
+      options: [
+        { value: 'true', label: 'Yes' },
+        { value: 'false', label: 'No' },
+      ],
+      onChange: (strValue: string) => {
+        onChange(strValue === 'true');
+      },
+    });
+  }
+
   /**
    * Create a tri-state boolean select (true/false/null)
    */
@@ -234,7 +257,12 @@ export class FormFieldBuilder {
   }
 
   /**
-   * Create a field group with grid layout
+   * Create a field group with grid layout.
+   * When priority is specified, it automatically sets colorVariant and defaultCollapsed:
+   * - required: primary color, always expanded
+   * - recommended: success color, expanded by default
+   * - optional: info color, expanded by default
+   * - advanced: warning/gray color, collapsed by default
    */
   static group(
     fields: FormFieldConfig[],
@@ -246,17 +274,44 @@ export class FormFieldBuilder {
       helpText?: string;
       colorVariant?: 'primary' | 'success' | 'info' | 'warning';
       icon?: string;
+      priority?: FormFieldPriority;
     },
   ): FormFieldGroup {
+    // Map priority to colorVariant and defaultCollapsed if priority is specified
+    let colorVariant = options?.colorVariant;
+    let defaultCollapsed = options?.defaultCollapsed;
+
+    if (options?.priority) {
+      switch (options.priority) {
+        case 'required':
+          colorVariant = colorVariant ?? 'primary';
+          defaultCollapsed = defaultCollapsed ?? false;
+          break;
+        case 'recommended':
+          colorVariant = colorVariant ?? 'success';
+          defaultCollapsed = defaultCollapsed ?? false;
+          break;
+        case 'optional':
+          colorVariant = colorVariant ?? 'info';
+          defaultCollapsed = defaultCollapsed ?? false;
+          break;
+        case 'advanced':
+          colorVariant = colorVariant ?? 'warning';
+          defaultCollapsed = defaultCollapsed ?? true;
+          break;
+      }
+    }
+
     return {
       fields,
       gridClass,
       label: options?.label,
       collapsible: options?.collapsible,
-      defaultCollapsed: options?.defaultCollapsed,
+      defaultCollapsed,
       helpText: options?.helpText,
-      colorVariant: options?.colorVariant,
+      colorVariant,
       icon: options?.icon,
+      priority: options?.priority,
     };
   }
 }
@@ -265,7 +320,7 @@ export class FormFieldBuilder {
  * Base builder class with common fluent methods
  */
 abstract class BaseFieldBuilder<T extends FormFieldConfig> {
-  constructor(protected config: T) { }
+  constructor(protected config: T) {}
 
   placeholder(text: string): this {
     this.config.placeholder = text;
@@ -293,6 +348,14 @@ abstract class BaseFieldBuilder<T extends FormFieldConfig> {
   }
 
   /**
+   * Set the number of columns this field should span in grid layout (1-4)
+   */
+  gridSpan(columns: number): this {
+    this.config.gridColumnSpan = columns;
+    return this;
+  }
+
+  /**
    * Hide this field for specific categories using the legacy fixed fields config
    */
   hideForCategory(category: ModelReferenceCategory): this {
@@ -316,14 +379,22 @@ abstract class BaseFieldBuilder<T extends FormFieldConfig> {
     return this;
   }
 
+  /**
+   * Set the priority level for visual hierarchy (required, recommended, optional, advanced)
+   */
+  priority(level: FormFieldPriority): this {
+    this.config.priority = level;
+    return this;
+  }
+
   build(): T {
     return this.config;
   }
 }
 
-class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> { }
+class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> {}
 
-class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> { }
+class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> {}
 
 class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   rows(count: number): this {
@@ -332,7 +403,7 @@ class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   }
 }
 
-class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> { }
+class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> {}
 
 class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   checkboxLabel(text: string): this {
@@ -351,7 +422,7 @@ class TagInputFieldBuilder extends BaseFieldBuilder<TagInputFieldConfig> {
   }
 }
 
-class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> { }
+class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> {}
 
 class RequirementsFieldBuilder extends BaseFieldBuilder<RequirementsFieldConfig> {
   /**

@@ -40,20 +40,22 @@ export class HordeApiService {
 
   getTotalStats(type: HordeModelType): Observable<HordeTotalStatsResponse> {
     return this.trackLoading(
-      this.http.get<HordeTotalStatsResponse>(`${this.baseUrl}/${this.getTotalsEndpoint(type)}`).pipe(
-        catchError((error) => {
-          this.notificationService.error(
-            `Failed to fetch Horde total stats: ${this.getErrorMessage(error)}`,
-          );
-          return of({
-            minute: {},
-            hour: {},
-            day: {},
-            month: {},
-            total: {},
-          });
-        }),
-      ),
+      this.http
+        .get<HordeTotalStatsResponse>(`${this.baseUrl}/${this.getTotalsEndpoint(type)}`)
+        .pipe(
+          catchError((error) => {
+            this.notificationService.error(
+              `Failed to fetch Horde total stats: ${this.getErrorMessage(error)}`,
+            );
+            return of({
+              minute: {},
+              hour: {},
+              day: {},
+              month: {},
+              total: {},
+            });
+          }),
+        ),
     );
   }
 

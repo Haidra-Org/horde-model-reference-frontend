@@ -16,6 +16,11 @@ export type FormFieldType =
   | 'key-value'
   | 'requirements';
 
+/**
+ * Priority level for field groups, determining visual hierarchy
+ */
+export type FormFieldPriority = 'required' | 'recommended' | 'optional' | 'advanced';
+
 export interface SelectOption {
   value: string;
   label: string;
@@ -44,12 +49,16 @@ export interface BaseFieldConfig<T = unknown> {
   placeholder?: string;
   /** Whether the field is required */
   required?: boolean;
+  /** Priority level for visual hierarchy (required, recommended, optional, advanced) */
+  priority?: FormFieldPriority;
   /** CSS classes to apply to the field wrapper */
   wrapperClass?: string;
   /** Additional label text (e.g., warnings or hints) */
   labelSuffix?: string;
   /** Help text explaining the field's purpose (shown below the input) */
   helpText?: string;
+  /** Number of columns this field should span in grid layout (1-4) */
+  gridColumnSpan?: number;
   /** Function to determine if field should be hidden */
   isHidden?: () => boolean;
   /** Function to determine if field should be shown (alternative to isHidden) */
@@ -159,6 +168,8 @@ export interface FormFieldGroup {
   colorVariant?: 'primary' | 'success' | 'info' | 'warning';
   /** Optional icon/emoji to display before the label */
   icon?: string;
+  /** Priority level determining visual hierarchy and default behavior */
+  priority?: FormFieldPriority;
 }
 
 /**

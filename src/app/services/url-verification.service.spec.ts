@@ -32,29 +32,27 @@ describe('UrlVerificationService', () => {
   });
 
   it('should verify URL metadata successfully', async () => {
-    const fetchSpy = jasmine
-      .createSpy('fetch')
-      .and.returnValue(
-        Promise.resolve({
-          ok: true,
-          status: 200,
-          statusText: 'OK',
-          headers: {
-            get: (key: string) => {
-              switch (key.toLowerCase()) {
-                case 'x-sha256':
-                  return 'ABC123';
-                case 'content-length':
-                  return '2048';
-                case 'content-type':
-                  return 'application/octet-stream';
-                default:
-                  return null;
-              }
-            },
+    const fetchSpy = jasmine.createSpy('fetch').and.returnValue(
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          get: (key: string) => {
+            switch (key.toLowerCase()) {
+              case 'x-sha256':
+                return 'ABC123';
+              case 'content-length':
+                return '2048';
+              case 'content-type':
+                return 'application/octet-stream';
+              default:
+                return null;
+            }
           },
-        } as unknown as Response),
-      );
+        },
+      } as unknown as Response),
+    );
 
     (globalThis as { fetch: typeof fetch }).fetch = fetchSpy as unknown as typeof fetch;
 
@@ -74,24 +72,20 @@ describe('UrlVerificationService', () => {
   });
 
   it('should surface HTTP errors from HEAD requests', async () => {
-    const fetchSpy = jasmine
-      .createSpy('fetch')
-      .and.returnValue(
-        Promise.resolve({
-          ok: false,
-          status: 404,
-          statusText: 'Not Found',
-          headers: {
-            get: () => null,
-          },
-        } as unknown as Response),
-      );
+    const fetchSpy = jasmine.createSpy('fetch').and.returnValue(
+      Promise.resolve({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        headers: {
+          get: () => null,
+        },
+      } as unknown as Response),
+    );
 
     (globalThis as { fetch: typeof fetch }).fetch = fetchSpy as unknown as typeof fetch;
 
-    const result = await firstValueFrom(
-      service.verifyUrl('https://example.com/missing'),
-    );
+    const result = await firstValueFrom(service.verifyUrl('https://example.com/missing'));
 
     expect(result).toEqual({
       success: false,

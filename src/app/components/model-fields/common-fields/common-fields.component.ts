@@ -10,7 +10,7 @@ export interface CommonFieldsData {
   type?: string | null;
   version?: string | null;
   style?: string | null;
-  nsfw?: boolean | null;
+  nsfw: boolean;
   download_all?: boolean | null;
   available?: boolean | null;
   features_not_supported?: string[] | null;
@@ -26,22 +26,6 @@ export interface CommonFieldsData {
       </div>
 
       <div class="card-body">
-        <!-- Color Legend -->
-        <div class="form-legend mb-4">
-          <span class="form-legend-item">
-            <span>🔷</span>
-            <span>Core</span>
-          </span>
-          <span class="form-legend-item">
-            <span>✅</span>
-            <span>Content</span>
-          </span>
-          <span class="form-legend-item">
-            <span>⚠️</span>
-            <span>Constraints</span>
-          </span>
-        </div>
-
         <div class="card-section">
           @for (item of fieldGroups(); track $index) {
             <app-field-group [item]="item" />
@@ -62,13 +46,14 @@ export class CommonFieldsComponent {
   /**
    * Computed signal that generates all field configurations for the common fields form.
    * This declaratively defines all fields using the builder pattern with helpful descriptions.
+   * Fields are organized by priority: required, recommended, optional, advanced.
    */
   readonly fieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
     const category = this.category();
     const currentData = this.data();
 
     return [
-      // Model Identity - Core information
+      // Essential Information - Required fields
       FormFieldBuilder.group(
         [
           FormFieldBuilder.textarea(
@@ -80,6 +65,8 @@ export class CommonFieldsComponent {
             .rows(3)
             .placeholder('Brief description of the model and its capabilities')
             .helpText('A concise summary that helps users understand what this model does')
+            .gridSpan(4)
+            .priority('required')
             .build(),
 
           FormFieldBuilder.text('type', 'Type', currentData.type || null, (value) =>
@@ -88,6 +75,8 @@ export class CommonFieldsComponent {
             .placeholder('e.g., ckpt, safetensors')
             .helpText('Model file format (e.g., ckpt, safetensors, diffusers)')
             .hideForCategory(category)
+            .gridSpan(1)
+            .priority('advanced')
             .build(),
 
           FormFieldBuilder.text('version', 'Version', currentData.version || null, (value) =>
@@ -95,39 +84,56 @@ export class CommonFieldsComponent {
           )
             .placeholder('e.g., 1.0, v2.1, fp16')
             .helpText('Version identifier or variant name for this model release')
+            .gridSpan(3)
+            .priority('recommended')
+            .build(),
+        ],
+        'form-grid-4',
+        {
+          label: 'Essential Information',
+          collapsible: true,
+          helpText: 'Core information required for all models',
+          icon: '⭐',
+          priority: 'required',
+        },
+      ),
+
+      // Content Classification - Recommended fields
+      FormFieldBuilder.group(
+        [
+          FormFieldBuilder.boolean('nsfw', 'NSFW', currentData.nsfw, (value) =>
+            this.updateField('nsfw', value),
+          )
+            .helpText('Whether this model is designed for or may generate NSFW content')
+            .gridSpan(1)
+            .priority('recommended')
             .build(),
 
           FormFieldBuilder.select(
             'style',
             'Style',
             currentData.style || '',
-            [
-              { value: '', label: '(None)' },
-              ...this.modelConstants.getModelStyles(),
-            ],
+            [{ value: '', label: '(None)' }, ...this.modelConstants.getModelStyles()],
             (value) => this.updateField('style', value || null),
           )
             .helpText('Visual or output style category of the model')
+            .gridSpan(1)
+            .priority('optional')
             .build(),
-        ],
-        'form-grid-3',
-        {
-          label: 'Model Identity',
-          collapsible: true,
-          defaultCollapsed: false,
-          helpText: 'Basic identifying information about this model',
-          colorVariant: 'primary',
-          icon: '🔷',
-        },
-      ),
 
-      // Content & Availability Settings
-      FormFieldBuilder.group(
-        [
-          FormFieldBuilder.triStateBoolean('nsfw', 'NSFW', currentData.nsfw ?? null, (value) =>
-            this.updateField('nsfw', value),
+          FormFieldBuilder.tagInput(
+            'features_not_supported',
+            'Features Not Supported',
+            currentData.features_not_supported || [],
+            (value) => this.updateField('features_not_supported', value.length > 0 ? value : null),
           )
-            .helpText('Whether this model is designed for or may generate NSFW content')
+            .placeholder('Add unsupported feature...')
+            .suggestions(this.modelConstants.getCommonUnsupportedFeatures())
+            .helpText(
+              'List any features this model does not support (e.g., img2img, controlnet, lora)',
+            )
+            .gridSpan(2)
+            .priority('optional')
             .build(),
 
           FormFieldBuilder.triStateBoolean(
@@ -138,6 +144,7 @@ export class CommonFieldsComponent {
           )
             .helpText('Whether to download all model variants')
             .hideForCategory(category)
+            .gridSpan(2)
             .build(),
 
           FormFieldBuilder.triStateBoolean(
@@ -149,42 +156,16 @@ export class CommonFieldsComponent {
             .labelSuffix(' (usually should be unset)')
             .helpText('Model availability status (leave unset to auto-detect)')
             .hideForCategory(category)
+            .gridSpan(2)
             .build(),
         ],
         'form-grid-3',
         {
-          label: 'Content & Availability',
+          label: 'Content Classification',
           collapsible: true,
-          defaultCollapsed: false,
-          colorVariant: 'success',
-          icon: '✅',
-        },
-      ),
-
-      // Limitations
-      FormFieldBuilder.group(
-        [
-          FormFieldBuilder.tagInput(
-            'features_not_supported',
-            'Features Not Supported',
-            currentData.features_not_supported || [],
-            (value) => this.updateField('features_not_supported', value.length > 0 ? value : null),
-          )
-            .placeholder('Add unsupported feature...')
-            .suggestions(this.modelConstants.getCommonUnsupportedFeatures())
-            .helpText(
-              'List any features this model does not support (e.g., img2img, controlnet, lora). Start typing for common suggestions.',
-            )
-            .build(),
-        ],
-        undefined,
-        {
-          label: 'Limitations',
-          collapsible: true,
-          defaultCollapsed: false,
-          helpText: 'Document known limitations or unsupported features',
-          colorVariant: 'warning',
-          icon: '⚠️',
+          helpText: 'Classify model content type and document any limitations',
+          icon: '🏷️',
+          priority: 'recommended',
         },
       ),
     ];

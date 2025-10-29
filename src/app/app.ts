@@ -4,6 +4,7 @@ import { NavigationComponent } from './components/navigation/navigation.componen
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NotificationDisplayComponent } from './components/notification-display/notification-display.component';
 import { ModelReferenceApiService } from './services/model-reference-api.service';
+import { SidebarService } from './services/sidebar.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -14,8 +15,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class App {
   private readonly api = inject(ModelReferenceApiService);
+  private readonly sidebarService = inject(SidebarService);
+
+  readonly sidebarCollapsed = this.sidebarService.isCollapsed;
 
   constructor() {
     this.api.detectBackendCapabilities().pipe(takeUntilDestroyed()).subscribe();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarService.toggle();
   }
 }
