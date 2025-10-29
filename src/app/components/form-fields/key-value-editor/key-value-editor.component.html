@@ -1,107 +1,132 @@
 <fieldset class="form-section">
   @if (label()) {
-  <legend class="form-label">{{ label() }}</legend>
+    <legend class="form-label">{{ label() }}</legend>
   }
 
   <!-- Existing Pairs -->
   @if (pairs().length > 0) {
-  <div class="space-y-2 mb-4">
-    @for (pair of pairs(); track pair.key) {
-    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-      <div class="flex gap-3 items-start">
-        <!-- Key Column -->
-        <div class="flex-1 min-w-0">
-          <label class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1"
-            [attr.for]="'pair-key-' + pair.key">
-            Key
-          </label>
-          <div class="font-mono text-sm text-gray-900 dark:text-gray-100 break-all" [attr.id]="'pair-key-' + pair.key">
-            {{ pair.key }}
+    <div class="form-grid-3 mb-4">
+      @for (pair of pairs(); track pair.key) {
+        <div class="key-value-item-card">
+          <div class="space-y-2">
+            <!-- Key -->
+            <div>
+              <label class="form-label-sm" [attr.for]="'pair-key-' + pair.key"> Key </label>
+              <div
+                class="font-mono text-sm text-gray-900 dark:text-gray-100 break-all"
+                [attr.id]="'pair-key-' + pair.key"
+              >
+                {{ pair.key }}
+              </div>
+            </div>
+
+            <!-- Value -->
+            <div>
+              <label class="form-label-sm" [attr.for]="'pair-value-' + pair.key">
+                Value
+                <span class="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700">
+                  {{ pair.valueType }}
+                </span>
+              </label>
+              <input
+                type="text"
+                class="form-input text-sm"
+                [value]="getValueAsString(pair.value)"
+                [attr.id]="'pair-value-' + pair.key"
+                (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
+                placeholder="Enter value"
+              />
+            </div>
+
+            <!-- Remove Button -->
+            <div class="flex justify-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                (click)="removePair(pair.key)"
+                [attr.aria-label]="'Remove ' + pair.key"
+                title="Remove this requirement"
+              >
+                <span class="text-lg leading-none">×</span>
+              </button>
+            </div>
           </div>
         </div>
-
-        <!-- Value Column -->
-        <div class="flex-[2] min-w-0">
-          <label class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1"
-            [attr.for]="'pair-value-' + pair.key">
-            Value
-            <span class="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700">
-              {{ pair.valueType }}
-            </span>
-          </label>
-          <input type="text" class="form-input text-sm" [value]="getValueAsString(pair.value)"
-            [attr.id]="'pair-value-' + pair.key"
-            (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
-            placeholder="Enter value" />
-        </div>
-
-        <!-- Remove Button -->
-        <div class="pt-6">
-          <button type="button" class="btn btn-sm btn-danger" (click)="removePair(pair.key)"
-            [attr.aria-label]="'Remove ' + pair.key" title="Remove this requirement">
-            <span class="text-lg leading-none">×</span>
-          </button>
-        </div>
-      </div>
+      }
     </div>
-    }
-  </div>
   }
 
   <!-- Add New Pair Section -->
-  <div
-    class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border-2 border-dashed border-blue-300 dark:border-blue-700">
-    <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+  <div class="key-value-item-card">
+    <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
       Add Custom Requirement
     </div>
 
-    <div class="space-y-3">
+    <!-- All inputs in a single row for compact layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-2">
       <!-- Key Input -->
-      <div>
-        <label for="new-key" class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-          Key <span class="text-red-500">*</span>
-        </label>
-        <input id="new-key" type="text" class="form-input" placeholder="e.g., min_vram_gb, gpu_required"
-          [(ngModel)]="newKey" (ngModelChange)="newKey.set($event)" (keydown.enter)="addPair()" />
+      <div class="lg:col-span-3">
+        <label for="new-key" class="form-label-sm"> Key <span class="text-red-500">*</span> </label>
+        <input
+          id="new-key"
+          type="text"
+          class="form-input text-sm"
+          placeholder="e.g., min_vram_gb"
+          [(ngModel)]="newKey"
+          (ngModelChange)="newKey.set($event)"
+          (keydown.enter)="addPair()"
+        />
       </div>
 
-      <!-- Value and Type Row -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div class="md:col-span-2">
-          <label for="new-value" class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-            Value <span class="text-red-500">*</span>
-          </label>
-          <input id="new-value" type="text" class="form-input" [placeholder]="getPlaceholderForType()"
-            [(ngModel)]="newValue" (ngModelChange)="newValue.set($event)" (keydown.enter)="addPair()" />
-        </div>
+      <!-- Value Input -->
+      <div class="lg:col-span-4">
+        <label for="new-value" class="form-label-sm">
+          Value <span class="text-red-500">*</span>
+        </label>
+        <input
+          id="new-value"
+          type="text"
+          class="form-input text-sm"
+          [placeholder]="getPlaceholderForType()"
+          [(ngModel)]="newValue"
+          (ngModelChange)="newValue.set($event)"
+          (keydown.enter)="addPair()"
+        />
+      </div>
 
-        <div>
-          <label for="new-type" class="text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1">
-            Type
-          </label>
-          <select id="new-type" class="form-select" [(ngModel)]="newValueType"
-            (ngModelChange)="newValueType.set($event)">
-            <option value="string">Text</option>
-            <option value="number">Number</option>
-            <option value="boolean">True/False</option>
-            <option value="array">List (JSON)</option>
-          </select>
-        </div>
+      <!-- Type Select -->
+      <div class="lg:col-span-3">
+        <label for="new-type" class="form-label-sm"> Type </label>
+        <select
+          id="new-type"
+          class="form-select text-sm"
+          [(ngModel)]="newValueType"
+          (ngModelChange)="newValueType.set($event)"
+        >
+          <option value="string">Text</option>
+          <option value="number">Number</option>
+          <option value="boolean">True/False</option>
+          <option value="array">List (JSON)</option>
+        </select>
       </div>
 
       <!-- Add Button -->
-      <div class="flex justify-end">
-        <button type="button" class="btn btn-primary" (click)="addPair()"
-          [disabled]="!newKey().trim() || !newValue().trim()">
-          <span class="text-lg mr-1">+</span> Add Requirement
+      <div class="lg:col-span-2 lg:pt-6">
+        <button
+          type="button"
+          class="btn btn-primary w-full"
+          (click)="addPair()"
+          [disabled]="!newKey().trim() || !newValue().trim()"
+        >
+          <span class="text-lg mr-1">+</span> Add
         </button>
       </div>
     </div>
 
     <!-- Help Text -->
-    <div class="mt-3 text-xs text-gray-600 dark:text-gray-400">
-      <strong>Examples:</strong> min_vram_gb: 8 (number) • gpu_required: true (boolean) • supported_features: ["fp16",
-      "xformers"] (list)
+    <div class="text-xs text-gray-600 dark:text-gray-400">
+      <strong>Examples:</strong> min_vram_gb: 8 (number) • gpu_required: true (boolean) •
+      supported_features: ["fp16", "xformers"] (list)
     </div>
   </div>
 </fieldset>

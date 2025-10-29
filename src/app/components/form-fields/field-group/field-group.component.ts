@@ -21,12 +21,19 @@ export class FieldGroupComponent {
    */
   readonly isCollapsed = signal(false);
 
+  /**
+   * Track if we've initialized the collapsed state to prevent resetting on item changes
+   */
+  private hasInitialized = false;
+
   constructor() {
     // Initialize collapsed state based on the item's defaultCollapsed property
+    // Only run this once to avoid resetting when the item reference changes
     effect(() => {
       const item = this.item();
-      if ('fields' in item && item.collapsible) {
+      if ('fields' in item && item.collapsible && !this.hasInitialized) {
         this.isCollapsed.set(item.defaultCollapsed ?? false);
+        this.hasInitialized = true;
       }
     });
   }
@@ -50,14 +57,61 @@ export class FieldGroupComponent {
   });
 
   /**
-   * Computed signal that returns the color variant class for the group
+   * Computed signal that returns the color variant class for the group.
+   * Priority-based classes take precedence over colorVariant classes.
    */
   readonly colorVariantClass = computed<string>(() => {
     const group = this.asGroup();
-    if (!group || !group.colorVariant) {
+    if (!group) {
       return '';
     }
-    return `field-group-collapsible-${group.colorVariant}`;
+
+    // Priority-based classes take precedence
+    if (group.priority) {
+      return `field-group-${group.priority}`;
+    }
+
+    // Fall back to colorVariant classes
+    if (group.colorVariant) {
+      return `field-group-collapsible-${group.colorVariant}`;
+    }
+
+    return '';
+  });
+
+  /**
+   * Computed signal that returns the priority badge class
+   */
+  readonly priorityBadgeClass = computed<string>(() => {
+    const group = this.asGroup();
+    if (!group?.priority) {
+      return '';
+    }
+
+    switch (group.priority) {
+      case 'required':
+        return 'badge-danger';
+      case 'recommended':
+        return 'badge-success';
+      case 'optional':
+        return 'badge-info';
+      case 'advanced':
+        return 'badge-secondary';
+      default:
+        return '';
+    }
+  });
+
+  /**
+   * Computed signal that returns the priority label text
+   */
+  readonly priorityLabel = computed<string>(() => {
+    const group = this.asGroup();
+    if (!group?.priority) {
+      return '';
+    }
+
+    return group.priority.charAt(0).toUpperCase() + group.priority.slice(1);
   });
 
   /**

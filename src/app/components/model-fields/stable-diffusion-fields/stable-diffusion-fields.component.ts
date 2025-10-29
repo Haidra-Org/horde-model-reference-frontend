@@ -29,22 +29,6 @@ export interface StableDiffusionFieldsData {
       </div>
 
       <div class="card-body">
-        <!-- Color Legend -->
-        <div class="form-legend mb-4">
-          <span class="form-legend-item">
-            <span>🔷</span>
-            <span>Core</span>
-          </span>
-          <span class="form-legend-item">
-            <span>🔧</span>
-            <span>Technical</span>
-          </span>
-          <span class="form-legend-item">
-            <span>✅</span>
-            <span>Content</span>
-          </span>
-        </div>
-
         <div class="card-section">
           @for (item of fieldGroups(); track $index) {
             <app-field-group [item]="item" />
@@ -71,13 +55,13 @@ export class StableDiffusionFieldsComponent {
 
   /**
    * Computed signal that generates all field configurations for the stable diffusion fields form.
-   * Organized into collapsible sections: Core → Technical Details → Metadata.
+   * Organized by priority: Essential Information (required) → Metadata (optional) → Technical Specs (advanced).
    */
   readonly fieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
     const currentData = this.data();
 
     return [
-      // Core Fields (always visible)
+      // Essential Information - Fields that define the model type
       FormFieldBuilder.group(
         [
           FormFieldBuilder.select(
@@ -89,6 +73,7 @@ export class StableDiffusionFieldsComponent {
           )
             .required()
             .helpText('The base Stable Diffusion model architecture (e.g., SD1.5, SDXL)')
+            .gridSpan(2)
             .build(),
 
           FormFieldBuilder.checkbox(
@@ -99,20 +84,72 @@ export class StableDiffusionFieldsComponent {
           )
             .checkboxLabel('This model is designed for inpainting tasks')
             .helpText('Inpainting models fill in missing or masked parts of images')
+            .gridSpan(2)
             .build(),
         ],
-        'form-grid-2',
+        'form-grid-4',
         {
-          label: 'Core Configuration',
+          label: 'Essential Information',
           collapsible: true,
-          defaultCollapsed: false,
-          helpText: 'Essential model architecture settings',
-          colorVariant: 'primary',
-          icon: '🔷',
+          helpText: 'Core model architecture and capabilities',
+          icon: '⭐',
+          priority: 'required',
         },
       ),
 
-      // Technical Details Section (promoted for frequently used fields)
+      // Metadata & Discovery - Optional descriptive information
+      FormFieldBuilder.group(
+        [
+          FormFieldBuilder.url('homepage', 'Homepage', currentData.homepage || null, (value) =>
+            this.updateField('homepage', value),
+          )
+            .placeholder('https://civitai.com/models/...')
+            .helpText("URL to the model's homepage, CivitAI page, or HuggingFace repository")
+            .gridSpan(4)
+            .build(),
+
+          FormFieldBuilder.tagInput('tags', 'Tags', currentData.tags || [], (value) =>
+            this.updateField('tags', value.length > 0 ? value : null),
+          )
+            .placeholder('Add tag...')
+            .suggestions(this.modelConstants.getKnownTags())
+            .helpText('Descriptive tags for categorizing (e.g., anime, realistic, portrait)')
+            .gridSpan(2)
+            .build(),
+
+          FormFieldBuilder.tagInput(
+            'trigger',
+            'Trigger Words',
+            currentData.trigger || [],
+            (value) => this.updateField('trigger', value.length > 0 ? value : null),
+          )
+            .placeholder('Add trigger word...')
+            .helpText("Specific words/phrases that activate this model's style")
+            .gridSpan(2)
+            .build(),
+
+          FormFieldBuilder.tagInput(
+            'showcases',
+            'Showcase URLs',
+            currentData.showcases || [],
+            (value) => this.updateField('showcases', value.length > 0 ? value : null),
+          )
+            .placeholder('Add showcase URL...')
+            .helpText('URLs to example images generated with this model')
+            .gridSpan(4)
+            .build(),
+        ],
+        'form-grid-4',
+        {
+          label: 'Metadata & Discovery',
+          collapsible: true,
+          helpText: 'Additional information for users to find and evaluate this model',
+          icon: '📋',
+          priority: 'optional',
+        },
+      ),
+
+      // Technical Specifications - Advanced fields, collapsed by default
       FormFieldBuilder.group(
         [
           FormFieldBuilder.text(
@@ -123,6 +160,7 @@ export class StableDiffusionFieldsComponent {
           )
             .placeholder('e.g., xformers, sdp, none')
             .helpText('Optimization techniques: xformers, scaled dot product attention (sdp), etc.')
+            .gridSpan(1)
             .build(),
 
           FormFieldBuilder.number(
@@ -132,7 +170,8 @@ export class StableDiffusionFieldsComponent {
             (value) => this.updateField('size_on_disk_bytes', value),
           )
             .placeholder('e.g., 2000000000')
-            .helpText('Total size of the model file in bytes (~2GB for SD1.5, ~6-7GB for SDXL)')
+            .helpText('Total size in bytes (~2GB for SD1.5, ~6-7GB for SDXL)')
+            .gridSpan(2)
             .build(),
 
           FormFieldBuilder.number(
@@ -142,10 +181,24 @@ export class StableDiffusionFieldsComponent {
             (value) => this.updateField('min_bridge_version', value),
           )
             .placeholder('e.g., 7')
-            .helpText('Minimum AI Horde bridge version required to run this model')
+            .helpText('Minimum AI Horde bridge version required')
             .hideForCategory('image_generation')
+            .gridSpan(1)
             .build(),
+        ],
+        'form-grid-4',
+        {
+          label: 'Technical Specifications',
+          collapsible: true,
+          helpText: 'Advanced technical details and system requirements',
+          icon: '⚙️',
+          priority: 'advanced',
+        },
+      ),
 
+      // Requirements - On its own row for better horizontal layout
+      FormFieldBuilder.group(
+        [
           FormFieldBuilder.requirements(
             'requirements',
             'Requirements',
@@ -154,69 +207,18 @@ export class StableDiffusionFieldsComponent {
               this.updateField('requirements', Object.keys(value).length > 0 ? value : null),
           )
             .helpText(
-              'System requirements for running this model (steps, cfg_scale, samplers, schedulers, etc.)',
+              'Generation parameters and system requirements (steps, cfg_scale, samplers, etc.)',
             )
+            .gridSpan(1)
             .build(),
         ],
-        undefined,
+        '',
         {
-          label: 'Technical Details',
+          label: 'Requirements',
           collapsible: true,
-          defaultCollapsed: false,
-          helpText: 'Performance optimization and technical specifications',
-          colorVariant: 'info',
-          icon: '🔧',
-        },
-      ),
-
-      // Metadata Section (less frequently edited)
-      FormFieldBuilder.group(
-        [
-          FormFieldBuilder.url('homepage', 'Homepage', currentData.homepage || null, (value) =>
-            this.updateField('homepage', value),
-          )
-            .placeholder('https://civitai.com/models/...')
-            .helpText("URL to the model's homepage, CivitAI page, or HuggingFace repository")
-            .build(),
-
-          FormFieldBuilder.tagInput('tags', 'Tags', currentData.tags || [], (value) =>
-            this.updateField('tags', value.length > 0 ? value : null),
-          )
-            .placeholder('Add tag...')
-            .suggestions(this.modelConstants.getKnownTags())
-            .helpText(
-              'Descriptive tags for categorizing (e.g., anime, realistic, portrait). Start typing for suggestions.',
-            )
-            .build(),
-
-          FormFieldBuilder.tagInput(
-            'trigger',
-            'Trigger Words',
-            currentData.trigger || [],
-            (value) => this.updateField('trigger', value.length > 0 ? value : null),
-          )
-            .placeholder('Add trigger word...')
-            .helpText("Specific words or phrases that activate this model's style (e.g., 'ohwx', 'person', 'style')")
-            .build(),
-
-          FormFieldBuilder.tagInput(
-            'showcases',
-            'Showcase URLs',
-            currentData.showcases || [],
-            (value) => this.updateField('showcases', value.length > 0 ? value : null),
-          )
-            .placeholder('Add showcase URL...')
-            .helpText('URLs to example images generated with this model (typically GitHub raw URLs or CivitAI images)')
-            .build(),
-        ],
-        undefined,
-        {
-          label: 'Metadata',
-          collapsible: true,
-          defaultCollapsed: false,
-          helpText: 'Additional descriptive information about the model',
-          colorVariant: 'success',
-          icon: '✅',
+          helpText: 'Generation parameters and system requirements',
+          icon: '📋',
+          priority: 'advanced',
         },
       ),
     ];

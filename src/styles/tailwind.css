@@ -242,6 +242,20 @@
     @apply dark:bg-gray-800 dark:text-gray-300;
   }
 
+  /* Badge size variants */
+  .badge-xs {
+    @apply text-[10px] px-1.5 py-0;
+  }
+
+  .badge-sm {
+    @apply text-[10px] px-1.5 py-0.5;
+  }
+
+  /* Priority badge variant - combines badge with small sizing */
+  .badge-priority {
+    @apply ml-2 text-[10px] px-1.5 py-0.5;
+  }
+
   /* Form controls with enhanced focus and validation states */
   .form-input,
   .form-textarea,
@@ -275,6 +289,11 @@
   .form-label {
     @apply block text-sm font-semibold text-gray-700 mb-1.5;
     @apply dark:text-gray-300;
+  }
+
+  /* Small form label variant for compact layouts */
+  .form-label-sm {
+    @apply text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1;
   }
 
   .form-textarea {
@@ -821,17 +840,44 @@
 
   /* Common grid layouts for forms */
   .form-grid-2 {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+    @apply grid grid-cols-1 md:grid-cols-2 gap-3;
   }
 
   .form-grid-3 {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+    @apply grid grid-cols-1 md:grid-cols-3 gap-3;
+  }
+
+  .form-grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-4;
+  }
+
+  /* Column span utilities for flexible field sizing */
+  .grid-col-span-1 {
+    @apply col-span-1;
+  }
+
+  .grid-col-span-2 {
+    @apply col-span-1 md:col-span-2;
+  }
+
+  .grid-col-span-3 {
+    @apply col-span-1 md:col-span-3;
+  }
+
+  .grid-col-span-4 {
+    @apply col-span-1 md:col-span-4;
+  }
+
+  /* Two-column layout for major form sections on large screens */
+  .form-main-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-4 items-start;
   }
 
   /* Mobile-optimized form layouts */
   @media (max-width: 767px) {
     .form-grid-2,
-    .form-grid-3 {
+    .form-grid-3,
+    .form-grid-4 {
       @apply grid-cols-1 gap-3;
     }
 
@@ -907,6 +953,27 @@
     @apply dark:border-l-warning-400 dark:bg-warning-900/10;
   }
 
+  /* Priority-based field group variants with progressive border weights */
+  .field-group-required {
+    @apply border-l-4 border-l-primary-600 bg-primary-50/40;
+    @apply dark:border-l-primary-500 dark:bg-primary-900/15;
+  }
+
+  .field-group-recommended {
+    @apply border-l-[3px] border-l-success-500 bg-success-50/30;
+    @apply dark:border-l-success-400 dark:bg-success-900/10;
+  }
+
+  .field-group-optional {
+    @apply border-l-2 border-l-info-400 bg-info-50/20;
+    @apply dark:border-l-info-400 dark:bg-info-900/5;
+  }
+
+  .field-group-advanced {
+    @apply border-l-2 border-l-gray-400 bg-gray-50/20;
+    @apply dark:border-l-gray-500 dark:bg-gray-800/10;
+  }
+
   /* Spacing between field groups */
   .card-section > .field-group-collapsible + .field-group-collapsible {
     @apply mt-4;
@@ -975,6 +1042,16 @@
 
   .nested-item-grid {
     @apply grid grid-cols-1 md:grid-cols-2 gap-3 pr-10;
+  }
+
+  /* Key-value editor item card */
+  .key-value-item-card {
+    @apply bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700;
+  }
+
+  /* Requirements section header */
+  .requirements-section-header {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-1.5;
   }
 
   /* Empty state message */
@@ -1089,11 +1166,28 @@
 
   /* Autocomplete dropdown for tag inputs */
   .autocomplete-dropdown {
-    @apply absolute z-50 left-0 right-[88px] mt-1;
+    @apply absolute left-0 top-full mt-1;
     @apply bg-white dark:bg-gray-800;
     @apply border border-gray-300 dark:border-gray-600;
     @apply rounded-lg shadow-lg;
-    @apply max-h-60 overflow-y-auto;
+    @apply overflow-y-auto;
+    /* Use z-[9999] to ensure it stays above all other content including modals and containers */
+    z-index: 9999;
+  }
+
+  /* Fixed positioning variant to avoid container clipping */
+  .autocomplete-dropdown-fixed {
+    @apply fixed;
+    /* Override relative positioning properties when using fixed */
+    /* Width is set dynamically via inline styles to match input width */
+    left: auto;
+    top: auto;
+    margin-top: 0;
+  }
+
+  /* Autocomplete dropdown with 6-item visible limit */
+  .autocomplete-dropdown-6 {
+    max-height: calc(6 * 2.5rem); /* 6 items at ~2.5rem each */
   }
 
   .autocomplete-item {
@@ -1107,6 +1201,11 @@
   .autocomplete-item-selected {
     @apply bg-primary-100 dark:bg-primary-900/50;
     @apply text-primary-900 dark:text-primary-100;
+  }
+
+  /* Matched item styling for filtered suggestions */
+  .autocomplete-item-matched {
+    @apply font-semibold;
   }
 
   /* Stat card value display */

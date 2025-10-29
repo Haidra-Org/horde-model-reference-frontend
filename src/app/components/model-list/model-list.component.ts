@@ -609,19 +609,22 @@ export class ModelListComponent implements OnInit {
       return;
     }
 
-    this.api.deleteModel(this.category(), modelName).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.notification.success(`Model "${modelName}" deleted successfully`);
-        this.modelToDelete.set(null);
-        this.deleteConfirmationInput.set('');
-        this.loadModels();
-      },
-      error: (error: Error) => {
-        this.notification.error(error.message);
-        this.modelToDelete.set(null);
-        this.deleteConfirmationInput.set('');
-      },
-    });
+    this.api
+      .deleteModel(this.category(), modelName)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notification.success(`Model "${modelName}" deleted successfully`);
+          this.modelToDelete.set(null);
+          this.deleteConfirmationInput.set('');
+          this.loadModels();
+        },
+        error: (error: Error) => {
+          this.notification.error(error.message);
+          this.modelToDelete.set(null);
+          this.deleteConfirmationInput.set('');
+        },
+      });
   }
 
   toggleTag(tag: string): void {
@@ -745,52 +748,58 @@ export class ModelListComponent implements OnInit {
     const hordeType = this.getCategoryHordeType(this.category());
     const isTextGen = this.isTextGeneration();
 
-    this.api.getLegacyModelsAsArray(this.category()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (referenceModels) => {
-        // Parse text model names for text generation category
-        const modelsWithParsing = isTextGen
-          ? mergeMultipleModels(referenceModels, undefined, undefined, {
-            parseTextModelNames: true,
-          })
-          : referenceModels.map((m) => ({ ...m }));
+    this.api
+      .getLegacyModelsAsArray(this.category())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (referenceModels) => {
+          // Parse text model names for text generation category
+          const modelsWithParsing = isTextGen
+            ? mergeMultipleModels(referenceModels, undefined, undefined, {
+                parseTextModelNames: true,
+              })
+            : referenceModels.map((m) => ({ ...m }));
 
-        // Group text models by base name
-        const displayModels = isTextGen
-          ? createGroupedTextModels(modelsWithParsing)
-          : modelsWithParsing;
+          // Group text models by base name
+          const displayModels = isTextGen
+            ? createGroupedTextModels(modelsWithParsing)
+            : modelsWithParsing;
 
-        // Immediately display reference models
-        this.models.set(displayModels);
-        this.loading.set(false);
+          // Immediately display reference models
+          this.models.set(displayModels);
+          this.loading.set(false);
 
-        // Asynchronously fetch and merge Horde data if applicable
-        if (hordeType) {
-          this.hordeApi.getCombinedModelData(hordeType).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: ({ status, stats }) => {
-              const unifiedModels = mergeMultipleModels(
-                referenceModels,
-                status,
-                stats,
-                isTextGen ? { parseTextModelNames: true } : undefined,
-              );
+          // Asynchronously fetch and merge Horde data if applicable
+          if (hordeType) {
+            this.hordeApi
+              .getCombinedModelData(hordeType)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: ({ status, stats }) => {
+                  const unifiedModels = mergeMultipleModels(
+                    referenceModels,
+                    status,
+                    stats,
+                    isTextGen ? { parseTextModelNames: true } : undefined,
+                  );
 
-              // Re-group text models with updated Horde data
-              const groupedModels = isTextGen
-                ? createGroupedTextModels(unifiedModels)
-                : unifiedModels;
+                  // Re-group text models with updated Horde data
+                  const groupedModels = isTextGen
+                    ? createGroupedTextModels(unifiedModels)
+                    : unifiedModels;
 
-              this.models.set(groupedModels);
-            },
-            error: () => {
-              // Keep displaying reference models even if Horde API fails
-            },
-          });
-        }
-      },
-      error: (error: Error) => {
-        this.notification.error(error.message);
-        this.loading.set(false);
-      },
-    });
+                  this.models.set(groupedModels);
+                },
+                error: () => {
+                  // Keep displaying reference models even if Horde API fails
+                },
+              });
+          }
+        },
+        error: (error: Error) => {
+          this.notification.error(error.message);
+          this.loading.set(false);
+        },
+      });
   }
 }

@@ -58,6 +58,9 @@ export class ModelRequirementsEditorComponent {
   readonly minSteps = signal<number | null>(null);
   readonly maxSteps = signal<number | null>(null);
   readonly cfgScale = signal<number | null>(null);
+  readonly minCfgScale = signal<number | null>(null);
+  readonly maxCfgScale = signal<number | null>(null);
+  readonly clipSkip = signal<number | null>(null);
   readonly samplers = signal<string[]>([]);
   readonly schedulers = signal<string[]>([]);
 
@@ -94,6 +97,12 @@ export class ModelRequirementsEditorComponent {
         this.maxSteps.set(value);
       } else if (key === 'cfg_scale' && typeof value === 'number') {
         this.cfgScale.set(value);
+      } else if (key === 'min_cfg_scale' && typeof value === 'number') {
+        this.minCfgScale.set(value);
+      } else if (key === 'max_cfg_scale' && typeof value === 'number') {
+        this.maxCfgScale.set(value);
+      } else if (key === 'clip_skip' && typeof value === 'number') {
+        this.clipSkip.set(value);
       } else if (key === 'samplers' && Array.isArray(value)) {
         this.samplers.set(value.filter((v): v is string => typeof v === 'string'));
       } else if (key === 'schedulers' && Array.isArray(value)) {
@@ -119,6 +128,15 @@ export class ModelRequirementsEditorComponent {
     }
     if (this.showCfgScale() && this.cfgScale() !== null) {
       combined['cfg_scale'] = this.cfgScale()!;
+    }
+    if (this.minCfgScale() !== null) {
+      combined['min_cfg_scale'] = this.minCfgScale()!;
+    }
+    if (this.maxCfgScale() !== null) {
+      combined['max_cfg_scale'] = this.maxCfgScale()!;
+    }
+    if (this.clipSkip() !== null) {
+      combined['clip_skip'] = this.clipSkip()!;
     }
     if (this.showSamplers() && this.samplers().length > 0) {
       combined['samplers'] = this.samplers();
@@ -175,14 +193,55 @@ export class ModelRequirementsEditorComponent {
     this.emitCombinedValues();
   }
 
+  updateMinCfgScale(value: string): void {
+    const num = value.trim() === '' ? null : parseFloat(value);
+    if (num !== null && (isNaN(num) || num <= 0)) {
+      this.notification.error('Min CFG scale must be a positive number');
+      return;
+    }
+    this.minCfgScale.set(num);
+    this.validateCfgScaleRange();
+    this.emitCombinedValues();
+  }
+
+  updateMaxCfgScale(value: string): void {
+    const num = value.trim() === '' ? null : parseFloat(value);
+    if (num !== null && (isNaN(num) || num <= 0)) {
+      this.notification.error('Max CFG scale must be a positive number');
+      return;
+    }
+    this.maxCfgScale.set(num);
+    this.validateCfgScaleRange();
+    this.emitCombinedValues();
+  }
+
+  updateClipSkip(value: string): void {
+    const num = value.trim() === '' ? null : parseFloat(value);
+    if (num !== null && (isNaN(num) || num < 1 || num > 12)) {
+      this.notification.error('CLIP skip must be between 1 and 12');
+      return;
+    }
+    this.clipSkip.set(num);
+    this.emitCombinedValues();
+  }
+
   updateCustomFields(value: Record<string, RequirementValue>): void {
     // Prevent users from adding structured field names as custom fields
-    const reserved = ['min_steps', 'max_steps', 'cfg_scale', 'samplers', 'schedulers'];
+    const reserved = [
+      'min_steps',
+      'max_steps',
+      'cfg_scale',
+      'min_cfg_scale',
+      'max_cfg_scale',
+      'clip_skip',
+      'samplers',
+      'schedulers',
+    ];
     const hasReservedKey = Object.keys(value).some((key) => reserved.includes(key));
 
     if (hasReservedKey) {
       this.notification.error(
-        'Cannot use reserved field names (min_steps, max_steps, cfg_scale, samplers, schedulers) in custom fields',
+        'Cannot use reserved field names (min_steps, max_steps, cfg_scale, min_cfg_scale, max_cfg_scale, clip_skip, samplers, schedulers) in custom fields',
       );
       // Remove reserved keys from the value
       const filtered: Record<string, RequirementValue> = {};
@@ -205,6 +264,15 @@ export class ModelRequirementsEditorComponent {
 
     if (min !== null && max !== null && min >= max) {
       this.notification.error('Min steps must be less than max steps');
+    }
+  }
+
+  private validateCfgScaleRange(): void {
+    const min = this.minCfgScale();
+    const max = this.maxCfgScale();
+
+    if (min !== null && max !== null && min >= max) {
+      this.notification.error('Min CFG scale must be less than max CFG scale');
     }
   }
 }

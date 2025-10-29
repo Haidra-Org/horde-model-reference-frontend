@@ -17,6 +17,13 @@ export interface ClipFieldsData {
       </div>
 
       <div class="card-body">
+        <!-- Color Legend -->
+        <div class="form-legend mb-4">
+          <span class="form-legend-item">
+            <span>🔷</span>
+            <span>Core</span>
+          </span>
+        </div>
 
         <div class="card-section">
           @for (item of fieldGroups(); track $index) {

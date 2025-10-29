@@ -520,48 +520,54 @@ export class ModelAuditComponent implements OnInit {
     const hordeType = this.getCategoryHordeType(this.category());
     const isTextGen = this.isTextGeneration();
 
-    this.api.getLegacyModelsAsArray(this.category()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (referenceModels) => {
-        const modelsWithParsing = isTextGen
-          ? mergeMultipleModels(referenceModels, undefined, undefined, {
-            parseTextModelNames: true,
-          })
-          : referenceModels.map((m) => ({ ...m }));
+    this.api
+      .getLegacyModelsAsArray(this.category())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (referenceModels) => {
+          const modelsWithParsing = isTextGen
+            ? mergeMultipleModels(referenceModels, undefined, undefined, {
+                parseTextModelNames: true,
+              })
+            : referenceModels.map((m) => ({ ...m }));
 
-        const displayModels = isTextGen
-          ? createGroupedTextModels(modelsWithParsing)
-          : modelsWithParsing;
+          const displayModels = isTextGen
+            ? createGroupedTextModels(modelsWithParsing)
+            : modelsWithParsing;
 
-        this.models.set(displayModels);
-        this.loading.set(false);
+          this.models.set(displayModels);
+          this.loading.set(false);
 
-        if (hordeType) {
-          this.hordeApi.getCombinedModelData(hordeType).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: ({ status, stats }) => {
-              const unifiedModels = mergeMultipleModels(
-                referenceModels,
-                status,
-                stats,
-                isTextGen ? { parseTextModelNames: true } : undefined,
-              );
+          if (hordeType) {
+            this.hordeApi
+              .getCombinedModelData(hordeType)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: ({ status, stats }) => {
+                  const unifiedModels = mergeMultipleModels(
+                    referenceModels,
+                    status,
+                    stats,
+                    isTextGen ? { parseTextModelNames: true } : undefined,
+                  );
 
-              const groupedModels = isTextGen
-                ? createGroupedTextModels(unifiedModels)
-                : unifiedModels;
+                  const groupedModels = isTextGen
+                    ? createGroupedTextModels(unifiedModels)
+                    : unifiedModels;
 
-              this.models.set(groupedModels);
-            },
-            error: () => {
-              // Keep displaying reference models if Horde API fails
-            },
-          });
-        }
-      },
-      error: (error: Error) => {
-        this.notification.error(error.message);
-        this.loading.set(false);
-      },
-    });
+                  this.models.set(groupedModels);
+                },
+                error: () => {
+                  // Keep displaying reference models if Horde API fails
+                },
+              });
+          }
+        },
+        error: (error: Error) => {
+          this.notification.error(error.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   // Sorting

@@ -167,7 +167,7 @@ import { hasShowcases } from './model-row.utils';
                 <div class="card-header">
                   <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Backend & Author Variations
-                    <span class="text-xs font-normal text-gray-500 dark:text-gray-400 ml-2">
+                    <span class="label-hint">
                       ({{ groupedModel()!.variations.length }} total)
                     </span>
                   </h4>
@@ -330,9 +330,13 @@ export class ModelRowComponent {
     return '';
   });
 
-  readonly isStableDiffusionRecord = computed(() => isLegacyStableDiffusionRecord(this.legacyModel()));
+  readonly isStableDiffusionRecord = computed(() =>
+    isLegacyStableDiffusionRecord(this.legacyModel()),
+  );
 
-  readonly isTextGenerationRecord = computed(() => isLegacyTextGenerationRecord(this.legacyModel()));
+  readonly isTextGenerationRecord = computed(() =>
+    isLegacyTextGenerationRecord(this.legacyModel()),
+  );
 
   readonly tags = computed(() => {
     const model = this.legacyModel();

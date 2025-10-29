@@ -7,10 +7,7 @@
     <div class="flex items-center gap-4">
       @if (api.backendCapabilities().mode !== 'UNKNOWN') {
       <span class="px-3 py-1.5 rounded-lg text-sm font-medium"
-        [class.bg-success-500/25]="api.backendCapabilities().writable"
-        [class.text-success-100]="api.backendCapabilities().writable"
-        [class.bg-warning-500/25]="!api.backendCapabilities().writable"
-        [class.text-warning-100]="!api.backendCapabilities().writable">
+        [class]="api.backendCapabilities().writable ? 'px-3 py-1.5 rounded-lg text-sm font-medium bg-success-500/25 text-success-100' : 'px-3 py-1.5 rounded-lg text-sm font-medium bg-warning-500/25 text-warning-100'">
         {{ api.backendCapabilities().mode }}
         @if (api.backendCapabilities().writable) {
         (Writable)

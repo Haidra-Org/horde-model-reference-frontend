@@ -12,6 +12,7 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { SidebarService } from '../../services/sidebar.service';
 import { RECORD_DISPLAY_MAP } from '../../models/maps';
 
 @Component({
@@ -25,10 +26,12 @@ export class SidebarComponent implements OnInit {
   private readonly notification = inject(NotificationService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly sidebarService = inject(SidebarService);
 
   readonly categories = signal<string[]>([]);
   readonly loading = signal(true);
   readonly currentCategory = signal<string | null>(null);
+  readonly isCollapsed = this.sidebarService.isCollapsed;
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
   readonly recordDisplayMap = RECORD_DISPLAY_MAP;

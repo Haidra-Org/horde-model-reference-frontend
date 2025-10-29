@@ -86,7 +86,7 @@ export class ModelFormComponent implements OnInit {
   private readonly configValidationErrors = signal<string[]>([]);
   readonly viewMode = signal<'form' | 'json'>('form');
 
-  readonly commonData = signal<CommonFieldsData>({});
+  readonly commonData = signal<CommonFieldsData>({ nsfw: false });
   readonly stableDiffusionData = signal<StableDiffusionFieldsData>({
     inpainting: false,
     baseline: 'stable_diffusion_1',
@@ -338,7 +338,7 @@ export class ModelFormComponent implements OnInit {
       type: model.type,
       version: model.version,
       style: model.style,
-      nsfw: model.nsfw,
+      nsfw: model.nsfw ?? false,
       download_all: model.download_all,
       available: model.available,
       features_not_supported: model.features_not_supported,
@@ -556,19 +556,21 @@ export class ModelFormComponent implements OnInit {
       return this.api.createLegacyModel(category, variation.name, modelData);
     });
 
-    forkJoin(operations).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        const count = variations.length;
-        this.notification.success(
-          `Successfully created ${count} model ${count === 1 ? 'entry' : 'entries'}`,
-        );
-        this.router.navigate(['/categories', this.category()]);
-      },
-      error: (error: Error) => {
-        this.notification.error(`Failed to create models: ${error.message}`);
-        this.submitting.set(false);
-      },
-    });
+    forkJoin(operations)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const count = variations.length;
+          this.notification.success(
+            `Successfully created ${count} model ${count === 1 ? 'entry' : 'entries'}`,
+          );
+          this.router.navigate(['/categories', this.category()]);
+        },
+        error: (error: Error) => {
+          this.notification.error(`Failed to create models: ${error.message}`);
+          this.submitting.set(false);
+        },
+      });
   }
 
   private handleEditModeBackendChanges(
@@ -651,20 +653,23 @@ export class ModelFormComponent implements OnInit {
   private initFormForEdit(modelName: string): void {
     this.loading.set(true);
 
-    this.api.getLegacyModelsInCategory(this.category()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        // For text generation, check if this is a grouped model with backend variations
-        if (this.isTextGeneration()) {
-          this.initFormForEditTextGeneration(modelName, response);
-        } else {
-          this.initFormForEditSingle(modelName, response);
-        }
-      },
-      error: (error: Error) => {
-        this.notification.error(error.message);
-        this.router.navigate(['/categories', this.category()]);
-      },
-    });
+    this.api
+      .getLegacyModelsInCategory(this.category())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          // For text generation, check if this is a grouped model with backend variations
+          if (this.isTextGeneration()) {
+            this.initFormForEditTextGeneration(modelName, response);
+          } else {
+            this.initFormForEditSingle(modelName, response);
+          }
+        },
+        error: (error: Error) => {
+          this.notification.error(error.message);
+          this.router.navigate(['/categories', this.category()]);
+        },
+      });
   }
 
   private initFormForEditSingle(

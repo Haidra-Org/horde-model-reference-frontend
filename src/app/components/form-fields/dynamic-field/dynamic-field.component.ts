@@ -25,7 +25,12 @@ import { ModelRequirementsEditorComponent } from '../model-requirements-editor/m
  */
 @Component({
   selector: 'app-dynamic-field',
-  imports: [FormsModule, TagInputComponent, KeyValueEditorComponent, ModelRequirementsEditorComponent],
+  imports: [
+    FormsModule,
+    TagInputComponent,
+    KeyValueEditorComponent,
+    ModelRequirementsEditorComponent,
+  ],
   templateUrl: './dynamic-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -92,6 +97,50 @@ export class DynamicFieldComponent {
       return true;
     }
     return false;
+  });
+
+  /**
+   * Computed signal to generate the grid column span class.
+   * Maps gridColumnSpan to the appropriate CSS class (grid-col-span-1, etc.)
+   */
+  readonly gridSpanClass = computed<string>(() => {
+    const span = this.config().gridColumnSpan;
+    if (!span || span < 1 || span > 4) {
+      return '';
+    }
+    return `grid-col-span-${span}`;
+  });
+
+  /**
+   * Computed signal for priority badge CSS class.
+   * Maps priority level to the appropriate badge color variant.
+   */
+  readonly priorityBadgeClass = computed<string>(() => {
+    const priority = this.config().priority;
+    if (!priority) return '';
+
+    switch (priority) {
+      case 'required':
+        return 'badge-danger';
+      case 'recommended':
+        return 'badge-success';
+      case 'optional':
+        return 'badge-info';
+      case 'advanced':
+        return 'badge-secondary';
+      default:
+        return '';
+    }
+  });
+
+  /**
+   * Computed signal for priority badge label text.
+   * Capitalizes the first letter of the priority level.
+   */
+  readonly priorityLabel = computed<string>(() => {
+    const priority = this.config().priority;
+    if (!priority) return '';
+    return priority.charAt(0).toUpperCase() + priority.slice(1);
   });
 
   /**
