@@ -367,7 +367,7 @@ Example for GitHub Actions:
 
 - name: Wait for service
   run: |
-    timeout 30 bash -c 'until curl -f http://localhost:19800/heartbeat; do sleep 1; done'
+    timeout 30 bash -c 'until curl -f http://localhost:19800/api/heartbeat; do sleep 1; done'
 
 - name: Run API model tests
   run: npm test -- --include='**/api.models.spec.ts'

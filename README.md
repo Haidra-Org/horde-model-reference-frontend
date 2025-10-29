@@ -1,44 +1,54 @@
 # Horde Model Reference Frontend
 
-A web-based CRUD interface for managing AI Horde model references using Angular.
+A web-based CRUD interface for managing AI Horde model references, powered by Angular.
+
+## Role in AI-Horde
+
+The [AI-Horde](https://aihorde.net) ([github](https://github.com/Haidra-Org/AI-Horde)) is a free and open sourced, crowd-sourced distributed compute network for AI-generations. Currently, the following github repositories store the "legacy" model references still used by AI-Horde:
+
+- [Haidra-Org/AI-Horde-image-model-reference](https://github.com/Haidra-Org/AI-Horde-image-model-reference)
+- [Haidra-Org/AI-Horde-text-model-reference](https://github.com/Haidra-Org/AI-Horde-text-model-reference)
+
+This frontend application provides a user-friendly interface to view, create, edit, and delete model references stored in a running instance of the [horde-model-reference](https://github.com/Haidra-Org/horde-model-reference) backend service.
+
+The official version of this frontend is deployed at [models.aihorde.net](https://models.aihorde.net). However, anyone can run the built static webpage anywhere (e.g., GitHub Pages, Netlify, Vercel). Forks of the AI-Horde can also use it to manage their own model references by connecting to their own canonical instance of the [horde-model-reference](https://github.com/Haidra-Org/horde-model-reference) backend.
 
 ## Features
 
-- **Persistent sidebar** with all model categories always visible
-- **Active category highlighting** shows currently selected category
-- View all models within a category with search/filter
-- Create, edit, and delete models (when connected to PRIMARY backend)
+- View all models by category, with search/filter
+- **Audit mode** allowing for detailed analysis of model metadata, usage, and history
+- Create, edit, and delete models (when connected to PRIMARY backend and logged in)
 - Backend capability detection (PRIMARY/REPLICA, writable/read-only)
-- Real-time status indicator showing backend mode in header
-- Form validation and error handling
-- Clean, responsive design
 
-## Prerequisites
+## Installation
+
+### Prerequisites
 
 - Node.js (v18 or higher)
+  - I recommend using [nvm](https://github.com/nvm-sh/nvm) to manage Node versions
 - Angular CLI (`npm install -g @angular/cli`)
 - Running instance of horde-model-reference backend service
 
-## Installation
+### Setup
 
 ```bash
 npm install
 ```
 
-## Configuration
+### Configuration
 
-The API base URL is configured in `src/environments/environment.ts`:
+The API base URL is configured in `src/environments/environment.ts` for development:
 
 ```typescript
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:19800/api/model_references/v1',
+  apiBaseUrl: 'http://localhost:19800/api/',
 };
 ```
 
 For production, update `src/environments/environment.prod.ts` accordingly.
 
-## Development Server
+### Development Server
 
 Start the development server:
 
@@ -48,7 +58,7 @@ npm start
 
 Navigate to `http://localhost:4200/`. The application will automatically reload when you change source files.
 
-## Build
+### Build
 
 Build the project for production:
 
@@ -57,78 +67,6 @@ npm run build
 ```
 
 Build artifacts will be stored in the `dist/` directory.
-
-## API Client Generation
-
-The TypeScript Angular API client is automatically generated from the OpenAPI schema. To regenerate:
-
-```bash
-# Generate from backend service (must be running)
-npm run generate-client
-
-# Or use cached local schema (offline)
-npm run generate-client:local
-```
-
-The generation script automatically:
-
-- ✅ Discovers all SCREAMING_CASE enum names
-- ✅ Preserves exact enum naming (e.g., `MODEL_REFERENCE_CATEGORY.ts`)
-- ✅ Runs openapi-generator-cli with proper configuration
-- ✅ Formats generated code with Prettier
-
-**Documentation:**
-
-- [API Client Generation Guide](./API_CLIENT_GENERATION.md) - Complete guide
-- [Generation Scripts](./scripts/README.md) - Script documentation
-- [API Models](./src/app/models/README.md) - Using generated types
-
-**When to regenerate:**
-
-- After backend API changes (new endpoints, schemas, enums)
-- After pulling backend updates that affect the API
-- To update generated types to match latest OpenAPI spec
-
-## Backend Requirements
-
-This frontend requires a running horde-model-reference backend service in PRIMARY mode with `canonical_format='legacy'` to enable write operations (create, update, delete).
-
-### Backend Modes
-
-- **PRIMARY (Writable)**: Full CRUD operations available
-- **PRIMARY (Read-only)**: Connected but canonical_format is not 'legacy'
-- **REPLICA (Read-only)**: Only viewing operations available
-
-The UI automatically detects the backend mode and adjusts available features accordingly.
-
-## API Endpoints Used
-
-- `GET /info` - Backend capability detection
-- `GET /model_categories` - List all categories
-- `GET /{category}` - Get all models in category
-- `POST /{category}/{model_name}` - Create new model
-- `PUT /{category}/{model_name}` - Update/upsert model
-- `DELETE /{category}/{model_name}` - Delete model
-
-## Project Structure
-
-```bash
-src/
-├── app/
-│   ├── components/
-│   │   ├── home/                # Welcome screen
-│   │   ├── sidebar/             # Category navigation sidebar
-│   │   ├── model-list/          # View and manage models
-│   │   ├── model-form/          # Create/edit forms
-│   │   ├── navigation/          # Header with status
-│   │   └── notification-display/ # Toast notifications
-│   ├── services/
-│   │   ├── model-reference-api.service.ts  # API client
-│   │   └── notification.service.ts         # User notifications
-│   └── models/
-│       └── api.models.ts        # TypeScript interfaces
-└── environments/                # Environment configs
-```
 
 ## Usage
 
@@ -161,16 +99,6 @@ src/
 2. Click "Delete" on a model
 3. Confirm deletion
 
-## Error Handling
-
-The application provides user-friendly error messages for:
-
-- 400: Invalid request format or name mismatch
-- 404: Model or category not found
-- 409: Model already exists (use edit instead)
-- 422: Validation errors from backend
-- 503: Backend doesn't support write operations
-
 ## Technologies
 
 - **Angular 20** with standalone components
@@ -179,17 +107,6 @@ The application provides user-friendly error messages for:
 - **Reactive Forms** for form handling
 - **OnPush** change detection strategy
 - **RxJS** for HTTP operations
-
-## Contributing
-
-Follow the Angular style guide and project conventions:
-
-- Use signals for state management
-- Use `computed()` for derived state
-- Use native control flow (`@if`, `@for`)
-- Use `inject()` function instead of constructor injection
-- Set `changeDetection: ChangeDetectionStrategy.OnPush`
-- Avoid `any` type, prefer strict typing
 
 ## License
 
