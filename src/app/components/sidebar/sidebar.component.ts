@@ -1,13 +1,15 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  computed,
   inject,
   OnInit,
   signal,
-  computed,
-  ChangeDetectionStrategy,
 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { RECORD_DISPLAY_MAP } from '../../models/maps';
@@ -22,6 +24,7 @@ export class SidebarComponent implements OnInit {
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly categories = signal<string[]>([]);
   readonly loading = signal(true);
@@ -48,7 +51,13 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories();
-    this.trackCurrentCategory();
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.updateCurrentCategory());
+    this.updateCurrentCategory();
   }
 
   selectCategory(category: string): void {
@@ -69,19 +78,12 @@ export class SidebarComponent implements OnInit {
     });
   }
 
-  private trackCurrentCategory(): void {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      const urlSegments = this.router.url.split('/');
-      if (urlSegments[1] === 'categories' && urlSegments[2]) {
-        this.currentCategory.set(urlSegments[2]);
-      } else {
-        this.currentCategory.set(null);
-      }
-    });
-
+  private updateCurrentCategory(): void {
     const urlSegments = this.router.url.split('/');
     if (urlSegments[1] === 'categories' && urlSegments[2]) {
       this.currentCategory.set(urlSegments[2]);
+    } else {
+      this.currentCategory.set(null);
     }
   }
 }

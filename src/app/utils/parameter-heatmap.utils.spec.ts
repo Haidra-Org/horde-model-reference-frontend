@@ -1,4 +1,8 @@
-import { getParameterHeatmapClass, formatParametersInBillions } from './parameter-heatmap.utils';
+import {
+  getParameterHeatmapClass,
+  formatParametersInBillions,
+  getParametersCountFromShorthand,
+} from './parameter-heatmap.utils';
 
 describe('Parameter Heatmap Utils', () => {
   describe('getParameterHeatmapClass', () => {
@@ -68,6 +72,20 @@ describe('Parameter Heatmap Utils', () => {
       expect(formatParametersInBillions(3_500_000_000)).toBe('4B'); // Rounds to 4B
       expect(formatParametersInBillions(3_200_000_000)).toBe('3B'); // Rounds to 3B
       expect(formatParametersInBillions(550_000_000)).toBe('550M'); // Rounds to 550M
+    });
+  });
+
+  describe('getParametersCountFromShorthand', () => {
+    it('should parse million, billion, and trillion shorthand regardless of case', () => {
+      expect(getParametersCountFromShorthand('250M')).toBe(250_000_000);
+      expect(getParametersCountFromShorthand('12b')).toBe(12_000_000_000);
+      expect(getParametersCountFromShorthand('3T')).toBe(3_000_000_000_000);
+    });
+
+    it('should return null for invalid shorthand values', () => {
+      expect(getParametersCountFromShorthand('abc')).toBeNull();
+      expect(getParametersCountFromShorthand('42')).toBeNull();
+      expect(getParametersCountFromShorthand('4G')).toBeNull();
     });
   });
 });

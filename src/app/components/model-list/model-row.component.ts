@@ -1,13 +1,4 @@
-import {
-  Component,
-  input,
-  output,
-  signal,
-  computed,
-  ChangeDetectionStrategy,
-  OnInit,
-  OnChanges,
-} from '@angular/core';
+import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -69,9 +60,9 @@ import { hasShowcases } from './model-row.utils';
         {{ legacyModel().description || '-' }}
       </td>
       <td>
-        @if (isStableDiffusionRecord(model())) {
+        @if (isStableDiffusionRecord()) {
           {{ baselineDisplay() }}
-        } @else if (isTextGenerationRecord(model())) {
+        } @else if (isTextGenerationRecord()) {
           {{ legacyModel().baseline || '-' }}
         } @else {
           -
@@ -259,14 +250,14 @@ import { hasShowcases } from './model-row.utils';
             }
 
             <!-- Showcases Section -->
-            @if (hasShowcases(model())) {
+            @if (hasShowcaseContent()) {
               <div class="card">
                 <div class="card-body p-0">
                   <app-model-row-showcases
-                    [showcases]="getShowcases()"
+                    [showcases]="showcases()"
                     [modelName]="model().name"
                     layout="grid"
-                    [initiallyExpanded]="isShowcaseExpanded()"
+                    [initiallyExpanded]="showcaseExpanded()"
                   />
                 </div>
               </div>
@@ -279,7 +270,7 @@ import { hasShowcases } from './model-row.utils';
   styles: [':host { display: contents; }'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModelRowComponent implements OnInit, OnChanges {
+export class ModelRowComponent {
   readonly model = input.required<UnifiedModelData | GroupedTextModel>();
   readonly writable = input<boolean>(false);
   readonly isEven = input<boolean>(false);
@@ -291,9 +282,9 @@ export class ModelRowComponent implements OnInit, OnChanges {
   readonly delete = output<string>();
   readonly toggleRow = output<string>();
 
-  readonly expanded = signal(false);
+  readonly expanded = computed(() => this.expandedRows().has(this.model().name));
 
-  readonly hasShowcases = hasShowcases;
+  readonly hasShowcaseContent = computed(() => hasShowcases(this.model()));
 
   readonly isActive = computed(() => hasActiveWorkers(this.model()));
 
@@ -333,45 +324,17 @@ export class ModelRowComponent implements OnInit, OnChanges {
 
   readonly baselineDisplay = computed(() => {
     const model = this.legacyModel();
-    if (isLegacyStableDiffusionRecord(model)) {
-      return this.getBaselineDisplay(model.baseline);
+    if (isLegacyStableDiffusionRecord(model) && model.baseline) {
+      return BASELINE_SHORTHAND_MAP[model.baseline] || model.baseline;
     }
     return '';
   });
 
-  readonly parametersDisplay = computed(() => {
-    const model = this.legacyModel();
-    if (isLegacyTextGenerationRecord(model) && model.parameters) {
-      return model.parameters.toLocaleString();
-    }
-    return null;
-  });
+  readonly isStableDiffusionRecord = computed(() => isLegacyStableDiffusionRecord(this.legacyModel()));
 
-  ngOnInit(): void {
-    this.expanded.set(this.expandedRows().has(this.model().name));
-  }
+  readonly isTextGenerationRecord = computed(() => isLegacyTextGenerationRecord(this.legacyModel()));
 
-  ngOnChanges(): void {
-    this.expanded.set(this.expandedRows().has(this.model().name));
-  }
-
-  toggleExpansion(): void {
-    this.toggleRow.emit(this.model().name);
-  }
-
-  isStableDiffusionRecord(model: UnifiedModelData) {
-    return isLegacyStableDiffusionRecord(model as LegacyRecordUnion);
-  }
-
-  isTextGenerationRecord(model: UnifiedModelData) {
-    return isLegacyTextGenerationRecord(model as LegacyRecordUnion);
-  }
-
-  getBaselineDisplay(baseline: string): string {
-    return BASELINE_SHORTHAND_MAP[baseline] || baseline;
-  }
-
-  tags(): string[] {
+  readonly tags = computed(() => {
     const model = this.legacyModel();
     if (isLegacyStableDiffusionRecord(model) && model.tags) {
       return model.tags;
@@ -380,17 +343,19 @@ export class ModelRowComponent implements OnInit, OnChanges {
       return model.tags;
     }
     return [];
-  }
+  });
 
-  getShowcases(): string[] | null | undefined {
+  readonly showcases = computed(() => {
     const model = this.legacyModel();
     if (isLegacyStableDiffusionRecord(model)) {
-      return model.showcases;
+      return model.showcases ?? null;
     }
     return null;
-  }
+  });
 
-  isShowcaseExpanded(): boolean {
-    return this.expandedShowcases().has(this.model().name);
+  readonly showcaseExpanded = computed(() => this.expandedShowcases().has(this.model().name));
+
+  toggleExpansion(): void {
+    this.toggleRow.emit(this.model().name);
   }
 }
