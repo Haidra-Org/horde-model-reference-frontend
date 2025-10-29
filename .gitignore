@@ -1,4 +1,10 @@
 .angular/
+.claude/
+.editorconfig
+.vscode/
+openapitools.json
+.github/copilot*
+
 
 # Logs
 logs
