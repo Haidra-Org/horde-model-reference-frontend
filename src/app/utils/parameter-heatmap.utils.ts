@@ -37,12 +37,12 @@ export function getParameterHeatmapClass(parameterCount: number): string {
 }
 
 export function getParametersCountFromShorthand(shorthand: string): number | null {
-  const match = shorthand.match(/^(\d+)([BM])$/);
+  const match = shorthand.match(/^(\d+)([BMT])$/i);
   if (!match) {
     return null;
   }
   const value = parseInt(match[1], 10);
-  const unit = match[2];
+  const unit = match[2].toUpperCase();
   if (unit === 'T') {
     return value * 1_000_000_000_000;
   } else if (unit === 'B') {

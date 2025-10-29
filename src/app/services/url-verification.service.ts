@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
+import { Observable, catchError, of, timeout } from 'rxjs';
 
 /**
  * Result of a URL verification attempt
@@ -52,6 +51,15 @@ export class UrlVerificationService {
     return new Observable<UrlVerificationResult>((observer) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      let settled = false;
+
+      const finalizeRequest = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timeoutId);
+      };
 
       fetch(url, {
         method: 'HEAD',
@@ -60,7 +68,7 @@ export class UrlVerificationService {
         mode: 'cors',
       })
         .then((response) => {
-          clearTimeout(timeoutId);
+          finalizeRequest();
 
           if (!response.ok) {
             observer.next({
@@ -85,7 +93,7 @@ export class UrlVerificationService {
           observer.complete();
         })
         .catch((error: Error) => {
-          clearTimeout(timeoutId);
+          finalizeRequest();
 
           let errorMessage = 'Failed to verify URL';
           if (error.name === 'AbortError') {
@@ -102,6 +110,13 @@ export class UrlVerificationService {
           });
           observer.complete();
         });
+
+      return () => {
+        if (!settled) {
+          controller.abort();
+        }
+        finalizeRequest();
+      };
     }).pipe(
       timeout(timeoutMs + 1000), // Add buffer to RxJS timeout
       catchError((error: Error) => {
