@@ -15,49 +15,49 @@ import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
  */
 export interface CategoryMetadata {
   /**
-   * Model reference category
+   * The category of the model reference.
    */
   category: MODEL_REFERENCE_CATEGORY;
   /**
-   * Unix timestamp of last successful operation
+   * Unix timestamp when metadata was last updated.
    */
   last_updated: number;
   last_operation_type?: OperationType | null;
   last_operation_model?: string | null;
   /**
-   * Total number of create operations
+   * Total number of create operations.
    */
   total_creates?: number;
   /**
-   * Total number of update operations
+   * Total number of update operations.
    */
   total_updates?: number;
   /**
-   * Total number of delete operations
+   * Total number of delete operations.
    */
   total_deletes?: number;
   /**
-   * Current total number of models in category
+   * Current total number of models in category.
    */
   total_models?: number;
   /**
-   * Unix timestamp when metadata was first created
+   * Unix timestamp when metadata was first created.
    */
   initialization_time: number;
   /**
-   * Unix timestamp of last successful operation
+   * Unix timestamp of the last successful operation.
    */
   last_successful_operation: number;
   /**
-   * Total number of errors encountered
+   * Total number of errors encountered.
    */
   error_count?: number;
   /**
-   * Version of metadata schema
+   * Version of the metadata schema.
    */
   metadata_schema_version?: string;
   /**
-   * Type of backend (FileSystemBackend/RedisBackend)
+   * Type of backend performing operations.
    */
   backend_type: string;
 }

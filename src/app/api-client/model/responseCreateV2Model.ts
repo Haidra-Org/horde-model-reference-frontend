@@ -14,6 +14,7 @@ import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { ControlNetModelRecordOutput } from './controlNetModelRecordOutput';
+import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 import { ImageGenerationModelRecordOutput } from './imageGenerationModelRecordOutput';
 import { TextGenerationModelRecordOutput } from './textGenerationModelRecordOutput';
@@ -26,6 +27,7 @@ export interface ResponseCreateV2Model {
   name: string;
   description?: string;
   version?: string;
+  finetune_series?: FineTuneSeriesInfo;
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification: ModelClassification;

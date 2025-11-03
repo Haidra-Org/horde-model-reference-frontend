@@ -111,7 +111,7 @@ export class DefaultService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/heartbeat`;
+    let localVarPath = `/heartbeat`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<ContainsStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,

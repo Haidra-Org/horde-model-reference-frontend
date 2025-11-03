@@ -15,6 +15,7 @@ import { GenericModelRecordInput } from './genericModelRecordInput';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { TextGenerationModelRecordInput } from './textGenerationModelRecordInput';
+import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 import { ControlNetModelRecordInput } from './controlNetModelRecordInput';
 
@@ -26,6 +27,7 @@ export interface NewModelRecord {
   name: string;
   description?: string;
   version?: string;
+  finetune_series?: FineTuneSeriesInfo;
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification: ModelClassification;
