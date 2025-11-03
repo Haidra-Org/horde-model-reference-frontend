@@ -10,6 +10,7 @@
 import { ModelClassification } from './modelClassification';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
+import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
@@ -20,6 +21,7 @@ export interface GenericModelRecordInput {
   name: string;
   description?: string | null;
   version?: string | null;
+  finetune_series?: FineTuneSeriesInfo | null;
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification: ModelClassification;
