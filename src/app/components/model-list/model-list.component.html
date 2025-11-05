@@ -734,9 +734,7 @@
     >
       <h2 class="modal-title">Model JSON: {{ modelJsonToShow()!.name }}</h2>
       <div class="modal-content">
-        <pre
-          class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto text-sm"
-        ><code>{{ getFormattedJson(modelJsonToShow()!) }}</code></pre>
+        <app-json-display [data]="modelJsonToShow()!" />
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">

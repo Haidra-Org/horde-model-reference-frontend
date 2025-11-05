@@ -164,6 +164,14 @@
             <span class="form-hint">
               Enter valid JSON. Common fields: description, config, baseline, nsfw, etc.
             </span>
+
+            <!-- Syntax-highlighted JSON preview -->
+            @if (getParsedJsonData()) {
+              <div class="mt-4">
+                <div class="form-label">Preview (with syntax highlighting)</div>
+                <app-json-display [data]="getParsedJsonData()" />
+              </div>
+            }
           </div>
         </div>
       }

@@ -45,10 +45,11 @@ import {
   CountValueDescriptionTriple,
   CountValueDetailTriple,
 } from './stat-modal.component';
+import { JsonDisplayComponent } from '../common/json-display.component';
 
 @Component({
   selector: 'app-model-list',
-  imports: [FormsModule, RouterLink, ModelRowComponent, StatModalComponent],
+  imports: [FormsModule, RouterLink, ModelRowComponent, StatModalComponent, JsonDisplayComponent],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
