@@ -393,8 +393,7 @@ export function generateLargeAuditResponse(
       ).length,
       models_with_zero_month_usage: models.filter((m) => (m.usage_month ?? 0) === 0).length,
       models_with_no_active_workers: models.filter((m) => (m.worker_count ?? 0) === 0).length,
-      average_risk_score:
-        models.reduce((sum, m) => sum + m.risk_score, 0) / (modelCount || 1),
+      average_risk_score: models.reduce((sum, m) => sum + m.risk_score, 0) / (modelCount || 1),
       category_total_month_usage: totalMonthUsage,
     })
     .build();

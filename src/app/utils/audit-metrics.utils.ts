@@ -20,7 +20,7 @@ export const PRESET_NAME_TO_BACKEND: Record<string, string | undefined> = {
   'No Workers': BACKEND_AUDIT_PRESETS.NO_WORKERS,
   'Missing Data': BACKEND_AUDIT_PRESETS.MISSING_DATA,
   'Host Issues': BACKEND_AUDIT_PRESETS.HOST_ISSUES,
-  'Critical': BACKEND_AUDIT_PRESETS.CRITICAL,
+  Critical: BACKEND_AUDIT_PRESETS.CRITICAL,
   'Low Usage': BACKEND_AUDIT_PRESETS.LOW_USAGE,
 };
 
@@ -48,17 +48,29 @@ export interface UsageTrend {
 export const AUDIT_FILTER_PRESETS: Record<string, AuditPreset[]> = {
   image_generation: [
     { name: 'Show All', description: 'Clear all filters', filters: {} },
-    { name: 'Deletion Candidates', description: 'Models with any flags', filters: { showOnlyFlagged: true } },
+    {
+      name: 'Deletion Candidates',
+      description: 'Models with any flags',
+      filters: { showOnlyFlagged: true },
+    },
     { name: 'Zero Usage', description: 'Zero monthly usage', filters: { maxMonthUsage: 0 } },
     { name: 'No Workers', description: 'No active workers', filters: { maxWorkerCount: 0 } },
     { name: 'Missing Data', description: 'Missing data', filters: { showOnlyFlagged: true } },
     { name: 'Host Issues', description: 'File hosting issues', filters: { showOnlyFlagged: true } },
-    { name: 'Critical', description: 'Critical state', filters: { maxMonthUsage: 0, maxWorkerCount: 0 } },
+    {
+      name: 'Critical',
+      description: 'Critical state',
+      filters: { maxMonthUsage: 0, maxWorkerCount: 0 },
+    },
     { name: 'Low Usage', description: 'Low usage', filters: { maxUsagePercentage: 0.1 } },
   ],
   text_generation: [
     { name: 'Show All', description: 'Clear all filters', filters: {} },
-    { name: 'Deletion Candidates', description: 'Models with any flags', filters: { showOnlyFlagged: true } },
+    {
+      name: 'Deletion Candidates',
+      description: 'Models with any flags',
+      filters: { showOnlyFlagged: true },
+    },
     { name: 'Zero Usage', description: 'Zero total usage', filters: { maxTotalUsage: 0 } },
     { name: 'No Workers', description: 'No active workers', filters: { showOnlyFlagged: true } },
     { name: 'Missing Data', description: 'Missing data', filters: { showOnlyFlagged: true } },

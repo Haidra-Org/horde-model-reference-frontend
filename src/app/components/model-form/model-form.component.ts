@@ -243,7 +243,7 @@ export class ModelFormComponent implements OnInit {
       if (variations.length > 1) {
         const variationsJson = variations.map((v) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { name, ...jsonData } = v.data;
+          const { name: _name, ...jsonData } = v.data;
           return { name: v.name, ...jsonData };
         });
         this.form.patchValue({
@@ -252,7 +252,7 @@ export class ModelFormComponent implements OnInit {
       } else {
         const modelData = this.buildModelDataFromForm();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { name, ...jsonData } = modelData;
+        const { _name, ...jsonData } = modelData;
         this.form.patchValue({
           jsonData: JSON.stringify(jsonData, null, 2),
         });
@@ -260,7 +260,7 @@ export class ModelFormComponent implements OnInit {
     } else {
       const modelData = this.buildModelDataFromForm();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { name, ...jsonData } = modelData;
+      const { _name, ...jsonData } = modelData;
       this.form.patchValue({
         jsonData: JSON.stringify(jsonData, null, 2),
       });
