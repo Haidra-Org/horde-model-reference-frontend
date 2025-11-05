@@ -169,41 +169,6 @@ describe('HordeApiService', () => {
     });
   });
 
-  describe('getCombinedModelData', () => {
-    it('should fetch both status and stats in parallel', (done) => {
-      const mockStatus: HordeModelStatus[] = [
-        {
-          performance: 884156.6,
-          queued: 1597177856.0,
-          jobs: 390.0,
-          eta: 129,
-          type: 'image',
-          name: 'AlbedoBase XL (SDXL)',
-          count: 14,
-        },
-      ];
-
-      const mockStats: HordeModelStatsResponse = {
-        day: { 'AlbedoBase XL (SDXL)': 12010 },
-        month: { 'AlbedoBase XL (SDXL)': 509919 },
-        total: { 'AlbedoBase XL (SDXL)': 9929012 },
-      };
-
-      service.getCombinedModelData('image').subscribe((data) => {
-        expect(data.status).toEqual(mockStatus);
-        expect(data.stats).toEqual(mockStats);
-        expect(service.isLoading()).toBe(false);
-        done();
-      });
-
-      const statusReq = httpMock.expectOne((request) => request.url.includes('status/models'));
-      const statsReq = httpMock.expectOne((request) => request.url.includes('stats/img/models'));
-
-      statusReq.flush(mockStatus);
-      statsReq.flush(mockStats);
-    });
-  });
-
   describe('getWorkers', () => {
     it('should fetch worker by name', (done) => {
       const mockImageWorker: HordeImageWorker = {

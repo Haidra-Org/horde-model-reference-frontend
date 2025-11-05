@@ -6,6 +6,8 @@ import {
   V1Service,
   V2Service,
   V1CreateUpdateService,
+  StatisticsService,
+  AuditService,
   MODEL_REFERENCE_CATEGORY,
   ReplicateMode,
   ResponseReadV2ReferenceValue,
@@ -28,6 +30,8 @@ import {
   LegacyMiscellaneousRecordOutput,
   LegacySafetyCheckerRecordOutput,
   LegacyTextGenerationRecordOutput,
+  CategoryStatistics,
+  CategoryAuditResponse,
 } from '../api-client';
 import { BackendCapabilities, LegacyModelsResponse, LegacyRecordUnion } from '../models/api.models';
 
@@ -63,6 +67,8 @@ export class ModelReferenceApiService {
   private readonly legacyService = inject(V1Service);
   private readonly v2Service = inject(V2Service);
   private readonly v1CreateUpdateService = inject(V1CreateUpdateService);
+  private readonly statisticsService = inject(StatisticsService);
+  private readonly auditService = inject(AuditService);
 
   readonly backendCapabilities = signal<BackendCapabilities>({
     writable: false,
@@ -325,6 +331,56 @@ export class ModelReferenceApiService {
       .pipe(
         map(() => undefined),
         catchError(this.handleError),
+      );
+  }
+
+  /**
+   * Get category-level statistics from backend
+   *
+   * @param category The category to get statistics for
+   * @param groupTextModels Whether to group text models by base name (strips quantization)
+   * @returns Observable of CategoryStatistics or null on error
+   */
+  getCategoryStatistics(
+    category: string,
+    groupTextModels = false,
+  ): Observable<CategoryStatistics | null> {
+    return this.statisticsService
+      .readV2CategoryStatistics(category as MODEL_REFERENCE_CATEGORY, groupTextModels, undefined, 0)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.warn('Failed to fetch category statistics:', error);
+          return of(null);
+        }),
+      );
+  }
+
+  /**
+   * Get category-level audit analysis from backend
+   *
+   * @param category The category to audit
+   * @param groupTextModels Whether to group text models by base name (strips quantization)
+   * @param preset Optional preset filter to apply (deletion_candidates, zero_usage, etc.)
+   * @returns Observable of CategoryAuditResponse or null on error
+   */
+  getCategoryAudit(
+    category: string,
+    groupTextModels = false,
+    preset?: string,
+  ): Observable<CategoryAuditResponse | null> {
+    return this.auditService
+      .readV2CategoryAudit(
+        category as MODEL_REFERENCE_CATEGORY,
+        groupTextModels,
+        preset,
+        undefined,
+        0,
+      )
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.warn('Failed to fetch category audit:', error);
+          return of(null);
+        }),
       );
   }
 
