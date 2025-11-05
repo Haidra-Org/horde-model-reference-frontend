@@ -5,10 +5,15 @@
     <!-- Toggle Button -->
     <button
       class="absolute top-4 z-10 w-10 h-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-md hover:shadow-lg active:scale-95"
-      [class]="sidebarCollapsed() ? 'left-2' : 'left-60'" (click)="toggleSidebar()"
-      [attr.aria-label]="sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
-      <span class="text-gray-600 dark:text-gray-400 text-lg font-bold transition-transform"
-        [class]="sidebarCollapsed() ? 'rotate-0' : 'rotate-180'">›</span>
+      [class]="sidebarCollapsed() ? 'left-2' : 'left-60'"
+      (click)="toggleSidebar()"
+      [attr.aria-label]="sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+    >
+      <span
+        class="text-gray-600 dark:text-gray-400 text-lg font-bold transition-transform"
+        [class]="sidebarCollapsed() ? 'rotate-0' : 'rotate-180'"
+        >›</span
+      >
     </button>
   </div>
   <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">

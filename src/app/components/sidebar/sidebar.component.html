@@ -1,36 +1,49 @@
 <aside
   class="h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden"
-  [class]="isCollapsed() ? 'w-0' : 'w-64'">
+  [class]="isCollapsed() ? 'w-0' : 'w-64'"
+>
   @if (!isCollapsed()) {
-  <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap overflow-hidden">Model
-      Categories</h2>
-  </div>
+    <div
+      class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
+    >
+      <h2
+        class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap overflow-hidden"
+      >
+        Model Categories
+      </h2>
+    </div>
   }
 
   @if (loading()) {
-  <div class="p-6 text-center text-sm text-muted">Loading...</div>
+    <div class="p-6 text-center text-sm text-muted">Loading...</div>
   } @else if (categories().length === 0) {
-  <div class="p-6 text-center text-sm text-muted">
-    No categories available
-  </div>
+    <div class="p-6 text-center text-sm text-muted">No categories available</div>
   } @else {
-  <nav class="flex-1 overflow-y-auto">
-    @for (category of sortedCategories(); track category) {
-    <button
-      class="w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3"
-      [class]="currentCategory() === category
-            ? 'w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3 bg-primary-50 dark:bg-primary-900/20 border-primary-600 text-primary-700 dark:text-primary-300'
-            : 'w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3 border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
-      (click)="selectCategory(category)">
-      <span class="capitalize break-words">
-        {{ recordDisplayMap[category] || category }}
-      </span>
-      <span class="text-xl font-bold transition-opacity" [class]="currentCategory() === category
-              ? 'text-xl font-bold transition-opacity text-primary-400 opacity-100'
-              : 'text-xl font-bold transition-opacity opacity-0'">›</span>
-    </button>
-    }
-  </nav>
+    <nav class="flex-1 overflow-y-auto">
+      @for (category of sortedCategories(); track category) {
+        <button
+          class="w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3"
+          [class]="
+            currentCategory() === category
+              ? 'w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3 bg-primary-50 dark:bg-primary-900/20 border-primary-600 text-primary-700 dark:text-primary-300'
+              : 'w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3 border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+          "
+          (click)="selectCategory(category)"
+        >
+          <span class="capitalize break-words">
+            {{ recordDisplayMap[category] || category }}
+          </span>
+          <span
+            class="text-xl font-bold transition-opacity"
+            [class]="
+              currentCategory() === category
+                ? 'text-xl font-bold transition-opacity text-primary-400 opacity-100'
+                : 'text-xl font-bold transition-opacity opacity-0'
+            "
+            >›</span
+          >
+        </button>
+      }
+    </nav>
   }
 </aside>
