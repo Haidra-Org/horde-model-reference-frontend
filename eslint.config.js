@@ -2,6 +2,8 @@
 const eslint = require('@eslint/js');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
+const unusedImports = require('eslint-plugin-unused-imports');
+const importPlugin = require('eslint-plugin-import');
 
 module.exports = tseslint.config(
   {
@@ -12,6 +14,10 @@ module.exports = tseslint.config(
       ...tseslint.configs.stylistic,
       ...angular.configs.tsRecommended,
     ],
+    plugins: {
+      'unused-imports': unusedImports,
+      import: importPlugin,
+    },
     processor: angular.processInlineTemplates,
     rules: {
       '@angular-eslint/directive-selector': [
@@ -30,6 +36,22 @@ module.exports = tseslint.config(
           style: 'kebab-case',
         },
       ],
+      // Unused imports and variables
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
+      // Import organization
+      'import/no-duplicates': 'error',
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
+      'no-duplicate-imports': 'off', // Handled by import/no-duplicates
     },
   },
   {

@@ -7,7 +7,11 @@ import { of, throwError } from 'rxjs';
 import { ModelAuditComponent } from './model-audit.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
-import type { CategoryAuditResponse, ModelAuditInfo, MODEL_REFERENCE_CATEGORY } from '../../api-client';
+import type {
+  CategoryAuditResponse,
+  ModelAuditInfo,
+  MODEL_REFERENCE_CATEGORY,
+} from '../../api-client';
 import {
   ModelAuditInfoBuilder,
   CategoryAuditResponseBuilder,
@@ -206,7 +210,9 @@ describe('ModelAuditComponent', () => {
     apiService = TestBed.inject(
       ModelReferenceApiService,
     ) as jasmine.SpyObj<ModelReferenceApiService>;
-    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationService = TestBed.inject(
+      NotificationService,
+    ) as jasmine.SpyObj<NotificationService>;
 
     fixture = TestBed.createComponent(ModelAuditComponent);
     component = fixture.componentInstance;
@@ -217,7 +223,7 @@ describe('ModelAuditComponent', () => {
   });
 
   describe('initialization and data loading', () => {
-    it('should load models and audit data on init', (() => {
+    it('should load models and audit data on init', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
 
@@ -228,9 +234,9 @@ describe('ModelAuditComponent', () => {
       expect(component.auditResponse()).toEqual(mockAuditResponse);
       expect(component.loading()).toBe(false);
       expect(component.degradedMode()).toBe(false);
-    }));
+    });
 
-    it('should enter degraded mode when audit API fails', (() => {
+    it('should enter degraded mode when audit API fails', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(null));
 
@@ -240,18 +246,16 @@ describe('ModelAuditComponent', () => {
       expect(notificationService.warning).toHaveBeenCalledWith(
         jasmine.stringContaining('Audit analysis unavailable'),
       );
-    }));
+    });
 
-    it('should handle model loading error', (() => {
-      apiService.getLegacyModelsAsArray.and.returnValue(
-        throwError(() => new Error('API error')),
-      );
+    it('should handle model loading error', () => {
+      apiService.getLegacyModelsAsArray.and.returnValue(throwError(() => new Error('API error')));
 
       fixture.detectChanges();
 
       expect(notificationService.error).toHaveBeenCalled();
       expect(component.loading()).toBe(false);
-    }));
+    });
 
     it('should display loading state initially', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
@@ -260,7 +264,7 @@ describe('ModelAuditComponent', () => {
       expect(component.loading()).toBe(true);
     });
 
-    it('should display category in the header', (() => {
+    it('should display category in the header', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
 
@@ -268,15 +272,15 @@ describe('ModelAuditComponent', () => {
 
       const headerText = fixture.nativeElement.querySelector('h1, h2')?.textContent;
       expect(headerText).toContain('Image Generation');
-    }));
+    });
   });
 
   describe('computed properties', () => {
-    beforeEach((() => {
+    beforeEach(() => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
-    }));
+    });
 
     it('should compute category total usage from audit response', () => {
       expect(component.categoryTotalUsage()).toBe(150);
@@ -306,11 +310,11 @@ describe('ModelAuditComponent', () => {
   });
 
   describe('degraded mode', () => {
-    beforeEach((() => {
+    beforeEach(() => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(null));
       fixture.detectChanges();
-    }));
+    });
 
     it('should compute metrics without audit data in degraded mode', () => {
       const metricsModels = component.modelsWithAuditMetrics();
@@ -340,7 +344,7 @@ describe('ModelAuditComponent', () => {
   });
 
   describe('critical and warning flags', () => {
-    it('should identify critical models (zero month usage AND no workers)', (() => {
+    it('should identify critical models (zero month usage AND no workers)', () => {
       const criticalAudit: CategoryAuditResponse = {
         ...mockAuditResponse,
         models: [
@@ -366,9 +370,9 @@ describe('ModelAuditComponent', () => {
 
       const metricsModels = component.modelsWithAuditMetrics();
       expect(metricsModels[0].isCritical).toBe(true);
-    }));
+    });
 
-    it('should identify models with warnings (host issues)', (() => {
+    it('should identify models with warnings (host issues)', () => {
       const warningAudit: CategoryAuditResponse = {
         ...mockAuditResponse,
         models: [
@@ -392,15 +396,15 @@ describe('ModelAuditComponent', () => {
 
       const metricsModels = component.modelsWithAuditMetrics();
       expect(metricsModels[0].hasWarning).toBe(true);
-    }));
+    });
   });
 
   describe('sorting', () => {
-    beforeEach((() => {
+    beforeEach(() => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
-    }));
+    });
 
     it('should sort models by usage month ascending', () => {
       component.toggleSort('usageMonth');
@@ -434,7 +438,7 @@ describe('ModelAuditComponent', () => {
   });
 
   describe('preset filtering', () => {
-    it('should request audit data with preset parameter', (() => {
+    it('should request audit data with preset parameter', () => {
       const filteredAudit: CategoryAuditResponse = {
         ...mockAuditResponse,
         total_count: 2,
@@ -455,15 +459,15 @@ describe('ModelAuditComponent', () => {
         false,
         'zero_usage',
       );
-    }));
+    });
   });
 
   describe('data staleness detection', () => {
-    beforeEach((() => {
+    beforeEach(() => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
-    }));
+    });
 
     it('should detect fresh data', () => {
       component.lastRefreshTime.set(Date.now());
@@ -471,18 +475,18 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should detect stale data (> 5 minutes)', () => {
-      const sixMinutesAgo = Date.now() - (6 * 60 * 1000);
+      const sixMinutesAgo = Date.now() - 6 * 60 * 1000;
       component.lastRefreshTime.set(sixMinutesAgo);
       expect(component.isDataStale()).toBe(true);
     });
   });
 
   describe('selection functionality', () => {
-    beforeEach((() => {
+    beforeEach(() => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
-    }));
+    });
 
     it('should toggle model selection', () => {
       component.toggleModelSelection('test-model-1');
@@ -515,11 +519,11 @@ describe('ModelAuditComponent', () => {
   });
 
   describe('usage statistics extraction', () => {
-    beforeEach((() => {
+    beforeEach(() => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
-    }));
+    });
 
     it('should extract usage day from audit info', () => {
       const metrics = component.modelsWithAuditMetrics()[0];
@@ -536,7 +540,7 @@ describe('ModelAuditComponent', () => {
       expect(component.getUsageTotal(metrics)).toBe(500);
     });
 
-    it('should fall back to model usage stats in degraded mode', (() => {
+    it('should fall back to model usage stats in degraded mode', () => {
       apiService.getCategoryAudit.and.returnValue(of(null));
       fixture.detectChanges();
 
@@ -544,11 +548,11 @@ describe('ModelAuditComponent', () => {
       expect(component.getUsageDay(metrics)).toBe(10);
       expect(component.getUsageMonth(metrics)).toBe(100);
       expect(component.getUsageTotal(metrics)).toBe(500);
-    }));
+    });
   });
 
   describe('row styling', () => {
-    it('should apply critical styling for critical models', (() => {
+    it('should apply critical styling for critical models', () => {
       const criticalAudit: CategoryAuditResponse = {
         ...mockAuditResponse,
         models: [
@@ -571,9 +575,9 @@ describe('ModelAuditComponent', () => {
       const metrics = component.modelsWithAuditMetrics()[0];
       const rowClass = component.getRowClass(metrics);
       expect(rowClass).toContain('border-danger-500');
-    }));
+    });
 
-    it('should apply warning styling for models with warnings', (() => {
+    it('should apply warning styling for models with warnings', () => {
       const warningAudit: CategoryAuditResponse = {
         ...mockAuditResponse,
         models: [
@@ -595,9 +599,9 @@ describe('ModelAuditComponent', () => {
       const metrics = component.modelsWithAuditMetrics()[0];
       const rowClass = component.getRowClass(metrics);
       expect(rowClass).toContain('border-warning-500');
-    }));
+    });
 
-    it('should not apply special styling in degraded mode', (() => {
+    it('should not apply special styling in degraded mode', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(null));
 
@@ -606,11 +610,11 @@ describe('ModelAuditComponent', () => {
       const metrics = component.modelsWithAuditMetrics()[0];
       const rowClass = component.getRowClass(metrics);
       expect(rowClass).toBe('');
-    }));
+    });
   });
 
   describe('CSV export', () => {
-    it('should create CSV blob with correct content structure', (() => {
+    it('should create CSV blob with correct content structure', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
@@ -621,9 +625,9 @@ describe('ModelAuditComponent', () => {
       expect(createObjectURLSpy).toHaveBeenCalled();
       const blobArgs = createObjectURLSpy.calls.mostRecent().args[0] as Blob;
       expect(blobArgs.type).toBe('text/csv;charset=utf-8;');
-    }));
+    });
 
-    it('should trigger download with correct filename', (() => {
+    it('should trigger download with correct filename', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
@@ -635,22 +639,23 @@ describe('ModelAuditComponent', () => {
       expect(mockLink.download).toBe('model-audit-image_generation.csv');
       expect(mockLink.href).toBe('blob:mock-url');
       expect(clickSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('should include all models in CSV export', (() => {
+    it('should include all models in CSV export', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
-      const { createObjectURLSpy, appendChildSpy, removeChildSpy, mockLink } = setupCSVExportMocks();
+      const { createObjectURLSpy, appendChildSpy, removeChildSpy, mockLink } =
+        setupCSVExportMocks();
       component.exportToCSV();
 
       expect(createObjectURLSpy).toHaveBeenCalled();
       expect(appendChildSpy).toHaveBeenCalledWith(mockLink);
       expect(removeChildSpy).toHaveBeenCalledWith(mockLink);
-    }));
+    });
 
-    it('should handle models with special characters in CSV', (() => {
+    it('should handle models with special characters in CSV', () => {
       const specialModels = [
         {
           name: 'model, with comma',
@@ -667,10 +672,7 @@ describe('ModelAuditComponent', () => {
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(100)
         .withModels([
-          new ModelAuditInfoBuilder()
-            .withName('model, with comma')
-            .withUsage(10, 100, 500)
-            .build(),
+          new ModelAuditInfoBuilder().withName('model, with comma').withUsage(10, 100, 500).build(),
         ])
         .build();
 
@@ -683,11 +685,11 @@ describe('ModelAuditComponent', () => {
       component.exportToCSV();
 
       expect(createObjectURLSpy).toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('performance with large datasets', () => {
-    it('should handle 100 models without performance issues', (() => {
+    it('should handle 100 models without performance issues', () => {
       const largeDataset = generateLargeAuditResponse(100);
       const largeModels = largeDataset.models.map((m) => ({
         name: m.name,
@@ -712,9 +714,9 @@ describe('ModelAuditComponent', () => {
       expect(component.models().length).toBe(100);
       expect(component.modelsWithAuditMetrics().length).toBe(100);
       expect(duration).toBeLessThan(2000); // Under 2 seconds for 100 models
-    }));
+    });
 
-    it('should sort large datasets efficiently', (() => {
+    it('should sort large datasets efficiently', () => {
       const largeDataset = generateLargeAuditResponse(500);
       const largeModels = largeDataset.models.map((m) => ({
         name: m.name,
@@ -741,9 +743,9 @@ describe('ModelAuditComponent', () => {
 
       expect(sorted.length).toBe(500);
       expect(duration).toBeLessThan(200); // Under 200ms for sorting
-    }));
+    });
 
-    it('should export large datasets to CSV efficiently', (() => {
+    it('should export large datasets to CSV efficiently', () => {
       const largeDataset = generateLargeAuditResponse(1000);
       const largeModels = largeDataset.models.map((m) => ({
         name: m.name,
@@ -770,11 +772,11 @@ describe('ModelAuditComponent', () => {
       const duration = performance.now() - startTime;
 
       expect(duration).toBeLessThan(1000); // Under 1 second for CSV export
-    }));
+    });
   });
 
   describe('edge cases', () => {
-    it('should handle empty models array', (() => {
+    it('should handle empty models array', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of([]));
       apiService.getCategoryAudit.and.returnValue(
         of(
@@ -791,9 +793,9 @@ describe('ModelAuditComponent', () => {
       expect(component.models().length).toBe(0);
       expect(component.modelsWithAuditMetrics().length).toBe(0);
       expect(component.categoryTotalUsage()).toBe(0);
-    }));
+    });
 
-    it('should handle zero category total usage (division by zero)', (() => {
+    it('should handle zero category total usage (division by zero)', () => {
       const zeroUsageAudit = new CategoryAuditResponseBuilder()
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(0)
@@ -814,17 +816,14 @@ describe('ModelAuditComponent', () => {
       const metrics = component.modelsWithAuditMetrics()[0];
       expect(metrics.usagePercentage).toBe(0);
       expect(isNaN(metrics.usagePercentage)).toBe(false);
-    }));
+    });
 
-    it('should handle null/undefined optional fields in audit info', (() => {
+    it('should handle null/undefined optional fields in audit info', () => {
       const nullFieldsAudit = new CategoryAuditResponseBuilder()
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(100)
         .withModels([
-          new ModelAuditInfoBuilder()
-            .withName('test-model-1')
-            .withUsage(10, 100, 500)
-            .build(), // All optional fields remain null
+          new ModelAuditInfoBuilder().withName('test-model-1').withUsage(10, 100, 500).build(), // All optional fields remain null
         ])
         .build();
 
@@ -837,9 +836,9 @@ describe('ModelAuditComponent', () => {
       expect(metrics.costBenefitScore).toBeNull();
       expect(metrics.sizeGB).toBeNull();
       expect(metrics.baseline).toBeNull();
-    }));
+    });
 
-    it('should detect staleness at exact 5 minute boundary', (() => {
+    it('should detect staleness at exact 5 minute boundary', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
 
@@ -855,21 +854,15 @@ describe('ModelAuditComponent', () => {
       const almostFiveMinutes = now - 299000;
       component.lastRefreshTime.set(almostFiveMinutes);
       expect(component.isDataStale()).toBe(false);
-    }));
+    });
 
-    it('should handle all critical flag combinations', (() => {
+    it('should handle all critical flag combinations', () => {
       const criticalCombos = new CategoryAuditResponseBuilder()
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(100)
         .withModels([
-          new ModelAuditInfoBuilder()
-            .withName('critical-model')
-            .withCriticalFlags()
-            .build(),
-          new ModelAuditInfoBuilder()
-            .withName('warning-model')
-            .withWarningFlags()
-            .build(),
+          new ModelAuditInfoBuilder().withName('critical-model').withCriticalFlags().build(),
+          new ModelAuditInfoBuilder().withName('warning-model').withWarningFlags().build(),
           new ModelAuditInfoBuilder()
             .withName('both-flags')
             .withFlags({
@@ -921,7 +914,7 @@ describe('ModelAuditComponent', () => {
       expect(metrics[1].hasWarning).toBe(true);
       expect(metrics[2].isCritical).toBe(true); // Both (critical takes precedence)
       expect(metrics[2].hasWarning).toBe(true);
-    }));
+    });
 
     it('should handle text_generation category differences', () => {
       component.category.set('text_generation');
@@ -930,7 +923,7 @@ describe('ModelAuditComponent', () => {
       expect(component.recordDisplayName()).toBe('Text Generation');
     });
 
-    it('should handle models with null usage stats in degraded mode', (() => {
+    it('should handle models with null usage stats in degraded mode', () => {
       const modelsWithoutStats = [
         {
           name: 'no-stats-model',
@@ -950,9 +943,9 @@ describe('ModelAuditComponent', () => {
       expect(component.getUsageDay(metrics)).toBe(0);
       expect(component.getUsageMonth(metrics)).toBe(0);
       expect(component.getUsageTotal(metrics)).toBe(0);
-    }));
+    });
 
-    it('should handle extreme usage values', (() => {
+    it('should handle extreme usage values', () => {
       const extremeModels = [
         {
           name: 'extreme-model',
@@ -984,23 +977,17 @@ describe('ModelAuditComponent', () => {
       const metrics = component.modelsWithAuditMetrics()[0];
       expect(metrics.usagePercentage).toBeGreaterThan(0);
       expect(isFinite(metrics.usagePercentage)).toBe(true);
-    }));
+    });
   });
 
   describe('additional computed properties', () => {
-    it('should count selected critical models', (() => {
+    it('should count selected critical models', () => {
       const criticalAudit = new CategoryAuditResponseBuilder()
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(100)
         .withModels([
-          new ModelAuditInfoBuilder()
-            .withName('test-model-1')
-            .withCriticalFlags()
-            .build(),
-          new ModelAuditInfoBuilder()
-            .withName('test-model-2')
-            .withUsage(10, 100, 500)
-            .build(),
+          new ModelAuditInfoBuilder().withName('test-model-1').withCriticalFlags().build(),
+          new ModelAuditInfoBuilder().withName('test-model-2').withUsage(10, 100, 500).build(),
         ])
         .build();
 
@@ -1013,21 +1000,15 @@ describe('ModelAuditComponent', () => {
 
       component.toggleModelSelection('test-model-2');
       expect(component.selectedCriticalCount()).toBe(1); // Still 1, second isn't critical
-    }));
+    });
 
-    it('should count selected warning models', (() => {
+    it('should count selected warning models', () => {
       const warningAudit = new CategoryAuditResponseBuilder()
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(100)
         .withModels([
-          new ModelAuditInfoBuilder()
-            .withName('test-model-1')
-            .withWarningFlags()
-            .build(),
-          new ModelAuditInfoBuilder()
-            .withName('test-model-2')
-            .withUsage(10, 100, 500)
-            .build(),
+          new ModelAuditInfoBuilder().withName('test-model-1').withWarningFlags().build(),
+          new ModelAuditInfoBuilder().withName('test-model-2').withUsage(10, 100, 500).build(),
         ])
         .build();
 
@@ -1037,25 +1018,25 @@ describe('ModelAuditComponent', () => {
 
       component.toggleModelSelection('test-model-1');
       expect(component.selectedWarningCount()).toBe(1);
-    }));
+    });
 
-    it('should calculate total models count', (() => {
+    it('should calculate total models count', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
       expect(component.totalModels()).toBe(2);
-    }));
+    });
 
-    it('should calculate models with workers count', (() => {
+    it('should calculate models with workers count', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
       expect(component.modelsWithWorkers()).toBe(2); // Both have workerCount > 0
-    }));
+    });
 
-    it('should calculate average usage percentage', (() => {
+    it('should calculate average usage percentage', () => {
       apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
       apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
       fixture.detectChanges();
@@ -1065,9 +1046,9 @@ describe('ModelAuditComponent', () => {
       expect(avgPercentage).toBeGreaterThan(0);
       expect(avgPercentage).toBeLessThanOrEqual(100);
       expect(avgPercentage).toBeCloseTo(50, 0); // Approximately 50%
-    }));
+    });
 
-    it('should select only flagged models', (() => {
+    it('should select only flagged models', () => {
       const flaggedAudit = new CategoryAuditResponseBuilder()
         .withCategory('image_generation' as MODEL_REFERENCE_CATEGORY)
         .withCategoryTotalUsage(150)
@@ -1077,10 +1058,7 @@ describe('ModelAuditComponent', () => {
             .withCriticalFlags()
             .withUsage(0, 0, 0)
             .build(),
-          new ModelAuditInfoBuilder()
-            .withName('test-model-2')
-            .withUsage(10, 100, 500)
-            .build(),
+          new ModelAuditInfoBuilder().withName('test-model-2').withUsage(10, 100, 500).build(),
         ])
         .build();
 
@@ -1092,6 +1070,6 @@ describe('ModelAuditComponent', () => {
       expect(component.selectedCount()).toBe(1);
       expect(component.isModelSelected('test-model-1')).toBe(true);
       expect(component.isModelSelected('test-model-2')).toBe(false);
-    }));
+    });
   });
 });

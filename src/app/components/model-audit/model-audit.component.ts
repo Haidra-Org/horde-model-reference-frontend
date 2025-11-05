@@ -24,11 +24,7 @@ import {
   GroupedTextModel,
 } from '../../models/unified-model';
 import { HordeModelUsageStats } from '../../models/horde-api.models';
-import {
-  ModelAuditInfo,
-  DeletionRiskFlags,
-  CategoryAuditResponse,
-} from '../../api-client';
+import { ModelAuditInfo, DeletionRiskFlags, CategoryAuditResponse } from '../../api-client';
 import { BASELINE_SHORTHAND_MAP, RECORD_DISPLAY_MAP } from '../../models/maps';
 import {
   getModelFileHosts,
@@ -172,7 +168,10 @@ export class ModelAuditComponent implements OnInit {
         const model = models.find((m) => m.name === auditInfo.name);
         if (!model) {
           // Shouldn't happen, but handle gracefully - create minimal model from auditInfo
-          return this.createDegradedMetrics({ name: auditInfo.name } as UnifiedModelData, categoryTotal);
+          return this.createDegradedMetrics(
+            { name: auditInfo.name } as UnifiedModelData,
+            categoryTotal,
+          );
         }
 
         const fileHosts = auditInfo.download_hosts ?? [];
@@ -199,12 +198,14 @@ export class ModelAuditComponent implements OnInit {
           // Risk assessment
           flags: flags ?? null,
           isCritical: flags ? !!(flags.zero_usage_month && flags.no_active_workers) : false,
-          hasWarning: flags ? !!(
-            flags.has_multiple_hosts ||
-            flags.has_non_preferred_host ||
-            flags.no_download_urls ||
-            flags.has_unknown_host
-          ) : false,
+          hasWarning: flags
+            ? !!(
+                flags.has_multiple_hosts ||
+                flags.has_non_preferred_host ||
+                flags.no_download_urls ||
+                flags.has_unknown_host
+              )
+            : false,
           flagCount: auditInfo.risk_score ?? 0,
           fileHosts,
           baseline: auditInfo.baseline ?? null,
@@ -220,7 +221,10 @@ export class ModelAuditComponent implements OnInit {
   /**
    * Create metrics in degraded mode (when audit API fails)
    */
-  private createDegradedMetrics(model: UnifiedModelData | GroupedTextModel, categoryTotal: number): ModelWithAuditMetrics {
+  private createDegradedMetrics(
+    model: UnifiedModelData | GroupedTextModel,
+    categoryTotal: number,
+  ): ModelWithAuditMetrics {
     const legacyModel = model as LegacyRecordUnion;
     const stats = model.usageStats as HordeModelUsageStats | undefined;
     const monthUsage = stats?.month ?? 0;

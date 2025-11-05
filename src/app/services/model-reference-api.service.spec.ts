@@ -115,8 +115,20 @@ describe('ModelReferenceApiService', () => {
         top_tags: [],
         top_styles: [],
         parameter_buckets: [
-          { bucket_label: '3B-7B', min_params: 3000000000, max_params: 7000000000, count: 30, percentage: 60 },
-          { bucket_label: '7B-13B', min_params: 7000000000, max_params: 13000000000, count: 20, percentage: 40 },
+          {
+            bucket_label: '3B-7B',
+            min_params: 3000000000,
+            max_params: 7000000000,
+            count: 30,
+            percentage: 60,
+          },
+          {
+            bucket_label: '7B-13B',
+            min_params: 7000000000,
+            max_params: 13000000000,
+            count: 20,
+            percentage: 40,
+          },
         ],
         models_without_param_info: 0,
         models_with_trigger_words: 0,
@@ -630,6 +642,3 @@ describe('ModelReferenceApiService', () => {
     });
   });
 });
-
-
-
