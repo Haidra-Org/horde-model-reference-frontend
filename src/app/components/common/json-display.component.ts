@@ -40,7 +40,7 @@ export class JsonDisplayComponent {
             cls = 'json-key';
           }
           return `<span class="${cls}">${match}</span>`;
-        }
+        },
       )
       .replace(/\b(true|false)\b/g, '<span class="json-boolean">$1</span>')
       .replace(/\b(null)\b/g, '<span class="json-null">$1</span>')
