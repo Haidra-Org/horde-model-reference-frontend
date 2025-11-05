@@ -54,6 +54,7 @@ import {
 } from '../../models/text-model-name';
 import { DownloadRecord } from '../../api-client';
 import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../../utils/config-converter';
+import { JsonDisplayComponent } from '../common/json-display.component';
 
 @Component({
   selector: 'app-model-form',
@@ -64,6 +65,7 @@ import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../../utils/
     TextGenerationFieldsComponent,
     ClipFieldsComponent,
     ConfigFormSectionSimplifiedComponent,
+    JsonDisplayComponent,
   ],
   templateUrl: './model-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -222,6 +224,19 @@ export class ModelFormComponent implements OnInit {
           severity: 'error',
         },
       ]);
+    }
+  }
+
+  /**
+   * Gets the parsed JSON data for syntax-highlighted display
+   * Returns null if the JSON is invalid
+   */
+  getParsedJsonData(): unknown {
+    try {
+      const formValue = this.form.getRawValue();
+      return JSON.parse(formValue.jsonData);
+    } catch {
+      return null;
     }
   }
 
