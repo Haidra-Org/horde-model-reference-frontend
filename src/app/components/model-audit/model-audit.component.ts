@@ -22,6 +22,8 @@ import {
   UnifiedModelData,
   createGroupedTextModels,
   GroupedTextModel,
+  isGroupedTextModel,
+  mergeMultipleModels,
 } from '../../models/unified-model';
 import { HordeModelUsageStats } from '../../models/horde-api.models';
 import { ModelAuditInfo, DeletionRiskFlags, CategoryAuditResponse } from '../../api-client';
@@ -62,6 +64,10 @@ interface ModelWithAuditMetrics {
   fileHosts: string[];
   baseline: string | null;
   sizeGB: number | null;
+  // Grouping support
+  isGrouped: boolean;
+  variations?: UnifiedModelData[];
+  variationCount: number;
 }
 
 type SortColumn =
@@ -111,6 +117,9 @@ export class ModelAuditComponent implements OnInit {
 
   // Selection
   readonly selectedModels = signal<Set<string>>(new Set());
+
+  // Row expansion for grouped models
+  readonly expandedRows = signal<Set<string>>(new Set());
 
   // Computed values
   readonly recordDisplayName = computed(() => {
@@ -162,55 +171,179 @@ export class ModelAuditComponent implements OnInit {
     const categoryTotal = this.categoryTotalUsage();
 
     if (auditResp && !this.degradedMode()) {
-      // Backend mode: map ModelAuditInfo to ModelWithAuditMetrics
-      return auditResp.models.map((auditInfo) => {
-        // Find corresponding model from reference data for extended properties
-        const model = models.find((m) => m.name === auditInfo.name);
-        if (!model) {
-          // Shouldn't happen, but handle gracefully - create minimal model from auditInfo
-          return this.createDegradedMetrics(
-            { name: auditInfo.name } as UnifiedModelData,
-            categoryTotal,
+      // Backend mode: match audit data to models (including grouped models)
+      return models.map((model) => {
+        const isGrouped = isGroupedTextModel(model);
+
+        if (isGrouped) {
+          // For grouped models, aggregate audit data from all variations
+          const groupedModel = model as GroupedTextModel;
+          const variationAuditInfos = groupedModel.variations
+            .map((v) => auditResp.models.find((a) => a.name === v.name))
+            .filter((a): a is ModelAuditInfo => a !== undefined);
+
+          if (variationAuditInfos.length === 0) {
+            // No audit data for this grouped model - use degraded metrics
+            return this.createDegradedMetrics(model, categoryTotal);
+          }
+
+          // Aggregate metrics across all variations
+          const aggregatedWorkerCount = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.worker_count ?? 0),
+            0,
           );
-        }
+          const aggregatedUsageDay = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.usage_day ?? 0),
+            0,
+          );
+          const aggregatedUsageMonth = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.usage_month ?? 0),
+            0,
+          );
+          const aggregatedUsageTotal = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.usage_total ?? 0),
+            0,
+          );
+          const aggregatedUsageHour = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.usage_hour ?? 0),
+            0,
+          );
+          const aggregatedUsageMinute = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.usage_minute ?? 0),
+            0,
+          );
 
-        const fileHosts = auditInfo.download_hosts ?? [];
-        const flags = auditInfo.deletion_risk_flags;
+          // Collect all file hosts
+          const allFileHosts = new Set<string>();
+          variationAuditInfos.forEach((a) => {
+            (a.download_hosts ?? []).forEach((h) => allFileHosts.add(h));
+          });
 
-        return {
-          model,
-          auditInfo,
-          // Core metrics from audit API
-          name: auditInfo.name,
-          workerCount: auditInfo.worker_count ?? 0,
-          usagePercentage: auditInfo.usage_percentage_of_category ?? 0,
-          usageTrend: {
-            dayToMonthRatio: auditInfo.usage_trend?.day_to_month_ratio ?? null,
-            monthToTotalRatio: auditInfo.usage_trend?.month_to_total_ratio ?? null,
-          },
-          // New fields from audit API
-          usageHour: auditInfo.usage_hour ?? 0,
-          usageMinute: auditInfo.usage_minute ?? 0,
-          costBenefitScore: auditInfo.cost_benefit_score ?? null,
-          nsfw: auditInfo.nsfw ?? null,
-          hasDescription: auditInfo.has_description ?? false,
-          downloadCount: auditInfo.download_count ?? 0,
-          // Risk assessment
-          flags: flags ?? null,
-          isCritical: flags ? !!(flags.zero_usage_month && flags.no_active_workers) : false,
-          hasWarning: flags
-            ? !!(
+          // Aggregate flags (a flag is set if ANY variation has it)
+          const aggregatedFlags = variationAuditInfos.reduce(
+            (acc, a) => {
+              const f = a.deletion_risk_flags;
+              if (!f) return acc;
+              return {
+                zero_usage_day: acc.zero_usage_day || f.zero_usage_day,
+                zero_usage_month: acc.zero_usage_month || f.zero_usage_month,
+                zero_usage_total: acc.zero_usage_total || f.zero_usage_total,
+                no_active_workers: acc.no_active_workers || f.no_active_workers,
+                has_multiple_hosts: acc.has_multiple_hosts || f.has_multiple_hosts,
+                has_non_preferred_host: acc.has_non_preferred_host || f.has_non_preferred_host,
+                has_unknown_host: acc.has_unknown_host || f.has_unknown_host,
+                no_download_urls: acc.no_download_urls || f.no_download_urls,
+                missing_description: acc.missing_description || f.missing_description,
+                missing_baseline: acc.missing_baseline || f.missing_baseline,
+                low_usage: acc.low_usage || f.low_usage,
+              };
+            },
+            {
+              zero_usage_day: false,
+              zero_usage_month: false,
+              zero_usage_total: false,
+              no_active_workers: false,
+              has_multiple_hosts: false,
+              has_non_preferred_host: false,
+              has_unknown_host: false,
+              no_download_urls: false,
+              missing_description: false,
+              missing_baseline: false,
+              low_usage: false,
+            } as DeletionRiskFlags,
+          );
+
+          const aggregatedRiskScore = variationAuditInfos.reduce(
+            (sum, a) => sum + (a.risk_score ?? 0),
+            0,
+          );
+
+          // Use first variation's audit info as template
+          const primaryAuditInfo = variationAuditInfos[0];
+          const usagePercentage =
+            categoryTotal > 0 ? (aggregatedUsageMonth / categoryTotal) * 100 : 0;
+
+          return {
+            model,
+            auditInfo: primaryAuditInfo, // Reference to first variation's audit info
+            name: model.name,
+            workerCount: aggregatedWorkerCount,
+            usagePercentage,
+            usageTrend: {
+              dayToMonthRatio:
+                aggregatedUsageMonth > 0 ? aggregatedUsageDay / aggregatedUsageMonth : null,
+              monthToTotalRatio:
+                aggregatedUsageTotal > 0 ? aggregatedUsageMonth / aggregatedUsageTotal : null,
+            },
+            usageHour: aggregatedUsageHour,
+            usageMinute: aggregatedUsageMinute,
+            costBenefitScore: null, // Can't meaningfully aggregate
+            nsfw: primaryAuditInfo.nsfw ?? null,
+            hasDescription: primaryAuditInfo.has_description ?? false,
+            downloadCount: variationAuditInfos.reduce((sum, a) => sum + (a.download_count ?? 0), 0),
+            flags: aggregatedFlags,
+            isCritical: !!(
+              aggregatedFlags.zero_usage_month && aggregatedFlags.no_active_workers
+            ),
+            hasWarning: !!(
+              aggregatedFlags.has_multiple_hosts ||
+              aggregatedFlags.has_non_preferred_host ||
+              aggregatedFlags.no_download_urls ||
+              aggregatedFlags.has_unknown_host
+            ),
+            flagCount: aggregatedRiskScore,
+            fileHosts: Array.from(allFileHosts),
+            baseline: primaryAuditInfo.baseline ?? null,
+            sizeGB: primaryAuditInfo.size_gb ?? null,
+            isGrouped: true,
+            variations: groupedModel.variations,
+            variationCount: groupedModel.variations.length,
+          };
+        } else {
+          // For ungrouped models, find matching audit info by exact name
+          const auditInfo = auditResp.models.find((a) => a.name === model.name);
+          if (!auditInfo) {
+            return this.createDegradedMetrics(model, categoryTotal);
+          }
+
+          const fileHosts = auditInfo.download_hosts ?? [];
+          const flags = auditInfo.deletion_risk_flags;
+
+          return {
+            model,
+            auditInfo,
+            name: auditInfo.name,
+            workerCount: auditInfo.worker_count ?? 0,
+            usagePercentage: auditInfo.usage_percentage_of_category ?? 0,
+            usageTrend: {
+              dayToMonthRatio: auditInfo.usage_trend?.day_to_month_ratio ?? null,
+              monthToTotalRatio: auditInfo.usage_trend?.month_to_total_ratio ?? null,
+            },
+            usageHour: auditInfo.usage_hour ?? 0,
+            usageMinute: auditInfo.usage_minute ?? 0,
+            costBenefitScore: auditInfo.cost_benefit_score ?? null,
+            nsfw: auditInfo.nsfw ?? null,
+            hasDescription: auditInfo.has_description ?? false,
+            downloadCount: auditInfo.download_count ?? 0,
+            flags: flags ?? null,
+            isCritical: flags ? !!(flags.zero_usage_month && flags.no_active_workers) : false,
+            hasWarning: flags
+              ? !!(
                 flags.has_multiple_hosts ||
                 flags.has_non_preferred_host ||
                 flags.no_download_urls ||
                 flags.has_unknown_host
               )
-            : false,
-          flagCount: auditInfo.risk_score ?? 0,
-          fileHosts,
-          baseline: auditInfo.baseline ?? null,
-          sizeGB: auditInfo.size_gb ?? null,
-        };
+              : false,
+            flagCount: auditInfo.risk_score ?? 0,
+            fileHosts,
+            baseline: auditInfo.baseline ?? null,
+            sizeGB: auditInfo.size_gb ?? null,
+            isGrouped: false,
+            variations: undefined,
+            variationCount: 0,
+          };
+        }
       });
     }
 
@@ -243,6 +376,8 @@ export class ModelAuditComponent implements OnInit {
       sizeGB = legacyModel.size_on_disk_bytes / (1024 * 1024 * 1024);
     }
 
+    const isGrouped = isGroupedTextModel(model);
+
     return {
       model,
       auditInfo: null,
@@ -269,6 +404,10 @@ export class ModelAuditComponent implements OnInit {
       fileHosts,
       baseline,
       sizeGB,
+      // Grouping support
+      isGrouped,
+      variations: isGrouped ? (model as GroupedTextModel).variations : undefined,
+      variationCount: isGrouped ? (model as GroupedTextModel).variations.length : 0,
     };
   }
 
@@ -454,9 +593,17 @@ export class ModelAuditComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (referenceModels) => {
-          const displayModels = isTextGen
-            ? createGroupedTextModels(referenceModels.map((m) => ({ ...m })))
+          // Parse text model names for text generation category (required for grouping)
+          const modelsWithParsing = isTextGen
+            ? mergeMultipleModels(referenceModels, undefined, undefined, {
+              parseTextModelNames: true,
+            })
             : referenceModels.map((m) => ({ ...m }));
+
+          // Group text models by base name
+          const displayModels = isTextGen
+            ? createGroupedTextModels(modelsWithParsing)
+            : modelsWithParsing;
 
           this.models.set(displayModels);
 
@@ -583,6 +730,21 @@ export class ModelAuditComponent implements OnInit {
         .map((item) => item.model.name),
     );
     this.selectedModels.set(names);
+  }
+
+  // Row expansion for grouped models
+  toggleRowExpansion(modelName: string): void {
+    const expanded = new Set(this.expandedRows());
+    if (expanded.has(modelName)) {
+      expanded.delete(modelName);
+    } else {
+      expanded.add(modelName);
+    }
+    this.expandedRows.set(expanded);
+  }
+
+  isRowExpanded(modelName: string): boolean {
+    return this.expandedRows().has(modelName);
   }
 
   // Preset selection (filters are now server-side)

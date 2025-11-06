@@ -137,24 +137,22 @@ export class ModelFormComponent implements OnInit {
 
     const variations: { name: string; data: LegacyRecordUnion }[] = [];
 
-    // Always include base model (without backend prefix) if no backends selected
-    if (selectedBackends.length === 0) {
-      variations.push({
-        name: baseModelName,
-        data: { ...modelData, name: baseModelName },
+    // Always include base model (without backend prefix)
+    variations.push({
+      name: baseModelName,
+      data: { ...modelData, name: baseModelName },
+    });
+
+    // Add variation for each selected backend
+    for (const backend of selectedBackends) {
+      const variantName = buildTextModelName({
+        backend,
+        ...parseTextModelName(baseModelName),
       });
-    } else {
-      // Create variation for each selected backend
-      for (const backend of selectedBackends) {
-        const variantName = buildTextModelName({
-          backend,
-          ...parseTextModelName(baseModelName),
-        });
-        variations.push({
-          name: variantName,
-          data: { ...modelData, name: variantName },
-        });
-      }
+      variations.push({
+        name: variantName,
+        data: { ...modelData, name: variantName },
+      });
     }
 
     return variations;

@@ -26,6 +26,7 @@ import {
   createGroupedTextModels,
   GroupedTextModel,
   hasActiveWorkers,
+  isGroupedTextModel,
 } from '../../models/unified-model';
 import { HordeModelType } from '../../models/horde-api.models';
 import {
