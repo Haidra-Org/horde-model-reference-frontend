@@ -10,6 +10,9 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
@@ -50,12 +53,20 @@ import { JsonDisplayComponent } from '../common/json-display.component';
 
 @Component({
   selector: 'app-model-list',
-  imports: [FormsModule, RouterLink, ModelRowComponent, StatModalComponent, JsonDisplayComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    ModelRowComponent,
+    StatModalComponent,
+    JsonDisplayComponent,
+    ScrollingModule,
+  ],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModelListComponent implements OnInit {
   readonly recordDisplayMap = RECORD_DISPLAY_MAP;
+  protected readonly Math = Math;
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
   private readonly auth = inject(AuthService);
@@ -68,6 +79,8 @@ export class ModelListComponent implements OnInit {
   readonly models = signal<(UnifiedModelData | GroupedTextModel)[]>([]);
   readonly loading = signal(true);
   readonly searchTerm = signal('');
+  readonly searchTermSubject = new Subject<string>();
+  readonly debouncedSearchTerm = signal('');
   readonly filterByActive = signal(false);
   readonly selectedTags = signal<string[]>([]);
   readonly tagSearchTerm = signal('');
@@ -164,7 +177,7 @@ export class ModelListComponent implements OnInit {
   });
 
   readonly filteredModels = computed(() => {
-    const search = this.searchTerm().toLowerCase();
+    const search = this.debouncedSearchTerm().toLowerCase();
     const selectedTags = this.selectedTags();
     const selectedParameterTags = this.selectedParameterTags();
     const activeFilter = this.filterByActive();
@@ -199,14 +212,52 @@ export class ModelListComponent implements OnInit {
     if (search) {
       filtered = filtered.filter((model) => {
         const legacyModel = model as LegacyRecordUnion;
-        return (
-          model.name.toLowerCase().includes(search) ||
-          (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) ||
-          (isLegacyStableDiffusionRecord(legacyModel) &&
-            legacyModel.baseline?.toLowerCase().includes(search)) ||
-          (isLegacyStableDiffusionRecord(legacyModel) &&
-            legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search)))
-        );
+
+        // Check base name
+        if (model.name.toLowerCase().includes(search)) {
+          return true;
+        }
+
+        // Check description
+        if (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) {
+          return true;
+        }
+
+        // Check baseline
+        if (
+          isLegacyStableDiffusionRecord(legacyModel) &&
+          legacyModel.baseline?.toLowerCase().includes(search)
+        ) {
+          return true;
+        }
+
+        // Check tags
+        if (
+          isLegacyStableDiffusionRecord(legacyModel) &&
+          legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search))
+        ) {
+          return true;
+        }
+
+        // For grouped text models, also check variations and backends
+        if (isGroupedTextModel(model)) {
+          // Check if search matches any backend name
+          if (model.availableBackends.some((backend) => backend.toLowerCase().includes(search))) {
+            return true;
+          }
+
+          // Check if search matches any variation name
+          if (model.variations.some((variation) => variation.name.toLowerCase().includes(search))) {
+            return true;
+          }
+
+          // Check if search matches any author
+          if (model.availableAuthors.some((author) => author.toLowerCase().includes(search))) {
+            return true;
+          }
+        }
+
+        return false;
       });
     }
 
@@ -556,6 +607,17 @@ export class ModelListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Setup debounced search
+    this.searchTermSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((term) => {
+        this.debouncedSearchTerm.set(term);
+      });
+
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const category = params['category'];
       if (category) {
@@ -758,8 +820,8 @@ export class ModelListComponent implements OnInit {
           // Parse text model names for text generation category
           const modelsWithParsing = isTextGen
             ? mergeMultipleModels(referenceModels, undefined, undefined, {
-                parseTextModelNames: true,
-              })
+              parseTextModelNames: true,
+            })
             : referenceModels.map((m) => ({ ...m }));
 
           // Group text models by base name

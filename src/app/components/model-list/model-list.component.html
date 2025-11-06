@@ -3,24 +3,13 @@
   <div class="card">
     <div
       class="flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-      (click)="toggleHeaderCollapsed()"
-      [title]="headerCollapsed() ? 'Expand header' : 'Collapse header'"
-      role="button"
-      tabindex="0"
-      (keydown)="($event.key === 'Enter' || $event.key === ' ') && toggleHeaderCollapsed()"
-    >
-      <button
-        type="button"
+      (click)="toggleHeaderCollapsed()" [title]="headerCollapsed() ? 'Expand header' : 'Collapse header'" role="button"
+      tabindex="0" (keydown)="($event.key === 'Enter' || $event.key === ' ') && toggleHeaderCollapsed()">
+      <button type="button"
         class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-        aria-label="{{ headerCollapsed() ? 'Expand' : 'Collapse' }} header"
-      >
-        <svg
-          class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200"
-          [class.rotate-180]="!headerCollapsed()"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        aria-label="{{ headerCollapsed() ? 'Expand' : 'Collapse' }} header">
+        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200"
+          [class.rotate-180]="!headerCollapsed()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
         </svg>
       </button>
@@ -28,284 +17,212 @@
         {{ recordDisplayMap[category()] || category() }}
       </h1>
       <div class="flex gap-2 mt-2 w-40">
-        <a
-          [routerLink]="['/categories', category(), 'audit']"
-          class="btn btn-secondary w-auto flex items-center gap-2"
-        >
+        <a [routerLink]="['/categories', category(), 'audit']" class="btn btn-secondary w-auto flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-            ></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+            </path>
           </svg>
           Audit
         </a>
         @if (writable()) {
-          <button class="btn btn-primary" (click)="createModel()">+ Create Model</button>
+        <button class="btn btn-primary" (click)="createModel()">+ Create Model</button>
         }
       </div>
       @if (headerCollapsed()) {
-        <span class="text-sm text-gray-600 dark:text-gray-400"> ({{ totalModels() }} models) </span>
+      <span class="text-sm text-gray-600 dark:text-gray-400"> ({{ totalModels() }} models) </span>
       }
     </div>
 
     @if (!headerCollapsed()) {
-      <div class="flex justify-between items-start px-6 pb-4" [class.gap-6]="hasParametersStats()">
-        <div [class.flex-1]="hasParametersStats()">
-          <div class="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">
-            MODEL_REFERENCE_CATEGORY: {{ category() }}
-          </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {{ totalModels() }} models
-            @if (filteredModels().length !== totalModels()) {
-              (showing {{ filteredModels().length }} after filters)
-            }
-          </p>
+    <div class="flex justify-between items-start px-6 pb-4" [class.gap-6]="hasParametersStats()">
+      <div [class.flex-1]="hasParametersStats()">
+        <div class="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">
+          MODEL_REFERENCE_CATEGORY: {{ category() }}
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          {{ totalModels() }} models
+          @if (filteredModels().length !== totalModels()) {
+          (showing {{ filteredModels().length }} after filters)
+          }
+        </p>
 
-          <!-- Category Statistics -->
-          @if (filteredModels().length > 0) {
-            <div class="flex flex-wrap gap-3 mt-3">
-              @for (statType of categoryStatsConfig(); track statType) {
-                @if (statType === 'baseline' && baselineStats().length > 0) {
-                  <div
-                    class="stat-card stat-card--column"
-                    title="Click for detailed baseline breakdown"
-                    tabindex="0"
-                    role="button"
-                    aria-label="View baseline statistics"
-                    (click)="showBaselineDetails()"
-                    (keydown)="
+        <!-- Category Statistics -->
+        @if (filteredModels().length > 0) {
+        <div class="flex flex-wrap gap-3 mt-3">
+          @for (statType of categoryStatsConfig(); track statType) {
+          @if (statType === 'baseline' && baselineStats().length > 0) {
+          <div class="stat-card stat-card--column" title="Click for detailed baseline breakdown" tabindex="0"
+            role="button" aria-label="View baseline statistics" (click)="showBaselineDetails()" (keydown)="
                       ($event.key === 'Enter' || $event.key === ' ') && showBaselineDetails()
-                    "
-                  >
-                    <div class="flex items-center gap-2 w-full">
-                      <div class="stat-card-icon">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                          />
-                        </svg>
-                      </div>
-                      <span class="stat-card-label">Baselines</span>
-                    </div>
-                    <div class="stat-card-badges">
-                      @for (stat of baselineStats(); track stat.baseline) {
-                        <span class="badge badge-info" [title]="getBaselineTooltip(stat.baseline)">
-                          {{ getBaselineDisplayName(stat.baseline) }}: {{ stat.count }}
-                        </span>
-                      }
-                    </div>
-                  </div>
-                }
-                @if (statType === 'tags' && tagStats() > 0) {
-                  <div
-                    class="stat-card stat-card--compact"
-                    title="Click to see all tags"
-                    tabindex="0"
-                    role="button"
-                    aria-label="View all tags"
-                    (click)="showTagsDetails()"
-                    (keydown)="($event.key === 'Enter' || $event.key === ' ') && showTagsDetails()"
-                  >
-                    <div class="stat-card-icon">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                        />
-                      </svg>
-                    </div>
-                    <span class="badge badge-info">
-                      {{ tagStats() }} tag{{ tagStats() === 1 ? '' : 's' }}
-                    </span>
-                  </div>
-                }
-                @if (statType === 'nsfw') {
-                  <div
-                    class="stat-card stat-card--column"
-                    role="button"
-                    tabindex="0"
-                    title="Click for content rating details"
-                    aria-label="View content rating statistics"
-                    (click)="showNsfwDetails()"
-                    (keydown)="($event.key === 'Enter' || $event.key === ' ') && showNsfwDetails()"
-                  >
-                    <div class="flex items-center gap-2 w-full">
-                      <div class="stat-card-icon">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                          />
-                        </svg>
-                      </div>
-                      <span class="stat-card-label">Content Rating</span>
-                    </div>
-                    <div class="stat-card-badges">
-                      @if (nsfwStats().nsfw > 0) {
-                        <span class="badge badge-warning"> NSFW: {{ nsfwStats().nsfw }} </span>
-                      }
-                      @if (nsfwStats().sfw > 0) {
-                        <span class="badge badge-success"> SFW: {{ nsfwStats().sfw }} </span>
-                      }
-                      @if (nsfwStats().unknown > 0) {
-                        <span class="badge badge-secondary">
-                          Unknown: {{ nsfwStats().unknown }}
-                        </span>
-                      }
-                    </div>
-                  </div>
-                }
-                @if (statType === 'size' && sizeStats() > 0) {
-                  <div
-                    class="stat-card stat-card--compact"
-                    role="button"
-                    tabindex="0"
-                    title="Click for disk size details"
-                    aria-label="View disk size statistics"
-                    (click)="showSizeDetails()"
-                    (keydown)="($event.key === 'Enter' || $event.key === ' ') && showSizeDetails()"
-                  >
-                    <div class="stat-card-icon">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
-                        />
-                      </svg>
-                    </div>
-                    <span class="badge badge-info">
-                      {{ formatSizeInGB(sizeStats()) }} GB total
-                    </span>
-                  </div>
-                }
-                @if (statType === 'requirements' && requirementsStats() > 0) {
-                  <div
-                    class="stat-card stat-card--compact"
-                    title="Click to see model requirements"
-                    tabindex="0"
-                    role="button"
-                    aria-label="View model requirements"
-                    (click)="showRequirementsDetails()"
-                    (keydown)="
-                      ($event.key === 'Enter' || $event.key === ' ') && showRequirementsDetails()
-                    "
-                  >
-                    <div class="stat-card-icon">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                        />
-                      </svg>
-                    </div>
-                    <span class="badge badge-info">
-                      {{ requirementsStats() }} model{{ requirementsStats() === 1 ? '' : 's' }}
-                      with requirements
-                    </span>
-                  </div>
-                }
-                @if (statType === 'style' && styleStats().length > 0) {
-                  <div
-                    class="stat-card stat-card--column"
-                    title="Click for detailed style breakdown"
-                    tabindex="0"
-                    role="button"
-                    aria-label="View style statistics"
-                    (click)="showStyleDetails()"
-                    (keydown)="($event.key === 'Enter' || $event.key === ' ') && showStyleDetails()"
-                  >
-                    <div class="flex items-center gap-2 w-full">
-                      <div class="stat-card-icon">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                          />
-                        </svg>
-                      </div>
-                      <span class="stat-card-label">Styles</span>
-                    </div>
-                    <div class="stat-card-badges">
-                      @for (stat of styleStats(); track stat.style) {
-                        <span class="badge badge-info"> {{ stat.style }}: {{ stat.count }} </span>
-                      }
-                    </div>
-                  </div>
-                }
+                    ">
+            <div class="flex items-center gap-2 w-full">
+              <div class="stat-card-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <span class="stat-card-label">Baselines</span>
+            </div>
+            <div class="stat-card-badges">
+              @for (stat of baselineStats(); track stat.baseline) {
+              <span class="badge badge-info" [title]="getBaselineTooltip(stat.baseline)">
+                {{ getBaselineDisplayName(stat.baseline) }}: {{ stat.count }}
+              </span>
               }
             </div>
+          </div>
           }
-        </div>
-
-        <!-- Parameters Table (Right Half) -->
-        @if (hasParametersStats()) {
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="stat-card-label">Parameter Distribution</h3>
-              <button
-                type="button"
-                class="text-xs link"
-                (click)="showParametersDetails()"
-                title="View full breakdown in modal"
-              >
-                View Details
-              </button>
+          @if (statType === 'tags' && tagStats() > 0) {
+          <div class="stat-card stat-card--compact" title="Click to see all tags" tabindex="0" role="button"
+            aria-label="View all tags" (click)="showTagsDetails()"
+            (keydown)="($event.key === 'Enter' || $event.key === ' ') && showTagsDetails()">
+            <div class="stat-card-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
             </div>
-            <div class="stat-table-container">
-              <table class="stat-table">
-                <thead>
-                  <tr>
-                    <th class="text-left">Count</th>
-                    <th class="text-left">Parameters</th>
-                    <th class="text-right">Exact Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (bucket of parameterBucketStats().topBuckets; track bucket.params) {
-                    <tr>
-                      <td class="font-medium">
-                        {{ bucket.count }}
-                      </td>
-                      <td>
-                        <span class="pc-badge" [class]="getParameterHeatmapClass(bucket.params)">
-                          {{ formatParametersInBillions(bucket.params) }}
-                        </span>
-                      </td>
-                      <td class="text-right text-muted font-mono text-xs">
-                        {{ bucket.params.toLocaleString() }}
-                      </td>
-                    </tr>
-                  }
-                  @if (parameterBucketStats().otherCount > 0) {
-                    <tr>
-                      <td class="font-medium">
-                        {{ parameterBucketStats().otherCount }}
-                      </td>
-                      <td class="text-muted italic" colspan="2">Other parameter counts</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+            <span class="badge badge-info">
+              {{ tagStats() }} tag{{ tagStats() === 1 ? '' : 's' }}
+            </span>
+          </div>
+          }
+          @if (statType === 'nsfw') {
+          <div class="stat-card stat-card--column" role="button" tabindex="0" title="Click for content rating details"
+            aria-label="View content rating statistics" (click)="showNsfwDetails()"
+            (keydown)="($event.key === 'Enter' || $event.key === ' ') && showNsfwDetails()">
+            <div class="flex items-center gap-2 w-full">
+              <div class="stat-card-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <span class="stat-card-label">Content Rating</span>
+            </div>
+            <div class="stat-card-badges">
+              @if (nsfwStats().nsfw > 0) {
+              <span class="badge badge-warning"> NSFW: {{ nsfwStats().nsfw }} </span>
+              }
+              @if (nsfwStats().sfw > 0) {
+              <span class="badge badge-success"> SFW: {{ nsfwStats().sfw }} </span>
+              }
+              @if (nsfwStats().unknown > 0) {
+              <span class="badge badge-secondary">
+                Unknown: {{ nsfwStats().unknown }}
+              </span>
+              }
             </div>
           </div>
+          }
+          @if (statType === 'size' && sizeStats() > 0) {
+          <div class="stat-card stat-card--compact" role="button" tabindex="0" title="Click for disk size details"
+            aria-label="View disk size statistics" (click)="showSizeDetails()"
+            (keydown)="($event.key === 'Enter' || $event.key === ' ') && showSizeDetails()">
+            <div class="stat-card-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+              </svg>
+            </div>
+            <span class="badge badge-info">
+              {{ formatSizeInGB(sizeStats()) }} GB total
+            </span>
+          </div>
+          }
+          @if (statType === 'requirements' && requirementsStats() > 0) {
+          <div class="stat-card stat-card--compact" title="Click to see model requirements" tabindex="0" role="button"
+            aria-label="View model requirements" (click)="showRequirementsDetails()" (keydown)="
+                      ($event.key === 'Enter' || $event.key === ' ') && showRequirementsDetails()
+                    ">
+            <div class="stat-card-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <span class="badge badge-info">
+              {{ requirementsStats() }} model{{ requirementsStats() === 1 ? '' : 's' }}
+              with requirements
+            </span>
+          </div>
+          }
+          @if (statType === 'style' && styleStats().length > 0) {
+          <div class="stat-card stat-card--column" title="Click for detailed style breakdown" tabindex="0" role="button"
+            aria-label="View style statistics" (click)="showStyleDetails()"
+            (keydown)="($event.key === 'Enter' || $event.key === ' ') && showStyleDetails()">
+            <div class="flex items-center gap-2 w-full">
+              <div class="stat-card-icon">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                </svg>
+              </div>
+              <span class="stat-card-label">Styles</span>
+            </div>
+            <div class="stat-card-badges">
+              @for (stat of styleStats(); track stat.style) {
+              <span class="badge badge-info"> {{ stat.style }}: {{ stat.count }} </span>
+              }
+            </div>
+          </div>
+          }
+          }
+        </div>
         }
       </div>
+
+      <!-- Parameters Table (Right Half) -->
+      @if (hasParametersStats()) {
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="stat-card-label">Parameter Distribution</h3>
+          <button type="button" class="text-xs link" (click)="showParametersDetails()"
+            title="View full breakdown in modal">
+            View Details
+          </button>
+        </div>
+        <div class="stat-table-container">
+          <table class="stat-table">
+            <thead>
+              <tr>
+                <th class="text-left">Count</th>
+                <th class="text-left">Parameters</th>
+                <th class="text-right">Exact Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (bucket of parameterBucketStats().topBuckets; track bucket.params) {
+              <tr>
+                <td class="font-medium">
+                  {{ bucket.count }}
+                </td>
+                <td>
+                  <span class="pc-badge" [class]="getParameterHeatmapClass(bucket.params)">
+                    {{ formatParametersInBillions(bucket.params) }}
+                  </span>
+                </td>
+                <td class="text-right text-muted font-mono text-xs">
+                  {{ bucket.params.toLocaleString() }}
+                </td>
+              </tr>
+              }
+              @if (parameterBucketStats().otherCount > 0) {
+              <tr>
+                <td class="font-medium">
+                  {{ parameterBucketStats().otherCount }}
+                </td>
+                <td class="text-muted italic" colspan="2">Other parameter counts</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      }
+    </div>
     }
   </div>
 
@@ -313,42 +230,27 @@
   <div class="sticky-header">
     <div class="flex gap-6">
       <label class="flex items-center gap-2 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          class="sr-only peer"
-          [checked]="showDetails()"
-          (change)="toggleShowDetails()"
-          aria-checked="{{ showDetails() ? 'true' : 'false' }}"
-          role="switch"
-        />
+        <input type="checkbox" class="sr-only peer" [checked]="showDetails()" (change)="toggleShowDetails()"
+          aria-checked="{{ showDetails() ? 'true' : 'false' }}" role="switch" />
         <span
-          class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-primary-600 dark:peer-checked:bg-primary-400"
-        >
+          class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-primary-600 dark:peer-checked:bg-primary-400">
           <span
             class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200"
-            [class.translate-x-5]="showDetails()"
-          ></span>
+            [class.translate-x-5]="showDetails()"></span>
         </span>
         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
           {{ showDetails() ? 'Hide Details' : "Show All Models' Details" }}
         </span>
       </label>
       <label class="flex items-center gap-2 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          class="sr-only peer"
-          [checked]="filterByActive()"
-          (change)="filterByActive.set(!filterByActive())"
-          aria-checked="{{ filterByActive() ? 'true' : 'false' }}"
-          role="switch"
-        />
+        <input type="checkbox" class="sr-only peer" [checked]="filterByActive()"
+          (change)="filterByActive.set(!filterByActive())" aria-checked="{{ filterByActive() ? 'true' : 'false' }}"
+          role="switch" />
         <span
-          class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-success-600 dark:peer-checked:bg-success-400"
-        >
+          class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-success-600 dark:peer-checked:bg-success-400">
           <span
             class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200"
-            [class.translate-x-5]="filterByActive()"
-          ></span>
+            [class.translate-x-5]="filterByActive()"></span>
         </span>
         <span class="text-sm font-medium text-gray-700 dark:text-gray-200"> Filter By Active </span>
       </label>
@@ -357,462 +259,307 @@
     <div class="flex flex-wrap gap-4 sm:gap-6">
       <div>
         <label for="model-search" class="form-label">Search models</label>
-        <input
-          id="model-search"
-          type="search"
-          class="form-input w-64 text-gray-400"
-          placeholder="Enter a name, description, or tag"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="searchTerm.set($event)"
-        />
+        <input id="model-search" type="search" class="form-input w-64 text-gray-400"
+          placeholder="Enter a name, description, or tag" [(ngModel)]="searchTerm"
+          (ngModelChange)="searchTerm.set($event); searchTermSubject.next($event)" />
       </div>
       <div class="relative">
         <label class="form-label" for="tag-filter-btn">Filter by tags</label>
-        <button
-          id="tag-filter-btn"
-          type="button"
-          class="form-input w-64 text-left flex items-center justify-between"
-          (click)="toggleTagFilterDropdown()"
-        >
+        <button id="tag-filter-btn" type="button" class="form-input w-64 text-left flex items-center justify-between"
+          (click)="toggleTagFilterDropdown()">
           <span class="truncate">
             @if (selectedTags().length === 0) {
-              All tags (parameter count tags are hidden)
+            All tags (parameter count tags are hidden)
             } @else {
-              {{ selectedTags().length }} tag(s) selected
+            {{ selectedTags().length }} tag(s) selected
             }
           </span>
-          <svg
-            class="w-4 h-4 ml-2 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
+          <svg class="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
 
         @if (tagFilterOpen()) {
-          <!-- Backdrop to close dropdown when clicking outside -->
-          <div
-            class="filter-dropdown-backdrop"
-            tabindex="0"
-            (click)="closeTagFilterDropdown()"
-            (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeTagFilterDropdown()"
-            aria-label="Close tag filter dropdown"
-          ></div>
+        <!-- Backdrop to close dropdown when clicking outside -->
+        <div class="filter-dropdown-backdrop" tabindex="0" (click)="closeTagFilterDropdown()"
+          (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeTagFilterDropdown()"
+          aria-label="Close tag filter dropdown"></div>
 
-          <div class="filter-dropdown">
-            <div class="filter-dropdown-header">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select tags</span>
-              @if (selectedTags().length > 0) {
-                <button type="button" class="text-xs link" (click)="clearAllTags()">
-                  Clear all
-                </button>
-              }
-            </div>
-            <div class="filter-dropdown-search">
-              <input
-                type="search"
-                class="form-input w-full text-sm"
-                placeholder="Search tags..."
-                [(ngModel)]="tagSearchTerm"
-                (ngModelChange)="tagSearchTerm.set($event)"
-                (click)="$event.stopPropagation()"
-              />
-            </div>
-            <div class="filter-dropdown-content">
-              @if (availableTags().length === 0) {
-                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                  No tags available
-                </div>
-              } @else if (filteredAvailableTags().length === 0) {
-                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                  No tags match your search
-                </div>
-              } @else {
-                @for (tag of filteredAvailableTags(); track tag) {
-                  <label class="filter-dropdown-item">
-                    <input
-                      type="checkbox"
-                      class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
-                      [checked]="isTagSelected(tag)"
-                      (change)="toggleTag(tag)"
-                    />
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ tag }}</span>
-                  </label>
-                }
-              }
-            </div>
+        <div class="filter-dropdown">
+          <div class="filter-dropdown-header">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select tags</span>
+            @if (selectedTags().length > 0) {
+            <button type="button" class="text-xs link" (click)="clearAllTags()">
+              Clear all
+            </button>
+            }
           </div>
+          <div class="filter-dropdown-search">
+            <input type="search" class="form-input w-full text-sm" placeholder="Search tags..."
+              [(ngModel)]="tagSearchTerm" (ngModelChange)="tagSearchTerm.set($event)"
+              (click)="$event.stopPropagation()" />
+          </div>
+          <div class="filter-dropdown-content">
+            @if (availableTags().length === 0) {
+            <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+              No tags available
+            </div>
+            } @else if (filteredAvailableTags().length === 0) {
+            <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+              No tags match your search
+            </div>
+            } @else {
+            @for (tag of filteredAvailableTags(); track tag) {
+            <label class="filter-dropdown-item">
+              <input type="checkbox"
+                class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
+                [checked]="isTagSelected(tag)" (change)="toggleTag(tag)" />
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ tag }}</span>
+            </label>
+            }
+            }
+          </div>
+        </div>
         }
       </div>
 
       <!-- Parameter Count Filter (Text Generation Only) -->
       @if (isTextGeneration()) {
-        <div class="relative">
-          <label class="form-label" for="param-filter-btn">Filter by parameters</label>
-          <button
-            id="param-filter-btn"
-            type="button"
-            class="form-input w-64 text-left flex items-center justify-between"
-            (click)="toggleParameterTagFilterDropdown()"
-          >
-            <span class="truncate">
-              @if (selectedParameterTags().length === 0) {
-                All parameter counts
-              } @else {
-                {{ selectedParameterTags().length }} selected
-              }
-            </span>
-            <svg
-              class="w-4 h-4 ml-2 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
+      <div class="relative">
+        <label class="form-label" for="param-filter-btn">Filter by parameters</label>
+        <button id="param-filter-btn" type="button" class="form-input w-64 text-left flex items-center justify-between"
+          (click)="toggleParameterTagFilterDropdown()">
+          <span class="truncate">
+            @if (selectedParameterTags().length === 0) {
+            All parameter counts
+            } @else {
+            {{ selectedParameterTags().length }} selected
+            }
+          </span>
+          <svg class="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
 
-          @if (parameterTagFilterOpen()) {
-            <!-- Backdrop to close dropdown when clicking outside -->
-            <div
-              class="filter-dropdown-backdrop"
-              tabindex="0"
-              (click)="closeParameterTagFilterDropdown()"
-              (keydown)="
+        @if (parameterTagFilterOpen()) {
+        <!-- Backdrop to close dropdown when clicking outside -->
+        <div class="filter-dropdown-backdrop" tabindex="0" (click)="closeParameterTagFilterDropdown()" (keydown)="
                 ($event.key === 'Enter' || $event.key === ' ') && closeParameterTagFilterDropdown()
-              "
-              aria-label="Close parameter filter dropdown"
-            ></div>
+              " aria-label="Close parameter filter dropdown"></div>
 
-            <div class="filter-dropdown">
-              <div class="filter-dropdown-header">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >Select parameters</span
-                >
-                @if (selectedParameterTags().length > 0) {
-                  <button type="button" class="text-xs link" (click)="clearAllParameterTags()">
-                    Clear all
-                  </button>
-                }
-              </div>
-              <div class="filter-dropdown-search">
-                <input
-                  type="search"
-                  class="form-input w-full text-sm"
-                  placeholder="Search parameter counts..."
-                  [(ngModel)]="parameterTagSearchTerm"
-                  (ngModelChange)="parameterTagSearchTerm.set($event)"
-                  (click)="$event.stopPropagation()"
-                />
-              </div>
-              <div class="filter-dropdown-content">
-                @if (availableParameterTags().length === 0) {
-                  <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                    No parameter counts available
-                  </div>
-                } @else if (filteredAvailableParameterTags().length === 0) {
-                  <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                    No parameter counts match your search
-                  </div>
-                } @else {
-                  @for (tag of filteredAvailableParameterTags(); track tag) {
-                    <label class="filter-dropdown-item">
-                      <input
-                        type="checkbox"
-                        class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
-                        [checked]="isParameterTagSelected(tag)"
-                        (change)="toggleParameterTag(tag)"
-                      />
-                      <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ tag }}</span>
-                    </label>
-                  }
-                }
-              </div>
+        <div class="filter-dropdown">
+          <div class="filter-dropdown-header">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select parameters</span>
+            @if (selectedParameterTags().length > 0) {
+            <button type="button" class="text-xs link" (click)="clearAllParameterTags()">
+              Clear all
+            </button>
+            }
+          </div>
+          <div class="filter-dropdown-search">
+            <input type="search" class="form-input w-full text-sm" placeholder="Search parameter counts..."
+              [(ngModel)]="parameterTagSearchTerm" (ngModelChange)="parameterTagSearchTerm.set($event)"
+              (click)="$event.stopPropagation()" />
+          </div>
+          <div class="filter-dropdown-content">
+            @if (availableParameterTags().length === 0) {
+            <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+              No parameter counts available
             </div>
-          }
+            } @else if (filteredAvailableParameterTags().length === 0) {
+            <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+              No parameter counts match your search
+            </div>
+            } @else {
+            @for (tag of filteredAvailableParameterTags(); track tag) {
+            <label class="filter-dropdown-item">
+              <input type="checkbox"
+                class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
+                [checked]="isParameterTagSelected(tag)" (change)="toggleParameterTag(tag)" />
+              <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ tag }}</span>
+            </label>
+            }
+            }
+          </div>
         </div>
+        }
+      </div>
       }
 
       <!-- Selected Tags Display -->
       @if (selectedTags().length > 0) {
-        <div class="flex-1 min-w-0">
-          <span class="form-label block">Active tag filters</span>
-          <div class="flex flex-wrap gap-2">
-            @for (tag of selectedTags(); track tag) {
-              <button
-                type="button"
-                class="tag tag-primary inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
-                (click)="toggleTag(tag)"
-                [title]="'Remove ' + tag + ' filter'"
-              >
-                <span>{{ tag }}</span>
-                <svg
-                  class="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  ></path>
-                </svg>
-              </button>
-            }
-          </div>
+      <div class="flex-1 min-w-0">
+        <span class="form-label block">Active tag filters</span>
+        <div class="flex flex-wrap gap-2">
+          @for (tag of selectedTags(); track tag) {
+          <button type="button"
+            class="tag tag-primary inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+            (click)="toggleTag(tag)" [title]="'Remove ' + tag + ' filter'">
+            <span>{{ tag }}</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          }
         </div>
+      </div>
       }
 
       <!-- Selected Parameter Tags Display (Text Generation Only) -->
       @if (isTextGeneration() && selectedParameterTags().length > 0) {
-        <div class="flex-1 min-w-0">
-          <span class="form-label block">Active parameter filters</span>
-          <div class="flex flex-wrap gap-2">
-            @for (tag of selectedParameterTags(); track tag) {
-              <button
-                type="button"
-                class="tag tag-info inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500"
-                (click)="toggleParameterTag(tag)"
-                [title]="'Remove ' + tag + ' parameter filter'"
-              >
-                <span>{{ tag }}</span>
-                <svg
-                  class="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  ></path>
-                </svg>
-              </button>
-            }
-          </div>
+      <div class="flex-1 min-w-0">
+        <span class="form-label block">Active parameter filters</span>
+        <div class="flex flex-wrap gap-2">
+          @for (tag of selectedParameterTags(); track tag) {
+          <button type="button"
+            class="tag tag-info inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500"
+            (click)="toggleParameterTag(tag)" [title]="'Remove ' + tag + ' parameter filter'">
+            <span>{{ tag }}</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          }
         </div>
+      </div>
       }
     </div>
   </div>
 
   <!-- Loading/Empty States -->
   @if (loading()) {
-    <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading models...</div>
-    </div>
+  <div class="card">
+    <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading models...</div>
+  </div>
   } @else if (filteredModels().length === 0) {
-    <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-        @if (searchTerm()) {
-          No models match your search
-        } @else {
-          No models in this category
-        }
-      </div>
+  <div class="card">
+    <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+      @if (searchTerm()) {
+      No models match your search
+      } @else {
+      No models in this category
+      }
     </div>
+  </div>
   } @else {
-    <!-- Data Table -->
-    <div class="data-table">
+  <!-- Data Table with Virtual Scrolling -->
+  <div class="data-table">
+    <table>
+      <thead>
+        <tr>
+          <th class="w-8"></th>
+          <th class="w-12">Active</th>
+          <th class="w-auto">Name</th>
+          <th class="w-1/3">Description</th>
+          <th>Baseline</th>
+          <th>Tags</th>
+          <th>NSFW</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+    </table>
+
+    <cdk-virtual-scroll-viewport itemSize="50" class="virtual-scroll-viewport" [style.height.px]="800"
+      [minBufferPx]="400" [maxBufferPx]="800">
       <table>
-        <thead>
-          <tr>
-            <th class="w-8"></th>
-            <th class="w-12">Active</th>
-            <th class="w-auto">Name</th>
-            <th class="w-1/3">Description</th>
-            <th>Baseline</th>
-            <th>Tags</th>
-            <th>NSFW</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
         <tbody>
           @for (model of filteredModels(); track model.name; let isEven = $even) {
-            <app-model-row
-              [model]="model"
-              [writable]="writable()"
-              [isEven]="isEven"
-              [expandedRows]="expandedModels()"
-              [expandedShowcases]="expandedShowcases()"
-              (showJson)="showJson($event)"
-              (edit)="editModel($event)"
-              (delete)="confirmDelete($event)"
-              (toggleRow)="toggleRowExpansion($event)"
-            />
+          <app-model-row [model]="model" [writable]="writable()" [isEven]="isEven" [expandedRows]="expandedModels()"
+            [expandedShowcases]="expandedShowcases()" (showJson)="showJson($event)" (edit)="editModel($event)"
+            (delete)="confirmDelete($event)" (toggleRow)="toggleRowExpansion($event)" />
           }
         </tbody>
       </table>
-    </div>
+    </cdk-virtual-scroll-viewport>
+  </div>
   }
 </div>
 
 <!-- Delete Confirmation Modal -->
 @if (modelToDelete()) {
-  <div
-    class="modal-overlay"
-    tabindex="0"
-    (click)="cancelDelete()"
-    (keydown)="$event.key === 'Escape' && cancelDelete()"
-    aria-label="Close modal"
-  >
-    <div
-      class="modal-dialog"
-      (click)="$event.stopPropagation()"
-      (keydown)="$event.stopPropagation()"
-      aria-modal="true"
-      role="dialog"
-    >
-      <h2 class="modal-title">Confirm Delete</h2>
-      <div class="modal-content space-y-3">
-        <p>
-          Are you sure you want to delete <strong>{{ modelToDelete() }}</strong
-          >?
-        </p>
-        <p class="text-danger-600 dark:text-danger-400 font-medium">
-          This action cannot be undone.
-        </p>
-        <div>
-          <label for="delete-confirm" class="form-label">Type the model name to confirm:</label>
-          <input
-            id="delete-confirm"
-            type="text"
-            class="form-input"
-            placeholder="{{ modelToDelete() }}"
-            [(ngModel)]="deleteConfirmationInput"
-            autocomplete="off"
-          />
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-        <button
-          class="btn btn-danger"
-          [disabled]="!deleteAllowed()"
-          (click)="deleteModel(modelToDelete()!)"
-        >
-          Delete
-        </button>
+<div class="modal-overlay" tabindex="0" (click)="cancelDelete()" (keydown)="$event.key === 'Escape' && cancelDelete()"
+  aria-label="Close modal">
+  <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h2 class="modal-title">Confirm Delete</h2>
+    <div class="modal-content space-y-3">
+      <p>
+        Are you sure you want to delete <strong>{{ modelToDelete() }}</strong>?
+      </p>
+      <p class="text-danger-600 dark:text-danger-400 font-medium">
+        This action cannot be undone.
+      </p>
+      <div>
+        <label for="delete-confirm" class="form-label">Type the model name to confirm:</label>
+        <input id="delete-confirm" type="text" class="form-input" placeholder="{{ modelToDelete() }}"
+          [(ngModel)]="deleteConfirmationInput" autocomplete="off" />
       </div>
     </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+      <button class="btn btn-danger" [disabled]="!deleteAllowed()" (click)="deleteModel(modelToDelete()!)">
+        Delete
+      </button>
+    </div>
   </div>
+</div>
 }
 
 <!-- JSON Display Modal -->
 @if (modelJsonToShow()) {
-  <div
-    class="modal-overlay"
-    tabindex="0"
-    (click)="closeJsonModal()"
-    (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeJsonModal()"
-    aria-label="Close modal"
-  >
-    <div
-      class="modal-dialog modal-dialog--xl"
-      tabindex="0"
-      (click)="$event.stopPropagation()"
-      (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()"
-      aria-modal="true"
-      role="dialog"
-    >
-      <h2 class="modal-title">Model JSON: {{ modelJsonToShow()!.name }}</h2>
-      <div class="modal-content">
-        <app-json-display [data]="modelJsonToShow()!" />
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">
-          Copy
-        </button>
-        <button class="btn btn-primary" (click)="closeJsonModal()">Close</button>
-      </div>
+<div class="modal-overlay" tabindex="0" (click)="closeJsonModal()"
+  (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeJsonModal()" aria-label="Close modal">
+  <div class="modal-dialog modal-dialog--xl" tabindex="0" (click)="$event.stopPropagation()"
+    (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h2 class="modal-title">Model JSON: {{ modelJsonToShow()!.name }}</h2>
+    <div class="modal-content">
+      <app-json-display [data]="modelJsonToShow()!" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">
+        Copy
+      </button>
+      <button class="btn btn-primary" (click)="closeJsonModal()">Close</button>
     </div>
   </div>
+</div>
 }
 
 <!-- Reusable Stat Modals -->
-<app-stat-modal
-  [isOpen]="showBaselineModal()"
-  [title]="'Baseline Breakdown'"
-  [countValueDescriptionData]="baselineModalData()"
-  (closeModal)="showBaselineModal.set(false)"
-/>
+<app-stat-modal [isOpen]="showBaselineModal()" [title]="'Baseline Breakdown'"
+  [countValueDescriptionData]="baselineModalData()" (closeModal)="showBaselineModal.set(false)" />
 
-<app-stat-modal
-  [isOpen]="showStyleModal()"
-  [title]="'Style Breakdown'"
-  [countValueData]="styleModalData()"
-  (closeModal)="showStyleModal.set(false)"
-/>
+<app-stat-modal [isOpen]="showStyleModal()" [title]="'Style Breakdown'" [countValueData]="styleModalData()"
+  (closeModal)="showStyleModal.set(false)" />
 
-<app-stat-modal
-  [isOpen]="showNsfwModal()"
-  [title]="'Content Rating Breakdown'"
-  [countValueDescriptionData]="nsfwModalData()"
-  [countValueDescriptionHeaders]="['Count', 'Rating', 'Description']"
-  (closeModal)="showNsfwModal.set(false)"
-/>
+<app-stat-modal [isOpen]="showNsfwModal()" [title]="'Content Rating Breakdown'"
+  [countValueDescriptionData]="nsfwModalData()" [countValueDescriptionHeaders]="['Count', 'Rating', 'Description']"
+  (closeModal)="showNsfwModal.set(false)" />
 
-<app-stat-modal
-  [isOpen]="showTagsModal()"
-  [title]="'All Tags (' + tagsModalData().length + ')'"
-  [countValueData]="tagsModalData()"
-  [countValueHeaders]="['Count', 'Tag']"
-  (closeModal)="showTagsModal.set(false)"
-/>
+<app-stat-modal [isOpen]="showTagsModal()" [title]="'All Tags (' + tagsModalData().length + ')'"
+  [countValueData]="tagsModalData()" [countValueHeaders]="['Count', 'Tag']" (closeModal)="showTagsModal.set(false)" />
 
-<app-stat-modal
-  [isOpen]="showParametersModal()"
-  [title]="'Parameter Distribution'"
-  [countValueDetailData]="parametersModalData()"
-  [countValueDetailHeaders]="['Count', 'Parameters', 'Exact Value']"
-  (closeModal)="showParametersModal.set(false)"
-/>
+<app-stat-modal [isOpen]="showParametersModal()" [title]="'Parameter Distribution'"
+  [countValueDetailData]="parametersModalData()" [countValueDetailHeaders]="['Count', 'Parameters', 'Exact Value']"
+  (closeModal)="showParametersModal.set(false)" />
 
 <!-- Stat Details Modal (for text-based stats) -->
 @if (statDetailsToShow()) {
-  <div
-    class="modal-overlay"
-    tabindex="0"
-    (click)="closeStatDetails()"
-    (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeStatDetails()"
-    aria-label="Close modal"
-  >
-    <div
-      class="modal-dialog"
-      tabindex="0"
-      (click)="$event.stopPropagation()"
-      (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()"
-      aria-modal="true"
-      role="dialog"
-    >
-      <h2 class="modal-title">{{ statDetailsToShow()!.title }}</h2>
-      <div class="modal-content">
-        <pre
-          class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap break-words"
-          >{{ statDetailsToShow()!.content }}</pre
-        >
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="copyStatDetailsToClipboard()">Copy</button>
-        <button class="btn btn-primary" (click)="closeStatDetails()">Close</button>
-      </div>
+<div class="modal-overlay" tabindex="0" (click)="closeStatDetails()"
+  (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeStatDetails()" aria-label="Close modal">
+  <div class="modal-dialog" tabindex="0" (click)="$event.stopPropagation()"
+    (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h2 class="modal-title">{{ statDetailsToShow()!.title }}</h2>
+    <div class="modal-content">
+      <pre
+        class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap break-words">{{ statDetailsToShow()!.content }}</pre>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="copyStatDetailsToClipboard()">Copy</button>
+      <button class="btn btn-primary" (click)="closeStatDetails()">Close</button>
     </div>
   </div>
+</div>
 }

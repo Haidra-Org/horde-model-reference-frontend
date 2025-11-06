@@ -157,110 +157,142 @@ import { hasShowcases } from './model-row.utils';
             </div>
 
             <!-- Main Content -->
-            <div>
-              <app-model-row-fields [model]="model()" mode="grid" />
-            </div>
-
-            <!-- Backend/Author Variations Section (Grouped Text Models) -->
-            @if (isGrouped() && groupedModel()) {
-              <div class="card">
-                <div class="card-header">
-                  <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Backend & Author Variations
-                    <span class="label-hint">
-                      ({{ groupedModel()!.variations.length }} total)
-                    </span>
-                  </h4>
-                </div>
-                <div class="card-body p-0">
-                  <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                      <thead class="bg-gray-50 dark:bg-gray-800">
-                        <tr>
-                          <th
-                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                          >
-                            Full Name
-                          </th>
-                          <th
-                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                          >
-                            Backend
-                          </th>
-                          <th
-                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                          >
-                            Author
-                          </th>
-                          <th
-                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                          >
-                            Workers
-                          </th>
-                          <th
-                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                          >
-                            Queued
-                          </th>
-                          <th
-                            class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                          >
-                            Usage (Total)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody
-                        class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
-                      >
-                        @for (variation of groupedModel()!.variations; track variation.name) {
-                          <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td
-                              class="px-4 py-2 font-mono text-xs text-gray-900 dark:text-gray-100"
-                            >
-                              {{ variation.name }}
-                            </td>
-                            <td class="px-4 py-2">
-                              @if (variation.parsedName?.backend) {
-                                <span class="badge badge-info text-xs">{{
-                                  variation.parsedName?.backend
-                                }}</span>
-                              } @else {
-                                <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
-                              }
-                            </td>
-                            <td class="px-4 py-2 text-gray-700 dark:text-gray-300">
-                              {{ variation.parsedName?.author ?? '-' }}
-                            </td>
-                            <td class="px-4 py-2 text-center text-gray-700 dark:text-gray-300">
-                              {{ variation.workerCount ?? 0 }}
-                            </td>
-                            <td class="px-4 py-2 text-center text-gray-700 dark:text-gray-300">
-                              {{ variation.queuedJobs ?? 0 }}
-                            </td>
-                            <td class="px-4 py-2 text-right text-gray-700 dark:text-gray-300">
-                              {{ variation.usageStats?.total ?? 0 }}
-                            </td>
-                          </tr>
-                        }
-                      </tbody>
-                    </table>
-                  </div>
+            @defer (on viewport; prefetch on hover) {
+              <div>
+                <app-model-row-fields [model]="model()" mode="grid" />
+              </div>
+            } @placeholder {
+              <div class="p-4">
+                <div class="animate-pulse space-y-3">
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
                 </div>
               </div>
             }
 
+            <!-- Backend/Author Variations Section (Grouped Text Models) -->
+            @if (isGrouped() && groupedModel()) {
+              @defer (on viewport; prefetch on hover) {
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Backend & Author Variations
+                      <span class="label-hint">
+                        ({{ groupedModel()!.variations.length }} total)
+                      </span>
+                    </h4>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="overflow-x-auto">
+                      <table class="w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                          <tr>
+                            <th
+                              class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                              Full Name
+                            </th>
+                            <th
+                              class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                              Backend
+                            </th>
+                            <th
+                              class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                              Author
+                            </th>
+                            <th
+                              class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                              Workers
+                            </th>
+                            <th
+                              class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                              Queued
+                            </th>
+                            <th
+                              class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                            >
+                              Usage (Total)
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody
+                          class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
+                        >
+                          @for (variation of groupedModel()!.variations; track variation.name) {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                              <td
+                                class="px-4 py-2 font-mono text-xs text-gray-900 dark:text-gray-100"
+                              >
+                                {{ variation.name }}
+                              </td>
+                              <td class="px-4 py-2">
+                                @if (variation.parsedName?.backend) {
+                                  <span class="badge badge-info text-xs">{{
+                                    variation.parsedName?.backend
+                                  }}</span>
+                                } @else {
+                                  <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
+                                }
+                              </td>
+                              <td class="px-4 py-2 text-gray-700 dark:text-gray-300">
+                                {{ variation.parsedName?.author ?? '-' }}
+                              </td>
+                              <td class="px-4 py-2 text-center text-gray-700 dark:text-gray-300">
+                                {{ variation.workerCount ?? 0 }}
+                              </td>
+                              <td class="px-4 py-2 text-center text-gray-700 dark:text-gray-300">
+                                {{ variation.queuedJobs ?? 0 }}
+                              </td>
+                              <td class="px-4 py-2 text-right text-gray-700 dark:text-gray-300">
+                                {{ variation.usageStats?.total ?? 0 }}
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              } @placeholder {
+                <div class="card">
+                  <div class="card-body">
+                    <div class="animate-pulse space-y-2">
+                      <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+
             <!-- Showcases Section -->
             @if (hasShowcaseContent()) {
-              <div class="card">
-                <div class="card-body p-0">
-                  <app-model-row-showcases
-                    [showcases]="showcases()"
-                    [modelName]="model().name"
-                    layout="grid"
-                    [initiallyExpanded]="showcaseExpanded()"
-                  />
+              @defer (on viewport; prefetch on hover) {
+                <div class="card">
+                  <div class="card-body p-0">
+                    <app-model-row-showcases
+                      [showcases]="showcases()"
+                      [modelName]="model().name"
+                      layout="grid"
+                      [initiallyExpanded]="showcaseExpanded()"
+                    />
+                  </div>
                 </div>
-              </div>
+              } @placeholder {
+                <div class="card">
+                  <div class="card-body">
+                    <div class="animate-pulse">
+                      <div class="h-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              }
             }
           </div>
         </td>

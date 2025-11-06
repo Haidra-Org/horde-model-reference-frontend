@@ -1291,4 +1291,17 @@
   .form-input-sm {
     @apply px-2 py-1 text-xs;
   }
+
+  /* Virtual Scrolling Support */
+  .virtual-scroll-viewport {
+    @apply w-full overflow-auto;
+  }
+
+  .virtual-scroll-viewport .cdk-virtual-scroll-content-wrapper {
+    @apply w-full;
+  }
+
+  .virtual-scroll-viewport table {
+    @apply w-full border-collapse;
+  }
 }
