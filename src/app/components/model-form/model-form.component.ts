@@ -6,6 +6,7 @@ import {
   computed,
   ChangeDetectionStrategy,
   DestroyRef,
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -160,6 +161,23 @@ export class ModelFormComponent implements OnInit {
 
   form!: FormGroup;
 
+  constructor() {
+    // Automatically sync form data to JSON view when signals change
+    effect(() => {
+      // Track all relevant signals
+      this.commonData();
+      this.stableDiffusionData();
+      this.textGenerationData();
+      this.clipData();
+      this.simplifiedDownloads();
+
+      // Only sync if in JSON view mode and form exists
+      if (this.viewMode() === 'json' && this.form) {
+        this.syncFormToJsonSilent();
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.category.set(params['category']);
@@ -198,6 +216,15 @@ export class ModelFormComponent implements OnInit {
       ...currentData,
       selectedBackends: newBackends.length > 0 ? newBackends : undefined,
     });
+
+    // Trigger validation after backend change
+    if (this.viewMode() === 'form') {
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm();
+        const issues = validateLegacyRecord(modelData);
+        this.validationIssues.set(issues);
+      }, 0);
+    }
   }
 
   getVariationNames(): string {
@@ -249,7 +276,11 @@ export class ModelFormComponent implements OnInit {
     }
   }
 
-  syncFormToJson(): void {
+  /**
+   * Syncs form data to JSON format and updates the jsonData control
+   * This is a silent version that doesn't trigger validation
+   */
+  private syncFormToJsonSilent(): void {
     if (this.isTextGeneration()) {
       // For text generation with backend selection, show all variations
       const variations = this.modelVariations();
@@ -259,25 +290,38 @@ export class ModelFormComponent implements OnInit {
           const { name: _name, ...jsonData } = v.data;
           return { name: v.name, ...jsonData };
         });
-        this.form.patchValue({
-          jsonData: JSON.stringify(variationsJson, null, 2),
-        });
+        this.form.patchValue(
+          {
+            jsonData: JSON.stringify(variationsJson, null, 2),
+          },
+          { emitEvent: false },
+        );
       } else {
         const modelData = this.buildModelDataFromForm();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { _name, ...jsonData } = modelData;
-        this.form.patchValue({
-          jsonData: JSON.stringify(jsonData, null, 2),
-        });
+        const { name: _name, ...jsonData } = modelData;
+        this.form.patchValue(
+          {
+            jsonData: JSON.stringify(jsonData, null, 2),
+          },
+          { emitEvent: false },
+        );
       }
     } else {
       const modelData = this.buildModelDataFromForm();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { _name, ...jsonData } = modelData;
-      this.form.patchValue({
-        jsonData: JSON.stringify(jsonData, null, 2),
-      });
+      const { name: _name, ...jsonData } = modelData;
+      this.form.patchValue(
+        {
+          jsonData: JSON.stringify(jsonData, null, 2),
+        },
+        { emitEvent: false },
+      );
     }
+  }
+
+  syncFormToJson(): void {
+    this.syncFormToJsonSilent();
     // Delay validation to ensure all signals have propagated
     setTimeout(() => this.validateJson(), 0);
   }
