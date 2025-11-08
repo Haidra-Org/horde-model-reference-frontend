@@ -81,6 +81,11 @@ export const TEXT_GENERATION_FIELDS: ModelFieldConfig[] = [
     getValue: (model) => model.type ?? '-',
   },
   {
+    label: 'Model Group',
+    type: 'text',
+    getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.text_model_group : null),
+  },
+  {
     label: 'Display Name',
     type: 'text',
     getValue: (model) => (isLegacyTextGenerationRecord(model) ? model.display_name : null),

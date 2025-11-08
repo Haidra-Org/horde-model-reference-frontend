@@ -10,6 +10,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
@@ -108,12 +110,25 @@ export class ModelAuditComponent implements OnInit {
   // Staleness warning threshold (5 minutes = 300000ms, matching backend cache TTL)
   private readonly STALE_THRESHOLD_MS = 300000;
 
-  // Filter controls - now handled server-side via presets
+  // Filter controls - server-side via presets
   readonly selectedPresetName = signal<string>('Show All');
+
+  // Client-side filters (same as model-list)
+  readonly searchTerm = signal('');
+  readonly searchTermSubject = new Subject<string>();
+  readonly debouncedSearchTerm = signal('');
+  readonly filterByActive = signal(false);
+  readonly selectedTags = signal<string[]>([]);
+  readonly tagSearchTerm = signal('');
+  readonly tagFilterOpen = signal(false);
+  readonly selectedParameterTags = signal<string[]>([]);
+  readonly parameterTagSearchTerm = signal('');
+  readonly parameterTagFilterOpen = signal(false);
 
   // Sorting
   readonly sortColumn = signal<SortColumn | null>(null);
-  readonly sortDirection = signal<SortDirection>(null);
+  readonly sortDirection = signal<SortDirection>('desc');
+  private initialSortSet = false;
 
   // Selection
   readonly selectedModels = signal<Set<string>>(new Set());
@@ -128,6 +143,69 @@ export class ModelAuditComponent implements OnInit {
 
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
   readonly isImageGeneration = computed(() => this.category() === 'image_generation');
+
+  private isParameterTag(tag: string): boolean {
+    // Match patterns like: 33b, 65b, 7B, 13B, 70b, etc.
+    return /^\d+\.?\d*[bB]$/.test(tag);
+  }
+
+  readonly availableTags = computed(() => {
+    const tagsSet = new Set<string>();
+    const isTextGen = this.isTextGeneration();
+    this.models().forEach((model) => {
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => tagsSet.add(tag));
+      } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => {
+          // For text generation, exclude parameter count tags
+          if (!isTextGen || !this.isParameterTag(tag)) {
+            tagsSet.add(tag);
+          }
+        });
+      }
+    });
+    return Array.from(tagsSet).sort();
+  });
+
+  readonly availableParameterTags = computed(() => {
+    if (!this.isTextGeneration()) {
+      return [];
+    }
+    const paramTagsSet = new Set<string>();
+    this.models().forEach((model) => {
+      const legacyModel = model as LegacyRecordUnion;
+      if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+        legacyModel.tags.forEach((tag) => {
+          if (this.isParameterTag(tag)) {
+            paramTagsSet.add(tag);
+          }
+        });
+      }
+    });
+    // Sort parameter tags numerically
+    return Array.from(paramTagsSet).sort((a, b) => {
+      const numA = parseFloat(a);
+      const numB = parseFloat(b);
+      return numA - numB;
+    });
+  });
+
+  readonly filteredAvailableTags = computed(() => {
+    const search = this.tagSearchTerm().toLowerCase();
+    if (!search) {
+      return this.availableTags();
+    }
+    return this.availableTags().filter((tag) => tag.toLowerCase().includes(search));
+  });
+
+  readonly filteredAvailableParameterTags = computed(() => {
+    const search = this.parameterTagSearchTerm().toLowerCase();
+    if (!search) {
+      return this.availableParameterTags();
+    }
+    return this.availableParameterTags().filter((tag) => tag.toLowerCase().includes(search));
+  });
 
   /**
    * Check if audit data is stale (older than 5 minutes)
@@ -263,6 +341,10 @@ export class ModelAuditComponent implements OnInit {
           const usagePercentage =
             categoryTotal > 0 ? (aggregatedUsageMonth / categoryTotal) * 100 : 0;
 
+          // For grouped models, aggregate critical/warning status across all variations
+          const isCritical = variationAuditInfos.some((a) => a.is_critical);
+          const hasWarning = variationAuditInfos.some((a) => a.has_warning);
+
           return {
             model,
             auditInfo: primaryAuditInfo, // Reference to first variation's audit info
@@ -282,15 +364,8 @@ export class ModelAuditComponent implements OnInit {
             hasDescription: primaryAuditInfo.has_description ?? false,
             downloadCount: variationAuditInfos.reduce((sum, a) => sum + (a.download_count ?? 0), 0),
             flags: aggregatedFlags,
-            isCritical: !!(
-              aggregatedFlags.zero_usage_month && aggregatedFlags.no_active_workers
-            ),
-            hasWarning: !!(
-              aggregatedFlags.has_multiple_hosts ||
-              aggregatedFlags.has_non_preferred_host ||
-              aggregatedFlags.no_download_urls ||
-              aggregatedFlags.has_unknown_host
-            ),
+            isCritical,
+            hasWarning,
             flagCount: aggregatedRiskScore,
             fileHosts: Array.from(allFileHosts),
             baseline: primaryAuditInfo.baseline ?? null,
@@ -326,15 +401,8 @@ export class ModelAuditComponent implements OnInit {
             hasDescription: auditInfo.has_description ?? false,
             downloadCount: auditInfo.download_count ?? 0,
             flags: flags ?? null,
-            isCritical: flags ? !!(flags.zero_usage_month && flags.no_active_workers) : false,
-            hasWarning: flags
-              ? !!(
-                flags.has_multiple_hosts ||
-                flags.has_non_preferred_host ||
-                flags.no_download_urls ||
-                flags.has_unknown_host
-              )
-              : false,
+            isCritical: auditInfo.is_critical, // Use backend-computed value
+            hasWarning: auditInfo.has_warning, // Use backend-computed value
             flagCount: auditInfo.risk_score ?? 0,
             fileHosts,
             baseline: auditInfo.baseline ?? null,
@@ -430,9 +498,93 @@ export class ModelAuditComponent implements OnInit {
   });
 
   readonly filteredModels = computed(() => {
-    // Backend handles all filtering via preset parameter
-    // This just passes through the audit metrics
-    return this.modelsWithAuditMetrics();
+    // Apply client-side filters on top of server-side preset filters
+    const search = this.debouncedSearchTerm().toLowerCase();
+    const selectedTags = this.selectedTags();
+    const selectedParameterTags = this.selectedParameterTags();
+    const activeFilter = this.filterByActive();
+    let filtered = this.modelsWithAuditMetrics();
+
+    if (activeFilter) {
+      filtered = filtered.filter((item) => item.workerCount > 0);
+    }
+
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter((item) => {
+        const legacyModel = item.model as LegacyRecordUnion;
+        if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
+          return legacyModel.tags.some((tag) => selectedTags.includes(tag));
+        } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+          return legacyModel.tags.some((tag) => selectedTags.includes(tag));
+        }
+        return false;
+      });
+    }
+
+    if (selectedParameterTags.length > 0) {
+      filtered = filtered.filter((item) => {
+        const legacyModel = item.model as LegacyRecordUnion;
+        if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
+          return legacyModel.tags.some((tag) => selectedParameterTags.includes(tag));
+        }
+        return false;
+      });
+    }
+
+    if (search) {
+      filtered = filtered.filter((item) => {
+        const legacyModel = item.model as LegacyRecordUnion;
+
+        // Check base name
+        if (item.model.name.toLowerCase().includes(search)) {
+          return true;
+        }
+
+        // Check description
+        if (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) {
+          return true;
+        }
+
+        // Check baseline
+        if (
+          isLegacyStableDiffusionRecord(legacyModel) &&
+          legacyModel.baseline?.toLowerCase().includes(search)
+        ) {
+          return true;
+        }
+
+        // Check tags
+        if (
+          isLegacyStableDiffusionRecord(legacyModel) &&
+          legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search))
+        ) {
+          return true;
+        }
+
+        // For grouped text models, also check variations and backends
+        if (isGroupedTextModel(item.model)) {
+          const groupedModel = item.model as GroupedTextModel;
+          // Check if search matches any backend name
+          if (groupedModel.availableBackends.some((backend) => backend.toLowerCase().includes(search))) {
+            return true;
+          }
+
+          // Check if search matches any variation name
+          if (groupedModel.variations.some((variation) => variation.name.toLowerCase().includes(search))) {
+            return true;
+          }
+
+          // Check if search matches any author
+          if (groupedModel.availableAuthors.some((author) => author.toLowerCase().includes(search))) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    }
+
+    return filtered;
   });
 
   readonly sortedFilteredModels = computed(() => {
@@ -572,6 +724,17 @@ export class ModelAuditComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    // Setup debounced search
+    this.searchTermSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((term) => {
+        this.debouncedSearchTerm.set(term);
+      });
+
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const category = params['category'];
       if (category) {
@@ -633,6 +796,12 @@ export class ModelAuditComponent implements OnInit {
             this.auditResponse.set(auditResponse);
             this.degradedMode.set(false);
             this.lastRefreshTime.set(Date.now());
+
+            // Set default sorting on first load
+            if (!this.initialSortSet) {
+              this.sortColumn.set('usagePercentage');
+              this.initialSortSet = true;
+            }
           } else {
             // Audit API failed - enter degraded mode
             this.degradedMode.set(true);
@@ -881,5 +1050,58 @@ export class ModelAuditComponent implements OnInit {
       return `"${value.replace(/"/g, '""')}"`;
     }
     return value;
+  }
+
+  // Tag filter methods
+  toggleTag(tag: string): void {
+    const current = this.selectedTags();
+    if (current.includes(tag)) {
+      this.selectedTags.set(current.filter((t) => t !== tag));
+    } else {
+      this.selectedTags.set([...current, tag]);
+    }
+  }
+
+  isTagSelected(tag: string): boolean {
+    return this.selectedTags().includes(tag);
+  }
+
+  clearAllTags(): void {
+    this.selectedTags.set([]);
+  }
+
+  toggleParameterTag(tag: string): void {
+    const current = this.selectedParameterTags();
+    if (current.includes(tag)) {
+      this.selectedParameterTags.set(current.filter((t) => t !== tag));
+    } else {
+      this.selectedParameterTags.set([...current, tag]);
+    }
+  }
+
+  isParameterTagSelected(tag: string): boolean {
+    return this.selectedParameterTags().includes(tag);
+  }
+
+  clearAllParameterTags(): void {
+    this.selectedParameterTags.set([]);
+  }
+
+  toggleTagFilterDropdown(): void {
+    this.tagFilterOpen.set(!this.tagFilterOpen());
+  }
+
+  closeTagFilterDropdown(): void {
+    this.tagFilterOpen.set(false);
+    this.tagSearchTerm.set('');
+  }
+
+  toggleParameterTagFilterDropdown(): void {
+    this.parameterTagFilterOpen.set(!this.parameterTagFilterOpen());
+  }
+
+  closeParameterTagFilterDropdown(): void {
+    this.parameterTagFilterOpen.set(false);
+    this.parameterTagSearchTerm.set('');
   }
 }

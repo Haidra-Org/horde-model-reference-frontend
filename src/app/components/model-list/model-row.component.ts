@@ -50,16 +50,21 @@ import { hasShowcases } from './model-row.utils';
           ></path>
         </svg>
       </td>
+      <td class="text-center text-xs text-muted">
+        {{ originalIndex() + 1 }}
+      </td>
       <td class="text-center" [title]="workerCountTooltip()">
         <span class="inline-block w-3 h-3 rounded-full" [class]="activeIndicatorClass()"></span>
       </td>
       <td class="font-medium text-gray-900 dark:text-gray-100">
-        <app-model-row-header [model]="model()" mode="compact" />
+        <app-model-row-header [model]="model()" [allModels]="allModels()" mode="compact" />
       </td>
-      <td class="field-value max-w-md truncate">
-        {{ legacyModel().description || '-' }}
+      <td class="field-value">
+        <div class="truncate">
+          {{ legacyModel().description || '-' }}
+        </div>
       </td>
-      <td>
+      <td class="text-sm">
         @if (isStableDiffusionRecord()) {
           {{ baselineDisplay() }}
         } @else if (isTextGenerationRecord()) {
@@ -68,27 +73,31 @@ import { hasShowcases } from './model-row.utils';
           -
         }
       </td>
-      <td class="max-w-xs">
+      <td class="text-sm">
         @if (tags().length > 0) {
-          <span class="text-sm text-muted">
-            {{ tags().slice(0, 3).join(', ') }}
-            @if (tags().length > 3) {
-              <span class="text-muted italic ml-1"> +{{ tags().length - 3 }} </span>
-            }
-          </span>
+          <div class="truncate">
+            <span class="text-muted">
+              {{ tags().slice(0, 3).join(', ') }}
+              @if (tags().length > 3) {
+                <span class="text-muted italic ml-1"> +{{ tags().length - 3 }} </span>
+              }
+            </span>
+          </div>
         } @else {
           -
         }
       </td>
-      <td>
-        @if (legacyModel().nsfw === true) {
-          <span class="badge badge-warning">NSFW</span>
-        } @else if (legacyModel().nsfw === false) {
-          <span class="badge badge-success">SFW</span>
-        } @else {
-          <span class="badge badge-secondary">Unknown</span>
-        }
-      </td>
+      @if (!isTextGeneration()) {
+        <td>
+          @if (legacyModel().nsfw === true) {
+            <span class="badge badge-warning">NSFW</span>
+          } @else if (legacyModel().nsfw === false) {
+            <span class="badge badge-success">SFW</span>
+          } @else {
+            <span class="badge badge-secondary">Unknown</span>
+          }
+        </td>
+      }
       <td (click)="$event.stopPropagation()">
         <app-model-row-actions
           [model]="model()"
@@ -109,7 +118,7 @@ import { hasShowcases } from './model-row.utils';
           ' detail-row'
         "
       >
-        <td colspan="8">
+        <td colspan="9">
           <div class="detail-section">
             <!-- Overview Header -->
             <div class="card-overview">
@@ -304,10 +313,13 @@ import { hasShowcases } from './model-row.utils';
 })
 export class ModelRowComponent {
   readonly model = input.required<UnifiedModelData | GroupedTextModel>();
+  readonly allModels = input<(UnifiedModelData | GroupedTextModel)[]>([]);
   readonly writable = input<boolean>(false);
   readonly isEven = input<boolean>(false);
+  readonly isTextGeneration = input<boolean>(false);
   readonly expandedRows = input<Set<string>>(new Set());
   readonly expandedShowcases = input<Set<string>>(new Set());
+  readonly hordeStatsState = input<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   readonly showJson = output<LegacyRecordUnion>();
   readonly edit = output<string>();
@@ -321,7 +333,27 @@ export class ModelRowComponent {
   readonly isActive = computed(() => hasActiveWorkers(this.model()));
 
   readonly activeIndicatorClass = computed(() => {
+    const statsState = this.hordeStatsState();
     const workerCount = this.model().workerCount ?? 0;
+
+    // Show loading indicator (pulsing blue)
+    if (statsState === 'loading') {
+      return {
+        'animate-pulse': true,
+        'bg-blue-500': true,
+        'dark:bg-blue-400': true,
+      };
+    }
+
+    // Show error/unknown state (grey)
+    if (statsState === 'error' || statsState === 'idle') {
+      return {
+        'bg-gray-400': true,
+        'dark:bg-gray-500': true,
+      };
+    }
+
+    // Show normal states based on worker count
     if (workerCount === 0) {
       return {
         'bg-danger-500': true,
@@ -347,8 +379,22 @@ export class ModelRowComponent {
   });
 
   readonly workerCountTooltip = computed(() => {
+    const statsState = this.hordeStatsState();
     const count = this.model().workerCount ?? 0;
     const suffix = this.isGrouped() ? ' (across all backends/authors)' : '';
+
+    if (statsState === 'loading') {
+      return 'Loading Horde statistics...';
+    }
+
+    if (statsState === 'error') {
+      return 'Failed to load Horde statistics';
+    }
+
+    if (statsState === 'idle') {
+      return 'Horde statistics not available for this category';
+    }
+
     return `${count} worker${count === 1 ? '' : 's'} serving this model${suffix}`;
   });
 
@@ -379,6 +425,10 @@ export class ModelRowComponent {
       return model.tags;
     }
     return [];
+  });
+
+  readonly originalIndex = computed(() => {
+    return (this.model() as any).originalIndex ?? 0;
   });
 
   readonly showcases = computed(() => {

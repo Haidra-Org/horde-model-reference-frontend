@@ -444,16 +444,38 @@
   } @else {
   <!-- Data Table with Virtual Scrolling -->
   <div class="data-table">
-    <table>
+    <table class="table-fixed">
+      <colgroup>
+        <col class="w-12" />
+        <col class="w-16" />
+        <col class="w-16" />
+        <col class="w-64" />
+        <col style="width: auto;" />
+        <col class="w-32" />
+        <col class="w-40" />
+        @if (!isTextGeneration()) {
+        <col class="w-24" />
+        }
+        <col class="w-48" />
+      </colgroup>
       <thead>
         <tr>
-          <th class="w-8"></th>
-          <th class="w-12">Active</th>
-          <th class="w-auto">Name</th>
-          <th class="w-1/3">Description</th>
+          <th class="text-center"></th>
+          <th class="text-center cursor-pointer" (click)="toggleSort('index')">
+            # {{ getSortIcon('index') }}
+          </th>
+          <th class="text-center cursor-pointer" (click)="toggleSort('active')">
+            Active {{ getSortIcon('active') }}
+          </th>
+          <th class="cursor-pointer" (click)="toggleSort('name')">
+            Name {{ getSortIcon('name') }}
+          </th>
+          <th>Description</th>
           <th>Baseline</th>
           <th>Tags</th>
+          @if (!isTextGeneration()) {
           <th>NSFW</th>
+          }
           <th>Actions</th>
         </tr>
       </thead>
@@ -461,12 +483,27 @@
 
     <cdk-virtual-scroll-viewport itemSize="50" class="virtual-scroll-viewport" [style.height.px]="800"
       [minBufferPx]="400" [maxBufferPx]="800">
-      <table>
+      <table class="table-fixed">
+        <colgroup>
+          <col class="w-12" />
+          <col class="w-16" />
+          <col class="w-16" />
+          <col class="w-64" />
+          <col style="width: auto;" />
+          <col class="w-32" />
+          <col class="w-40" />
+          @if (!isTextGeneration()) {
+          <col class="w-24" />
+          }
+          <col class="w-48" />
+        </colgroup>
         <tbody>
-          @for (model of filteredModels(); track model.name; let isEven = $even) {
-          <app-model-row [model]="model" [writable]="writable()" [isEven]="isEven" [expandedRows]="expandedModels()"
-            [expandedShowcases]="expandedShowcases()" (showJson)="showJson($event)" (edit)="editModel($event)"
-            (delete)="confirmDelete($event)" (toggleRow)="toggleRowExpansion($event)" />
+          @for (model of sortedFilteredModels(); track model.name; let isEven = $even) {
+          <app-model-row [model]="model" [allModels]="models()" [writable]="writable()" [isEven]="isEven"
+            [isTextGeneration]="isTextGeneration()" [expandedRows]="expandedModels()"
+            [expandedShowcases]="expandedShowcases()" [hordeStatsState]="hordeApi.hordeStatsState()"
+            (showJson)="showJson($event)" (edit)="editModel($event)" (delete)="confirmDelete($event)"
+            (toggleRow)="toggleRowExpansion($event)" />
           }
         </tbody>
       </table>

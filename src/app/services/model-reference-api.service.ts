@@ -138,6 +138,14 @@ export class ModelReferenceApiService {
   }
 
   getLegacyModelsInCategory(category: string): Observable<LegacyModelsResponse> {
+    // Use dedicated text_generation endpoint with include_group parameter
+    if (category === 'text_generation') {
+      return this.legacyService.readLegacyTextGenerationReference(true).pipe(
+        map((response: LegacyModelsResponse) => response),
+        catchError(this.handleError),
+      );
+    }
+
     return this.legacyService.readLegacyReference(category as MODEL_REFERENCE_CATEGORY).pipe(
       map((response: LegacyModelsResponse) => response),
       catchError(this.handleError),

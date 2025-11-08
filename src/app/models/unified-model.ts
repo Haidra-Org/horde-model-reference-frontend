@@ -4,6 +4,7 @@ import {
   HordeModelUsageStats,
   HordeWorker,
 } from './horde-api.models';
+import type { BackendCombinedModelStatistics } from '../services/horde-api.service';
 import {
   parseTextModelName,
   getBaseModelName,
@@ -115,6 +116,11 @@ export interface GroupedTextModel extends Omit<UnifiedModelData, 'name' | 'worke
   isGrouped: true;
 
   /**
+   * Flag indicating statistics are aggregated from multiple variations
+   */
+  hasAggregatedStats: boolean;
+
+  /**
    * Array of backend variations for this base model
    */
   variations: UnifiedModelData[];
@@ -160,6 +166,65 @@ export interface GroupedTextModel extends Omit<UnifiedModelData, 'name' | 'worke
   parameters?: number;
 }
 
+/**
+ * Merge backend pre-aggregated statistics into reference model data.
+ * This replaces the old mergeModelData that did client-side matching.
+ * 
+ * @param referenceData The reference model data
+ * @param backendStats Backend statistics response (model name -> stats)
+ * @param options Optional parsing options
+ * @returns Unified model data with backend statistics
+ */
+export function mergeBackendStatistics<T extends { name: string }>(
+  referenceData: T,
+  backendStats: Record<string, BackendCombinedModelStatistics> | undefined,
+  options?: { parseTextModelNames?: boolean },
+): UnifiedModelData {
+  const unified: UnifiedModelData = { ...referenceData };
+
+  // Parse text model names if requested
+  if (options?.parseTextModelNames && referenceData.name) {
+    unified.parsedName = parseTextModelName(referenceData.name);
+  }
+
+  // Merge backend statistics if available
+  if (backendStats && referenceData.name) {
+    const stats = backendStats[referenceData.name];
+    if (stats) {
+      unified.workerCount = stats.worker_count ?? undefined;
+      unified.queuedJobs = stats.queued_jobs ?? undefined;
+      unified.performance = stats.performance ?? undefined;
+      unified.eta = stats.eta ?? undefined;
+      unified.queued = stats.queued ?? undefined;
+
+      if (stats.usage_stats) {
+        unified.usageStats = {
+          day: stats.usage_stats.day,
+          month: stats.usage_stats.month,
+          total: stats.usage_stats.total,
+        };
+      }
+
+      if (stats.worker_summaries) {
+        unified.workers = Object.values(stats.worker_summaries).map((w) => ({
+          id: w.id,
+          name: w.name,
+          performance: w.performance,
+          online: w.online,
+          trusted: w.trusted,
+          uptime: w.uptime,
+        }));
+      }
+    }
+  }
+
+  return unified;
+}
+
+/**
+ * @deprecated Use mergeBackendStatistics instead
+ * Legacy function for merging with direct aihorde.net API responses
+ */
 export function mergeModelData<T extends { name: string }>(
   referenceData: T,
   hordeStatus?: HordeModelStatus[],
@@ -223,6 +288,84 @@ export function mergeModelData<T extends { name: string }>(
   return unified;
 }
 
+/**
+ * Merge backend pre-aggregated statistics for multiple models.
+ * For text models with backend_variations, creates additional entries for each backend variant.
+ * 
+ * @param referenceModels Array of reference model data
+ * @param backendStats Backend statistics response (model name -> stats)
+ * @param options Optional parsing options
+ * @returns Array of unified model data with backend statistics, expanded with backend variations
+ */
+export function mergeMultipleBackendStatistics<T extends { name: string }>(
+  referenceModels: T[],
+  backendStats: Record<string, BackendCombinedModelStatistics> | undefined,
+  options?: { parseTextModelNames?: boolean },
+): UnifiedModelData[] {
+  const result: UnifiedModelData[] = [];
+
+  for (const model of referenceModels) {
+    const unified = mergeBackendStatistics(model, backendStats, options);
+
+    // Check if this model has backend variations
+    if (backendStats && model.name) {
+      const stats = backendStats[model.name];
+      if (stats?.backend_variations) {
+        // Check if any backend variation has the same name as the original model
+        const hasCanonicalVariation = Object.values(stats.backend_variations).some(
+          (variation) => variation.variant_name === model.name,
+        );
+
+        // Only push the base unified model if it's NOT already represented in backend_variations
+        if (!hasCanonicalVariation) {
+          result.push(unified);
+        }
+
+        // Create a UnifiedModelData entry for each backend variation
+        for (const variation of Object.values(stats.backend_variations)) {
+          const backendVariation: UnifiedModelData = {
+            ...model, // Copy reference data
+            name: variation.variant_name, // Use the backend-prefixed name
+            workerCount: variation.worker_count ?? undefined,
+            queuedJobs: variation.queued ?? undefined,
+            performance: variation.performance ?? undefined,
+            eta: variation.eta ?? undefined,
+            queued: variation.queued ?? undefined,
+          };
+
+          // Parse the backend-prefixed name
+          if (options?.parseTextModelNames) {
+            backendVariation.parsedName = parseTextModelName(variation.variant_name);
+          }
+
+          // Add usage stats if available
+          if (variation.usage_day !== undefined || variation.usage_month !== undefined || variation.usage_total !== undefined) {
+            backendVariation.usageStats = {
+              day: variation.usage_day ?? 0,
+              month: variation.usage_month ?? 0,
+              total: variation.usage_total ?? 0,
+            };
+          }
+
+          result.push(backendVariation);
+        }
+      } else {
+        // No backend variations, just add the unified model
+        result.push(unified);
+      }
+    } else {
+      // No backend stats available, just add the unified model
+      result.push(unified);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * @deprecated Use mergeMultipleBackendStatistics instead
+ * Legacy function for merging with direct aihorde.net API responses
+ */
 export function mergeMultipleModels<T extends { name: string }>(
   referenceModels: T[],
   hordeStatus?: HordeModelStatus[],
@@ -331,6 +474,7 @@ export function getDisplayName(model: UnifiedModelData): string {
 
 /**
  * Group text generation models by their base name (collapsing backend and author variations)
+ * Prefers using the backend's text_model_group field when available, falls back to client-side parsing
  *
  * @param models Array of unified model data
  * @returns Map of base names to arrays of model variations
@@ -341,8 +485,20 @@ export function groupTextModelsByBaseName(
   const groups = new Map<string, UnifiedModelData[]>();
 
   for (const model of models) {
-    // Group by just the final model name component (no backend, no author)
-    const baseName = model.parsedName ? getBaseModelName(model.name) : model.name;
+    // Prefer text_model_group from backend if available
+    const modelRecord = model as Record<string, unknown>;
+    let baseName: string;
+
+    if (modelRecord['text_model_group'] && typeof modelRecord['text_model_group'] === 'string') {
+      // Use backend's grouping
+      baseName = modelRecord['text_model_group'];
+    } else if (model.parsedName) {
+      // Fall back to client-side parsing
+      baseName = getBaseModelName(model.name);
+    } else {
+      // No grouping possible
+      baseName = model.name;
+    }
 
     if (!groups.has(baseName)) {
       groups.set(baseName, []);
@@ -419,6 +575,13 @@ export function findModelByNameVariation(
  * @param models Array of model variations for the same base model
  * @returns Aggregated stats across all variations
  */
+/**
+ * Aggregate stats from multiple backend variations of the same model.
+ * Since backend provides pre-aggregated stats per model name, we just sum across variations.
+ * 
+ * @param models Array of model variations for the same base model
+ * @returns Aggregated stats across all variations
+ */
 export function aggregateModelVariations(models: UnifiedModelData[]): {
   totalWorkerCount: number;
   totalQueuedJobs: number;
@@ -432,9 +595,10 @@ export function aggregateModelVariations(models: UnifiedModelData[]): {
     allWorkers: [] as HordeWorkerSummary[],
   };
 
-  const usageDay = new Map<string, number>();
-  const usageMonth = new Map<string, number>();
-  const usageTotal = new Map<string, number>();
+  let totalDay = 0;
+  let totalMonth = 0;
+  let totalTotal = 0;
+  let hasUsageStats = false;
 
   for (const model of models) {
     result.totalWorkerCount += model.workerCount ?? 0;
@@ -452,20 +616,18 @@ export function aggregateModelVariations(models: UnifiedModelData[]): {
     }
 
     if (model.usageStats) {
-      // Aggregate usage stats by model name key
-      const key = model.name;
-      usageDay.set(key, model.usageStats.day);
-      usageMonth.set(key, model.usageStats.month);
-      usageTotal.set(key, model.usageStats.total);
+      totalDay += model.usageStats.day;
+      totalMonth += model.usageStats.month;
+      totalTotal += model.usageStats.total;
+      hasUsageStats = true;
     }
   }
 
-  // Sum up all usage stats
-  if (usageDay.size > 0 || usageMonth.size > 0 || usageTotal.size > 0) {
+  if (hasUsageStats) {
     result.combinedUsageStats = {
-      day: Array.from(usageDay.values()).reduce((sum, val) => sum + val, 0),
-      month: Array.from(usageMonth.values()).reduce((sum, val) => sum + val, 0),
-      total: Array.from(usageTotal.values()).reduce((sum, val) => sum + val, 0),
+      day: totalDay,
+      month: totalMonth,
+      total: totalTotal,
     };
   }
 
@@ -518,6 +680,7 @@ export function createGroupedTextModels(
       const grouped: GroupedTextModel = {
         name: baseName,
         isGrouped: true,
+        hasAggregatedStats: variations.length > 1,
         variations,
         availableBackends: Array.from(backends),
         availableAuthors: Array.from(authors),

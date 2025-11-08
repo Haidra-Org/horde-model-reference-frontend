@@ -68,6 +68,7 @@ export interface LegacyTextGenerationRecord extends LegacyGenericRecord {
   url?: string | null;
   tags?: string[] | null;
   settings?: Record<string, LegacyRequirementValue> | null;
+  text_model_group?: string | null;
 }
 
 export interface LegacyClipRecord extends LegacyGenericRecord {
@@ -83,3 +84,46 @@ export type LegacyRecordUnion =
 export type LegacyModelsResponse = Record<string, LegacyRecordUnion>;
 
 export type LegacyRequirementValue = number | string | boolean | number[] | string[];
+
+// Horde API statistics types
+
+export interface BackendVariation {
+  backend: string; // e.g., 'aphrodite', 'koboldcpp', 'canonical'
+  variant_name: string; // Full model name as reported by Horde API
+  worker_count: number;
+  performance?: number | null;
+  queued?: number | null;
+  queued_jobs?: number | null;
+  eta?: number | null;
+  usage_day: number;
+  usage_month: number;
+  usage_total: number;
+}
+
+export interface HordeModelUsageStats {
+  day: number;
+  month: number;
+  total: number;
+}
+
+export interface HordeWorkerSummary {
+  id: string;
+  name: string;
+  performance: string;
+  online: boolean;
+  trusted: boolean;
+  uptime: number;
+}
+
+export interface BackendCombinedModelStatistics {
+  worker_count?: number;
+  queued_jobs?: number | null;
+  performance?: number | null;
+  eta?: number | null;
+  queued?: number | null;
+  usage_stats?: HordeModelUsageStats | null;
+  worker_summaries?: Record<string, HordeWorkerSummary> | null;
+  backend_variations?: Record<string, BackendVariation> | null;
+}
+
+export type BackendStatisticsResponse = Record<string, BackendCombinedModelStatistics>;

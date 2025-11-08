@@ -12,7 +12,9 @@
   "paths": {
     "/model_references/v2/info": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get info about the v2 model reference API",
         "description": "Get information about the v2 model reference API.\n\nThis is the v2 model reference API, which uses the new format established by horde_model_reference.",
         "operationId": "read_v2_reference_api_info",
@@ -41,7 +43,9 @@
     },
     "/model_references/v2/model_categories": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get all v2 model reference names",
         "description": "Get all available v2 model reference category names.\n\nReturns a list of all model categories that have v2 format references available.",
         "operationId": "read_v2_references_names",
@@ -77,7 +81,9 @@
     },
     "/model_references/v2/{model_category_name}": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get a specific v2 model reference by category name",
         "description": "Get all models in a specific v2 model reference category.\n\nReturns the complete v2 format JSON for the requested category.",
         "operationId": "read_v2_reference",
@@ -147,7 +153,9 @@
     },
     "/model_references/v2/{model_category_name}/{model_name}": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get a specific model by category and name",
         "description": "Get a specific model by category and name.\n\nArgs:\n    model_category_name: The model reference category (e.g., image_generation).\n    model_name: The name of the model within the category.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The model record data.\n\nRaises:\n    HTTPException: 404 if category or model not found.",
         "operationId": "read_v2_single_model",
@@ -231,7 +239,9 @@
         }
       },
       "put": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Update an existing model in v2 format",
         "description": "Update an existing model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the specified category. Use POST to create new models.\n\n- Preserves original `created_at` and `created_by` metadata\n- Updates `updated_at` timestamp",
         "operationId": "update_v2_model",
@@ -380,7 +390,9 @@
         }
       },
       "delete": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Delete a v2 model entry",
         "description": "Delete a model from a v2 model reference category.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nPermanently removes the specified model from the category.",
         "operationId": "delete_v2_model",
@@ -458,7 +470,9 @@
     },
     "/model_references/v2/image_generation/create_model": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new image generation model in v2 format",
         "description": "Create a new image generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the image generation category.",
         "operationId": "create_v2_image_generation_model",
@@ -556,7 +570,9 @@
     },
     "/model_references/v2/text_generation/create_model": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new text generation model in v2 format",
         "description": "Create a new text generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the text generation category.",
         "operationId": "create_v2_text_generation_model",
@@ -654,7 +670,9 @@
     },
     "/model_references/v2/controlnet/create_model": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new ControlNet model in v2 format",
         "description": "Create a new ControlNet model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the ControlNet category.",
         "operationId": "create_v2_controlnet_model",
@@ -752,7 +770,9 @@
     },
     "/model_references/v2/{model_category_name}/add": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new model in v2 format",
         "description": "Create a new model in the specified category.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the specified category.",
         "operationId": "create_v2_model",
@@ -898,7 +918,10 @@
     },
     "/model_references/statistics/{model_category_name}": {
       "get": {
-        "tags": ["v2", "statistics"],
+        "tags": [
+          "v2",
+          "statistics"
+        ],
         "summary": "Get statistics for a model category",
         "description": "Get comprehensive statistics for a model reference category.\n\nReturns aggregate metrics including:\n- Total model counts (overall, NSFW, SFW)\n- Baseline distribution\n- Download statistics\n- Tag and style distributions\n- Category-specific metrics (trigger words, inpainting, etc.)\n\nStatistics are cached with TTL (default 300s) and automatically\ninvalidated when model data changes. Caching is skipped when\ngrouping is enabled.\n\nArgs:\n    model_category_name: The model reference category to get statistics for.\n    manager: The model reference manager (injected).\n    stats_cache: The statistics cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    limit: Maximum number of models to return (for pagination).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryStatistics containing all computed metrics.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if computation fails.",
         "operationId": "read_v2_category_statistics",
@@ -988,9 +1011,12 @@
     },
     "/model_references/statistics/{model_category_name}/with-stats": {
       "get": {
-        "tags": ["v2", "statistics"],
+        "tags": [
+          "v2",
+          "statistics"
+        ],
         "summary": "Get models merged with AI Horde runtime statistics",
-        "description": "Get AI Horde statistics data for models in a given category.\n\nCombines live runtime statistics from the AI Horde API:\n- Worker count, queued jobs, performance metrics, ETA\n- Usage statistics (day, month, total)\n- Optional worker details\n\n**Caching:**\n- Model reference data: cached by ModelReferenceManager (60s TTL)\n- Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available)\n- Merged results: computed on-demand (no caching)\n\nArgs:\n    model_category_name: The model category (image_generation or text_generation).\n    manager: Model reference manager dependency.\n    horde_api: Horde API integration dependency.\n    include_workers: Include detailed worker information for each model.\n    min_worker_count: Filter to models with at least this many workers.\n    sort_by: Sort by field (worker_count, usage_total, usage_month, name).\n    sort_desc: Sort in descending order (default: True).\n\nReturns:\n    JSONResponse: Dict of model_name -> enriched_model_data.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if Horde API fails.",
+        "description": "Get AI Horde statistics data for models in a given category.\n\nCombines live runtime statistics from the AI Horde API:\n- Worker count, queued jobs, performance metrics, ETA\n- Usage statistics (day, month, total)\n- Optional worker details\n- Optional per-backend variations (for text generation models)\n\n**Caching:**\n- Model reference data: cached by ModelReferenceManager (60s TTL)\n- Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available)\n- Merged results: computed on-demand (no caching)\n\nArgs:\n    model_category_name: The model category (image_generation or text_generation).\n    manager: Model reference manager dependency.\n    horde_api: Horde API integration dependency.\n    include_workers: Include detailed worker information for each model.\n    include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.\n    min_worker_count: Filter to models with at least this many workers.\n    sort_by: Sort by field (worker_count, usage_total, usage_month, name).\n    sort_desc: Sort in descending order (default: True).\n\nReturns:\n    JSONResponse: Dict of model_name -> enriched_model_data.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if Horde API fails.",
         "operationId": "read_models_with_stats",
         "parameters": [
           {
@@ -1009,6 +1035,16 @@
               "type": "boolean",
               "default": false,
               "title": "Include Workers"
+            }
+          },
+          {
+            "name": "include_backend_variations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Backend Variations"
             }
           },
           {
@@ -1111,7 +1147,10 @@
     },
     "/model_references/statistics/{model_category_name}/audit": {
       "get": {
-        "tags": ["v2", "audit"],
+        "tags": [
+          "v2",
+          "audit"
+        ],
         "summary": "Get audit analysis for a model category",
         "description": "Get comprehensive audit analysis for a model reference category.\n\nAnalyzes all models in the category to identify deletion risks including:\n- Missing or invalid download URLs\n- Non-preferred file hosts\n- Missing required fields (description, baseline)\n- Zero active workers\n- Low or no recent usage\n\nReturns both per-model audit information and aggregate summary statistics.\nAudit results are cached (default 300s TTL) and automatically invalidated\nwhen model data changes.\n\nArgs:\n    model_category_name: The model reference category to audit.\n    manager: The model reference manager (injected).\n    horde_api: The Horde API integration (injected).\n    audit_cache: The audit cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).\n    limit: Maximum number of models to return (None = all).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryAuditResponse with per-model audit info and summary.\n\nRaises:\n    HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.",
         "operationId": "read_v2_category_audit",
@@ -1222,7 +1261,12 @@
     },
     "/model_references/v2/metadata/last_updated": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for canonical format (v2)",
         "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor v2 format operations. Only available when canonical_format='v2'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'v2'.",
         "operationId": "read_v2_last_updated",
@@ -1254,7 +1298,12 @@
     },
     "/model_references/v2/metadata/{model_category_name}/last_updated": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for a specific category (v2)",
         "description": "Get the last update timestamp for a specific category (v2 format).\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryLastUpdatedResponse with the timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_v2_category_last_updated",
@@ -1309,7 +1358,12 @@
     },
     "/model_references/v2/metadata/metadata": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get all v2 format metadata",
         "description": "Get all v2 format metadata.\n\nReturns a dictionary mapping each category to its v2 format metadata.\n\nArgs:\n    manager: The model reference manager dependency.\n\nReturns:\n    Dict of category to CategoryMetadata.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.",
         "operationId": "read_all_v2_metadata",
@@ -1352,7 +1406,12 @@
     },
     "/model_references/v2/metadata/{model_category_name}": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get v2 format metadata for a specific category",
         "description": "Get v2 format metadata for a specific category.\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryMetadata for the category.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_v2_category_metadata",
@@ -1411,7 +1470,9 @@
     },
     "/model_references/v1/info": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get info about the legacy model reference API",
         "description": "Get information about the legacy model reference API.\n\nThis is the legacy model reference API, which uses the format originally found at the\ngithub repositories:\n- https://github.com/Haidra-Org/AI-Horde-image-model-reference\n- https://github.com/Haidra-Org/AI-Horde-text-model-reference",
         "operationId": "read_legacy_reference_api_info",
@@ -1434,7 +1495,9 @@
     },
     "/model_references/v1/model_categories": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get all legacy model reference names",
         "description": "Get all available legacy model reference category names.\n\nReturns a list of all model categories that have legacy format references available.",
         "operationId": "read_legacy_references_names",
@@ -1459,9 +1522,152 @@
         }
       }
     },
+    "/model_references/v1/text_generation": {
+      "get": {
+        "tags": [
+          "v1"
+        ],
+        "summary": "Get text generation models with optional grouping field",
+        "description": "Get all text generation models with optional text_model_group field.\n\nReturns the complete legacy format JSON for text generation models.\n\nBy default, the text_model_group field is not included (legacy format).\nSet include_group=true to dynamically compute and include the text_model_group\nfield, which contains the base model group name for grouping model variants\ntogether (e.g., models with different quantization levels).",
+        "operationId": "read_legacy_text_generation_reference",
+        "parameters": [
+          {
+            "name": "include_group",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include text_model_group field for grouping model variants together",
+              "default": false,
+              "title": "Include Group"
+            },
+            "description": "Include text_model_group field for grouping model variants together"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All text generation models",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Text generation models not found or empty"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "v1_create_update"
+        ],
+        "summary": "Create a new text generation model in legacy format",
+        "description": "Create a new text generation model in legacy format.\n\nThe model name in the request body must not already exist in the text generation category.",
+        "operationId": "create_legacy_text_generation_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Model created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyTextGenerationRecord-Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "409": {
+            "description": "Model already exists"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "v1_create_update"
+        ],
+        "summary": "Update an existing model in legacy format",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "operationId": "update_legacy_text_generation_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Model updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyTextGenerationRecord-Output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation error"
+          },
+          "503": {
+            "description": "Service unavailable (not in legacy canonical mode)"
+          }
+        }
+      }
+    },
     "/model_references/v1/{model_category_name}": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get a specific legacy model reference by category name",
         "description": "Get all models in a specific legacy model reference category.\n\nReturns the complete legacy format JSON for the requested category.\n\n**Note:** `stable_diffusion` is an alias for `image_generation`.",
         "operationId": "read_legacy_reference",
@@ -1507,7 +1713,9 @@
     },
     "/model_references/v1/{model_category_name}/{model_name}": {
       "delete": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Delete a legacy model entry.",
         "description": "Delete a model from a legacy model reference category.\n\nPermanently removes the specified model from the category.",
         "operationId": "delete_legacy_model",
@@ -1565,7 +1773,9 @@
     },
     "/model_references/v1/image_generation": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_model",
@@ -1610,7 +1820,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new image generation model in legacy format",
         "description": "Create a new image generation model in legacy format.\n\nThe model name in the request body must not already exist in the image generation category.",
         "operationId": "create_legacy_image_generation_model",
@@ -1655,101 +1867,11 @@
         ]
       }
     },
-    "/model_references/v1/text_generation": {
-      "put": {
-        "tags": ["v1_create_update"],
-        "summary": "Update an existing model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
-        "operationId": "update_legacy_text_generation_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyTextGenerationRecord-Output"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": ["v1_create_update"],
-        "summary": "Create a new text generation model in legacy format",
-        "description": "Create a new text generation model in legacy format.\n\nThe model name in the request body must not already exist in the text generation category.",
-        "operationId": "create_legacy_text_generation_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyTextGenerationRecord-Output"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists"
-          },
-          "422": {
-            "description": "Validation error"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
     "/model_references/v1/clip": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing CLIP model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_clip_model",
@@ -1794,7 +1916,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new clip model in legacy format",
         "description": "Create a new CLIP model in legacy format.\n\nThe model name in the request body must not already exist in the clip category.",
         "operationId": "create_legacy_clip_model",
@@ -1841,7 +1965,9 @@
     },
     "/model_references/v1/blip": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing BLIP model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_blip_model",
@@ -1886,7 +2012,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new BLIP model in legacy format",
         "description": "Create a new BLIP model in legacy format.\n\nThe model name in the request body must not already exist in the blip category.",
         "operationId": "create_legacy_blip_model",
@@ -1933,7 +2061,9 @@
     },
     "/model_references/v1/codeformer": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing Codeformer model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_codeformer_model",
@@ -1978,7 +2108,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new Codeformer model in legacy format",
         "description": "Create a new Codeformer model in legacy format.\n\nThe model name in the request body must not already exist in the codeformer category.",
         "operationId": "create_legacy_codeformer_model",
@@ -2025,7 +2157,9 @@
     },
     "/model_references/v1/controlnet": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing ControlNet model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_controlnet_model",
@@ -2070,7 +2204,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new ControlNet model in legacy format",
         "description": "Create a new ControlNet model in legacy format.\n\nThe model name in the request body must not already exist in the controlnet category.",
         "operationId": "create_legacy_controlnet_model",
@@ -2117,7 +2253,9 @@
     },
     "/model_references/v1/esrgan": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing ESRGAN model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_esrgan_model",
@@ -2162,7 +2300,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new ESRGAN model in legacy format",
         "description": "Create a new ESRGAN model in legacy format.\n\nThe model name in the request body must not already exist in the esrgan category.",
         "operationId": "create_legacy_esrgan_model",
@@ -2209,7 +2349,9 @@
     },
     "/model_references/v1/gfpgan": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing GFPGAN model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_gfpgan_model",
@@ -2254,7 +2396,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new GFPGAN model in legacy format",
         "description": "Create a new GFPGAN model in legacy format.\n\nThe model name in the request body must not already exist in the gfpgan category.",
         "operationId": "create_legacy_gfpgan_model",
@@ -2301,7 +2445,9 @@
     },
     "/model_references/v1/safety_checker": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing safety checker model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_safety_checker_model",
@@ -2346,7 +2492,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new safety checker model in legacy format",
         "description": "Create a new safety checker model in legacy format.\n\nThe model name in the request body must not already exist in the safety_checker category.",
         "operationId": "create_legacy_safety_checker_model",
@@ -2393,7 +2541,9 @@
     },
     "/model_references/v1/miscellaneous": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing miscellaneous model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_miscellaneous_model",
@@ -2438,7 +2588,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new miscellaneous model in legacy format",
         "description": "Create a new miscellaneous model in legacy format.\n\nThe model name in the request body must not already exist in the miscellaneous category.",
         "operationId": "create_legacy_miscellaneous_model",
@@ -2485,7 +2637,12 @@
     },
     "/model_references/v1/metadata/last_updated": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for canonical format (legacy)",
         "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor legacy format operations. Only available when canonical_format='legacy'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'legacy'.",
         "operationId": "read_legacy_last_updated",
@@ -2517,7 +2674,12 @@
     },
     "/model_references/v1/metadata/{model_category_name}/last_updated": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for a specific category (legacy)",
         "description": "Get the last update timestamp for a specific category (legacy format).\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryLastUpdatedResponse with the timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_legacy_category_last_updated",
@@ -2572,7 +2734,12 @@
     },
     "/model_references/v1/metadata/metadata": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get all legacy format metadata",
         "description": "Get all legacy format metadata.\n\nReturns a dictionary mapping each category to its legacy format metadata.\n\nArgs:\n    manager: The model reference manager dependency.\n\nReturns:\n    Dict of category to CategoryMetadata.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.",
         "operationId": "read_all_legacy_metadata",
@@ -2615,7 +2782,12 @@
     },
     "/model_references/v1/metadata/{model_category_name}": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get legacy format metadata for a specific category",
         "description": "Get legacy format metadata for a specific category.\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryMetadata for the category.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_legacy_category_metadata",
@@ -2754,7 +2926,11 @@
           }
         },
         "type": "object",
-        "required": ["baseline", "count", "percentage"],
+        "required": [
+          "baseline",
+          "count",
+          "percentage"
+        ],
         "title": "BaselineStats",
         "description": "Statistics about model baselines in a category."
       },
@@ -2836,7 +3012,12 @@
           }
         },
         "type": "object",
-        "required": ["category", "category_total_month_usage", "models", "summary"],
+        "required": [
+          "category",
+          "category_total_month_usage",
+          "models",
+          "summary"
+        ],
         "title": "CategoryAuditResponse",
         "description": "Complete audit response for a category.\n\nContains both per-model audit information and aggregate summary."
       },
@@ -3178,7 +3359,11 @@
           }
         },
         "type": "object",
-        "required": ["category", "total_models", "computed_at"],
+        "required": [
+          "category",
+          "total_models",
+          "computed_at"
+        ],
         "title": "CategoryStatistics",
         "description": "Comprehensive statistics for a model reference category.\n\nContains aggregate metrics, distributions, and metadata about all models in a category."
       },
@@ -3190,7 +3375,9 @@
           }
         },
         "type": "object",
-        "required": ["message"],
+        "required": [
+          "message"
+        ],
         "title": "ContainsMessage",
         "description": "A model that contains a message field."
       },
@@ -3202,7 +3389,9 @@
           }
         },
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "title": "ContainsStatus",
         "description": "A model that contains a status field."
       },
@@ -3262,7 +3451,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "controlnet_style"],
+        "required": [
+          "name",
+          "controlnet_style"
+        ],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
       },
@@ -3322,7 +3514,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "controlnet_style"],
+        "required": [
+          "name",
+          "controlnet_style"
+        ],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
       },
@@ -3438,7 +3633,10 @@
           }
         },
         "type": "object",
-        "required": ["file_name", "file_url"],
+        "required": [
+          "file_name",
+          "file_url"
+        ],
         "title": "DownloadRecord",
         "description": "A record of a file to download for a model. Typically a ckpt file."
       },
@@ -3534,7 +3732,9 @@
           }
         },
         "type": "object",
-        "required": ["msg"],
+        "required": [
+          "msg"
+        ],
         "title": "ErrorDetail",
         "description": "Detail about a specific error."
       },
@@ -3556,7 +3756,9 @@
           }
         },
         "type": "object",
-        "required": ["detail"],
+        "required": [
+          "detail"
+        ],
         "title": "ErrorResponse",
         "description": "Standardized error response."
       },
@@ -3612,7 +3814,9 @@
           }
         },
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "FineTuneSeriesInfo",
         "description": "Information about a fine-tuning series."
       },
@@ -3668,7 +3872,11 @@
           }
         },
         "type": "object",
-        "required": ["record_type", "name", "model_classification"],
+        "required": [
+          "record_type",
+          "name",
+          "model_classification"
+        ],
         "title": "GenericModelRecord",
         "description": "A generic model reference record."
       },
@@ -3724,7 +3932,11 @@
           }
         },
         "type": "object",
-        "required": ["record_type", "name", "model_classification"],
+        "required": [
+          "record_type",
+          "name",
+          "model_classification"
+        ],
         "title": "GenericModelRecord",
         "description": "A generic model reference record."
       },
@@ -4024,7 +4236,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "baseline", "nsfw"],
+        "required": [
+          "name",
+          "baseline",
+          "nsfw"
+        ],
         "title": "ImageGenerationModelRecord",
         "description": "A model entry in the model reference."
       },
@@ -4241,7 +4457,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "baseline", "nsfw"],
+        "required": [
+          "name",
+          "baseline",
+          "nsfw"
+        ],
         "title": "ImageGenerationModelRecord",
         "description": "A model entry in the model reference."
       },
@@ -4359,7 +4579,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyBlipRecord",
         "description": "BLIP legacy record with category-specific normalization."
       },
@@ -4461,7 +4683,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyBlipRecord",
         "description": "BLIP legacy record with category-specific normalization."
       },
@@ -4473,7 +4697,10 @@
           },
           "type": {
             "type": "string",
-            "enum": ["clip", "coca"],
+            "enum": [
+              "clip",
+              "coca"
+            ],
             "title": "Type",
             "default": "clip"
           },
@@ -4574,7 +4801,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyClipRecord",
         "description": "CLIP legacy record with category-specific normalization."
       },
@@ -4586,7 +4815,10 @@
           },
           "type": {
             "type": "string",
-            "enum": ["clip", "coca"],
+            "enum": [
+              "clip",
+              "coca"
+            ],
             "title": "Type",
             "default": "clip"
           },
@@ -4687,7 +4919,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyClipRecord",
         "description": "CLIP legacy record with category-specific normalization."
       },
@@ -4789,7 +5023,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyCodeformerRecord",
         "description": "Codeformers legacy record with category-specific normalization."
       },
@@ -4891,7 +5127,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyCodeformerRecord",
         "description": "Codeformers legacy record with category-specific normalization."
       },
@@ -5000,7 +5238,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["path"],
+        "required": [
+          "path"
+        ],
         "title": "LegacyConfigFile",
         "description": "A single legacy config file entry."
       },
@@ -5113,7 +5353,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyControlnetRecord",
         "description": "ControlNet legacy record with category-specific normalization."
       },
@@ -5226,7 +5469,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyControlnetRecord",
         "description": "ControlNet legacy record with category-specific normalization."
       },
@@ -5328,7 +5574,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyEsrganRecord",
         "description": "ESRGAN legacy record with category-specific normalization."
       },
@@ -5430,7 +5678,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyEsrganRecord",
         "description": "ESRGAN legacy record with category-specific normalization."
       },
@@ -5532,7 +5782,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyGfpganRecord",
         "description": "GFPGAN legacy record with category-specific normalization."
       },
@@ -5634,7 +5886,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyGfpganRecord",
         "description": "GFPGAN legacy record with category-specific normalization."
       },
@@ -5735,7 +5989,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyMiscellaneousRecord",
         "description": "Miscellaneous legacy record with category-specific normalization."
       },
@@ -5836,7 +6093,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyMiscellaneousRecord",
         "description": "Miscellaneous legacy record with category-specific normalization."
       },
@@ -5938,7 +6198,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacySafetyCheckerRecord",
         "description": "Safety Checker legacy record with category-specific normalization."
       },
@@ -6040,7 +6302,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacySafetyCheckerRecord",
         "description": "Safety Checker legacy record with category-specific normalization."
       },
@@ -6282,7 +6546,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "baseline"],
+        "required": [
+          "name",
+          "baseline"
+        ],
         "title": "LegacyStableDiffusionRecord",
         "description": "Stable Diffusion legacy record with category-specific validation."
       },
@@ -6507,7 +6774,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyTextGenerationRecord",
         "description": "Text generation legacy record with category-specific validation."
       },
@@ -6728,13 +6997,21 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyTextGenerationRecord",
         "description": "Text generation legacy record with category-specific validation."
       },
       "MODEL_DOMAIN": {
         "type": "string",
-        "enum": ["image", "text", "video", "audio", "rendered_3d"],
+        "enum": [
+          "image",
+          "text",
+          "video",
+          "audio",
+          "rendered_3d"
+        ],
         "title": "MODEL_DOMAIN",
         "description": "The domain of a model, i.e., what it pertains to (image, text, video, etc.)."
       },
@@ -6772,7 +7049,14 @@
       },
       "MODEL_STYLE": {
         "type": "string",
-        "enum": ["generalist", "anime", "furry", "artistic", "other", "realistic"],
+        "enum": [
+          "generalist",
+          "anime",
+          "furry",
+          "artistic",
+          "other",
+          "realistic"
+        ],
         "title": "MODEL_STYLE",
         "description": "An enum of all the model styles."
       },
@@ -6840,7 +7124,7 @@
               }
             ],
             "title": "Usage Hour",
-            "description": "Usage count for the past hour (if available)."
+            "description": "Usage count for the past hour (will be populated when alternative Horde API sources become available)."
           },
           "usage_minute": {
             "anyOf": [
@@ -6852,7 +7136,7 @@
               }
             ],
             "title": "Usage Minute",
-            "description": "Usage count for the past minute (if available)."
+            "description": "Usage count for the past minute (will be populated when alternative Horde API sources become available)."
           },
           "usage_percentage_of_category": {
             "type": "number",
@@ -6934,6 +7218,18 @@
             "type": "array",
             "title": "Download Hosts",
             "description": "List of download host domains."
+          },
+          "is_critical": {
+            "type": "boolean",
+            "title": "Is Critical",
+            "description": "Determine if model is in critical state.\n\nCritical = zero month usage AND no active workers.\n\nReturns:\n    True if model meets critical criteria.",
+            "readOnly": true
+          },
+          "has_warning": {
+            "type": "boolean",
+            "title": "Has Warning",
+            "description": "Determine if model has warning-level issues.\n\nWarnings include host-related issues or download problems.\n\nReturns:\n    True if model has warning-level flags.",
+            "readOnly": true
           }
         },
         "type": "object",
@@ -6943,7 +7239,9 @@
           "deletion_risk_flags",
           "at_risk",
           "risk_score",
-          "usage_trend"
+          "usage_trend",
+          "is_critical",
+          "has_warning"
         ],
         "title": "ModelAuditInfo",
         "description": "Audit information for a single model.\n\nContains model metadata along with deletion risk assessment and usage statistics."
@@ -6958,13 +7256,20 @@
           }
         },
         "type": "object",
-        "required": ["domain", "purpose"],
+        "required": [
+          "domain",
+          "purpose"
+        ],
         "title": "ModelClassification",
         "description": "Contains specific information about how to categorize a model.\n\nThis includes the model's `MODEL_DOMAIN` and `MODEL_PURPOSE`."
       },
       "OperationType": {
         "type": "string",
-        "enum": ["create", "update", "delete"],
+        "enum": [
+          "create",
+          "update",
+          "delete"
+        ],
         "title": "OperationType",
         "description": "Type of CRUD operation performed on model references."
       },
@@ -7014,13 +7319,20 @@
           }
         },
         "type": "object",
-        "required": ["bucket_label", "count", "percentage"],
+        "required": [
+          "bucket_label",
+          "count",
+          "percentage"
+        ],
         "title": "ParameterBucketStats",
         "description": "Statistics about parameter count buckets for text generation models.\n\nUsed to group models by parameter size ranges for analysis."
       },
       "ReplicateMode": {
         "type": "string",
-        "enum": ["PRIMARY", "REPLICA"],
+        "enum": [
+          "PRIMARY",
+          "REPLICA"
+        ],
         "title": "ReplicateMode",
         "description": "Indicates if copies of the model reference are canonical or replicated."
       },
@@ -7046,7 +7358,11 @@
           }
         },
         "type": "object",
-        "required": ["tag", "count", "percentage"],
+        "required": [
+          "tag",
+          "count",
+          "percentage"
+        ],
         "title": "TagStats",
         "description": "Statistics about model tags or styles."
       },
@@ -7212,10 +7528,24 @@
               }
             ],
             "title": "Settings"
+          },
+          "text_model_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Model Group"
           }
         },
         "type": "object",
-        "required": ["name", "parameters"],
+        "required": [
+          "name",
+          "parameters"
+        ],
         "title": "TextGenerationModelRecord",
         "description": "A text generation model entry in the model reference."
       },
@@ -7381,10 +7711,24 @@
               }
             ],
             "title": "Settings"
+          },
+          "text_model_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Model Group"
           }
         },
         "type": "object",
-        "required": ["name", "parameters"],
+        "required": [
+          "name",
+          "parameters"
+        ],
         "title": "TextGenerationModelRecord",
         "description": "A text generation model entry in the model reference."
       },
@@ -7445,7 +7789,11 @@
           }
         },
         "type": "object",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "title": "ValidationError"
       },
       "horde_model_reference__service__v1__routers__metadata__CategoryLastUpdatedResponse": {
@@ -7467,7 +7815,10 @@
           }
         },
         "type": "object",
-        "required": ["category", "last_updated"],
+        "required": [
+          "category",
+          "last_updated"
+        ],
         "title": "CategoryLastUpdatedResponse",
         "description": "Response for /{category}/last_updated endpoint."
       },
@@ -7486,7 +7837,9 @@
           }
         },
         "type": "object",
-        "required": ["last_updated"],
+        "required": [
+          "last_updated"
+        ],
         "title": "LastUpdatedResponse",
         "description": "Response for /last_updated endpoint."
       }

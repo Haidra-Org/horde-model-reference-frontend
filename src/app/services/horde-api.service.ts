@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, catchError, defer, finalize, forkJoin, of, tap } from 'rxjs';
+import { Observable, catchError, defer, finalize, of, tap } from 'rxjs';
 import {
   HordeModelState,
   HordeModelStatsResponse,
@@ -10,6 +10,52 @@ import {
   HordeWorker,
 } from '../models/horde-api.models';
 import { NotificationService } from './notification.service';
+import { environment } from '../../environments/environment';
+
+/**
+ * Backend response types for model statistics
+ */
+export interface BackendWorkerSummary {
+  id: string;
+  name: string;
+  performance: string;
+  online: boolean;
+  trusted: boolean;
+  uptime: number;
+}
+
+export interface BackendUsageStats {
+  day: number;
+  month: number;
+  total: number;
+}
+
+export interface BackendVariation {
+  backend: string;
+  variant_name: string;
+  worker_count?: number;
+  performance?: number | null;
+  queued?: number | null;
+  eta?: number | null;
+  usage_day?: number;
+  usage_month?: number;
+  usage_total?: number;
+}
+
+export interface BackendCombinedModelStatistics {
+  worker_count: number;
+  queued_jobs: number | null;
+  performance: number | null;
+  eta: number | null;
+  queued: number | null;
+  usage_stats: BackendUsageStats | null;
+  worker_summaries: Record<string, BackendWorkerSummary> | null;
+  backend_variations?: Record<string, BackendVariation> | null;
+}
+
+export type BackendStatisticsResponse = Record<string, BackendCombinedModelStatistics>;
+
+export type HordeStatsState = 'idle' | 'loading' | 'success' | 'error';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +68,13 @@ export class HordeApiService {
 
   private readonly pendingRequests = signal(0);
   readonly isLoading = computed(() => this.pendingRequests() > 0);
+
+  private readonly statsLoadState = signal<HordeStatsState>('idle');
+  readonly hordeStatsState = this.statsLoadState.asReadonly();
+
+  resetStatsState(): void {
+    this.statsLoadState.set('idle');
+  }
 
   getModelStatus(
     type: HordeModelType,
@@ -59,19 +112,70 @@ export class HordeApiService {
     );
   }
 
+  /**
+   * Get combined model data with statistics from the backend service.
+   * This replaces direct aihorde.net API calls with backend-aggregated statistics.
+   * 
+   * @param type The model type (image or text)
+   * @param minCount Optional minimum worker count filter
+   * @param includeBackendVariations Include per-backend statistics for text models (default: true for text, false for image)
+   * @returns Observable of backend statistics response
+   */
   getCombinedModelData(
     type: HordeModelType,
     minCount?: number,
-  ): Observable<{
-    status: HordeModelStatus[];
-    stats: HordeModelStatsResponse;
-  }> {
+    includeBackendVariations?: boolean,
+  ): Observable<BackendStatisticsResponse> {
+    const category = type === 'image' ? 'image_generation' : 'text_generation';
+    let params = new HttpParams();
+
+    if (minCount !== undefined) {
+      params = params.set('min_worker_count', minCount.toString());
+    }
+
+    // Default to including backend variations for text models
+    const shouldIncludeVariations = includeBackendVariations ?? (type === 'text');
+    if (shouldIncludeVariations) {
+      params = params.set('include_backend_variations', 'true');
+    }
+
+    this.statsLoadState.set('loading');
+
     return this.trackLoading(
-      forkJoin({
-        status: this.fetchModelStatus(type, minCount, 'known'),
-        stats: this.fetchModelStats(type, 'known'),
-      }),
+      this.http
+        .get<BackendStatisticsResponse>(
+          `${environment.apiBaseUrl}/model_references/statistics/${category}/with-stats`,
+          { params }
+        )
+        .pipe(
+          tap((response) => {
+            this.checkStatsStaleness(response);
+            this.statsLoadState.set('success');
+          }),
+          catchError((error) => {
+            this.statsLoadState.set('error');
+            this.notificationService.error(
+              `Failed to fetch model statistics from backend: ${this.getErrorMessage(error)}`,
+            );
+            return of({} as BackendStatisticsResponse);
+          }),
+        ),
     );
+  }
+
+  /**
+   * Check if statistics data appears stale and log warnings.
+   * Backend statistics are cached with 60s TTL, but if data seems older,
+   * it might indicate backend caching issues or stale Horde API data.
+   */
+  private checkStatsStaleness(response: BackendStatisticsResponse): void {
+    // For now, we don't have timestamps in the response
+    // This is a placeholder for future staleness detection
+    // We could add a timestamp field to the backend response in the future
+    const modelCount = Object.keys(response).length;
+    if (modelCount === 0) {
+      console.warn('[HordeApiService] Received empty statistics response from backend');
+    }
   }
 
   getWorkers(options?: { name?: string; type?: HordeModelType }): Observable<HordeWorker[]> {
@@ -91,6 +195,10 @@ export class HordeApiService {
     );
   }
 
+  /**
+   * @deprecated Use getCombinedModelData instead
+   * Fetches model status directly from aihorde.net (legacy method)
+   */
   private fetchModelStatus(
     type: HordeModelType,
     minCount: number | undefined,
@@ -112,6 +220,10 @@ export class HordeApiService {
     );
   }
 
+  /**
+   * @deprecated Use getCombinedModelData instead
+   * Fetches model stats directly from aihorde.net (legacy method)
+   */
   private fetchModelStats(
     type: HordeModelType,
     modelState: HordeModelState,

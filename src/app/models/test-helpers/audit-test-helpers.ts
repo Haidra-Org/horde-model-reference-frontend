@@ -48,16 +48,29 @@ export function createMockUsageTrend(overrides?: Partial<UsageTrend>): UsageTren
  * Creates a mock ModelAuditInfo object with minimal required fields
  */
 export function createMockModelAuditInfo(overrides?: Partial<ModelAuditInfo>): ModelAuditInfo {
+  const flags = overrides?.deletion_risk_flags ?? createMockDeletionRiskFlags();
+  const workerCount = overrides?.worker_count ?? 0;
+  const usageMonth = overrides?.usage_month ?? 0;
+
+  // Compute is_critical and has_warning based on flags (matching backend logic)
+  const is_critical = !!(flags.zero_usage_month && flags.no_active_workers);
+  const has_warning = !!(
+    flags.has_multiple_hosts ||
+    flags.has_non_preferred_host ||
+    flags.no_download_urls ||
+    flags.has_unknown_host
+  );
+
   return {
     name: 'test-model',
     category: 'image_generation' as MODEL_REFERENCE_CATEGORY,
-    deletion_risk_flags: createMockDeletionRiskFlags(),
+    deletion_risk_flags: flags,
     at_risk: false,
     risk_score: 0,
     usage_trend: createMockUsageTrend(),
-    worker_count: 0,
+    worker_count: workerCount,
     usage_day: 0,
-    usage_month: 0,
+    usage_month: usageMonth,
     usage_total: 0,
     usage_hour: null,
     usage_minute: null,
@@ -69,6 +82,8 @@ export function createMockModelAuditInfo(overrides?: Partial<ModelAuditInfo>): M
     has_description: false,
     download_count: 0,
     download_hosts: [],
+    is_critical,
+    has_warning,
     ...overrides,
   };
 }

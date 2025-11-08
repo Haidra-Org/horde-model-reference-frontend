@@ -25,7 +25,7 @@ import {
 } from '../../models';
 import {
   UnifiedModelData,
-  mergeMultipleModels,
+  mergeMultipleBackendStatistics,
   createGroupedTextModels,
   GroupedTextModel,
   hasActiveWorkers,
@@ -70,7 +70,7 @@ export class ModelListComponent implements OnInit {
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
   private readonly auth = inject(AuthService);
-  private readonly hordeApi = inject(HordeApiService);
+  readonly hordeApi = inject(HordeApiService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -101,6 +101,11 @@ export class ModelListComponent implements OnInit {
   readonly showNsfwModal = signal(false);
   readonly showTagsModal = signal(false);
   readonly headerCollapsed = signal(false);
+
+  // Sorting
+  readonly sortColumn = signal<'name' | 'active' | 'index' | null>(null);
+  readonly sortDirection = signal<'asc' | 'desc'>('asc');
+  private initialSortSet = false;
 
   readonly writable = computed(
     () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
@@ -262,6 +267,44 @@ export class ModelListComponent implements OnInit {
     }
 
     return filtered;
+  });
+
+  readonly sortedFilteredModels = computed(() => {
+    const models = [...this.filteredModels()];
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+
+    if (!column) {
+      return models;
+    }
+
+    models.sort((a, b) => {
+      if (column === 'name') {
+        const comparison = a.name.localeCompare(b.name);
+        return direction === 'asc' ? comparison : -comparison;
+      } else if (column === 'active') {
+        const aActive = hasActiveWorkers(a);
+        const bActive = hasActiveWorkers(b);
+
+        // First sort by active status
+        if (aActive !== bActive) {
+          // Active models first when asc (default), inactive first when desc
+          return direction === 'asc'
+            ? (aActive ? -1 : 1)  // Active first
+            : (aActive ? 1 : -1); // Inactive first
+        }
+
+        // Within each active status group, sort by name
+        return a.name.localeCompare(b.name);
+      } else if (column === 'index') {
+        const aIndex = (a as any).originalIndex ?? 0;
+        const bIndex = (b as any).originalIndex ?? 0;
+        return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
+      }
+      return 0;
+    });
+
+    return models;
   });
 
   readonly totalModels = computed(() => this.models().length);
@@ -725,6 +768,28 @@ export class ModelListComponent implements OnInit {
     this.selectedParameterTags.set([]);
   }
 
+  toggleSort(column: 'name' | 'active' | 'index'): void {
+    const currentColumn = this.sortColumn();
+    const currentDirection = this.sortDirection();
+
+    if (currentColumn !== column) {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    } else if (currentDirection === 'asc') {
+      this.sortDirection.set('desc');
+    } else if (currentDirection === 'desc') {
+      this.sortColumn.set(null);
+      this.sortDirection.set('asc');
+    } else {
+      this.sortDirection.set('asc');
+    }
+  }
+
+  getSortIcon(column: 'name' | 'active' | 'index'): string {
+    if (this.sortColumn() !== column) return '↕';
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
+
   toggleTagFilterDropdown(): void {
     this.tagFilterOpen.set(!this.tagFilterOpen());
   }
@@ -809,6 +874,7 @@ export class ModelListComponent implements OnInit {
 
   private loadModels(): void {
     this.loading.set(true);
+    this.hordeApi.resetStatsState();
     const hordeType = this.getCategoryHordeType(this.category());
     const isTextGen = this.isTextGeneration();
 
@@ -817,12 +883,18 @@ export class ModelListComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (referenceModels) => {
+          // Add original index to preserve order from canonical data
+          const modelsWithIndex = referenceModels.map((m, index) => ({
+            ...m,
+            originalIndex: index,
+          }));
+
           // Parse text model names for text generation category
           const modelsWithParsing = isTextGen
-            ? mergeMultipleModels(referenceModels, undefined, undefined, {
+            ? mergeMultipleBackendStatistics(modelsWithIndex, undefined, {
               parseTextModelNames: true,
             })
-            : referenceModels.map((m) => ({ ...m }));
+            : modelsWithIndex;
 
           // Group text models by base name
           const displayModels = isTextGen
@@ -833,29 +905,44 @@ export class ModelListComponent implements OnInit {
           this.models.set(displayModels);
           this.loading.set(false);
 
-          // Asynchronously fetch and merge Horde data if applicable
+          // Set default sorting on first load
+          if (!this.initialSortSet) {
+            this.sortColumn.set('active');
+            this.initialSortSet = true;
+          }
+
+          // Asynchronously fetch and merge backend statistics if applicable
           if (hordeType) {
             this.hordeApi
               .getCombinedModelData(hordeType)
               .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe({
-                next: ({ status, stats }) => {
-                  const unifiedModels = mergeMultipleModels(
-                    referenceModels,
-                    status,
-                    stats,
+                next: (backendStats) => {
+                  // Preserve original indices before merging
+                  const modelsWithIndex = referenceModels.map((m, index) => ({
+                    ...m,
+                    originalIndex: index,
+                  }));
+
+                  // Merge backend pre-aggregated statistics
+                  const unifiedModels = mergeMultipleBackendStatistics(
+                    modelsWithIndex,
+                    backendStats,
                     isTextGen ? { parseTextModelNames: true } : undefined,
                   );
 
-                  // Re-group text models with updated Horde data
+                  // Re-group text models with updated backend statistics
                   const groupedModels = isTextGen
                     ? createGroupedTextModels(unifiedModels)
                     : unifiedModels;
 
                   this.models.set(groupedModels);
                 },
-                error: () => {
-                  // Keep displaying reference models even if Horde API fails
+                error: (error: Error) => {
+                  // Keep displaying reference models even if backend statistics fail
+                  this.notification.error(
+                    `Failed to load model statistics: ${error.message}`,
+                  );
                 },
               });
           }

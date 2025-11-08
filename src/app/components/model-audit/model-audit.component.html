@@ -149,15 +149,15 @@
             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
           </path>
         </svg>
-        Audit Filters (Server-Side Presets)
+        Filters
       </h3>
     </div>
 
-    <div class="card-body">
-      <!-- Preset Buttons -->
+    <div class="card-body space-y-6">
+      <!-- Server-Side Preset Buttons -->
       @if (availablePresets().length > 0) {
-      <div class="mb-2">
-        <div class="form-label mb-2">Quick Filters</div>
+      <div>
+        <div class="form-label mb-2">Quick Filters (Server-Side Presets)</div>
         <div class="flex flex-wrap gap-2">
           @for (preset of availablePresets(); track preset.name) {
           <button type="button" class="btn btn-sm"
@@ -178,6 +178,196 @@
         </p>
       </div>
       }
+
+      <!-- Client-Side Filters -->
+      <div>
+        <div class="form-label mb-2">Additional Filters (Client-Side)</div>
+        <div class="flex gap-6 mb-4">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" class="sr-only peer" [checked]="filterByActive()"
+              (change)="filterByActive.set(!filterByActive())" aria-checked="{{ filterByActive() ? 'true' : 'false' }}"
+              role="switch" />
+            <span
+              class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-success-600 dark:peer-checked:bg-success-400">
+              <span
+                class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200"
+                [class.translate-x-5]="filterByActive()"></span>
+            </span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Filter By Active</span>
+          </label>
+        </div>
+
+        <div class="flex flex-wrap gap-4">
+          <div>
+            <label for="model-search-audit" class="form-label">Search models</label>
+            <input id="model-search-audit" type="search" class="form-input w-64 text-gray-400"
+              placeholder="Enter a name, description, or tag" [(ngModel)]="searchTerm"
+              (ngModelChange)="searchTerm.set($event); searchTermSubject.next($event)" />
+          </div>
+
+          <div class="relative">
+            <label class="form-label" for="tag-filter-btn-audit">Filter by tags</label>
+            <button id="tag-filter-btn-audit" type="button"
+              class="form-input w-64 text-left flex items-center justify-between" (click)="toggleTagFilterDropdown()">
+              <span class="truncate">
+                @if (selectedTags().length === 0) {
+                All tags (parameter count tags are hidden)
+                } @else {
+                {{ selectedTags().length }} tag(s) selected
+                }
+              </span>
+              <svg class="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            @if (tagFilterOpen()) {
+            <!-- Backdrop to close dropdown when clicking outside -->
+            <div class="filter-dropdown-backdrop" tabindex="0" (click)="closeTagFilterDropdown()"
+              (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeTagFilterDropdown()"
+              aria-label="Close tag filter dropdown"></div>
+
+            <div class="filter-dropdown">
+              <div class="filter-dropdown-header">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select tags</span>
+                @if (selectedTags().length > 0) {
+                <button type="button" class="text-xs link" (click)="clearAllTags()">
+                  Clear all
+                </button>
+                }
+              </div>
+              <div class="filter-dropdown-search">
+                <input type="search" class="form-input w-full text-sm" placeholder="Search tags..."
+                  [(ngModel)]="tagSearchTerm" (ngModelChange)="tagSearchTerm.set($event)"
+                  (click)="$event.stopPropagation()" />
+              </div>
+              <div class="filter-dropdown-content">
+                @if (availableTags().length === 0) {
+                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                  No tags available
+                </div>
+                } @else if (filteredAvailableTags().length === 0) {
+                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                  No tags match your search
+                </div>
+                } @else {
+                @for (tag of filteredAvailableTags(); track tag) {
+                <label class="filter-dropdown-item">
+                  <input type="checkbox"
+                    class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
+                    [checked]="isTagSelected(tag)" (change)="toggleTag(tag)" />
+                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ tag }}</span>
+                </label>
+                }
+                }
+              </div>
+            </div>
+            }
+          </div>
+
+          <!-- Parameter Count Filter (Text Generation Only) -->
+          @if (isTextGeneration()) {
+          <div class="relative">
+            <label class="form-label" for="param-filter-btn-audit">Filter by parameters</label>
+            <button id="param-filter-btn-audit" type="button"
+              class="form-input w-64 text-left flex items-center justify-between"
+              (click)="toggleParameterTagFilterDropdown()">
+              <span class="truncate">
+                @if (selectedParameterTags().length === 0) {
+                All parameter counts
+                } @else {
+                {{ selectedParameterTags().length }} selected
+                }
+              </span>
+              <svg class="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            @if (parameterTagFilterOpen()) {
+            <!-- Backdrop to close dropdown when clicking outside -->
+            <div class="filter-dropdown-backdrop" tabindex="0" (click)="closeParameterTagFilterDropdown()" (keydown)="
+                      ($event.key === 'Enter' || $event.key === ' ') && closeParameterTagFilterDropdown()
+                    " aria-label="Close parameter filter dropdown"></div>
+
+            <div class="filter-dropdown">
+              <div class="filter-dropdown-header">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Select parameters</span>
+                @if (selectedParameterTags().length > 0) {
+                <button type="button" class="text-xs link" (click)="clearAllParameterTags()">
+                  Clear all
+                </button>
+                }
+              </div>
+              <div class="filter-dropdown-search">
+                <input type="search" class="form-input w-full text-sm" placeholder="Search parameter counts..."
+                  [(ngModel)]="parameterTagSearchTerm" (ngModelChange)="parameterTagSearchTerm.set($event)"
+                  (click)="$event.stopPropagation()" />
+              </div>
+              <div class="filter-dropdown-content">
+                @if (availableParameterTags().length === 0) {
+                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                  No parameter counts available
+                </div>
+                } @else if (filteredAvailableParameterTags().length === 0) {
+                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                  No parameter counts match your search
+                </div>
+                } @else {
+                @for (tag of filteredAvailableParameterTags(); track tag) {
+                <label class="filter-dropdown-item">
+                  <input type="checkbox"
+                    class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
+                    [checked]="isParameterTagSelected(tag)" (change)="toggleParameterTag(tag)" />
+                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ tag }}</span>
+                </label>
+                }
+                }
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Selected Tags Display -->
+        @if (selectedTags().length > 0) {
+        <div class="mt-4">
+          <span class="form-label block">Active tag filters</span>
+          <div class="flex flex-wrap gap-2">
+            @for (tag of selectedTags(); track tag) {
+            <button type="button"
+              class="tag tag-primary inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+              (click)="toggleTag(tag)" [title]="'Remove ' + tag + ' filter'">
+              <span>{{ tag }}</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Selected Parameter Tags Display (Text Generation Only) -->
+        @if (isTextGeneration() && selectedParameterTags().length > 0) {
+        <div class="mt-4">
+          <span class="form-label block">Active parameter filters</span>
+          <div class="flex flex-wrap gap-2">
+            @for (tag of selectedParameterTags(); track tag) {
+            <button type="button"
+              class="tag tag-info inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500"
+              (click)="toggleParameterTag(tag)" [title]="'Remove ' + tag + ' parameter filter'">
+              <span>{{ tag }}</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            }
+          </div>
+        </div>
+        }
+      </div>
     </div>
   </div>
 
@@ -278,8 +468,8 @@
             <th class="cursor-pointer text-right" (click)="toggleSort('usageDay')">
               Usage (24h) {{ getSortIcon('usageDay') }}
             </th>
-            <th class="text-right text-xs" title="Usage in last hour">1h</th>
-            <th class="text-right text-xs" title="Usage in last minute">1m</th>
+            <th class="text-right text-xs hidden" title="Usage in last hour">1h</th>
+            <th class="text-right text-xs hidden" title="Usage in last minute">1m</th>
             <th class="cursor-pointer text-right" (click)="toggleSort('usageMonth')">
               Usage (30d) {{ getSortIcon('usageMonth') }}
             </th>
@@ -337,10 +527,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
                 }
-                <button type="button" class="link text-left"
-                  (click)="$event.stopPropagation(); editModel(item.model.name)">
+                <span class="font-medium text-gray-900 dark:text-gray-100">
                   {{ item.model.name }}
-                </button>
+                </span>
                 @if (item.isGrouped) {
                 <span class="badge badge-info text-xs">
                   {{ item.variationCount }} backend{{ item.variationCount !== 1 ? 's' : '' }}
@@ -357,8 +546,8 @@
               </span>
             </td>
             <td class="text-right">{{ getUsageDay(item) }}</td>
-            <td class="text-right text-xs text-muted">{{ item.usageHour }}</td>
-            <td class="text-right text-xs text-muted">{{ item.usageMinute }}</td>
+            <td class="text-right text-xs text-muted hidden">{{ item.usageHour }}</td>
+            <td class="text-right text-xs text-muted hidden">{{ item.usageMinute }}</td>
             <td class="text-right">{{ getUsageMonth(item) }}</td>
             <td class="text-right">{{ getUsageTotal(item) }}</td>
             <td class="text-right font-semibold">{{ item.usagePercentage.toFixed(3) }}%</td>
@@ -548,7 +737,7 @@
           model's share of the category's 30-day request volume.
         </p>
       </div>
-      <div>
+      <div class="hidden">
         <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">
           Short-Term Usage (1h, 1m)
         </h5>

@@ -15,6 +15,7 @@ import {
 import { TagInputComponent } from '../tag-input/tag-input.component';
 import { KeyValueEditorComponent } from '../key-value-editor/key-value-editor.component';
 import { ModelRequirementsEditorComponent } from '../model-requirements-editor/model-requirements-editor.component';
+import { GlossaryTooltipDirective } from '../../common/tooltip.directive';
 
 /**
  * Generic form field component that renders different field types
@@ -30,6 +31,7 @@ import { ModelRequirementsEditorComponent } from '../model-requirements-editor/m
     TagInputComponent,
     KeyValueEditorComponent,
     ModelRequirementsEditorComponent,
+    GlossaryTooltipDirective,
   ],
   templateUrl: './dynamic-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -141,6 +143,31 @@ export class DynamicFieldComponent {
     const priority = this.config().priority;
     if (!priority) return '';
     return priority.charAt(0).toUpperCase() + priority.slice(1);
+  });
+
+  /**
+   * Determine the glossary term key from field ID
+   * Maps common field IDs to their glossary terms
+   */
+  readonly glossaryTerm = computed<string | null>(() => {
+    const id = this.config().id;
+    const glossaryMap: Record<string, string> = {
+      'baseline': 'baseline',
+      'parameters': 'parameters',
+      'nsfw': 'NSFW',
+      'inpainting': 'inpainting',
+      'tags': 'tags',
+      'trigger': 'trigger words',
+      'style': 'style',
+      'showcases': 'showcases',
+      'min_bridge_version': 'bridge version',
+      'workers': 'worker',
+      'kudos': 'kudos',
+      'lora': 'LoRA',
+      'controlnet': 'ControlNet',
+      'quantization': 'quantization',
+    };
+    return glossaryMap[id] || null;
   });
 
   /**

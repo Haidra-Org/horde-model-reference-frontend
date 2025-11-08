@@ -13,6 +13,7 @@ import {
   HordeWorkerSummary,
   mergeModelData,
   mergeMultipleModels,
+  mergeMultipleBackendStatistics,
   sortByUsageTotal,
   sortByWorkerCount,
   UnifiedModelData,
@@ -879,6 +880,226 @@ describe('Unified Model Utilities', () => {
         expect(result.totalQueuedJobs).toBe(0);
         expect(result.combinedUsageStats).toBeUndefined();
         expect(result.allWorkers.length).toBe(0);
+      });
+    });
+
+    describe('groupTextModelsByBaseName with text_model_group', () => {
+      it('should prefer backend text_model_group over client-side parsing', () => {
+        const models: UnifiedModelData[] = [
+          {
+            name: 'ReadyArt/Broken-Tutu-24B-Unslop-v2.0',
+            text_model_group: 'Broken-Tutu-24B',
+            parsedName: {
+              originalName: 'ReadyArt/Broken-Tutu-24B-Unslop-v2.0',
+              fullName: 'ReadyArt/Broken-Tutu-24B-Unslop-v2.0',
+              author: 'ReadyArt',
+              modelName: 'Broken-Tutu-24B-Unslop-v2.0',
+              backend: undefined,
+            },
+          } as UnifiedModelData,
+          {
+            name: 'ReadyArt/Broken-Tutu-24B-Transgression-v2.0',
+            text_model_group: 'Broken-Tutu-24B',
+            parsedName: {
+              originalName: 'ReadyArt/Broken-Tutu-24B-Transgression-v2.0',
+              fullName: 'ReadyArt/Broken-Tutu-24B-Transgression-v2.0',
+              author: 'ReadyArt',
+              modelName: 'Broken-Tutu-24B-Transgression-v2.0',
+              backend: undefined,
+            },
+          } as UnifiedModelData,
+        ];
+
+        const groups = groupTextModelsByBaseName(models);
+
+        expect(groups.size).toBe(1);
+        expect(groups.has('Broken-Tutu-24B')).toBe(true);
+        expect(groups.get('Broken-Tutu-24B')?.length).toBe(2);
+      });
+
+      it('should fall back to client-side parsing when text_model_group is missing', () => {
+        const models: UnifiedModelData[] = [
+          {
+            name: 'acrastt/Marx-3B-V3',
+            parsedName: {
+              originalName: 'acrastt/Marx-3B-V3',
+              fullName: 'acrastt/Marx-3B-V3',
+              author: 'acrastt',
+              modelName: 'Marx-3B-V3',
+              backend: undefined,
+            },
+          } as UnifiedModelData,
+        ];
+
+        const groups = groupTextModelsByBaseName(models);
+
+        expect(groups.size).toBe(1);
+        // Should use parsed name extraction (removes author, size, version suffixes)
+        expect(Array.from(groups.keys())[0]).toBeDefined();
+      });
+
+      it('should handle models without parsedName or text_model_group', () => {
+        const models: UnifiedModelData[] = [
+          {
+            name: 'SomeUnparsedModel',
+          } as UnifiedModelData,
+        ];
+
+        const groups = groupTextModelsByBaseName(models);
+
+        expect(groups.size).toBe(1);
+        expect(groups.has('SomeUnparsedModel')).toBe(true);
+      });
+
+      it('should group different variations with same text_model_group', () => {
+        const models: UnifiedModelData[] = [
+          {
+            name: 'meta-llama/Llama-3-8B-Instruct',
+            text_model_group: 'Llama-3',
+          } as UnifiedModelData,
+          {
+            name: 'meta-llama/Llama-3-70B-Instruct',
+            text_model_group: 'Llama-3',
+          } as UnifiedModelData,
+          {
+            name: 'aphrodite/meta-llama/Llama-3-8B-Instruct',
+            text_model_group: 'Llama-3',
+          } as UnifiedModelData,
+        ];
+
+        const groups = groupTextModelsByBaseName(models);
+
+        expect(groups.size).toBe(1);
+        expect(groups.get('Llama-3')?.length).toBe(3);
+      });
+    });
+
+    describe('mergeMultipleBackendStatistics', () => {
+      it('should not create duplicate entries when backend_variations include canonical name', () => {
+        // Simulate the backend response where a model has backend_variations
+        // that include the canonical (non-prefixed) variant
+        const referenceModels = [
+          {
+            name: 'Qwen/Qwen3-1.7B',
+            baseline: 'qwen',
+          },
+        ];
+
+        const backendStats = {
+          'Qwen/Qwen3-1.7B': {
+            worker_count: 0,
+            queued_jobs: 0,
+            performance: null,
+            eta: null,
+            queued: null,
+            usage_stats: {
+              day: 500,
+              month: 26286,
+              total: 26286,
+            },
+            worker_summaries: null,
+            backend_variations: {
+              canonical: {
+                backend: 'canonical',
+                variant_name: 'Qwen/Qwen3-1.7B',
+                worker_count: 0,
+                performance: null,
+                queued: null,
+                queued_jobs: null,
+                eta: null,
+                usage_day: 500,
+                usage_month: 26286,
+                usage_total: 26286,
+              },
+            },
+          },
+        };
+
+        const result = mergeMultipleBackendStatistics(referenceModels, backendStats, {
+          parseTextModelNames: true,
+        });
+
+        // Should only have ONE entry for Qwen/Qwen3-1.7B, not two
+        const qwenEntries = result.filter((m) => m.name === 'Qwen/Qwen3-1.7B');
+        expect(qwenEntries.length).toBe(
+          1,
+          'Should not create duplicate entries for canonical model',
+        );
+
+        // Verify the entry has the correct stats
+        expect(qwenEntries[0].usageStats).toEqual({
+          day: 500,
+          month: 26286,
+          total: 26286,
+        });
+      });
+
+      it('should handle multiple backend variations without duplicates', () => {
+        const referenceModels = [
+          {
+            name: 'Qwen/Qwen3-8B',
+            baseline: 'qwen',
+          },
+        ];
+
+        const backendStats = {
+          'Qwen/Qwen3-8B': {
+            worker_count: 0,
+            queued_jobs: 0,
+            performance: null,
+            eta: null,
+            queued: null,
+            usage_stats: {
+              day: 100,
+              month: 2898,
+              total: 2898,
+            },
+            worker_summaries: null,
+            backend_variations: {
+              canonical: {
+                backend: 'canonical',
+                variant_name: 'Qwen/Qwen3-8B',
+                worker_count: 0,
+                performance: null,
+                queued: null,
+                queued_jobs: null,
+                eta: null,
+                usage_day: 100,
+                usage_month: 2898,
+                usage_total: 2898,
+              },
+              koboldcpp: {
+                backend: 'koboldcpp',
+                variant_name: 'koboldcpp/Qwen3-8B',
+                worker_count: 1,
+                performance: 50.5,
+                queued: 0,
+                queued_jobs: 0,
+                eta: 0,
+                usage_day: 50,
+                usage_month: 1500,
+                usage_total: 1500,
+              },
+            },
+          },
+        };
+
+        const result = mergeMultipleBackendStatistics(referenceModels, backendStats, {
+          parseTextModelNames: true,
+        });
+
+        // Should have exactly 2 entries: canonical and koboldcpp
+        expect(result.length).toBe(2, 'Should have exactly two entries (canonical + koboldcpp)');
+
+        const canonicalEntry = result.find((m) => m.name === 'Qwen/Qwen3-8B');
+        const koboldcppEntry = result.find((m) => m.name === 'koboldcpp/Qwen3-8B');
+
+        expect(canonicalEntry).toBeDefined('Should have canonical entry');
+        expect(koboldcppEntry).toBeDefined('Should have koboldcpp entry');
+
+        // Verify no duplicate canonical entries
+        const canonicalEntries = result.filter((m) => m.name === 'Qwen/Qwen3-8B');
+        expect(canonicalEntries.length).toBe(1, 'Should have exactly one canonical entry');
       });
     });
   });

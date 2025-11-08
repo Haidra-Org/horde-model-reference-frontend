@@ -1,5 +1,5 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { DarkModeService } from '../../services/dark-mode.service';
 import { AuthService } from '../../services/auth.service';
@@ -7,7 +7,7 @@ import { LoginModalComponent } from '../login-modal/login-modal.component';
 
 @Component({
   selector: 'app-navigation',
-  imports: [LoginModalComponent],
+  imports: [LoginModalComponent, RouterLink],
   templateUrl: './navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -18,6 +18,7 @@ export class NavigationComponent {
   readonly auth = inject(AuthService);
 
   readonly showLoginModal = signal(false);
+  readonly showHelpMenu = signal(false);
 
   goHome(): void {
     this.router.navigate(['/']);
@@ -25,6 +26,14 @@ export class NavigationComponent {
 
   toggleDarkMode(): void {
     this.darkMode.toggle();
+  }
+
+  toggleHelpMenu(): void {
+    this.showHelpMenu.update((v) => !v);
+  }
+
+  closeHelpMenu(): void {
+    this.showHelpMenu.set(false);
   }
 
   openLoginModal(): void {

@@ -76,7 +76,7 @@ export const AUDIT_FILTER_PRESETS: Record<string, AuditPreset[]> = {
     { name: 'Missing Data', description: 'Missing data', filters: { showOnlyFlagged: true } },
     { name: 'Host Issues', description: 'File hosting issues', filters: { showOnlyFlagged: true } },
     { name: 'Critical', description: 'Critical state', filters: { showOnlyFlagged: true } },
-    { name: 'Low Usage', description: 'Low usage', filters: { maxTotalUsage: 1000 } },
+    { name: 'Low Usage', description: 'Low usage', filters: { maxUsagePercentage: 0.5 } },
   ],
   clip: [{ name: 'Show All', description: 'Clear all filters', filters: {} }],
   blip: [{ name: 'Show All', description: 'Clear all filters', filters: {} }],

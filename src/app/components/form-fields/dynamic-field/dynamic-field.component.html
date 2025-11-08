@@ -9,7 +9,11 @@
   >
     @if (textConfig() || numberConfig() || textareaConfig() || selectConfig()) {
       <label [for]="config().id" class="form-label">
-        {{ config().label }}
+        @if (glossaryTerm(); as term) {
+          <span [appGlossaryTooltip]="term">{{ config().label }}</span>
+        } @else {
+          <span>{{ config().label }}</span>
+        }
         @if (config().required) {
           <span class="text-red-500">*</span>
         }

@@ -5,7 +5,12 @@ import {
   isLegacyTextGenerationRecord,
   isLegacyClipRecord,
 } from '../../models';
-import { UnifiedModelData, hasHordeData } from '../../models/unified-model';
+import {
+  UnifiedModelData,
+  GroupedTextModel,
+  hasHordeData,
+  isGroupedTextModel,
+} from '../../models/unified-model';
 import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { getFieldsForModel, ModelFieldConfig } from './model-row-field.config';
 import { formatRequirements, hasRequirements, getObjectKeysLength } from './model-row.utils';
@@ -79,6 +84,11 @@ import { HordeApiService } from '../../services/horde-api.service';
                   ></path>
                 </svg>
                 Horde Status
+                @if (isGroupedWithAggregatedStats()) {
+                  <span class="badge badge-info text-xs ml-2" title="Statistics aggregated from {{ groupedModel()!.variations.length }} model variations">
+                    Aggregated ({{ groupedModel()!.variations.length }} variants)
+                  </span>
+                }
               </h4>
             </div>
             <div class="card-body">
@@ -130,7 +140,7 @@ import { HordeApiService } from '../../services/horde-api.service';
                             <span class="text-muted text-sm">megapixelsteps</span>
                           </span>
                         } @else {
-                          {{ model().performance?.toFixed(2) }}
+                          {{ performanceFormatted() }}
                           <span class="text-muted text-sm">tokens/s</span>
                         }
                       </div>
@@ -166,21 +176,21 @@ import { HordeApiService } from '../../services/horde-api.service';
                       <div>
                         <div class="text-xs text-muted">Last 24h</div>
                         <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {{ model().usageStats!.day.toLocaleString() }}
+                          {{ usageStatsDay().toLocaleString() }}
                           <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
                         </div>
                       </div>
                       <div>
                         <div class="text-xs text-muted">Last 30d</div>
                         <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {{ model().usageStats!.month.toLocaleString() }}
+                          {{ usageStatsMonth().toLocaleString() }}
                           <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
                         </div>
                       </div>
                       <div>
                         <div class="text-xs text-muted">All Time</div>
                         <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {{ model().usageStats!.total.toLocaleString() }}
+                          {{ usageStatsTotal().toLocaleString() }}
                           <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
                         </div>
                       </div>
@@ -328,8 +338,17 @@ import { HordeApiService } from '../../services/horde-api.service';
 export class ModelRowFieldsComponent {
   private readonly hordeApi = inject(HordeApiService);
 
-  readonly model = input.required<UnifiedModelData>();
+  readonly model = input.required<UnifiedModelData | GroupedTextModel>();
   readonly mode = input<'grid' | 'card'>('grid');
+
+  readonly isGrouped = computed(() => isGroupedTextModel(this.model()));
+  readonly groupedModel = computed(() => {
+    return this.isGrouped() ? (this.model() as GroupedTextModel) : null;
+  });
+  readonly isGroupedWithAggregatedStats = computed(() => {
+    const grouped = this.groupedModel();
+    return grouped !== null && grouped.hasAggregatedStats === true;
+  });
 
   readonly fields = computed(() => getFieldsForModel(this.model() as LegacyRecordUnion));
 
@@ -362,7 +381,7 @@ export class ModelRowFieldsComponent {
   });
 
   readonly etaDisplay = computed(() => {
-    const eta = this.model().eta;
+    const eta = this.model().eta as number | null | undefined;
     if (eta == null) return '-';
     if (eta < 60) return `${Math.round(eta)}s`;
     if (eta < 3600) return `${Math.round(eta / 60)}m`;
@@ -383,7 +402,7 @@ export class ModelRowFieldsComponent {
   });
 
   readonly performanceDisplay = computed(() => {
-    const performance = this.model().performance;
+    const performance = this.model().performance as number | null | undefined;
     if (performance == null) return '-';
     if (this.isImageModel()) {
       return formatAsMegapixelsteps(performance);
@@ -396,7 +415,7 @@ export class ModelRowFieldsComponent {
   });
 
   readonly queuedDisplay = computed(() => {
-    const queued = this.model().queued;
+    const queued = this.model().queued as number | null | undefined;
     if (queued == null) return '-';
     if (this.isImageModel()) {
       return formatAsMegapixelsteps(queued);
@@ -420,6 +439,29 @@ export class ModelRowFieldsComponent {
       return 'images';
     }
     return 'requests';
+  });
+
+  readonly performanceFormatted = computed(() => {
+    const performance = this.model().performance as number | null | undefined;
+    return performance?.toFixed(2) ?? null;
+  });
+
+  readonly usageStatsDay = computed(() => {
+    const model = this.model();
+    const stats = model.usageStats as { day?: number; month?: number; total?: number } | null | undefined;
+    return stats?.day ?? 0;
+  });
+
+  readonly usageStatsMonth = computed(() => {
+    const model = this.model();
+    const stats = model.usageStats as { day?: number; month?: number; total?: number } | null | undefined;
+    return stats?.month ?? 0;
+  });
+
+  readonly usageStatsTotal = computed(() => {
+    const model = this.model();
+    const stats = model.usageStats as { day?: number; month?: number; total?: number } | null | undefined;
+    return stats?.total ?? 0;
   });
 
   readonly badges = computed(() => {
@@ -467,6 +509,9 @@ export class ModelRowFieldsComponent {
     } else if (isLegacyTextGenerationRecord(model)) {
       if (model.baseline) {
         result.push({ label: 'Baseline', value: model.baseline, class: 'badge-info' });
+      }
+      if (model.text_model_group) {
+        result.push({ label: 'Group', value: model.text_model_group, class: 'badge-info' });
       }
       if (model.type) {
         result.push({ label: 'Type', value: model.type, class: 'badge-secondary' });
