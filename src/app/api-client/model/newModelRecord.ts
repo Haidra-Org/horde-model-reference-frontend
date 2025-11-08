@@ -47,6 +47,7 @@ export interface NewModelRecord {
   display_name?: string;
   url?: string;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue };
+  text_model_group?: string;
   controlnet_style: CONTROLNET_STYLE;
 }
 export namespace NewModelRecord {}

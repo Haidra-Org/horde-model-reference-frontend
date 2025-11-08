@@ -34,5 +34,6 @@ export interface TextGenerationModelRecordInput {
   url?: string | null;
   tags?: Array<string> | null;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
+  text_model_group?: string | null;
 }
 export namespace TextGenerationModelRecordInput {}

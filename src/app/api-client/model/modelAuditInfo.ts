@@ -77,5 +77,13 @@ export interface ModelAuditInfo {
    * List of download host domains.
    */
   download_hosts?: Array<string>;
+  /**
+   * Determine if model is in critical state.  Critical = zero month usage AND no active workers.  Returns:     True if model meets critical criteria.
+   */
+  readonly is_critical: boolean;
+  /**
+   * Determine if model has warning-level issues.  Warnings include host-related issues or download problems.  Returns:     True if model has warning-level flags.
+   */
+  readonly has_warning: boolean;
 }
 export namespace ModelAuditInfo {}

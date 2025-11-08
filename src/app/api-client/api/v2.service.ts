@@ -757,9 +757,10 @@ export class V2Service extends BaseService {
 
   /**
    * Get models merged with AI Horde runtime statistics
-   * Get AI Horde statistics data for models in a given category.  Combines live runtime statistics from the AI Horde API: - Worker count, queued jobs, performance metrics, ETA - Usage statistics (day, month, total) - Optional worker details  **Caching:** - Model reference data: cached by ModelReferenceManager (60s TTL) - Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available) - Merged results: computed on-demand (no caching)  Args:     model_category_name: The model category (image_generation or text_generation).     manager: Model reference manager dependency.     horde_api: Horde API integration dependency.     include_workers: Include detailed worker information for each model.     min_worker_count: Filter to models with at least this many workers.     sort_by: Sort by field (worker_count, usage_total, usage_month, name).     sort_desc: Sort in descending order (default: True).  Returns:     JSONResponse: Dict of model_name -&gt; enriched_model_data.  Raises:     HTTPException: 404 if category not found, 500 if Horde API fails.
+   * Get AI Horde statistics data for models in a given category.  Combines live runtime statistics from the AI Horde API: - Worker count, queued jobs, performance metrics, ETA - Usage statistics (day, month, total) - Optional worker details - Optional per-backend variations (for text generation models)  **Caching:** - Model reference data: cached by ModelReferenceManager (60s TTL) - Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available) - Merged results: computed on-demand (no caching)  Args:     model_category_name: The model category (image_generation or text_generation).     manager: Model reference manager dependency.     horde_api: Horde API integration dependency.     include_workers: Include detailed worker information for each model.     include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.     min_worker_count: Filter to models with at least this many workers.     sort_by: Sort by field (worker_count, usage_total, usage_month, name).     sort_desc: Sort in descending order (default: True).  Returns:     JSONResponse: Dict of model_name -&gt; enriched_model_data.  Raises:     HTTPException: 404 if category not found, 500 if Horde API fails.
    * @param modelCategoryName
    * @param includeWorkers
+   * @param includeBackendVariations
    * @param minWorkerCount
    * @param sortBy
    * @param sortDesc
@@ -769,6 +770,7 @@ export class V2Service extends BaseService {
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
+    includeBackendVariations?: boolean,
     minWorkerCount?: number,
     sortBy?: string,
     sortDesc?: boolean,
@@ -783,6 +785,7 @@ export class V2Service extends BaseService {
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
+    includeBackendVariations?: boolean,
     minWorkerCount?: number,
     sortBy?: string,
     sortDesc?: boolean,
@@ -797,6 +800,7 @@ export class V2Service extends BaseService {
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
+    includeBackendVariations?: boolean,
     minWorkerCount?: number,
     sortBy?: string,
     sortDesc?: boolean,
@@ -811,6 +815,7 @@ export class V2Service extends BaseService {
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
+    includeBackendVariations?: boolean,
     minWorkerCount?: number,
     sortBy?: string,
     sortDesc?: boolean,
@@ -833,6 +838,11 @@ export class V2Service extends BaseService {
       localVarQueryParameters,
       <any>includeWorkers,
       'include_workers',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>includeBackendVariations,
+      'include_backend_variations',
     );
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
