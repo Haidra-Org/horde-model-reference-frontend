@@ -703,6 +703,15 @@ export class ModelFormComponent implements OnInit {
 
     this.populateFormFromModel(defaultRecord);
 
+    // For text generation, select all backends by default
+    if (this.isTextGeneration()) {
+      const tgData = this.textGenerationData();
+      this.textGenerationData.set({
+        ...tgData,
+        selectedBackends: [TextBackend.Aphrodite, TextBackend.KoboldCpp],
+      });
+    }
+
     // Delay validation to allow signals to propagate
     setTimeout(() => this.validateJson(), 0);
   }

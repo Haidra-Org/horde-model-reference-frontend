@@ -9,8 +9,8 @@
     "test": "ng test",
     "generate-client": "node scripts/generate-api-client.js",
     "generate-client:local": "node scripts/generate-api-client.js --local",
-    "lint": "ng lint",
-    "lint:fix": "ng lint --fix"
+    "lint": "ng lint && prettier --check .",
+    "lint:fix": "ng lint --fix && prettier --write ."
   },
   "prettier": {
     "printWidth": 100,
