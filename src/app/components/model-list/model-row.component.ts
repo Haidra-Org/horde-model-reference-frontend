@@ -428,7 +428,7 @@ export class ModelRowComponent {
   });
 
   readonly originalIndex = computed(() => {
-    return (this.model() as any).originalIndex ?? 0;
+    return ((this.model() as Record<string, unknown>)['originalIndex'] as number) ?? 0;
   });
 
   readonly showcases = computed(() => {

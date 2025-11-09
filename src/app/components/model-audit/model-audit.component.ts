@@ -6,12 +6,23 @@ import {
   computed,
   ChangeDetectionStrategy,
   DestroyRef,
+  EnvironmentInjector,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, Observable, combineLatest, EMPTY, of } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
@@ -97,6 +108,8 @@ export class ModelAuditComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(EnvironmentInjector);
+  private readonly auditRefreshTrigger = new Subject<void>();
 
   // Route and data
   readonly category = signal<string>('');
@@ -735,93 +748,111 @@ export class ModelAuditComponent implements OnInit {
         this.debouncedSearchTerm.set(term);
       });
 
-    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const category = params['category'];
-      if (category) {
+    const category$ = this.route.params.pipe(
+      map((params) => params['category'] as string | undefined),
+      filter((category): category is string => !!category),
+      distinctUntilChanged(),
+      tap((category) => {
         this.category.set(category);
-        this.loadModels();
-      }
-    });
-  }
+        this.loading.set(true);
+        this.auditResponse.set(null);
+        this.degradedMode.set(false);
+        this.models.set([]);
+        this.selectedModels.set(new Set());
+        this.expandedRows.set(new Set());
+        this.selectedTags.set([]);
+        this.selectedParameterTags.set([]);
+        if (this.selectedPresetName() !== 'Show All') {
+          this.selectedPresetName.set('Show All');
+        }
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
-  private loadModels(): void {
-    this.loading.set(true);
-    this.degradedMode.set(false);
-    const isTextGen = this.isTextGeneration();
-    const groupModels = isTextGen;
+    category$
+      .pipe(
+        switchMap((category) => this.fetchModelsForCategory$(category)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
 
-    // First, load reference models
-    this.api
-      .getLegacyModelsAsArray(this.category())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (referenceModels) => {
-          // Parse text model names for text generation category (required for grouping)
-          const modelsWithParsing = isTextGen
-            ? mergeMultipleModels(referenceModels, undefined, undefined, {
-              parseTextModelNames: true,
-            })
-            : referenceModels.map((m) => ({ ...m }));
+    const preset$ = toObservable(this.selectedPresetName, { injector: this.injector });
+    const auditTrigger$ = this.auditRefreshTrigger.asObservable().pipe(startWith(void 0));
 
-          // Group text models by base name
-          const displayModels = isTextGen
-            ? createGroupedTextModels(modelsWithParsing)
-            : modelsWithParsing;
+    combineLatest([category$, preset$, auditTrigger$])
+      .pipe(
+        tap(() => {
+          this.auditLoading.set(true);
+          this.degradedMode.set(false);
+        }),
+        switchMap(([category, presetName]) => this.fetchAuditForCategory$(category, presetName)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((audit) => {
+        const wasDegraded = this.degradedMode();
 
-          this.models.set(displayModels);
-
-          // Then, try to load audit data from backend
-          this.loadAuditData(groupModels);
-        },
-        error: (error: Error) => {
-          this.notification.error(error.message);
-          this.loading.set(false);
-        },
-      });
-  }
-
-  /**
-   * Load audit data from backend
-   */
-  private loadAuditData(groupModels: boolean): void {
-    const preset = this.getBackendPresetForSelected();
-
-    this.auditLoading.set(true);
-    this.api
-      .getCategoryAudit(this.category(), groupModels, preset)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (auditResponse) => {
-          if (auditResponse) {
-            this.auditResponse.set(auditResponse);
-            this.degradedMode.set(false);
-            this.lastRefreshTime.set(Date.now());
-
-            // Set default sorting on first load
-            if (!this.initialSortSet) {
-              this.sortColumn.set('usagePercentage');
-              this.initialSortSet = true;
-            }
-          } else {
-            // Audit API failed - enter degraded mode
-            this.degradedMode.set(true);
+        if (audit) {
+          this.auditResponse.set(audit);
+          this.degradedMode.set(false);
+          this.lastRefreshTime.set(Date.now());
+          if (!this.initialSortSet) {
+            this.sortColumn.set('usagePercentage');
+            this.initialSortSet = true;
+          }
+        } else {
+          this.auditResponse.set(null);
+          if (!wasDegraded) {
             this.notification.warning(
               'Audit analysis unavailable. Showing basic model data without risk assessment.',
             );
           }
-          this.loading.set(false);
-          this.auditLoading.set(false);
-        },
-        error: () => {
-          // Audit API failed - enter degraded mode
           this.degradedMode.set(true);
-          this.notification.warning(
-            'Audit analysis unavailable. Showing basic model data without risk assessment.',
-          );
-          this.loading.set(false);
-          this.auditLoading.set(false);
-        },
+        }
+
+        this.auditLoading.set(false);
       });
+  }
+
+  private fetchModelsForCategory$(category: string): Observable<void> {
+    const isTextGen = category === 'text_generation';
+
+    return this.api.getLegacyModelsAsArray(category).pipe(
+      map((referenceModels) => {
+        const canonical: UnifiedModelData[] = isTextGen
+          ? mergeMultipleModels(referenceModels, undefined, undefined, {
+            parseTextModelNames: true,
+          })
+          : referenceModels.map((model) => ({ ...model })) as UnifiedModelData[];
+
+        const displayModels: (UnifiedModelData | GroupedTextModel)[] = isTextGen
+          ? createGroupedTextModels(canonical)
+          : canonical;
+
+        return displayModels;
+      }),
+      tap((displayModels) => {
+        this.models.set(displayModels);
+        this.loading.set(false);
+      }),
+      map(() => undefined),
+      catchError((error: Error) => {
+        this.notification.error(error.message);
+        this.loading.set(false);
+        return EMPTY;
+      }),
+    );
+  }
+
+  private fetchAuditForCategory$(
+    category: string,
+    presetName: string,
+  ): Observable<CategoryAuditResponse | null> {
+    const groupModels = category === 'text_generation';
+    const preset = PRESET_NAME_TO_BACKEND[presetName];
+
+    return this.api
+      .getCategoryAudit(category, groupModels, preset)
+      .pipe(catchError(() => of(null)));
   }
 
   /**
@@ -832,9 +863,7 @@ export class ModelAuditComponent implements OnInit {
       return; // Already loading
     }
 
-    const isTextGen = this.isTextGeneration();
-    const groupModels = isTextGen;
-    this.loadAuditData(groupModels);
+    this.auditRefreshTrigger.next();
   }
 
   /**
@@ -930,11 +959,6 @@ export class ModelAuditComponent implements OnInit {
 
     // Store selected preset name
     this.selectedPresetName.set(presetName);
-
-    // Reload audit data with backend preset
-    const isTextGen = this.isTextGeneration();
-    const groupModels = isTextGen;
-    this.loadAuditData(groupModels);
   }
 
   // Utility methods

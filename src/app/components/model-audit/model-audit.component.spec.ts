@@ -3,15 +3,17 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { ModelAuditComponent } from './model-audit.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import type {
   CategoryAuditResponse,
+  DeletionRiskFlags,
   ModelAuditInfo,
   MODEL_REFERENCE_CATEGORY,
 } from '../../api-client';
+import { LegacyRecordUnion } from '../../models';
 import {
   ModelAuditInfoBuilder,
   CategoryAuditResponseBuilder,
@@ -49,6 +51,7 @@ describe('ModelAuditComponent', () => {
   let fixture: ComponentFixture<ModelAuditComponent>;
   let apiService: jasmine.SpyObj<ModelReferenceApiService>;
   let notificationService: jasmine.SpyObj<NotificationService>;
+  let paramsSubject: BehaviorSubject<{ category: string }>;
   const mockModels = [
     {
       name: 'test-model-1',
@@ -113,6 +116,8 @@ describe('ModelAuditComponent', () => {
         },
         risk_score: 0,
         at_risk: false,
+        is_critical: false,
+        has_warning: false,
         worker_count: 5,
         baseline: 'stable_diffusion_xl',
         nsfw: false,
@@ -150,6 +155,8 @@ describe('ModelAuditComponent', () => {
         },
         risk_score: 0,
         at_risk: false,
+        is_critical: false,
+        has_warning: false,
         worker_count: 2,
         baseline: 'stable_diffusion_1',
         nsfw: true,
@@ -189,6 +196,8 @@ describe('ModelAuditComponent', () => {
       'success',
     ]);
 
+    paramsSubject = new BehaviorSubject<{ category: string }>({ category: 'image_generation' });
+
     await TestBed.configureTestingModule({
       imports: [ModelAuditComponent],
       providers: [
@@ -201,7 +210,7 @@ describe('ModelAuditComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: of({ category: 'image_generation' }),
+            params: paramsSubject.asObservable(),
           },
         },
       ],
@@ -213,6 +222,9 @@ describe('ModelAuditComponent', () => {
     notificationService = TestBed.inject(
       NotificationService,
     ) as jasmine.SpyObj<NotificationService>;
+
+    apiService.getLegacyModelsAsArray.and.returnValue(of(mockModels));
+    apiService.getCategoryAudit.and.returnValue(of(mockAuditResponse));
 
     fixture = TestBed.createComponent(ModelAuditComponent);
     component = fixture.componentInstance;
@@ -359,6 +371,8 @@ describe('ModelAuditComponent', () => {
             },
             risk_score: 2,
             at_risk: true,
+            is_critical: true,
+            has_warning: false,
           } as ModelAuditInfo,
         ],
       };
@@ -385,6 +399,8 @@ describe('ModelAuditComponent', () => {
             },
             risk_score: 2,
             at_risk: true,
+            is_critical: false,
+            has_warning: true,
           } as ModelAuditInfo,
         ],
       };
@@ -438,7 +454,7 @@ describe('ModelAuditComponent', () => {
   });
 
   describe('preset filtering', () => {
-    it('should request audit data with preset parameter', () => {
+    it('should request audit data with preset parameter', async () => {
       const filteredAudit: CategoryAuditResponse = {
         ...mockAuditResponse,
         total_count: 2,
@@ -452,13 +468,178 @@ describe('ModelAuditComponent', () => {
       fixture.detectChanges();
 
       component.selectedPresetName.set('Zero Usage');
+      fixture.detectChanges();
       component.refreshAuditData();
+
+      await Promise.resolve();
 
       expect(apiService.getCategoryAudit).toHaveBeenCalledWith(
         'image_generation',
         false,
         'zero_usage',
       );
+    });
+  });
+
+  describe('race conditions', () => {
+    it('should discard stale responses when switching categories quickly', () => {
+      const imageModelsSubject = new Subject<LegacyRecordUnion[]>();
+      const textModelsSubject = new Subject<LegacyRecordUnion[]>();
+      apiService.getLegacyModelsAsArray.and.callFake((category: string) => {
+        if (category === 'image_generation') {
+          return imageModelsSubject.asObservable();
+        }
+        if (category === 'text_generation') {
+          return textModelsSubject.asObservable();
+        }
+        return of([]);
+      });
+
+      const imageAuditSubject = new Subject<CategoryAuditResponse | null>();
+      const textAuditSubject = new Subject<CategoryAuditResponse | null>();
+      apiService.getCategoryAudit.and.callFake((category: string) => {
+        if (category === 'image_generation') {
+          return imageAuditSubject.asObservable();
+        }
+        if (category === 'text_generation') {
+          return textAuditSubject.asObservable();
+        }
+        return of(null);
+      });
+
+      const baseFlags = {
+        zero_usage_day: false,
+        zero_usage_month: false,
+        zero_usage_total: false,
+        no_active_workers: false,
+        has_multiple_hosts: false,
+        has_non_preferred_host: false,
+        has_unknown_host: false,
+        no_download_urls: false,
+        missing_description: false,
+        missing_baseline: false,
+        low_usage: false,
+      } as DeletionRiskFlags;
+
+      const textAudit: CategoryAuditResponse = {
+        category: 'text_generation',
+        category_total_month_usage: 5,
+        models: [
+          {
+            name: 'text-beta',
+            category: 'text_generation',
+            deletion_risk_flags: { ...baseFlags },
+            at_risk: false,
+            risk_score: 0,
+            usage_day: 1,
+            usage_month: 5,
+            usage_total: 5,
+            usage_trend: {
+              day_to_month_ratio: 0.2,
+              month_to_total_ratio: 1,
+            },
+            worker_count: 2,
+            baseline: 'llama',
+            nsfw: false,
+            has_description: true,
+            download_count: 1,
+            download_hosts: ['example.com'],
+            usage_hour: 0,
+            usage_minute: 0,
+            cost_benefit_score: null,
+            size_gb: null,
+            is_critical: false,
+            has_warning: false,
+          } as ModelAuditInfo,
+        ],
+        summary: {
+          total_models: 1,
+          models_at_risk: 0,
+          models_critical: 0,
+          models_with_warnings: 0,
+          average_risk_score: 0,
+          category_total_month_usage: 5,
+        },
+      };
+
+      const imageAudit: CategoryAuditResponse = {
+        category: 'image_generation',
+        category_total_month_usage: 3,
+        models: [
+          {
+            name: 'image-alpha',
+            category: 'image_generation',
+            deletion_risk_flags: { ...baseFlags },
+            at_risk: false,
+            risk_score: 0,
+            usage_day: 1,
+            usage_month: 3,
+            usage_total: 3,
+            usage_trend: {
+              day_to_month_ratio: 0.33,
+              month_to_total_ratio: 1,
+            },
+            worker_count: 1,
+            baseline: 'stable_diffusion',
+            nsfw: false,
+            has_description: true,
+            download_count: 1,
+            download_hosts: ['example.com'],
+            usage_hour: 0,
+            usage_minute: 0,
+            cost_benefit_score: null,
+            size_gb: null,
+            is_critical: false,
+            has_warning: false,
+          } as ModelAuditInfo,
+        ],
+        summary: {
+          total_models: 1,
+          models_at_risk: 0,
+          models_critical: 0,
+          models_with_warnings: 0,
+          average_risk_score: 0,
+          category_total_month_usage: 3,
+        },
+      };
+
+      fixture.detectChanges();
+
+      paramsSubject.next({ category: 'text_generation' });
+      fixture.detectChanges();
+
+      const textModel = {
+        name: 'text-beta',
+        baseline: 'llama',
+        nsfw: false,
+        description: 'text model',
+        tags: ['alpaca'],
+        parameters: 7_000_000_000,
+      } as LegacyRecordUnion;
+
+      textModelsSubject.next([textModel]);
+      fixture.detectChanges();
+
+      textAuditSubject.next(textAudit);
+      fixture.detectChanges();
+
+      expect(component.category()).toBe('text_generation');
+      expect(component.auditResponse()).toEqual(textAudit);
+
+      const imageModel = {
+        name: 'image-alpha',
+        baseline: 'stable_diffusion',
+        nsfw: false,
+        description: 'image model',
+      } as LegacyRecordUnion;
+
+      imageModelsSubject.next([imageModel]);
+      imageAuditSubject.next(imageAudit);
+      fixture.detectChanges();
+
+      expect(component.category()).toBe('text_generation');
+      expect(component.auditResponse()).toEqual(textAudit);
+      expect(component.models().some((model) => model.name === 'image-alpha')).toBeFalse();
     });
   });
 
@@ -563,6 +744,8 @@ describe('ModelAuditComponent', () => {
               zero_usage_month: true,
               no_active_workers: true,
             },
+            is_critical: true,
+            has_warning: false,
           } as ModelAuditInfo,
         ],
       };
@@ -587,6 +770,8 @@ describe('ModelAuditComponent', () => {
               ...mockAuditResponse.models[0].deletion_risk_flags,
               has_multiple_hosts: true,
             },
+            is_critical: false,
+            has_warning: true,
           } as ModelAuditInfo,
         ],
       };

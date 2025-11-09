@@ -142,6 +142,20 @@ export class ModelAuditInfoBuilder {
     this.info = createMockModelAuditInfo();
   }
 
+  private recomputeDerivedFlags(): void {
+    const flags = this.info.deletion_risk_flags ?? createMockDeletionRiskFlags();
+    this.info = {
+      ...this.info,
+      is_critical: !!(flags.zero_usage_month && flags.no_active_workers),
+      has_warning: !!(
+        flags.has_multiple_hosts ||
+        flags.has_non_preferred_host ||
+        flags.no_download_urls ||
+        flags.has_unknown_host
+      ),
+    };
+  }
+
   withName(name: string): this {
     this.info.name = name;
     return this;
@@ -210,6 +224,7 @@ export class ModelAuditInfoBuilder {
 
   withFlags(flags: Partial<DeletionRiskFlags>): this {
     this.info.deletion_risk_flags = createMockDeletionRiskFlags(flags);
+    this.recomputeDerivedFlags();
     return this;
   }
 
@@ -222,6 +237,7 @@ export class ModelAuditInfoBuilder {
     this.info.risk_score = 2;
     this.info.worker_count = 0;
     this.info.usage_month = 0;
+    this.recomputeDerivedFlags();
     return this;
   }
 
@@ -232,6 +248,7 @@ export class ModelAuditInfoBuilder {
     });
     this.info.at_risk = true;
     this.info.risk_score = 2;
+    this.recomputeDerivedFlags();
     return this;
   }
 
@@ -240,6 +257,7 @@ export class ModelAuditInfoBuilder {
       zero_usage_day: true,
     });
     this.info.usage_day = 0;
+    this.recomputeDerivedFlags();
     return this;
   }
 
@@ -248,6 +266,7 @@ export class ModelAuditInfoBuilder {
       zero_usage_month: true,
     });
     this.info.usage_month = 0;
+    this.recomputeDerivedFlags();
     return this;
   }
 
@@ -256,6 +275,7 @@ export class ModelAuditInfoBuilder {
       zero_usage_total: true,
     });
     this.info.usage_total = 0;
+    this.recomputeDerivedFlags();
     return this;
   }
 
@@ -264,6 +284,7 @@ export class ModelAuditInfoBuilder {
       no_active_workers: true,
     });
     this.info.worker_count = 0;
+    this.recomputeDerivedFlags();
     return this;
   }
 

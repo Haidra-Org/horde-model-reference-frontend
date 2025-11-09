@@ -11,8 +11,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, combineLatest, EMPTY, Observable, of } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
@@ -50,6 +60,7 @@ import {
   CountValueDetailTriple,
 } from './stat-modal.component';
 import { JsonDisplayComponent } from '../common/json-display.component';
+import type { BackendStatisticsResponse } from '../../services/horde-api.service';
 
 @Component({
   selector: 'app-model-list',
@@ -297,8 +308,8 @@ export class ModelListComponent implements OnInit {
         // Within each active status group, sort by name
         return a.name.localeCompare(b.name);
       } else if (column === 'index') {
-        const aIndex = (a as any).originalIndex ?? 0;
-        const bIndex = (b as any).originalIndex ?? 0;
+        const aIndex = ((a as Record<string, unknown>)['originalIndex'] as number) ?? 0;
+        const bIndex = ((b as Record<string, unknown>)['originalIndex'] as number) ?? 0;
         return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
       }
       return 0;
@@ -650,7 +661,6 @@ export class ModelListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Setup debounced search
     this.searchTermSubject
       .pipe(
         debounceTime(300),
@@ -661,13 +671,21 @@ export class ModelListComponent implements OnInit {
         this.debouncedSearchTerm.set(term);
       });
 
-    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const category = params['category'];
-      if (category) {
-        this.category.set(category);
-        this.loadModels();
-      }
-    });
+    this.route.params
+      .pipe(
+        map((params) => params['category'] as string | undefined),
+        filter((category): category is string => !!category),
+        distinctUntilChanged(),
+        tap((category) => {
+          this.category.set(category);
+          this.loading.set(true);
+          this.models.set([]);
+          this.hordeApi.resetStatsState();
+        }),
+        switchMap((category) => this.loadModelsForCategory(category)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
   createModel(): void {
@@ -724,7 +742,12 @@ export class ModelListComponent implements OnInit {
           this.notification.success(`Model "${modelName}" deleted successfully`);
           this.modelToDelete.set(null);
           this.deleteConfirmationInput.set('');
-          this.loadModels();
+          this.loading.set(true);
+          this.models.set([]);
+          this.hordeApi.resetStatsState();
+          this.loadModelsForCategory(this.category())
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe();
         },
         error: (error: Error) => {
           this.notification.error(error.message);
@@ -872,85 +895,67 @@ export class ModelListComponent implements OnInit {
     return null;
   }
 
-  private loadModels(): void {
-    this.loading.set(true);
-    this.hordeApi.resetStatsState();
-    const hordeType = this.getCategoryHordeType(this.category());
-    const isTextGen = this.isTextGeneration();
-
-    this.api
-      .getLegacyModelsAsArray(this.category())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (referenceModels) => {
-          // Add original index to preserve order from canonical data
-          const modelsWithIndex = referenceModels.map((m, index) => ({
-            ...m,
-            originalIndex: index,
-          }));
-
-          // Parse text model names for text generation category
-          const modelsWithParsing = isTextGen
-            ? mergeMultipleBackendStatistics(modelsWithIndex, undefined, {
-              parseTextModelNames: true,
-            })
-            : modelsWithIndex;
-
-          // Group text models by base name
-          const displayModels = isTextGen
-            ? createGroupedTextModels(modelsWithParsing)
-            : modelsWithParsing;
-
-          // Immediately display reference models
-          this.models.set(displayModels);
+  private loadModelsForCategory(category: string): Observable<void> {
+    const isTextGen = category === 'text_generation';
+    const hordeType = this.getCategoryHordeType(category);
+    const models$ = this.getModelsForCategory$(category, hordeType, isTextGen).pipe(
+      tap((models) => {
+        this.models.set(models);
+        if (!this.initialSortSet) {
+          this.sortColumn.set('active');
+          this.initialSortSet = true;
+        }
+        if (this.loading()) {
           this.loading.set(false);
-
-          // Set default sorting on first load
-          if (!this.initialSortSet) {
-            this.sortColumn.set('active');
-            this.initialSortSet = true;
-          }
-
-          // Asynchronously fetch and merge backend statistics if applicable
-          if (hordeType) {
-            this.hordeApi
-              .getCombinedModelData(hordeType)
-              .pipe(takeUntilDestroyed(this.destroyRef))
-              .subscribe({
-                next: (backendStats) => {
-                  // Preserve original indices before merging
-                  const modelsWithIndex = referenceModels.map((m, index) => ({
-                    ...m,
-                    originalIndex: index,
-                  }));
-
-                  // Merge backend pre-aggregated statistics
-                  const unifiedModels = mergeMultipleBackendStatistics(
-                    modelsWithIndex,
-                    backendStats,
-                    isTextGen ? { parseTextModelNames: true } : undefined,
-                  );
-
-                  // Re-group text models with updated backend statistics
-                  const groupedModels = isTextGen
-                    ? createGroupedTextModels(unifiedModels)
-                    : unifiedModels;
-
-                  this.models.set(groupedModels);
-                },
-                error: (error: Error) => {
-                  // Keep displaying reference models even if backend statistics fail
-                  this.notification.error(
-                    `Failed to load model statistics: ${error.message}`,
-                  );
-                },
-              });
-          }
-        },
-        error: (error: Error) => {
-          this.notification.error(error.message);
+        }
+      }),
+      catchError((error: Error) => {
+        this.notification.error(error.message);
+        this.loading.set(false);
+        return EMPTY;
+      }),
+      finalize(() => {
+        if (this.loading()) {
           this.loading.set(false);
-        },
-      });
+        }
+      }),
+    );
+
+    return models$.pipe(map(() => undefined));
+  }
+
+  private getModelsForCategory$(
+    category: string,
+    hordeType: HordeModelType | null,
+    isTextGen: boolean,
+  ): Observable<(UnifiedModelData | GroupedTextModel)[]> {
+    const options = isTextGen ? { parseTextModelNames: true } : undefined;
+
+    const reference$ = this.api.getLegacyModelsAsArray(category).pipe(
+      map((referenceModels) =>
+        referenceModels.map((model, index) => ({
+          ...model,
+          originalIndex: index,
+        })),
+      ),
+    );
+
+    const stats$: Observable<BackendStatisticsResponse | null> = hordeType
+      ? this.hordeApi.getCombinedModelData(hordeType).pipe(
+        startWith<BackendStatisticsResponse | null>(null),
+        catchError(() => of(null)),
+      )
+      : of(null);
+
+    return combineLatest([reference$, stats$]).pipe(
+      map(([referenceModels, backendStats]) => {
+        const unifiedModels = mergeMultipleBackendStatistics(
+          referenceModels,
+          backendStats ?? undefined,
+          options,
+        );
+        return isTextGen ? createGroupedTextModels(unifiedModels) : unifiedModels;
+      }),
+    );
   }
 }
