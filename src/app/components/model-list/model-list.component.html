@@ -2,7 +2,7 @@
   <!-- Page Header -->
   <div class="card">
     <div
-      class="flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      class="collapsible-toggle"
       (click)="toggleHeaderCollapsed()"
       [title]="headerCollapsed() ? 'Expand header' : 'Collapse header'"
       role="button"
@@ -11,11 +11,11 @@
     >
       <button
         type="button"
-        class="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+        class="icon-button-gray"
         aria-label="{{ headerCollapsed() ? 'Expand' : 'Collapse' }} header"
       >
         <svg
-          class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200"
+          class="collapse-icon"
           [class.rotate-180]="!headerCollapsed()"
           fill="none"
           stroke="currentColor"
@@ -47,7 +47,7 @@
         }
       </div>
       @if (headerCollapsed()) {
-        <span class="text-sm text-gray-600 dark:text-gray-400"> ({{ totalModels() }} models) </span>
+        <span class="text-muted-sm"> ({{ totalModels() }} models) </span>
       }
     </div>
 
@@ -57,7 +57,7 @@
           <div class="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">
             MODEL_REFERENCE_CATEGORY: {{ category() }}
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p class="text-muted-sm mt-1">
             {{ totalModels() }} models
             @if (filteredModels().length !== totalModels()) {
               (showing {{ filteredModels().length }} after filters)
@@ -312,7 +312,7 @@
   <!-- Search and Toggle -->
   <div class="sticky-header">
     <div class="flex gap-6">
-      <label class="flex items-center gap-2 cursor-pointer select-none">
+      <label class="checkbox-item-label select-none">
         <input
           type="checkbox"
           class="sr-only peer"
@@ -321,19 +321,14 @@
           aria-checked="{{ showDetails() ? 'true' : 'false' }}"
           role="switch"
         />
-        <span
-          class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-primary-600 dark:peer-checked:bg-primary-400"
-        >
-          <span
-            class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200"
-            [class.translate-x-5]="showDetails()"
-          ></span>
+        <span class="toggle-switch toggle-switch-primary">
+          <span class="toggle-switch-slider" [class.translate-x-5]="showDetails()"></span>
         </span>
         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
           {{ showDetails() ? 'Hide Details' : "Show All Models' Details" }}
         </span>
       </label>
-      <label class="flex items-center gap-2 cursor-pointer select-none">
+      <label class="checkbox-item-label select-none">
         <input
           type="checkbox"
           class="sr-only peer"
@@ -342,13 +337,8 @@
           aria-checked="{{ filterByActive() ? 'true' : 'false' }}"
           role="switch"
         />
-        <span
-          class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-success-600 dark:peer-checked:bg-success-400"
-        >
-          <span
-            class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200"
-            [class.translate-x-5]="filterByActive()"
-          ></span>
+        <span class="toggle-switch toggle-switch-success">
+          <span class="toggle-switch-slider" [class.translate-x-5]="filterByActive()"></span>
         </span>
         <span class="text-sm font-medium text-gray-700 dark:text-gray-200"> Filter By Active </span>
       </label>
@@ -371,7 +361,7 @@
         <button
           id="tag-filter-btn"
           type="button"
-          class="form-input w-64 text-left flex items-center justify-between"
+          class="filter-button"
           (click)="toggleTagFilterDropdown()"
         >
           <span class="truncate">
@@ -427,13 +417,9 @@
             </div>
             <div class="filter-dropdown-content">
               @if (availableTags().length === 0) {
-                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                  No tags available
-                </div>
+                <div class="dropdown-empty-state">No tags available</div>
               } @else if (filteredAvailableTags().length === 0) {
-                <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                  No tags match your search
-                </div>
+                <div class="dropdown-empty-state">No tags match your search</div>
               } @else {
                 @for (tag of filteredAvailableTags(); track tag) {
                   <label class="filter-dropdown-item">
@@ -459,7 +445,7 @@
           <button
             id="param-filter-btn"
             type="button"
-            class="form-input w-64 text-left flex items-center justify-between"
+            class="filter-button"
             (click)="toggleParameterTagFilterDropdown()"
           >
             <span class="truncate">
@@ -553,7 +539,7 @@
             @for (tag of selectedTags(); track tag) {
               <button
                 type="button"
-                class="tag tag-primary inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+                class="active-filter-tag"
                 (click)="toggleTag(tag)"
                 [title]="'Remove ' + tag + ' filter'"
               >
@@ -586,7 +572,7 @@
             @for (tag of selectedParameterTags(); track tag) {
               <button
                 type="button"
-                class="tag tag-info inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500"
+                class="active-filter-tag-info"
                 (click)="toggleParameterTag(tag)"
                 [title]="'Remove ' + tag + ' parameter filter'"
               >
@@ -616,11 +602,11 @@
   <!-- Loading/Empty States -->
   @if (loading()) {
     <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">Loading models...</div>
+      <div class="page-loading-state">Loading models...</div>
     </div>
   } @else if (filteredModels().length === 0) {
     <div class="card">
-      <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+      <div class="page-loading-state">
         @if (searchTerm()) {
           No models match your search
         } @else {
@@ -637,7 +623,7 @@
           <col class="w-16" />
           <col class="w-16" />
           <col class="w-64" />
-          <col style="width: auto" />
+          <col class="w-auto" />
           <col class="w-32" />
           <col class="w-40" />
           @if (!isTextGeneration()) {
@@ -670,8 +656,7 @@
 
       <cdk-virtual-scroll-viewport
         itemSize="50"
-        class="virtual-scroll-viewport"
-        [style.height.px]="800"
+        class="virtual-scroll-viewport h-[800px]"
         [minBufferPx]="400"
         [maxBufferPx]="800"
       >
@@ -681,7 +666,7 @@
             <col class="w-16" />
             <col class="w-16" />
             <col class="w-64" />
-            <col style="width: auto" />
+            <col class="w-auto" />
             <col class="w-32" />
             <col class="w-40" />
             @if (!isTextGeneration()) {
@@ -735,9 +720,7 @@
           Are you sure you want to delete <strong>{{ modelToDelete() }}</strong
           >?
         </p>
-        <p class="text-danger-600 dark:text-danger-400 font-medium">
-          This action cannot be undone.
-        </p>
+        <p class="text-danger-bold">This action cannot be undone.</p>
         <div>
           <label for="delete-confirm" class="form-label">Type the model name to confirm:</label>
           <input
@@ -853,10 +836,7 @@
     >
       <h2 class="modal-title">{{ statDetailsToShow()!.title }}</h2>
       <div class="modal-content">
-        <pre
-          class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap break-words"
-          >{{ statDetailsToShow()!.content }}</pre
-        >
+        <pre class="json-display-container">{{ statDetailsToShow()!.content }}</pre>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" (click)="copyStatDetailsToClipboard()">Copy</button>

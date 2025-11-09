@@ -242,7 +242,7 @@
         <div>
           <div class="form-label mb-2">Additional Filters (Client-Side)</div>
           <div class="flex gap-6 mb-4">
-            <label class="flex items-center gap-2 cursor-pointer select-none">
+            <label class="checkbox-item-label select-none">
               <input
                 type="checkbox"
                 class="sr-only peer"
@@ -251,13 +251,8 @@
                 aria-checked="{{ filterByActive() ? 'true' : 'false' }}"
                 role="switch"
               />
-              <span
-                class="w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200 peer-checked:bg-success-600 dark:peer-checked:bg-success-400"
-              >
-                <span
-                  class="absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200"
-                  [class.translate-x-5]="filterByActive()"
-                ></span>
+              <span class="toggle-switch toggle-switch-success">
+                <span class="toggle-switch-slider" [class.translate-x-5]="filterByActive()"></span>
               </span>
               <span class="text-sm font-medium text-gray-700 dark:text-gray-200"
                 >Filter By Active</span
@@ -343,13 +338,9 @@
                   </div>
                   <div class="filter-dropdown-content">
                     @if (availableTags().length === 0) {
-                      <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                        No tags available
-                      </div>
+                      <div class="dropdown-empty-state">No tags available</div>
                     } @else if (filteredAvailableTags().length === 0) {
-                      <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                        No tags match your search
-                      </div>
+                      <div class="dropdown-empty-state">No tags match your search</div>
                     } @else {
                       @for (tag of filteredAvailableTags(); track tag) {
                         <label class="filter-dropdown-item">
@@ -446,9 +437,7 @@
                           No parameter counts available
                         </div>
                       } @else if (filteredAvailableParameterTags().length === 0) {
-                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                          No parameter counts match your search
-                        </div>
+                        <div class="dropdown-empty-state">No parameter tags match your search</div>
                       } @else {
                         @for (tag of filteredAvailableParameterTags(); track tag) {
                           <label class="filter-dropdown-item">

@@ -1169,6 +1169,199 @@
     @apply flex-1;
   }
 
+  /* Toggle switch component */
+  .toggle-switch {
+    @apply w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200;
+  }
+
+  .toggle-switch-primary {
+    @apply peer-checked:bg-primary-600 dark:peer-checked:bg-primary-400;
+  }
+
+  .toggle-switch-success {
+    @apply peer-checked:bg-success-600 dark:peer-checked:bg-success-400;
+  }
+
+  .toggle-switch-slider {
+    @apply absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200;
+  }
+
+  /* Dropdown and filter states */
+  .dropdown-empty-state {
+    @apply text-sm text-gray-500 dark:text-gray-400 text-center py-2;
+  }
+
+  /* Page loading state */
+  .page-loading-state {
+    @apply text-center py-12 text-gray-500 dark:text-gray-400;
+  }
+
+  /* Navigation and toolbar buttons */
+  .nav-icon-button {
+    @apply p-2 rounded-lg hover:bg-white/10 transition-colors;
+  }
+
+  .icon-button-gray {
+    @apply p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0;
+  }
+
+  /* Section dividers with spacing */
+  .section-divider-sm {
+    @apply mt-4 pt-4 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  .section-divider-md {
+    @apply mt-6 pt-6 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  /* Common layout patterns */
+  .flex-center-gap-2 {
+    @apply flex items-center gap-2;
+  }
+
+  .checkbox-item-label {
+    @apply flex items-center gap-2 cursor-pointer;
+  }
+
+  /* Sidebar section headers */
+  .sidebar-section-header {
+    @apply text-sm font-semibold text-gray-700 dark:text-gray-300;
+  }
+
+  /* Text muted variations */
+  .text-muted-sm {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  /* Collapsible card header icon styles */
+  .collapse-icon {
+    @apply w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200;
+  }
+
+  /* JSON display/readonly textarea */
+  .json-readonly-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50;
+    @apply transition-all duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
+    @apply placeholder:italic placeholder:text-gray-400;
+    @apply dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
+    @apply dark:placeholder:text-gray-500;
+    @apply resize-y min-h-[80px];
+    @apply font-mono cursor-not-allowed;
+  }
+
+  /* Readonly label badge */
+  .readonly-badge {
+    @apply absolute top-2 right-2 px-2 py-1 bg-gray-700 text-white text-xs rounded;
+  }
+
+  /* JSON display container */
+  .json-display-container {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap break-words;
+  }
+
+  /* Sidebar borders and backgrounds */
+  .sidebar-container {
+    @apply h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden;
+  }
+
+  .sidebar-header {
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50;
+  }
+
+  /* Sidebar navigation item */
+  .sidebar-nav-item {
+    @apply w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3;
+  }
+
+  .sidebar-nav-item-active {
+    @apply bg-primary-50 dark:bg-primary-900/20 border-primary-600 text-primary-700 dark:text-primary-300;
+  }
+
+  .sidebar-nav-item-inactive {
+    @apply border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50;
+  }
+
+  /* Navigation bar styling */
+  .nav-bar {
+    @apply sticky top-0 z-50 bg-primary-600 dark:bg-primary-700 text-white shadow-md;
+  }
+
+  .nav-content {
+    @apply flex justify-between items-center px-4 py-1;
+  }
+
+  .nav-title-button {
+    @apply text-lg font-semibold hover:opacity-90 transition-opacity;
+  }
+
+  /* Notification container */
+  .notification-container {
+    @apply fixed inset-0 z-[9999] pointer-events-none;
+  }
+
+  .notification-wrapper {
+    @apply absolute top-4 right-4 space-y-3 max-w-[calc(100vw-2rem)] w-auto;
+  }
+
+  .notification-alert {
+    @apply px-4 py-3 rounded-lg text-sm font-medium border;
+    @apply pointer-events-auto shadow-lg min-w-[280px] max-w-[400px];
+  }
+
+  .notification-close-button {
+    @apply text-current opacity-70 hover:opacity-100 transition-opacity text-xl leading-none flex-shrink-0;
+  }
+
+  /* Card header with collapsible styling - for hover effects */
+  .card-header-hover {
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  /* Model list filter button */
+  .filter-button {
+    @apply w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white;
+    @apply transition-all duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
+    @apply placeholder:italic placeholder:text-gray-400;
+    @apply dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
+    @apply dark:placeholder:text-gray-500;
+    @apply text-left flex items-center justify-between;
+  }
+
+  /* Collapsible section toggle */
+  .collapsible-toggle {
+    @apply flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors;
+  }
+
+  /* Active filter tag with close button */
+  .active-filter-tag {
+    @apply text-xs px-2 py-0.5 rounded border;
+    @apply bg-primary-50 text-primary-700 border-primary-300;
+    @apply dark:bg-primary-950 dark:text-primary-300 dark:border-primary-700;
+    @apply inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
+
+  .active-filter-tag-info {
+    @apply text-xs px-2 py-0.5 rounded border;
+    @apply bg-info-50 text-info-700 border-info-300;
+    @apply dark:bg-info-950 dark:text-info-300 dark:border-info-700;
+    @apply inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500;
+  }
+
+  /* Danger text variants */
+  .text-danger {
+    @apply text-danger-600 dark:text-danger-400;
+  }
+
+  .text-danger-bold {
+    @apply text-danger-600 dark:text-danger-400 font-medium;
+  }
+
   /* Autocomplete dropdown for tag inputs */
   .autocomplete-dropdown {
     @apply absolute left-0 top-full mt-1;

@@ -1,8 +1,6 @@
-<nav class="sticky top-0 z-50 bg-primary-600 dark:bg-primary-700 text-white shadow-md">
-  <div class="flex justify-between items-center px-4 py-1">
-    <button class="text-lg font-semibold hover:opacity-90 transition-opacity" (click)="goHome()">
-      Horde Model Reference
-    </button>
+<nav class="nav-bar">
+  <div class="nav-content">
+    <button class="nav-title-button" (click)="goHome()">Horde Model Reference</button>
 
     <div class="flex items-center gap-4">
       @if (api.backendCapabilities().mode !== 'UNKNOWN') {
@@ -19,7 +17,7 @@
       }
 
       @if (auth.isAuthenticated()) {
-        <div class="flex items-center gap-2">
+        <div class="flex-center-gap-2">
           <span class="text-sm font-medium">{{ auth.getUsername() }}</span>
           <button class="nav-button" (click)="logout()" aria-label="Logout">Logout</button>
         </div>
@@ -30,7 +28,7 @@
       <!-- Help Menu -->
       <div class="relative">
         <button
-          class="p-2 rounded-lg hover:bg-white/10 transition-colors"
+          class="nav-icon-button"
           (click)="toggleHelpMenu()"
           [attr.aria-label]="'Help and resources'"
         >
@@ -150,7 +148,7 @@
 
       <!-- Dark Mode Toggle -->
       <button
-        class="p-2 rounded-lg hover:bg-white/10 transition-colors"
+        class="nav-icon-button"
         (click)="toggleDarkMode()"
         [attr.aria-label]="darkMode.darkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
       >

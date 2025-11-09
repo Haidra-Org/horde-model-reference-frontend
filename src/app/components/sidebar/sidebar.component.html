@@ -1,16 +1,7 @@
-<aside
-  class="h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden"
-  [class]="isCollapsed() ? 'w-0' : 'w-64'"
->
+<aside class="sidebar-container" [class]="isCollapsed() ? 'w-0' : 'w-64'">
   @if (!isCollapsed()) {
-    <div
-      class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
-    >
-      <h2
-        class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap overflow-hidden"
-      >
-        Model Categories
-      </h2>
+    <div class="sidebar-header">
+      <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden">Model Categories</h2>
     </div>
   }
 
@@ -22,11 +13,11 @@
     <nav class="flex-1 overflow-y-auto">
       @for (category of sortedCategories(); track category) {
         <button
-          class="w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3"
+          class="sidebar-nav-item"
           [class]="
             currentCategory() === category
-              ? 'w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3 bg-primary-50 dark:bg-primary-900/20 border-primary-600 text-primary-700 dark:text-primary-300'
-              : 'w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3 border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              ? 'sidebar-nav-item sidebar-nav-item-active'
+              : 'sidebar-nav-item sidebar-nav-item-inactive'
           "
           (click)="selectCategory(category)"
         >
