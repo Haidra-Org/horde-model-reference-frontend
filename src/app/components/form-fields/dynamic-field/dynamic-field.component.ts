@@ -7,11 +7,13 @@ import {
   TextareaFieldConfig,
   SelectFieldConfig,
   CheckboxFieldConfig,
+  AutocompleteFieldConfig,
   TagInputFieldConfig,
   KeyValueFieldConfig,
   RequirementsFieldConfig,
   KeyValueEditorValueType,
 } from '../../../models/form-field-config';
+import { AutocompleteInputComponent } from '../autocomplete-input/autocomplete-input.component';
 import { TagInputComponent } from '../tag-input/tag-input.component';
 import { KeyValueEditorComponent } from '../key-value-editor/key-value-editor.component';
 import { ModelRequirementsEditorComponent } from '../model-requirements-editor/model-requirements-editor.component';
@@ -28,6 +30,7 @@ import { GlossaryTooltipDirective } from '../../common/tooltip.directive';
   selector: 'app-dynamic-field',
   imports: [
     FormsModule,
+    AutocompleteInputComponent,
     TagInputComponent,
     KeyValueEditorComponent,
     ModelRequirementsEditorComponent,
@@ -66,6 +69,11 @@ export class DynamicFieldComponent {
   readonly checkboxConfig = computed<CheckboxFieldConfig | null>(() => {
     const cfg = this.config();
     return cfg.type === 'checkbox' ? (cfg as CheckboxFieldConfig) : null;
+  });
+
+  readonly autocompleteConfig = computed<AutocompleteFieldConfig | null>(() => {
+    const cfg = this.config();
+    return cfg.type === 'autocomplete' ? (cfg as AutocompleteFieldConfig) : null;
   });
 
   readonly tagInputConfig = computed<TagInputFieldConfig | null>(() => {
@@ -204,6 +212,13 @@ export class DynamicFieldComponent {
    */
   onCheckboxChange(cfg: CheckboxFieldConfig, checked: boolean): void {
     cfg.onChange(checked);
+  }
+
+  /**
+   * Handle value changes for autocomplete input
+   */
+  onAutocompleteChange(cfg: AutocompleteFieldConfig, value: string | null): void {
+    cfg.onChange(value);
   }
 
   /**

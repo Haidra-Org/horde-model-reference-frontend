@@ -1,4 +1,15 @@
-import { Component, input, computed, signal, effect, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  computed,
+  signal,
+  effect,
+  inject,
+  ChangeDetectionStrategy,
+  OnInit,
+  Injector,
+  runInInjectionContext,
+} from '@angular/core';
 import { FormFieldConfig, FormFieldGroup } from '../../../models/form-field-config';
 import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component';
 
@@ -13,7 +24,7 @@ import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component'
   templateUrl: './field-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FieldGroupComponent {
+export class FieldGroupComponent implements OnInit {
   readonly item = input.required<FormFieldConfig | FormFieldGroup>();
 
   /**
@@ -25,17 +36,18 @@ export class FieldGroupComponent {
    * Track if we've initialized the collapsed state to prevent resetting on item changes
    */
   private hasInitialized = false;
+  private readonly injector = inject(Injector);
 
-  constructor() {
-    // Initialize collapsed state based on the item's defaultCollapsed property
-    // Only run this once to avoid resetting when the item reference changes
-    effect(() => {
-      const item = this.item();
-      if ('fields' in item && item.collapsible && !this.hasInitialized) {
-        this.isCollapsed.set(item.defaultCollapsed ?? false);
-        this.hasInitialized = true;
-      }
-    });
+  ngOnInit(): void {
+    runInInjectionContext(this.injector, () =>
+      effect(() => {
+        const item = this.item();
+        if ('fields' in item && item.collapsible && !this.hasInitialized) {
+          this.isCollapsed.set(item.defaultCollapsed ?? false);
+          this.hasInitialized = true;
+        }
+      }),
+    );
   }
 
   /**

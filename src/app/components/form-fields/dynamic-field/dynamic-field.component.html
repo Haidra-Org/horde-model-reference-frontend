@@ -124,6 +124,20 @@
       </div>
     }
 
+    <!-- Autocomplete Input -->
+    @if (autocompleteConfig(); as cfg) {
+      <app-autocomplete-input
+        [label]="cfg.label"
+        [placeholder]="cfg.placeholder || 'Type or select...'"
+        [value]="cfg.value"
+        [suggestions]="cfg.suggestions || []"
+        (valueChange)="onAutocompleteChange(cfg, $event)"
+      />
+      @if (cfg.helpText) {
+        <div class="form-hint">{{ cfg.helpText }}</div>
+      }
+    }
+
     <!-- Tag Input -->
     @if (tagInputConfig(); as cfg) {
       <app-tag-input

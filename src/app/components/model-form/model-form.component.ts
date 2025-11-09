@@ -56,6 +56,7 @@ import {
 import { DownloadRecord } from '../../api-client';
 import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../../utils/config-converter';
 import { JsonDisplayComponent } from '../common/json-display.component';
+import { JsonEditorComponent } from '../common/json-editor.component';
 
 @Component({
   selector: 'app-model-form',
@@ -67,6 +68,7 @@ import { JsonDisplayComponent } from '../common/json-display.component';
     ClipFieldsComponent,
     ConfigFormSectionSimplifiedComponent,
     JsonDisplayComponent,
+    JsonEditorComponent,
   ],
   templateUrl: './model-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -100,6 +102,8 @@ export class ModelFormComponent implements OnInit {
   readonly simplifiedDownloads = signal<DownloadRecord[]>([]);
   // Store legacy files array to preserve when converting back
   private readonly legacyFiles = signal<LegacyConfig['files']>([]);
+  private readonly formNameValue = signal<string>('');
+  private readonly jsonDataText = signal<string>('');
 
   readonly isImageGeneration = computed(() => this.category() === 'image_generation');
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
@@ -132,16 +136,27 @@ export class ModelFormComponent implements OnInit {
       return [];
     }
 
-    const baseModelName = this.form?.getRawValue().name || '';
-    const modelData = this.buildModelDataFromForm();
+    const baseModelName = this.formNameValue();
+    if (!baseModelName) {
+      return [];
+    }
+
     const selectedBackends = this.textGenerationData().selectedBackends || [];
+    const baseModelData =
+      this.viewMode() === 'json'
+        ? this.buildModelDataFromJson(baseModelName)
+        : this.buildModelDataFromForm(baseModelName);
+
+    if (!baseModelData) {
+      return [];
+    }
 
     const variations: { name: string; data: LegacyRecordUnion }[] = [];
 
     // Always include base model (without backend prefix)
     variations.push({
       name: baseModelName,
-      data: { ...modelData, name: baseModelName },
+      data: { ...baseModelData, name: baseModelName },
     });
 
     // Add variation for each selected backend
@@ -152,11 +167,36 @@ export class ModelFormComponent implements OnInit {
       });
       variations.push({
         name: variantName,
-        data: { ...modelData, name: variantName },
+        data: { ...baseModelData, name: variantName },
       });
     }
 
     return variations;
+  });
+
+  /**
+   * For text generation in JSON view, get the exploded variations (backend-prefixed models only)
+   * to display in a read-only preview section
+   */
+  readonly explodedVariationsJson = computed<string | null>(() => {
+    if (!this.isTextGeneration()) {
+      return null;
+    }
+
+    const variations = this.modelVariations();
+    // Only show exploded variations if there are backend-prefixed models (length > 1)
+    if (variations.length <= 1) {
+      return null;
+    }
+
+    // Get only the backend-prefixed variations (exclude base model)
+    const explodedVariations = variations.slice(1).map((v) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { name: _name, ...jsonData } = v.data;
+      return { name: v.name, ...jsonData };
+    });
+
+    return JSON.stringify(explodedVariations, null, 2);
   });
 
   form!: FormGroup;
@@ -220,7 +260,7 @@ export class ModelFormComponent implements OnInit {
     // Trigger validation after backend change
     if (this.viewMode() === 'form') {
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -281,43 +321,19 @@ export class ModelFormComponent implements OnInit {
    * This is a silent version that doesn't trigger validation
    */
   private syncFormToJsonSilent(): void {
-    if (this.isTextGeneration()) {
-      // For text generation with backend selection, show all variations
-      const variations = this.modelVariations();
-      if (variations.length > 1) {
-        const variationsJson = variations.map((v) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { name: _name, ...jsonData } = v.data;
-          return { name: v.name, ...jsonData };
-        });
-        this.form.patchValue(
-          {
-            jsonData: JSON.stringify(variationsJson, null, 2),
-          },
-          { emitEvent: false },
-        );
-      } else {
-        const modelData = this.buildModelDataFromForm();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { name: _name, ...jsonData } = modelData;
-        this.form.patchValue(
-          {
-            jsonData: JSON.stringify(jsonData, null, 2),
-          },
-          { emitEvent: false },
-        );
-      }
-    } else {
-      const modelData = this.buildModelDataFromForm();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { name: _name, ...jsonData } = modelData;
-      this.form.patchValue(
-        {
-          jsonData: JSON.stringify(jsonData, null, 2),
-        },
-        { emitEvent: false },
-      );
-    }
+    // For text generation, always show only the base (ungrouped) model data
+    // Exploded variations are shown in a separate read-only section
+    const modelData = this.buildModelDataFromForm(this.formNameValue());
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { name: _name, ...jsonData } = modelData;
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    this.form.patchValue(
+      {
+        jsonData: jsonString,
+      },
+      { emitEvent: false },
+    );
+    this.jsonDataText.set(jsonString);
   }
 
   syncFormToJson(): void {
@@ -350,7 +366,7 @@ export class ModelFormComponent implements OnInit {
 
       // Validate after a microtask to ensure all signals have propagated through child components
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -360,8 +376,21 @@ export class ModelFormComponent implements OnInit {
     }
   }
 
-  buildModelDataFromForm(): LegacyRecordUnion {
-    const modelName = this.form.getRawValue().name;
+  private buildModelDataFromJson(baseModelName: string): LegacyRecordUnion | null {
+    const jsonSource = this.jsonDataText();
+    if (!jsonSource.trim()) {
+      return null;
+    }
+
+    try {
+      const jsonData = JSON.parse(jsonSource) as Record<string, unknown>;
+      return { name: baseModelName, ...jsonData } as LegacyRecordUnion;
+    } catch {
+      return null;
+    }
+  }
+
+  buildModelDataFromForm(modelName: string): LegacyRecordUnion {
     // Convert simplified downloads back to legacy config format
     const legacyConfig = simplifiedToLegacyConfig(
       { download: this.simplifiedDownloads() },
@@ -387,6 +416,25 @@ export class ModelFormComponent implements OnInit {
     }
 
     return base;
+  }
+
+  private setupFormValueTracking(): void {
+    const nameControl = this.form.get('name');
+    const jsonControl = this.form.get('jsonData');
+
+    const currentName = (nameControl?.value ?? '') as string;
+    const currentJson = (jsonControl?.value ?? '') as string;
+
+    this.formNameValue.set(currentName);
+    this.jsonDataText.set(currentJson);
+
+    nameControl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => this.formNameValue.set((value ?? '') as string));
+
+    jsonControl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => this.jsonDataText.set((value ?? '') as string));
   }
 
   populateFormFromModel(model: LegacyRecordUnion): void {
@@ -451,7 +499,7 @@ export class ModelFormComponent implements OnInit {
     if (this.viewMode() === 'form') {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -463,7 +511,7 @@ export class ModelFormComponent implements OnInit {
     if (this.viewMode() === 'form') {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -475,7 +523,7 @@ export class ModelFormComponent implements OnInit {
     if (this.viewMode() === 'form') {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -487,7 +535,7 @@ export class ModelFormComponent implements OnInit {
     if (this.viewMode() === 'form') {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -499,7 +547,7 @@ export class ModelFormComponent implements OnInit {
     if (this.viewMode() === 'form') {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
-        const modelData = this.buildModelDataFromForm();
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
         const issues = validateLegacyRecord(modelData);
         this.validationIssues.set(issues);
       }, 0);
@@ -530,7 +578,7 @@ export class ModelFormComponent implements OnInit {
     let modelData: LegacyRecordUnion;
 
     if (this.viewMode() === 'form') {
-      modelData = this.buildModelDataFromForm();
+      modelData = this.buildModelDataFromForm(modelName);
     } else {
       try {
         const jsonData = JSON.parse(formValue.jsonData);
@@ -701,6 +749,8 @@ export class ModelFormComponent implements OnInit {
       }
     });
 
+    this.setupFormValueTracking();
+
     this.populateFormFromModel(defaultRecord);
 
     // For text generation, select all backends by default
@@ -763,6 +813,8 @@ export class ModelFormComponent implements OnInit {
       }
     });
 
+    this.setupFormValueTracking();
+
     this.populateFormFromModel(model);
 
     // Delay validation to allow signals to propagate
@@ -813,6 +865,8 @@ export class ModelFormComponent implements OnInit {
         this.validateJson();
       }
     });
+
+    this.setupFormValueTracking();
 
     this.populateFormFromModel(primaryModel);
 

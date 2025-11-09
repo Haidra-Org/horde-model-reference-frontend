@@ -1,0 +1,55 @@
+<div class="form-field">
+  @if (label()) {
+    <label class="form-label" [attr.for]="inputId">{{ label() }}</label>
+  }
+
+  <div class="relative">
+    <input
+      #inputElement
+      type="text"
+      class="form-input"
+      [id]="inputId"
+      [placeholder]="placeholder()"
+      [ngModel]="inputValue()"
+      (ngModelChange)="inputValue.set($event)"
+      (input)="handleInput()"
+      (focus)="handleFocus()"
+      (keydown)="handleKeyDown($event)"
+      (blur)="handleBlur()"
+      [attr.aria-controls]="suggestionsId"
+      [attr.aria-expanded]="showSuggestions()"
+      [attr.aria-autocomplete]="suggestions().length > 0 ? 'list' : null"
+      role="combobox"
+    />
+
+    <!-- Dropdown rendered with fixed positioning to avoid container clipping -->
+    @if (showSuggestions() && filteredSuggestions().length > 0) {
+      <div
+        [id]="suggestionsId"
+        class="autocomplete-dropdown autocomplete-dropdown-fixed"
+        role="listbox"
+        [attr.aria-label]="label() + ' suggestions'"
+        [style.top.px]="dropdownTop()"
+        [style.left.px]="dropdownLeft()"
+        [style.width.px]="dropdownWidth()"
+      >
+        @for (suggestion of filteredSuggestions(); track suggestion; let idx = $index) {
+          <button
+            type="button"
+            class="autocomplete-item"
+            [class.autocomplete-item-selected]="idx === selectedSuggestionIndex()"
+            [class.autocomplete-item-matched]="
+              inputValue().trim() &&
+              suggestion.toLowerCase().includes(inputValue().toLowerCase().trim())
+            "
+            (click)="selectSuggestion(suggestion)"
+            role="option"
+            [attr.aria-selected]="idx === selectedSuggestionIndex()"
+          >
+            {{ suggestion }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+</div>

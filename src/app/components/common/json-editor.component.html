@@ -1,0 +1,9 @@
+<div class="json-editor-wrapper">
+  <!-- Syntax-highlighted background -->
+  <pre class="json-editor-highlight" aria-hidden="true" [innerHTML]="highlightedHtml()"></pre>
+
+  <!-- Transparent textarea overlay -->
+  <textarea class="json-editor-textarea" [value]="editorValue()" [placeholder]="placeholder()" [rows]="rows()"
+    [readonly]="readonly()" [disabled]="componentDisabled()" (input)="onInput($event)" (blur)="onBlur()"
+    spellcheck="false" [attr.aria-disabled]="componentDisabled()"></textarea>
+</div>

@@ -1,0 +1,148 @@
+:host {
+  display: block;
+}
+
+:host(.json-editor-error) .json-editor-wrapper {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+:host(.json-editor-error) .json-editor-textarea:focus {
+  outline-color: #ef4444;
+}
+
+.json-editor-wrapper {
+  position: relative;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.json-editor-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0.75rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  background-color: transparent;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
+  overflow: hidden;
+}
+
+.json-editor-textarea {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: transparent;
+  caret-color: #000;
+  resize: vertical;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
+  -webkit-text-fill-color: transparent;
+}
+
+.json-editor-textarea::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: transparent;
+}
+
+.json-editor-textarea::-moz-selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: transparent;
+}
+
+.json-editor-textarea::placeholder {
+  color: #9ca3af;
+  -webkit-text-fill-color: #9ca3af;
+}
+
+.json-editor-textarea:read-only {
+  cursor: not-allowed;
+}
+
+.json-editor-textarea:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+  border-radius: 0.5rem;
+}
+
+/* JSON syntax highlighting colors - NO font-weight changes to prevent width misalignment */
+:host ::ng-deep .json-key {
+  color: #0451a5;
+}
+
+:host ::ng-deep .json-string {
+  color: #a31515;
+}
+
+:host ::ng-deep .json-number {
+  color: #098658;
+}
+
+:host ::ng-deep .json-boolean {
+  color: #0000ff;
+}
+
+:host ::ng-deep .json-null {
+  color: #808080;
+  font-style: italic;
+}
+
+/* Dark mode colors */
+:host-context(.dark) .json-editor-wrapper {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+:host-context(.dark) .json-editor-textarea {
+  caret-color: #fff;
+}
+
+:host-context(.dark) .json-editor-textarea::placeholder {
+  color: #6b7280;
+  -webkit-text-fill-color: #6b7280;
+}
+
+:host-context(.dark) ::ng-deep .json-key {
+  color: #9cdcfe;
+}
+
+:host-context(.dark) ::ng-deep .json-string {
+  color: #ce9178;
+}
+
+:host-context(.dark) ::ng-deep .json-number {
+  color: #b5cea8;
+}
+
+:host-context(.dark) ::ng-deep .json-boolean {
+  color: #569cd6;
+}
+
+:host-context(.dark) ::ng-deep .json-null {
+  color: #808080;
+}

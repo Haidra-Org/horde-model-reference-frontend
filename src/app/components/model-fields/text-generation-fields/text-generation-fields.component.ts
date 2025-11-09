@@ -1,8 +1,24 @@
-import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  computed,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  DestroyRef,
+  effect,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, switchMap } from 'rxjs';
 import { FieldGroupComponent } from '../../form-fields/field-group/field-group.component';
 import { FormFieldConfig, FormFieldGroup } from '../../../models/form-field-config';
 import { FormFieldBuilder } from '../../../utils/form-field-builder';
 import { TextBackend } from '../../../models/text-model-name';
+import { ModelConstantsService } from '../../../services/model-constants.service';
+import { ModelReferenceApiService } from '../../../services/model-reference-api.service';
+import { MODEL_REFERENCE_CATEGORY } from '../../../api-client';
+import { LegacyRecordUnion } from '../../../models/api.models';
 
 type SettingsValue = number | string | boolean | number[] | string[];
 
@@ -57,8 +73,41 @@ export interface TextGenerationFieldsData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextGenerationFieldsComponent {
+  private readonly modelConstants = inject(ModelConstantsService);
+  private readonly api = inject(ModelReferenceApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly categoryChange$ = new Subject<MODEL_REFERENCE_CATEGORY>();
+
   readonly data = input.required<TextGenerationFieldsData>();
   readonly dataChange = output<TextGenerationFieldsData>();
+
+  // Signal to hold the models for the current category
+  protected readonly categoryModels = signal<LegacyRecordUnion[]>([]);
+
+  // Computed signal for tag suggestions based on category models
+  protected readonly categoryTagValues = computed(() => {
+    const models = this.categoryModels();
+    return this.modelConstants.getTagSuggestions(models);
+  });
+
+  constructor() {
+    // Set up API call stream with switchMap for proper cancellation
+    this.categoryChange$
+      .pipe(
+        switchMap((category) => this.api.getLegacyModelsAsArray(category)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (models) => this.categoryModels.set(models as LegacyRecordUnion[]),
+        error: () => this.categoryModels.set([]), // Fallback to empty on error
+      });
+
+    // Effect to trigger fetching when component initializes
+    effect(() => {
+      // Text generation is always text_generation category
+      this.categoryChange$.next(MODEL_REFERENCE_CATEGORY.TextGeneration);
+    });
+  }
 
   /**
    * Computed signal that generates all field configurations for the text generation fields form.
@@ -136,6 +185,7 @@ export class TextGenerationFieldsComponent {
             this.updateField('tags', value.length > 0 ? value : null),
           )
             .placeholder('Add tag...')
+            .suggestions(this.categoryTagValues())
             .helpText('Descriptive tags for categorization (e.g., instruct, chat, code)')
             .build(),
         ],

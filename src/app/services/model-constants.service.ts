@@ -1,4 +1,9 @@
 import { Injectable } from '@angular/core';
+import {
+  LegacyRecordUnion,
+  LegacyStableDiffusionRecord,
+  LegacyTextGenerationRecord,
+} from '../models/api.models';
 
 /**
  * Service providing backend constants for model forms.
@@ -125,5 +130,63 @@ export class ModelConstantsService {
    */
   getKnownSchedulers(): readonly string[] {
     return this.KNOWN_SCHEDULERS;
+  }
+
+  /**
+   * Get style suggestions for autocomplete from actual model data.
+   * Deduplicates case-insensitively while preserving original casing from first occurrence.
+   * @param models - Array of models to extract styles from
+   * @returns Sorted array of unique style suggestions
+   */
+  getStyleSuggestions(models: LegacyRecordUnion[]): string[] {
+    const styleSet = new Map<string, string>();
+
+    // Collect styles from models
+    models.forEach((model) => {
+      if (model.style && typeof model.style === 'string') {
+        const lowerStyle = model.style.toLowerCase();
+        // Only add if not already present (preserves first occurrence casing)
+        if (!styleSet.has(lowerStyle)) {
+          styleSet.set(lowerStyle, model.style);
+        }
+      }
+    });
+
+    // Return sorted array
+    return Array.from(styleSet.values()).sort((a, b) => a.localeCompare(b));
+  }
+
+  /**
+   * Get tag suggestions from actual model data.
+   * Deduplicates case-insensitively while preserving original casing from first occurrence.
+   * @param models - Array of models to extract tags from
+   * @returns Sorted array of unique tag suggestions
+   */
+  getTagSuggestions(models: LegacyRecordUnion[]): string[] {
+    const tagSet = new Map<string, string>();
+
+    // Filter to only models that have tags property and add their tags
+    const modelsWithTags = models.filter(
+      (model): model is LegacyStableDiffusionRecord | LegacyTextGenerationRecord => {
+        return 'tags' in model && Array.isArray(model.tags);
+      },
+    );
+
+    modelsWithTags.forEach((model) => {
+      if (model.tags) {
+        model.tags.forEach((tag) => {
+          if (tag && typeof tag === 'string') {
+            const lowerTag = tag.toLowerCase();
+            // Only add if not already present (preserves first occurrence casing)
+            if (!tagSet.has(lowerTag)) {
+              tagSet.set(lowerTag, tag);
+            }
+          }
+        });
+      }
+    });
+
+    // Return sorted array
+    return Array.from(tagSet.values()).sort((a, b) => a.localeCompare(b));
   }
 }

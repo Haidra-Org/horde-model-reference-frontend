@@ -1,9 +1,26 @@
-import { Component, input, output, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  computed,
+  inject,
+  ChangeDetectionStrategy,
+  signal,
+  effect,
+  DestroyRef,
+  OnInit,
+  Injector,
+  runInInjectionContext,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FieldGroupComponent } from '../../form-fields/field-group/field-group.component';
-import { ModelReferenceCategory } from '../../../models/api.models';
+import { ModelReferenceCategory, LegacyRecordUnion } from '../../../models/api.models';
 import { FormFieldConfig, FormFieldGroup } from '../../../models/form-field-config';
 import { FormFieldBuilder } from '../../../utils/form-field-builder';
 import { ModelConstantsService } from '../../../services/model-constants.service';
+import { ModelReferenceApiService } from '../../../services/model-reference-api.service';
+import { Subject } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 export interface CommonFieldsData {
   description?: string | null;
@@ -36,12 +53,64 @@ export interface CommonFieldsData {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommonFieldsComponent {
+export class CommonFieldsComponent implements OnInit {
   private readonly modelConstants = inject(ModelConstantsService);
+  private readonly api = inject(ModelReferenceApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
 
   readonly data = input.required<CommonFieldsData>();
   readonly category = input.required<ModelReferenceCategory>();
   readonly dataChange = output<CommonFieldsData>();
+
+  /**
+   * Signal to store actual style values from models in the current category.
+   * Populated asynchronously when the category changes.
+   */
+  private readonly categoryModels = signal<LegacyRecordUnion[]>([]);
+
+  /**
+   * Subject to trigger category changes and handle request cancellation.
+   * Using switchMap ensures only the latest request completes.
+   */
+  private readonly categoryChange$ = new Subject<ModelReferenceCategory>();
+
+  /**
+   * Computed signal that extracts unique styles from existing models in the category.
+   * Returns unique, sorted suggestions for the autocomplete.
+   */
+  private readonly categoryStyleValues = computed(() => {
+    const models = this.categoryModels();
+    return this.modelConstants.getStyleSuggestions(models);
+  });
+
+  constructor() {
+    // Setup category change handler with proper request cancellation
+    this.categoryChange$
+      .pipe(
+        switchMap((category) => this.api.getLegacyModelsAsArray(category)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (models) => this.categoryModels.set(models),
+        error: () => {
+          // Silently fail and just use base suggestions
+          this.categoryModels.set([]);
+        },
+      });
+  }
+
+  ngOnInit(): void {
+    runInInjectionContext(this.injector, () =>
+      effect(() => {
+        const category = this.category();
+        if (!category) {
+          return;
+        }
+        this.categoryChange$.next(category);
+      }),
+    );
+  }
 
   /**
    * Computed signal that generates all field configurations for the common fields form.
@@ -111,14 +180,14 @@ export class CommonFieldsComponent {
             .priority('recommended')
             .build(),
 
-          FormFieldBuilder.select(
-            'style',
-            'Style',
-            currentData.style || '',
-            [{ value: '', label: '(None)' }, ...this.modelConstants.getModelStyles()],
-            (value) => this.updateField('style', value || null),
+          FormFieldBuilder.autocomplete('style', 'Style', currentData.style || null, (value) =>
+            this.updateField('style', value || null),
           )
-            .helpText('Visual or output style category of the model')
+            .suggestions(this.categoryStyleValues())
+            .placeholder('Type or select a style...')
+            .helpText(
+              'Visual or output style category of the model. You can type a custom value or select from common styles.',
+            )
             .gridSpan(1)
             .priority('optional')
             .build(),

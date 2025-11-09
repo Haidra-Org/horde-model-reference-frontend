@@ -10,6 +10,7 @@ import {
   TextareaFieldConfig,
   SelectFieldConfig,
   CheckboxFieldConfig,
+  AutocompleteFieldConfig,
   TagInputFieldConfig,
   KeyValueFieldConfig,
   RequirementsFieldConfig,
@@ -137,6 +138,25 @@ export class FormFieldBuilder {
       name: id,
       label,
       type: 'checkbox',
+      value,
+      onChange,
+    });
+  }
+
+  /**
+   * Create an autocomplete input field (single value with suggestions)
+   */
+  static autocomplete(
+    id: string,
+    label: string,
+    value: string | null,
+    onChange: (value: string | null) => void,
+  ): AutocompleteFieldBuilder {
+    return new AutocompleteFieldBuilder({
+      id,
+      name: id,
+      label,
+      type: 'autocomplete',
       value,
       onChange,
     });
@@ -408,6 +428,16 @@ class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> {}
 class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   checkboxLabel(text: string): this {
     this.config.checkboxLabel = text;
+    return this;
+  }
+}
+
+class AutocompleteFieldBuilder extends BaseFieldBuilder<AutocompleteFieldConfig> {
+  /**
+   * Add autocomplete suggestions
+   */
+  suggestions(values: readonly string[]): this {
+    this.config.suggestions = values;
     return this;
   }
 }

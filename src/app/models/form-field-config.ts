@@ -12,6 +12,7 @@ export type FormFieldType =
   | 'textarea'
   | 'select'
   | 'checkbox'
+  | 'autocomplete'
   | 'tag-input'
   | 'key-value'
   | 'requirements';
@@ -118,6 +119,15 @@ export interface TagInputFieldConfig extends BaseFieldConfig<string[]> {
 }
 
 /**
+ * Configuration for autocomplete input fields (single string value with suggestions)
+ */
+export interface AutocompleteFieldConfig extends BaseFieldConfig<string | null> {
+  type: 'autocomplete';
+  /** Suggestions for autocomplete */
+  suggestions?: readonly string[];
+}
+
+/**
  * Configuration for key-value editor fields
  */
 export interface KeyValueFieldConfig
@@ -144,6 +154,7 @@ export type FormFieldConfig =
   | TextareaFieldConfig
   | SelectFieldConfig
   | CheckboxFieldConfig
+  | AutocompleteFieldConfig
   | TagInputFieldConfig
   | KeyValueFieldConfig
   | RequirementsFieldConfig;
