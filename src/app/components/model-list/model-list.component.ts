@@ -301,8 +301,12 @@ export class ModelListComponent implements OnInit {
         if (aActive !== bActive) {
           // Active models first when asc (default), inactive first when desc
           return direction === 'asc'
-            ? (aActive ? -1 : 1)  // Active first
-            : (aActive ? 1 : -1); // Inactive first
+            ? aActive
+              ? -1
+              : 1 // Active first
+            : aActive
+              ? 1
+              : -1; // Inactive first
         }
 
         // Within each active status group, sort by name
@@ -662,11 +666,7 @@ export class ModelListComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchTermSubject
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((term) => {
         this.debouncedSearchTerm.set(term);
       });
@@ -942,9 +942,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-        startWith<BackendStatisticsResponse | null>(null),
-        catchError(() => of(null)),
-      )
+          startWith<BackendStatisticsResponse | null>(null),
+          catchError(() => of(null)),
+        )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(

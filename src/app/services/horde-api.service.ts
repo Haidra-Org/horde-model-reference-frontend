@@ -115,7 +115,7 @@ export class HordeApiService {
   /**
    * Get combined model data with statistics from the backend service.
    * This replaces direct aihorde.net API calls with backend-aggregated statistics.
-   * 
+   *
    * @param type The model type (image or text)
    * @param minCount Optional minimum worker count filter
    * @param includeBackendVariations Include per-backend statistics for text models (default: true for text, false for image)
@@ -134,7 +134,7 @@ export class HordeApiService {
     }
 
     // Default to including backend variations for text models
-    const shouldIncludeVariations = includeBackendVariations ?? (type === 'text');
+    const shouldIncludeVariations = includeBackendVariations ?? type === 'text';
     if (shouldIncludeVariations) {
       params = params.set('include_backend_variations', 'true');
     }
@@ -145,7 +145,7 @@ export class HordeApiService {
       this.http
         .get<BackendStatisticsResponse>(
           `${environment.apiBaseUrl}/model_references/statistics/${category}/with-stats`,
-          { params }
+          { params },
         )
         .pipe(
           tap((response) => {

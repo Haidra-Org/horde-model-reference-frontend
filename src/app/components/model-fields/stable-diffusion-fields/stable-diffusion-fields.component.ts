@@ -72,7 +72,9 @@ export class StableDiffusionFieldsComponent {
             (value) => this.updateField('baseline', value),
           )
             .required()
-            .helpText('The base Stable Diffusion model architecture (e.g., SD1.5, SDXL). Impact: Determines GPU memory requirements (SD1.5: 4GB+, SDXL: 12GB+) and generation speed. Affects which workers can serve this model.')
+            .helpText(
+              'The base Stable Diffusion model architecture (e.g., SD1.5, SDXL). Impact: Determines GPU memory requirements (SD1.5: 4GB+, SDXL: 12GB+) and generation speed. Affects which workers can serve this model.',
+            )
             .gridSpan(2)
             .build(),
 
@@ -83,7 +85,9 @@ export class StableDiffusionFieldsComponent {
             (value) => this.updateField('inpainting', value),
           )
             .checkboxLabel('This model is designed for inpainting tasks')
-            .helpText('Inpainting models fill in missing or masked parts of images. Impact: Workers need separate inpainting models loaded. Requesters must specify if they need this capability.')
+            .helpText(
+              'Inpainting models fill in missing or masked parts of images. Impact: Workers need separate inpainting models loaded. Requesters must specify if they need this capability.',
+            )
             .gridSpan(2)
             .build(),
         ],
@@ -113,7 +117,9 @@ export class StableDiffusionFieldsComponent {
           )
             .placeholder('Add tag...')
             .suggestions(this.modelConstants.getKnownTags())
-            .helpText('Descriptive tags for categorizing (e.g., anime, realistic, portrait). Impact: Well-tagged models are easier to discover via search. Best Practice: Use lowercase, descriptive tags from the suggestions when available.')
+            .helpText(
+              'Descriptive tags for categorizing (e.g., anime, realistic, portrait). Impact: Well-tagged models are easier to discover via search. Best Practice: Use lowercase, descriptive tags from the suggestions when available.',
+            )
             .gridSpan(2)
             .build(),
 
@@ -124,7 +130,9 @@ export class StableDiffusionFieldsComponent {
             (value) => this.updateField('trigger', value.length > 0 ? value : null),
           )
             .placeholder('Add trigger word...')
-            .helpText("Specific words/phrases that activate this model's style. Impact: Requesters must include these in prompts for best results. Best Practice: Document exact trigger words from model training.")
+            .helpText(
+              "Specific words/phrases that activate this model's style. Impact: Requesters must include these in prompts for best results. Best Practice: Document exact trigger words from model training.",
+            )
             .gridSpan(2)
             .build(),
 
@@ -135,7 +143,9 @@ export class StableDiffusionFieldsComponent {
             (value) => this.updateField('showcases', value.length > 0 ? value : null),
           )
             .placeholder('Add showcase URL...')
-            .helpText('URLs to example images generated with this model. Impact: Good showcases dramatically increase model discovery and usage. Best Practice: Include 3-5 diverse, high-quality examples.')
+            .helpText(
+              'URLs to example images generated with this model. Impact: Good showcases dramatically increase model discovery and usage. Best Practice: Include 3-5 diverse, high-quality examples.',
+            )
             .gridSpan(4)
             .build(),
         ],

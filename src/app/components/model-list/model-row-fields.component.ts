@@ -85,7 +85,12 @@ import { HordeApiService } from '../../services/horde-api.service';
                 </svg>
                 Horde Status
                 @if (isGroupedWithAggregatedStats()) {
-                  <span class="badge badge-info text-xs ml-2" title="Statistics aggregated from {{ groupedModel()!.variations.length }} model variations">
+                  <span
+                    class="badge badge-info text-xs ml-2"
+                    title="Statistics aggregated from {{
+                      groupedModel()!.variations.length
+                    }} model variations"
+                  >
                     Aggregated ({{ groupedModel()!.variations.length }} variants)
                   </span>
                 }
@@ -448,19 +453,28 @@ export class ModelRowFieldsComponent {
 
   readonly usageStatsDay = computed(() => {
     const model = this.model();
-    const stats = model.usageStats as { day?: number; month?: number; total?: number } | null | undefined;
+    const stats = model.usageStats as
+      | { day?: number; month?: number; total?: number }
+      | null
+      | undefined;
     return stats?.day ?? 0;
   });
 
   readonly usageStatsMonth = computed(() => {
     const model = this.model();
-    const stats = model.usageStats as { day?: number; month?: number; total?: number } | null | undefined;
+    const stats = model.usageStats as
+      | { day?: number; month?: number; total?: number }
+      | null
+      | undefined;
     return stats?.month ?? 0;
   });
 
   readonly usageStatsTotal = computed(() => {
     const model = this.model();
-    const stats = model.usageStats as { day?: number; month?: number; total?: number } | null | undefined;
+    const stats = model.usageStats as
+      | { day?: number; month?: number; total?: number }
+      | null
+      | undefined;
     return stats?.total ?? 0;
   });
 

@@ -104,7 +104,9 @@ export class CommonFieldsComponent {
           FormFieldBuilder.boolean('nsfw', 'NSFW', currentData.nsfw, (value) =>
             this.updateField('nsfw', value),
           )
-            .helpText('Whether this model is designed for or may generate NSFW content. Impact: Affects model discoverability and which workers will serve it. Some institutions filter NSFW models from search results.')
+            .helpText(
+              'Whether this model is designed for or may generate NSFW content. Impact: Affects model discoverability and which workers will serve it. Some institutions filter NSFW models from search results.',
+            )
             .gridSpan(1)
             .priority('recommended')
             .build(),

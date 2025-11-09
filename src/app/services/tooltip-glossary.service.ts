@@ -58,7 +58,7 @@ export class TooltipGlossaryService {
         term.term.toLowerCase().includes(lowerQuery) ||
         term.shortDef.toLowerCase().includes(lowerQuery) ||
         term.longDef.toLowerCase().includes(lowerQuery) ||
-        term.examples.some((ex) => ex.toLowerCase().includes(lowerQuery))
+        term.examples.some((ex) => ex.toLowerCase().includes(lowerQuery)),
     );
   }
 
@@ -91,7 +91,8 @@ export class TooltipGlossaryService {
 
     this.addTerm({
       term: 'parameters',
-      shortDef: 'Total number of model parameters (for text generation models, measured in billions)',
+      shortDef:
+        'Total number of model parameters (for text generation models, measured in billions)',
       longDef:
         'Parameter count indicates the size and complexity of a language model. Larger models generally produce better quality output but require more GPU memory, take longer to generate, and consume more kudos per request. Parameter count directly affects which workers can serve the model.',
       examples: [
@@ -143,8 +144,7 @@ export class TooltipGlossaryService {
       ],
       impact:
         'More workers serving a model = faster generation times. Models with zero active workers cannot fulfill requests.',
-      learnMoreUrl:
-        'https://github.com/Haidra-Org/AI-Horde/blob/main/docs/definitions.md#workers',
+      learnMoreUrl: 'https://github.com/Haidra-Org/AI-Horde/blob/main/docs/definitions.md#workers',
     });
 
     this.addTerm({
@@ -207,9 +207,9 @@ export class TooltipGlossaryService {
 
     this.addTerm({
       term: 'trigger words',
-      shortDef: 'Specific keywords or phrases that activate a model\'s style or special features',
+      shortDef: "Specific keywords or phrases that activate a model's style or special features",
       longDef:
-        'Many fine-tuned models are trained to respond to specific words or phrases in the prompt. Using these trigger words helps activate the model\'s unique style or characteristics. Without them, the model may produce generic results.',
+        "Many fine-tuned models are trained to respond to specific words or phrases in the prompt. Using these trigger words helps activate the model's unique style or characteristics. Without them, the model may produce generic results.",
       examples: [
         'artstation, highly detailed',
         'by greg rutkowski',
@@ -353,7 +353,7 @@ export class TooltipGlossaryService {
       term: 'showcases',
       shortDef: 'Example images generated with this model to demonstrate its capabilities',
       longDef:
-        'Showcase images help users understand a model\'s style, quality, and capabilities before using it. Good showcases demonstrate the model\'s strengths and typical output quality.',
+        "Showcase images help users understand a model's style, quality, and capabilities before using it. Good showcases demonstrate the model's strengths and typical output quality.",
       examples: [
         'Character portraits showing style',
         'Landscapes demonstrating detail',
@@ -375,7 +375,7 @@ export class TooltipGlossaryService {
         'LLM 70B Q4: ~40GB VRAM minimum',
       ],
       impact:
-        'Primary hardware constraint for workers. If you don\'t have enough VRAM, you cannot run the model.',
+        "Primary hardware constraint for workers. If you don't have enough VRAM, you cannot run the model.",
     });
 
     this.addTerm({

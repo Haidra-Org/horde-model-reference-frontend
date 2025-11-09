@@ -578,17 +578,25 @@ export class ModelAuditComponent implements OnInit {
         if (isGroupedTextModel(item.model)) {
           const groupedModel = item.model as GroupedTextModel;
           // Check if search matches any backend name
-          if (groupedModel.availableBackends.some((backend) => backend.toLowerCase().includes(search))) {
+          if (
+            groupedModel.availableBackends.some((backend) => backend.toLowerCase().includes(search))
+          ) {
             return true;
           }
 
           // Check if search matches any variation name
-          if (groupedModel.variations.some((variation) => variation.name.toLowerCase().includes(search))) {
+          if (
+            groupedModel.variations.some((variation) =>
+              variation.name.toLowerCase().includes(search),
+            )
+          ) {
             return true;
           }
 
           // Check if search matches any author
-          if (groupedModel.availableAuthors.some((author) => author.toLowerCase().includes(search))) {
+          if (
+            groupedModel.availableAuthors.some((author) => author.toLowerCase().includes(search))
+          ) {
             return true;
           }
         }
@@ -739,11 +747,7 @@ export class ModelAuditComponent implements OnInit {
   ngOnInit(): void {
     // Setup debounced search
     this.searchTermSubject
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((term) => {
         this.debouncedSearchTerm.set(term);
       });
@@ -820,9 +824,9 @@ export class ModelAuditComponent implements OnInit {
       map((referenceModels) => {
         const canonical: UnifiedModelData[] = isTextGen
           ? mergeMultipleModels(referenceModels, undefined, undefined, {
-            parseTextModelNames: true,
-          })
-          : referenceModels.map((model) => ({ ...model })) as UnifiedModelData[];
+              parseTextModelNames: true,
+            })
+          : (referenceModels.map((model) => ({ ...model })) as UnifiedModelData[]);
 
         const displayModels: (UnifiedModelData | GroupedTextModel)[] = isTextGen
           ? createGroupedTextModels(canonical)

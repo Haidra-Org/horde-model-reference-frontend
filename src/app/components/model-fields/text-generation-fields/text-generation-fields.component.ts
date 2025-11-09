@@ -79,7 +79,9 @@ export class TextGenerationFieldsComponent {
           )
             .required()
             .placeholder('e.g., 7000000000')
-            .helpText('Total number of model parameters (required for proper categorization). Impact: Directly affects GPU memory requirements (~0.6GB per billion for 4-bit), generation speed, and kudos costs. Larger = better quality but slower.')
+            .helpText(
+              'Total number of model parameters (required for proper categorization). Impact: Directly affects GPU memory requirements (~0.6GB per billion for 4-bit), generation speed, and kudos costs. Larger = better quality but slower.',
+            )
             .build(),
 
           FormFieldBuilder.text(

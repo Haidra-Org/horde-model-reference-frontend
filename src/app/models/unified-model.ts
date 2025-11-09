@@ -169,7 +169,7 @@ export interface GroupedTextModel extends Omit<UnifiedModelData, 'name' | 'worke
 /**
  * Merge backend pre-aggregated statistics into reference model data.
  * This replaces the old mergeModelData that did client-side matching.
- * 
+ *
  * @param referenceData The reference model data
  * @param backendStats Backend statistics response (model name -> stats)
  * @param options Optional parsing options
@@ -291,7 +291,7 @@ export function mergeModelData<T extends { name: string }>(
 /**
  * Merge backend pre-aggregated statistics for multiple models.
  * For text models with backend_variations, creates additional entries for each backend variant.
- * 
+ *
  * @param referenceModels Array of reference model data
  * @param backendStats Backend statistics response (model name -> stats)
  * @param options Optional parsing options
@@ -339,7 +339,11 @@ export function mergeMultipleBackendStatistics<T extends { name: string }>(
           }
 
           // Add usage stats if available
-          if (variation.usage_day !== undefined || variation.usage_month !== undefined || variation.usage_total !== undefined) {
+          if (
+            variation.usage_day !== undefined ||
+            variation.usage_month !== undefined ||
+            variation.usage_total !== undefined
+          ) {
             backendVariation.usageStats = {
               day: variation.usage_day ?? 0,
               month: variation.usage_month ?? 0,
@@ -578,7 +582,7 @@ export function findModelByNameVariation(
 /**
  * Aggregate stats from multiple backend variations of the same model.
  * Since backend provides pre-aggregated stats per model name, we just sum across variations.
- * 
+ *
  * @param models Array of model variations for the same base model
  * @returns Aggregated stats across all variations
  */

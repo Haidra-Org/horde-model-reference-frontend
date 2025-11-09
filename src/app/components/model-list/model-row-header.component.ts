@@ -60,31 +60,61 @@ import {
               @if (badges.isPopular) {
                 <span class="badge-popular" [title]="getStatusTooltip('isPopular')">
                   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path [attr.d]="getStatusIcon('isPopular')"/>
+                    <path [attr.d]="getStatusIcon('isPopular')" />
                   </svg>
                   {{ getStatusLabel('isPopular') }}
                 </span>
               }
               @if (badges.isTrending) {
                 <span class="badge-trending" [title]="getStatusTooltip('isTrending')">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getStatusIcon('isTrending')"/>
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      [attr.d]="getStatusIcon('isTrending')"
+                    />
                   </svg>
                   {{ getStatusLabel('isTrending') }}
                 </span>
               }
               @if (badges.needsWorkers) {
                 <span class="badge-needs-workers" [title]="getStatusTooltip('needsWorkers')">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getStatusIcon('needsWorkers')"/>
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      [attr.d]="getStatusIcon('needsWorkers')"
+                    />
                   </svg>
                   {{ getStatusLabel('needsWorkers') }}
                 </span>
               }
               @if (badges.isNew) {
                 <span class="badge-new" [title]="getStatusTooltip('isNew')">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getStatusIcon('isNew')"/>
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      [attr.d]="getStatusIcon('isNew')"
+                    />
                   </svg>
                   {{ getStatusLabel('isNew') }}
                 </span>
@@ -96,7 +126,12 @@ import {
           @if (gpuRequirement(); as req) {
             <span class="badge-gpu-requirement" [title]="req.speedDescription">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                />
               </svg>
               {{ formatVram(req.minVramGb) }}
             </span>
@@ -106,7 +141,12 @@ import {
           @if (speedTierBadge(); as speed) {
             <span [class]="speed.class" [title]="speed.description">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
               {{ speed.label }}
             </span>
@@ -197,13 +237,17 @@ export class ModelRowHeaderComponent {
 
     // Extract required fields for status badges
     const modelData = {
-      total_usage_count: (model as Record<string, unknown>)['total_usage_count'] as number | undefined,
-      month_usage_count: (model as Record<string, unknown>)['month_usage_count'] as number | undefined,
+      total_usage_count: (model as Record<string, unknown>)['total_usage_count'] as
+        | number
+        | undefined,
+      month_usage_count: (model as Record<string, unknown>)['month_usage_count'] as
+        | number
+        | undefined,
       active_workers: (model as Record<string, unknown>)['active_workers'] as number | undefined,
       created_at: (model as Record<string, unknown>)['created_at'] as string | undefined,
     };
 
-    const allModelsData = allModels.map(m => ({
+    const allModelsData = allModels.map((m) => ({
       total_usage_count: (m as Record<string, unknown>)['total_usage_count'] as number | undefined,
     }));
 

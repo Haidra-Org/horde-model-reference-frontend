@@ -172,7 +172,11 @@ export function mergeMultipleBackendStatistics<T extends { name: string }>(
             backendVariation.parsedName = parseTextModelName(variation.variant_name);
           }
 
-          if (variation.usage_day !== undefined || variation.usage_month !== undefined || variation.usage_total !== undefined) {
+          if (
+            variation.usage_day !== undefined ||
+            variation.usage_month !== undefined ||
+            variation.usage_total !== undefined
+          ) {
             backendVariation.usageStats = {
               day: variation.usage_day ?? 0,
               month: variation.usage_month ?? 0,

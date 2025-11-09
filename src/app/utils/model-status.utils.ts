@@ -36,7 +36,7 @@ export function getModelStatusBadges(
   },
   allModels: {
     total_usage_count?: number;
-  }[]
+  }[],
 ): ModelStatusBadges {
   const totalUsage = model.total_usage_count || 0;
   const monthUsage = model.month_usage_count || 0;
@@ -149,10 +149,9 @@ export function getStatusBadgeTooltip(status: keyof ModelStatusBadges): string {
 /**
  * Sort models by priority for display (popular/trending first, then needs workers, then rest)
  */
-export function sortModelsByPriority<T extends { total_usage_count?: number; active_workers?: number }>(
-  models: T[],
-  allModels: T[]
-): T[] {
+export function sortModelsByPriority<
+  T extends { total_usage_count?: number; active_workers?: number },
+>(models: T[], allModels: T[]): T[] {
   return [...models].sort((a, b) => {
     const badgesA = getModelStatusBadges(a, allModels);
     const badgesB = getModelStatusBadges(b, allModels);
@@ -175,7 +174,14 @@ export function sortModelsByPriority<T extends { total_usage_count?: number; act
 /**
  * Filter models by status badges
  */
-export function filterModelsByStatus<T extends { total_usage_count?: number; month_usage_count?: number; active_workers?: number; created_at?: string }>(
+export function filterModelsByStatus<
+  T extends {
+    total_usage_count?: number;
+    month_usage_count?: number;
+    active_workers?: number;
+    created_at?: string;
+  },
+>(
   models: T[],
   allModels: T[],
   filter: {
@@ -184,7 +190,7 @@ export function filterModelsByStatus<T extends { total_usage_count?: number; mon
     onlyNeedsWorkers?: boolean;
     onlyNew?: boolean;
     hasWorkers?: boolean;
-  }
+  },
 ): T[] {
   return models.filter((model) => {
     const badges = getModelStatusBadges(model, allModels);

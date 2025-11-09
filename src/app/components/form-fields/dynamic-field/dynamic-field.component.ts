@@ -152,20 +152,20 @@ export class DynamicFieldComponent {
   readonly glossaryTerm = computed<string | null>(() => {
     const id = this.config().id;
     const glossaryMap: Record<string, string> = {
-      'baseline': 'baseline',
-      'parameters': 'parameters',
-      'nsfw': 'NSFW',
-      'inpainting': 'inpainting',
-      'tags': 'tags',
-      'trigger': 'trigger words',
-      'style': 'style',
-      'showcases': 'showcases',
-      'min_bridge_version': 'bridge version',
-      'workers': 'worker',
-      'kudos': 'kudos',
-      'lora': 'LoRA',
-      'controlnet': 'ControlNet',
-      'quantization': 'quantization',
+      baseline: 'baseline',
+      parameters: 'parameters',
+      nsfw: 'NSFW',
+      inpainting: 'inpainting',
+      tags: 'tags',
+      trigger: 'trigger words',
+      style: 'style',
+      showcases: 'showcases',
+      min_bridge_version: 'bridge version',
+      workers: 'worker',
+      kudos: 'kudos',
+      lora: 'LoRA',
+      controlnet: 'ControlNet',
+      quantization: 'quantization',
     };
     return glossaryMap[id] || null;
   });

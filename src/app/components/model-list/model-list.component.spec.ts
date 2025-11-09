@@ -6,7 +6,11 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { ModelListComponent } from './model-list.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
-import { HordeApiService, BackendStatisticsResponse, HordeStatsState } from '../../services/horde-api.service';
+import {
+  HordeApiService,
+  BackendStatisticsResponse,
+  HordeStatsState,
+} from '../../services/horde-api.service';
 import { AuthService } from '../../services/auth.service';
 import { LegacyRecordUnion } from '../../models';
 import { HordeModelType } from '../../models/horde-api.models';
@@ -24,7 +28,11 @@ class MockAuthService {
 }
 
 class MockModelReferenceApiService {
-  readonly backendCapabilities = signal({ writable: false, mode: 'UNKNOWN', canonicalFormat: 'legacy' });
+  readonly backendCapabilities = signal({
+    writable: false,
+    mode: 'UNKNOWN',
+    canonicalFormat: 'legacy',
+  });
   private readonly subjects = new Map<string, Subject<LegacyRecordUnion[]>>();
 
   getLegacyModelsAsArray(category: string) {
