@@ -55,7 +55,6 @@ import {
 } from '../../models/text-model-name';
 import { DownloadRecord } from '../../api-client';
 import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../../utils/config-converter';
-import { JsonDisplayComponent } from '../common/json-display.component';
 import { JsonEditorComponent } from '../common/json-editor.component';
 
 @Component({
@@ -67,7 +66,6 @@ import { JsonEditorComponent } from '../common/json-editor.component';
     TextGenerationFieldsComponent,
     ClipFieldsComponent,
     ConfigFormSectionSimplifiedComponent,
-    JsonDisplayComponent,
     JsonEditorComponent,
   ],
   templateUrl: './model-form.component.html',

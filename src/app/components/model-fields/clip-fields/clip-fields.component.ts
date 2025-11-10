@@ -11,26 +11,10 @@ export interface ClipFieldsData {
   selector: 'app-clip-fields',
   imports: [FieldGroupComponent],
   template: `
-    <div class="card">
-      <div class="card-header">
-        <h3 class="heading-card">CLIP Fields</h3>
-      </div>
-
-      <div class="card-body">
-        <!-- Color Legend -->
-        <div class="form-legend mb-4">
-          <span class="form-legend-item">
-            <span>🔷</span>
-            <span>Core</span>
-          </span>
-        </div>
-
-        <div class="card-section">
-          @for (item of fieldGroups(); track $index) {
-            <app-field-group [item]="item" />
-          }
-        </div>
-      </div>
+    <div class="space-y-4">
+      @for (item of fieldGroups(); track $index) {
+        <app-field-group [item]="item" />
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

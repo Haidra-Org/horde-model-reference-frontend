@@ -40,34 +40,10 @@ export interface TextGenerationFieldsData {
   selector: 'app-text-generation-fields',
   imports: [FieldGroupComponent],
   template: `
-    <div class="card">
-      <div class="card-header">
-        <h3 class="heading-card">Text Generation Fields</h3>
-      </div>
-
-      <div class="card-body">
-        <!-- Color Legend -->
-        <div class="form-legend mb-4">
-          <span class="form-legend-item">
-            <span>🔷</span>
-            <span>Core</span>
-          </span>
-          <span class="form-legend-item">
-            <span>✅</span>
-            <span>Content</span>
-          </span>
-          <span class="form-legend-item">
-            <span>⚠️</span>
-            <span>Constraints</span>
-          </span>
-        </div>
-
-        <div class="card-section">
-          @for (item of fieldGroups(); track $index) {
-            <app-field-group [item]="item" />
-          }
-        </div>
-      </div>
+    <div class="space-y-4">
+      @for (item of fieldGroups(); track $index) {
+        <app-field-group [item]="item" />
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

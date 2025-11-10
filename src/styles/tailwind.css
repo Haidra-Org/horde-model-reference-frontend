@@ -148,6 +148,11 @@
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
+:root {
+  /* Calculate a cross-browser-friendly vertical scrollbar width once so we can offset table gutters. */
+  --table-scrollbar-width: clamp(0px, calc(100vw - 100%), 1.5rem);
+}
+
 @layer components {
   /* Button variants with enhanced focus states */
   .btn {
@@ -406,6 +411,12 @@
   .data-table {
     @apply w-full overflow-hidden rounded-xl border border-gray-200;
     @apply dark:border-gray-700;
+  }
+
+  /* Keep header cells aligned with the scrollable body when a vertical scrollbar is present. */
+  .data-table-header {
+    @apply w-full;
+    padding-inline-end: var(--table-scrollbar-width);
   }
 
   .data-table table {
@@ -1492,7 +1503,10 @@
 
   /* Virtual Scrolling Support */
   .virtual-scroll-viewport {
-    @apply w-full overflow-auto;
+    @apply w-full overflow-y-auto overflow-x-hidden;
+    /* Reserve enough inline space for the OS scrollbar so row widths stay stable when details expand. */
+    padding-inline-end: var(--table-scrollbar-width);
+    scrollbar-gutter: stable both-edges;
   }
 
   .virtual-scroll-viewport .cdk-virtual-scroll-content-wrapper {

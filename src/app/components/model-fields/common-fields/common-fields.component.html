@@ -1,11 +1,5 @@
-<div class="card">
-  <div class="card-header">
-    <h3 class="heading-card">Common Fields</h3>
-  </div>
-
-  <div class="card-body card-section">
-    @for (item of fieldGroups(); track $index) {
-      <app-field-group [item]="item" />
-    }
-  </div>
+<div class="space-y-4">
+  @for (item of fieldGroups(); track $index) {
+    <app-field-group [item]="item" />
+  }
 </div>

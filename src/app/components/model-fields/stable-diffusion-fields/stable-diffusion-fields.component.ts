@@ -38,18 +38,10 @@ export interface StableDiffusionFieldsData {
   selector: 'app-stable-diffusion-fields',
   imports: [FieldGroupComponent],
   template: `
-    <div class="card">
-      <div class="card-header">
-        <h3 class="heading-card">Image Generation (Stable Diffusion) Fields</h3>
-      </div>
-
-      <div class="card-body">
-        <div class="card-section">
-          @for (item of fieldGroups(); track $index) {
-            <app-field-group [item]="item" />
-          }
-        </div>
-      </div>
+    <div class="space-y-4">
+      @for (item of fieldGroups(); track $index) {
+        <app-field-group [item]="item" />
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

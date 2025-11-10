@@ -1,32 +1,38 @@
 <div class="page-container">
-  <!-- Page Header -->
-  <div class="card">
-    <div class="card-header">
-      <div class="flex justify-between items-start">
-        <div>
-          <h1 class="heading-page">{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
-          <p class="text-muted text-sm mt-1">Category: {{ category() }}</p>
-        </div>
-        <button type="button" class="btn btn-secondary" (click)="toggleViewMode()">
-          Switch to {{ viewMode() === 'form' ? 'JSON' : 'Form' }} View
-        </button>
-      </div>
+  <!-- Compact Header -->
+  <div class="section-header mb-6">
+    <div>
+      <h1 class="heading-page">{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
+      <p class="text-muted-sm mt-1">{{ category() }}</p>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="toggleViewMode()">
+        {{ viewMode() === 'form' ? '{ }' : '📝' }}
+        {{ viewMode() === 'form' ? 'JSON' : 'Form' }}
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="cancel()">Cancel</button>
     </div>
   </div>
 
   @if (loading()) {
-    <div class="card">
-      <div class="loading-state">Loading model data...</div>
-    </div>
+    <div class="text-center text-muted-sm py-12">Loading model data...</div>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
-      <!-- Model Name Field -->
-      <div class="card">
-        <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Validation Summary (shown at top if errors exist) -->
+      @if (hasErrors()) {
+        <div class="alert alert-danger mb-4">
+          <strong>{{ groupedIssues().errors.length }} error(s) must be fixed before saving</strong>
+        </div>
+      }
+
+      <!-- Main Form Container -->
+      <div class="card p-6">
+        <!-- Model Name -->
+        <div class="mb-6">
           <label for="name" class="form-label">
             Model Name *
             @if (isEditMode()) {
-              <span class="label-hint"> (read-only in edit mode) </span>
+              <span class="label-hint">(read-only)</span>
             }
           </label>
           <input
@@ -35,84 +41,66 @@
             class="form-input"
             formControlName="name"
             placeholder="my-model-name"
-            [class.border-danger-500]="form.get('name')?.invalid && form.get('name')?.touched"
+            [class.border-danger-500]="
+              form.get('name')?.invalid && (form.get('name')?.dirty || form.get('name')?.touched)
+            "
           />
-          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
-            <span class="form-error">Model name is required</span>
+          @if (
+            form.get('name')?.hasError('required') &&
+            (form.get('name')?.dirty || form.get('name')?.touched)
+          ) {
+            <span class="form-error">Required</span>
           }
-          @if (form.get('name')?.hasError('pattern') && form.get('name')?.touched) {
-            <span class="form-error">
-              Only alphanumeric characters, hyphens, and underscores allowed
-            </span>
-          }
-          @if (!isEditMode()) {
-            <span class="form-hint">Use lowercase, numbers, hyphens, or underscores</span>
-          }
-
-          <!-- Backend Selection for Text Generation -->
-          @if (isTextGeneration()) {
-            <div class="section-divider-sm">
-              <h4 class="form-subsection-header">Backend Selection</h4>
-              <p class="form-hint mb-3">
-                Select which backends this model should be available on. Each backend creates a
-                separate model entry with a prefix (e.g., aphrodite/model-name). Leave all unchecked
-                for a base model without backend prefix.
-              </p>
-              <div class="checkbox-group">
-                <label class="checkbox-item-label">
-                  <input
-                    type="checkbox"
-                    class="form-checkbox"
-                    [checked]="isBackendSelected('aphrodite')"
-                    (change)="toggleBackend('aphrodite')"
-                  />
-                  <span class="checkbox-label">
-                    Aphrodite
-                    <span class="checkbox-hint"> - creates aphrodite/[model-name] </span>
-                  </span>
-                </label>
-                <label class="checkbox-item-label">
-                  <input
-                    type="checkbox"
-                    class="form-checkbox"
-                    [checked]="isBackendSelected('koboldcpp')"
-                    (change)="toggleBackend('koboldcpp')"
-                  />
-                  <span class="checkbox-label">
-                    KoboldCpp
-                    <span class="checkbox-hint"> - creates koboldcpp/[model-name] </span>
-                  </span>
-                </label>
-              </div>
-              @if (modelVariations().length > 0) {
-                <div class="info-box-info mt-3">
-                  <p>
-                    <strong
-                      >Will create {{ modelVariations().length }} model
-                      {{ modelVariations().length === 1 ? 'entry' : 'entries' }}:</strong
-                    >
-                    {{ getVariationNames() }}
-                  </p>
-                </div>
-              }
-            </div>
+          @if (
+            form.get('name')?.hasError('pattern') &&
+            (form.get('name')?.dirty || form.get('name')?.touched)
+          ) {
+            <span class="form-error">Alphanumeric, hyphens, and underscores only</span>
           }
         </div>
-      </div>
 
-      <!-- Form or JSON View -->
-      @if (viewMode() === 'form') {
-        <!-- Two-column layout on large screens -->
-        <div class="form-main-grid">
-          <!-- Left Column: Common Fields -->
-          <app-common-fields
-            [data]="commonData()"
-            [category]="$any(category())"
-            (dataChange)="onCommonDataChange($event)"
-          />
+        <!-- Backend Selection for Text Generation -->
+        @if (isTextGeneration()) {
+          <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="form-label mb-3">Backend Variants</div>
+            <div class="flex gap-4">
+              <label class="inline-flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="form-checkbox"
+                  [checked]="isBackendSelected('aphrodite')"
+                  (change)="toggleBackend('aphrodite')"
+                />
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Aphrodite</span>
+              </label>
+              <label class="inline-flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="form-checkbox"
+                  [checked]="isBackendSelected('koboldcpp')"
+                  (change)="toggleBackend('koboldcpp')"
+                />
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">KoboldCpp</span>
+              </label>
+            </div>
+            @if (modelVariations().length > 0) {
+              <p class="form-hint mt-2">Will create: {{ getVariationNames() }}</p>
+            }
+          </div>
+        }
 
-          <!-- Right Column: Category-Specific Fields -->
-          <div>
+        <!-- Form or JSON View -->
+        @if (viewMode() === 'form') {
+          <!-- Streamlined field sections -->
+          <div class="space-y-6">
+            <!-- Common Fields -->
+            <app-common-fields
+              [data]="commonData()"
+              [category]="$any(category())"
+              (dataChange)="onCommonDataChange($event)"
+            />
+
+            <!-- Category-Specific Fields -->
             @if (isImageGeneration()) {
               <app-stable-diffusion-fields
                 [data]="stableDiffusionData()"
@@ -130,155 +118,115 @@
             @if (isClip()) {
               <app-clip-fields [data]="clipData()" (dataChange)="onClipDataChange($event)" />
             }
-          </div>
 
-          <!-- Config Section (spans both columns) -->
-          <div class="lg:col-span-2">
+            <!-- Downloads -->
             <app-config-form-section-simplified
               [downloads]="simplifiedDownloads()"
               (downloadsChange)="onSimplifiedDownloadsChange($event)"
               (validationErrors)="onConfigValidationErrors($event)"
             />
           </div>
-        </div>
-      } @else {
-        <div class="card">
-          <div class="card-body">
-            <label for="jsonData" class="form-label">
-              @if (isTextGeneration()) {
-                Base Model Data (JSON) *
-                <span class="label-hint">
-                  Editing base (ungrouped) model - exploded variations shown below
-                </span>
-              } @else {
+        } @else {
+          <div class="space-y-4">
+            <div>
+              <label for="jsonData" class="form-label">
                 Model Data (JSON) *
-                <span class="label-hint"> Name field will be added automatically </span>
+                @if (isTextGeneration()) {
+                  <span class="label-hint">Base model - variations auto-generated</span>
+                }
+              </label>
+              <app-json-editor
+                formControlName="jsonData"
+                [rows]="20"
+                placeholder='{"description": "...", "config": {...}}'
+                [class.json-editor-error]="
+                  form.get('jsonData')?.invalid &&
+                  (form.get('jsonData')?.dirty || form.get('jsonData')?.touched)
+                "
+              />
+              @if (
+                form.get('jsonData')?.hasError('required') &&
+                (form.get('jsonData')?.dirty || form.get('jsonData')?.touched)
+              ) {
+                <span class="form-error">Required</span>
               }
-            </label>
-            <app-json-editor
-              formControlName="jsonData"
-              [rows]="20"
-              placeholder='{"description": "...", "config": {...}}'
-              [class.json-editor-error]="
-                form.get('jsonData')?.invalid && form.get('jsonData')?.touched
-              "
-            />
-            @if (form.get('jsonData')?.hasError('required') && form.get('jsonData')?.touched) {
-              <span class="form-error">Model data is required</span>
-            }
-            <span class="form-hint">
-              Enter valid JSON. Common fields: description, config, baseline, nsfw, etc.
-            </span>
-
-            <!-- Syntax-highlighted JSON preview -->
-            @if (getParsedJsonData()) {
-              <div class="mt-4">
-                <div class="form-label">Preview</div>
-                <app-json-display [data]="getParsedJsonData()" />
-              </div>
-            }
+            </div>
 
             <!-- Exploded variations preview for text generation -->
             @if (isTextGeneration() && explodedVariationsJson()) {
-              <div class="section-divider-md">
-                <div class="form-label">
-                  Exploded Variations (Read-Only)
-                  <span class="label-hint">
-                    Backend-prefixed models created from the base model above
-                  </span>
+              <div class="form-section-divider">
+                <div class="form-label mb-2">
+                  Backend Variations
+                  <span class="label-hint">(read-only)</span>
                 </div>
                 <div class="relative">
                   <textarea
                     class="json-readonly-textarea"
                     [value]="explodedVariationsJson()"
                     readonly
-                    rows="15"
+                    rows="12"
+                    aria-label="Backend variations JSON"
                   ></textarea>
-                  <div class="readonly-badge">Read-Only</div>
                 </div>
-                <span class="form-hint">
-                  These variations are automatically generated based on selected backends and cannot
-                  be directly edited. Modify the base model data above or change backend selection
-                  to update.
-                </span>
               </div>
             }
           </div>
+        }
+      </div>
+
+      <!-- Compact Validation Details (collapsible if needed) -->
+      @if (validationIssues().length > 0 || groupedIssues().warnings.length > 0) {
+        <div
+          class="mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-300 dark:border-gray-700 p-4"
+        >
+          @if (groupedIssues().errors.length > 0) {
+            <div class="mb-3">
+              <h4 class="text-sm font-semibold text-danger-700 dark:text-danger-300 mb-2">
+                Errors ({{ groupedIssues().errors.length }})
+              </h4>
+              <ul class="space-y-1 text-sm">
+                @for (issue of groupedIssues().errors; track $index) {
+                  <li class="text-danger-600 dark:text-danger-400">
+                    @if (issue.field) {
+                      <strong>{{ issue.field }}:</strong>
+                    }
+                    {{ issue.message }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (groupedIssues().warnings.length > 0) {
+            <div>
+              <h4 class="text-sm font-semibold text-warning-700 dark:text-warning-300 mb-2">
+                Warnings ({{ groupedIssues().warnings.length }})
+              </h4>
+              <ul class="space-y-1 text-sm">
+                @for (issue of groupedIssues().warnings; track $index) {
+                  <li class="text-warning-600 dark:text-warning-400">
+                    @if (issue.field) {
+                      <strong>{{ issue.field }}:</strong>
+                    }
+                    {{ issue.message }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
         </div>
       }
 
-      <!-- Validation Results -->
-      @if (validationIssues().length > 0) {
-        <div class="card">
-          <div class="card-header">
-            <h3 class="heading-card">Validation Results</h3>
-          </div>
-          <div class="card-body card-section">
-            @if (groupedIssues().errors.length > 0) {
-              <div class="validation-section validation-section-error">
-                <h4 class="validation-heading-error">
-                  Errors ({{ groupedIssues().errors.length }})
-                </h4>
-                <ul class="validation-list">
-                  @for (issue of groupedIssues().errors; track $index) {
-                    <li class="validation-list-item-error">
-                      @if (issue.field) {
-                        <strong class="font-medium">{{ issue.field }}:</strong>
-                      }
-                      {{ issue.message }}
-                    </li>
-                  }
-                </ul>
-              </div>
-            }
-
-            @if (groupedIssues().warnings.length > 0) {
-              <div class="validation-section validation-section-warning">
-                <h4 class="validation-heading-warning">
-                  Warnings ({{ groupedIssues().warnings.length }})
-                </h4>
-                <ul class="validation-list">
-                  @for (issue of groupedIssues().warnings; track $index) {
-                    <li class="validation-list-item-warning">
-                      @if (issue.field) {
-                        <strong class="font-medium">{{ issue.field }}:</strong>
-                      }
-                      {{ issue.message }}
-                    </li>
-                  }
-                </ul>
-              </div>
-            }
-
-            @if (groupedIssues().errors.length === 0 && groupedIssues().warnings.length === 0) {
-              <div class="validation-success">No validation issues found</div>
-            }
-          </div>
-        </div>
-      }
-      <!-- Status Messages -->
-      @if (hasErrors()) {
-        <div class="alert alert-danger">Please fix validation errors before submitting</div>
-      }
-      @if (!hasErrors() && groupedIssues().warnings.length > 0) {
-        <div class="alert alert-warning">
-          You have {{ groupedIssues().warnings.length }} warning(s), but you can still submit
-        </div>
-      }
-      <!-- Form Actions -->
-      <div class="card">
-        <div class="card-footer">
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="submitting() || form.invalid || hasErrors()"
-            >
-              {{ submitting() ? 'Saving...' : isEditMode() ? 'Update Model' : 'Create Model' }}
-            </button>
-          </div>
-        </div>
+      <!-- Action Buttons -->
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="submitting() || form.invalid || hasErrors()"
+        >
+          {{ submitting() ? 'Saving...' : isEditMode() ? 'Update' : 'Create' }}
+        </button>
       </div>
     </form>
   }

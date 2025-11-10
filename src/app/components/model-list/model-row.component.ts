@@ -112,13 +112,8 @@ import { hasShowcases } from './model-row.utils';
 
     <!-- Expanded Details Row -->
     @if (expanded()) {
-      <tr
-        [class]="
-          (isEven() ? 'bg-gray-50 dark:bg-gray-700/30' : 'bg-white dark:bg-gray-800') +
-          ' detail-row'
-        "
-      >
-        <td colspan="9">
+      <tr [class]="(isEven() ? 'table-row-even' : 'table-row-odd') + ' detail-row'">
+        <td [attr.colspan]="detailColspan()">
           <div class="detail-section">
             <!-- Overview Header -->
             <div class="card-overview">
@@ -440,6 +435,8 @@ export class ModelRowComponent {
   });
 
   readonly showcaseExpanded = computed(() => this.expandedShowcases().has(this.model().name));
+
+  readonly detailColspan = computed(() => (this.isTextGeneration() ? 8 : 9));
 
   toggleExpansion(): void {
     this.toggleRow.emit(this.model().name);

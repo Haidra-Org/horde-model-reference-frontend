@@ -617,42 +617,44 @@
   } @else {
     <!-- Data Table with Virtual Scrolling -->
     <div class="data-table">
-      <table class="table-fixed">
-        <colgroup>
-          <col class="w-12" />
-          <col class="w-16" />
-          <col class="w-16" />
-          <col class="w-64" />
-          <col class="w-auto" />
-          <col class="w-32" />
-          <col class="w-40" />
-          @if (!isTextGeneration()) {
-            <col class="w-24" />
-          }
-          <col class="w-48" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th class="text-center"></th>
-            <th class="text-center cursor-pointer" (click)="toggleSort('index')">
-              # {{ getSortIcon('index') }}
-            </th>
-            <th class="text-center cursor-pointer" (click)="toggleSort('active')">
-              Active {{ getSortIcon('active') }}
-            </th>
-            <th class="cursor-pointer" (click)="toggleSort('name')">
-              Name {{ getSortIcon('name') }}
-            </th>
-            <th>Description</th>
-            <th>Baseline</th>
-            <th>Tags</th>
+      <div class="data-table-header">
+        <table class="table-fixed">
+          <colgroup>
+            <col class="w-12" />
+            <col class="w-16" />
+            <col class="w-16" />
+            <col class="w-64" />
+            <col class="w-auto" />
+            <col class="w-32" />
+            <col class="w-40" />
             @if (!isTextGeneration()) {
-              <th>NSFW</th>
+              <col class="w-24" />
             }
-            <th>Actions</th>
-          </tr>
-        </thead>
-      </table>
+            <col class="w-48" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="text-center"></th>
+              <th class="text-center cursor-pointer" (click)="toggleSort('index')">
+                # {{ getSortIcon('index') }}
+              </th>
+              <th class="text-center cursor-pointer" (click)="toggleSort('active')">
+                Active {{ getSortIcon('active') }}
+              </th>
+              <th class="cursor-pointer" (click)="toggleSort('name')">
+                Name {{ getSortIcon('name') }}
+              </th>
+              <th>Description</th>
+              <th>Baseline</th>
+              <th>Tags</th>
+              @if (!isTextGeneration()) {
+                <th>NSFW</th>
+              }
+              <th>Actions</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
 
       <cdk-virtual-scroll-viewport
         itemSize="50"
