@@ -43,32 +43,20 @@ fieldset {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--color-gray-100);
+  background-color: var(--scrollbar-track);
   border-right: 2px solid transparent;
   background-clip: padding-box;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background-color: var(--color-gray-800);
-}
-
 ::-webkit-scrollbar-thumb {
-  background-color: var(--color-gray-300);
+  background-color: var(--scrollbar-thumb);
   border-radius: 0.5rem;
   border-right: 2px solid transparent;
   background-clip: padding-box;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background-color: var(--color-gray-600);
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-gray-400);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-gray-500);
+  background-color: var(--scrollbar-thumb-hover);
 }
 
 /* Tooltip styles */

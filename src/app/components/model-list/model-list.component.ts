@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { Subject, combineLatest, EMPTY, Observable, of } from 'rxjs';
+import { Subject, combineLatest, EMPTY, Observable, of, fromEvent } from 'rxjs';
 import {
   catchError,
   debounceTime,
@@ -112,6 +112,14 @@ export class ModelListComponent implements OnInit {
   readonly showNsfwModal = signal(false);
   readonly showTagsModal = signal(false);
   readonly headerCollapsed = signal(false);
+
+  // Dynamic viewport height (minimum 400px)
+  private readonly VIEWPORT_MIN_HEIGHT = 400;
+  private readonly VIEWPORT_OVERHEAD = 450; // Header, search, filters, etc.
+  readonly windowHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 800);
+  readonly viewportHeight = computed(() =>
+    Math.max(this.VIEWPORT_MIN_HEIGHT, this.windowHeight() - this.VIEWPORT_OVERHEAD),
+  );
 
   // Sorting
   readonly sortColumn = signal<'name' | 'active' | 'index' | null>(null);
@@ -670,6 +678,15 @@ export class ModelListComponent implements OnInit {
       .subscribe((term) => {
         this.debouncedSearchTerm.set(term);
       });
+
+    // Handle window resize with debouncing
+    if (typeof window !== 'undefined') {
+      fromEvent(window, 'resize')
+        .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.windowHeight.set(window.innerHeight);
+        });
+    }
 
     this.route.params
       .pipe(

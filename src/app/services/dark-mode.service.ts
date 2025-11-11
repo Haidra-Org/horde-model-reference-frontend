@@ -1,42 +1,18 @@
-import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, computed, inject } from '@angular/core';
+import { ThemeService } from './theme.service';
 
+/**
+ * @deprecated Use ThemeService instead. This service is maintained for backward compatibility.
+ * DarkModeService now delegates to ThemeService for theme management.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class DarkModeService {
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly STORAGE_KEY = 'darkMode';
-
-  readonly darkMode = signal<boolean>(this.getInitialMode());
-
-  constructor() {
-    effect(() => {
-      if (isPlatformBrowser(this.platformId)) {
-        const isDark = this.darkMode();
-        if (isDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(isDark));
-      }
-    });
-  }
+  private readonly themeService = inject(ThemeService);
+  readonly darkMode = computed(() => this.themeService.isDark());
 
   toggle(): void {
-    this.darkMode.set(!this.darkMode());
-  }
-
-  private getInitialMode(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored !== null) {
-        return JSON.parse(stored);
-      }
-
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
+    this.themeService.toggleDarkMode();
   }
 }

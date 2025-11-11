@@ -11,7 +11,8 @@ import {
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject, Observable, combineLatest, EMPTY, of } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { Subject, Observable, combineLatest, EMPTY, of, fromEvent } from 'rxjs';
 import {
   catchError,
   debounceTime,
@@ -97,7 +98,7 @@ type SortDirection = 'asc' | 'desc' | null;
 
 @Component({
   selector: 'app-model-audit',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, ScrollingModule],
   templateUrl: './model-audit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -148,6 +149,14 @@ export class ModelAuditComponent implements OnInit {
 
   // Row expansion for grouped models
   readonly expandedRows = signal<Set<string>>(new Set());
+
+  // Dynamic viewport height (minimum 400px)
+  private readonly VIEWPORT_MIN_HEIGHT = 400;
+  private readonly VIEWPORT_OVERHEAD = 450; // Header, search, filters, etc.
+  readonly windowHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 800);
+  readonly viewportHeight = computed(() =>
+    Math.max(this.VIEWPORT_MIN_HEIGHT, this.windowHeight() - this.VIEWPORT_OVERHEAD),
+  );
 
   // Computed values
   readonly recordDisplayName = computed(() => {
@@ -751,6 +760,15 @@ export class ModelAuditComponent implements OnInit {
       .subscribe((term) => {
         this.debouncedSearchTerm.set(term);
       });
+
+    // Handle window resize with debouncing
+    if (typeof window !== 'undefined') {
+      fromEvent(window, 'resize')
+        .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.windowHeight.set(window.innerHeight);
+        });
+    }
 
     const category$ = this.route.params.pipe(
       map((params) => params['category'] as string | undefined),

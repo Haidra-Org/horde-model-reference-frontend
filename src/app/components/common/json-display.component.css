@@ -12,45 +12,24 @@
 
 /* JSON syntax highlighting colors */
 :host ::ng-deep .json-key {
-  color: #0451a5; /* Blue for keys */
+  color: var(--json-key);
   font-weight: 600;
 }
 
 :host ::ng-deep .json-string {
-  color: #a31515; /* Red for string values */
+  color: var(--json-string);
 }
 
 :host ::ng-deep .json-number {
-  color: #098658; /* Green for numbers */
+  color: var(--json-number);
 }
 
 :host ::ng-deep .json-boolean {
-  color: #0000ff; /* Blue for booleans */
+  color: var(--json-boolean);
   font-weight: bold;
 }
 
 :host ::ng-deep .json-null {
-  color: #808080; /* Gray for null */
+  color: var(--json-null);
   font-style: italic;
-}
-
-/* Dark mode colors */
-:host-context(.dark) ::ng-deep .json-key {
-  color: #9cdcfe; /* Light blue for keys in dark mode */
-}
-
-:host-context(.dark) ::ng-deep .json-string {
-  color: #ce9178; /* Light red for strings in dark mode */
-}
-
-:host-context(.dark) ::ng-deep .json-number {
-  color: #b5cea8; /* Light green for numbers in dark mode */
-}
-
-:host-context(.dark) ::ng-deep .json-boolean {
-  color: #569cd6; /* Light blue for booleans in dark mode */
-}
-
-:host-context(.dark) ::ng-deep .json-null {
-  color: #808080; /* Gray for null in dark mode */
 }

@@ -151,6 +151,193 @@
 :root {
   /* Calculate a cross-browser-friendly vertical scrollbar width once so we can offset table gutters. */
   --table-scrollbar-width: clamp(0px, calc(100vw - 100%), 1.5rem);
+
+  /* JSON syntax highlighting colors (overridden by theme classes) */
+  --json-key: #0451a5;
+  --json-string: #a31515;
+  --json-number: #098658;
+  --json-boolean: #0000ff;
+  --json-null: #808080;
+
+  /* Scrollbar colors (overridden by theme classes) */
+  --scrollbar-track: #f3f4f6;
+  --scrollbar-thumb: #d1d5db;
+  --scrollbar-thumb-hover: #9ca3af;
+}
+
+/* Theme-specific custom properties */
+.theme-default-dark {
+  --json-key: #9cdcfe;
+  --json-string: #ce9178;
+  --json-number: #b5cea8;
+  --json-boolean: #569cd6;
+  --json-null: #808080;
+
+  --scrollbar-track: #1f2937;
+  --scrollbar-thumb: #4b5563;
+  --scrollbar-thumb-hover: #6b7280;
+
+  --heat-1: #0b1220;
+  --heat-1-contrast: #dbeafe;
+  --heat-1-dark: #0b1220;
+  --heat-1-contrast-dark: #dbeafe;
+  --heat-2: #06243a;
+  --heat-2-contrast: #bfdbf7;
+  --heat-2-dark: #06243a;
+  --heat-2-contrast-dark: #bfdbf7;
+  --heat-3: #08331f;
+  --heat-3-contrast: #a7f3d0;
+  --heat-3-dark: #08331f;
+  --heat-3-contrast-dark: #a7f3d0;
+  --heat-4: #2a2300;
+  --heat-4-contrast: #fde68a;
+  --heat-4-dark: #2a2300;
+  --heat-4-contrast-dark: #fde68a;
+  --heat-5: #331f00;
+  --heat-5-contrast: #fcd79a;
+  --heat-5-dark: #331f00;
+  --heat-5-contrast-dark: #fcd79a;
+  --heat-6: #2a1200;
+  --heat-6-contrast: #ffccb0;
+  --heat-6-dark: #2a1200;
+  --heat-6-contrast-dark: #ffccb0;
+  --heat-7: #3b0b0b;
+  --heat-7-contrast: #ffd6d6;
+  --heat-7-dark: #3b0b0b;
+  --heat-7-contrast-dark: #ffd6d6;
+  --heat-8: #4a0b0b;
+  --heat-8-contrast: #ffdede;
+  --heat-8-dark: #4a0b0b;
+  --heat-8-contrast-dark: #ffdede;
+}
+
+.theme-utilitarian-light,
+.theme-utilitarian-dark {
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+  --color-gray-950: #0a0a0a;
+
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+  --color-primary-950: #082f49;
+
+  --color-info-50: #f0f9ff;
+  --color-info-100: #e0f2fe;
+  --color-info-200: #bae6fd;
+  --color-info-300: #7dd3fc;
+  --color-info-400: #38bdf8;
+  --color-info-500: #0ea5e9;
+  --color-info-600: #0284c7;
+  --color-info-700: #0369a1;
+  --color-info-800: #075985;
+  --color-info-900: #0c4a6e;
+  --color-info-950: #082f49;
+}
+
+.theme-utilitarian-light {
+  --json-key: #0369a1;
+  --json-string: #b91c1c;
+  --json-number: #15803d;
+  --json-boolean: #0284c7;
+  --json-null: #737373;
+
+  --scrollbar-track: #f5f5f5;
+  --scrollbar-thumb: #d4d4d4;
+  --scrollbar-thumb-hover: #a3a3a3;
+
+  --heat-1: #e0f2fe;
+  --heat-1-contrast: #082f49;
+  --heat-1-dark: #e0f2fe;
+  --heat-1-contrast-dark: #082f49;
+  --heat-2: #bae6fd;
+  --heat-2-contrast: #0c4a6e;
+  --heat-2-dark: #bae6fd;
+  --heat-2-contrast-dark: #0c4a6e;
+  --heat-3: #dcfce7;
+  --heat-3-contrast: #14532d;
+  --heat-3-dark: #dcfce7;
+  --heat-3-contrast-dark: #14532d;
+  --heat-4: #fef3c7;
+  --heat-4-contrast: #78350f;
+  --heat-4-dark: #fef3c7;
+  --heat-4-contrast-dark: #78350f;
+  --heat-5: #fde68a;
+  --heat-5-contrast: #92400e;
+  --heat-5-dark: #fde68a;
+  --heat-5-contrast-dark: #92400e;
+  --heat-6: #fed7aa;
+  --heat-6-contrast: #9a3412;
+  --heat-6-dark: #fed7aa;
+  --heat-6-contrast-dark: #9a3412;
+  --heat-7: #fecaca;
+  --heat-7-contrast: #7f1d1d;
+  --heat-7-dark: #fecaca;
+  --heat-7-contrast-dark: #7f1d1d;
+  --heat-8: #fca5a5;
+  --heat-8-contrast: #7f1d1d;
+  --heat-8-dark: #fca5a5;
+  --heat-8-contrast-dark: #7f1d1d;
+}
+
+.theme-utilitarian-dark {
+  --json-key: #7dd3fc;
+  --json-string: #fca5a5;
+  --json-number: #86efac;
+  --json-boolean: #38bdf8;
+  --json-null: #a3a3a3;
+
+  --scrollbar-track: #262626;
+  --scrollbar-thumb: #525252;
+  --scrollbar-thumb-hover: #737373;
+
+  --heat-1: #0c4a6e;
+  --heat-1-contrast: #e0f2fe;
+  --heat-1-dark: #0c4a6e;
+  --heat-1-contrast-dark: #e0f2fe;
+  --heat-2: #075985;
+  --heat-2-contrast: #bae6fd;
+  --heat-2-dark: #075985;
+  --heat-2-contrast-dark: #bae6fd;
+  --heat-3: #14532d;
+  --heat-3-contrast: #dcfce7;
+  --heat-3-dark: #14532d;
+  --heat-3-contrast-dark: #dcfce7;
+  --heat-4: #78350f;
+  --heat-4-contrast: #fef3c7;
+  --heat-4-dark: #78350f;
+  --heat-4-contrast-dark: #fef3c7;
+  --heat-5: #92400e;
+  --heat-5-contrast: #fde68a;
+  --heat-5-dark: #92400e;
+  --heat-5-contrast-dark: #fde68a;
+  --heat-6: #9a3412;
+  --heat-6-contrast: #fed7aa;
+  --heat-6-dark: #9a3412;
+  --heat-6-contrast-dark: #fed7aa;
+  --heat-7: #7f1d1d;
+  --heat-7-contrast: #fecaca;
+  --heat-7-dark: #7f1d1d;
+  --heat-7-contrast-dark: #fecaca;
+  --heat-8: #7f1d1d;
+  --heat-8-contrast: #fca5a5;
+  --heat-8-dark: #7f1d1d;
+  --heat-8-contrast-dark: #fca5a5;
 }
 
 @layer components {
@@ -239,12 +426,12 @@
 
   .badge-info {
     @apply bg-info-100 text-info-800;
-    @apply dark:bg-gradient-to-t dark:from-info-900 dark:to-info-800 dark:text-info-300;
+    @apply dark:bg-gray-800 dark:text-gray-300 dark:border dark:border-gray-700;
   }
 
   .badge-secondary {
     @apply bg-gray-100 text-gray-700;
-    @apply dark:bg-gray-800 dark:text-gray-300;
+    @apply dark:bg-gray-800 dark:text-gray-400 dark:border dark:border-gray-700;
   }
 
   /* Badge size variants */
@@ -408,6 +595,7 @@
   }
 
   /* Data table */
+  /* @deprecated Use .card wrapper instead of .data-table. Only .data-table-header is still used for virtual scroll alignment. */
   .data-table {
     @apply w-full overflow-hidden rounded-xl border border-gray-200;
     @apply dark:border-gray-700;
@@ -421,6 +609,8 @@
 
   .data-table table {
     @apply w-full border-collapse;
+    /* Use fixed layout to ensure columns respect widths and fill container */
+    table-layout: fixed;
   }
 
   .data-table table.table-fixed {
@@ -1360,8 +1550,8 @@
   .active-filter-tag-info {
     @apply text-xs px-2 py-0.5 rounded border;
     @apply bg-info-50 text-info-700 border-info-300;
-    @apply dark:bg-info-950 dark:text-info-300 dark:border-info-700;
-    @apply inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500;
+    @apply dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600;
+    @apply inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500 dark:focus:ring-gray-500;
   }
 
   /* Danger text variants */
@@ -1468,6 +1658,8 @@
   /* Table styling additions */
   .table {
     @apply w-full border-collapse;
+    /* Use fixed layout for predictable column widths and proper container filling */
+    table-layout: fixed;
   }
 
   .table thead {
@@ -1492,8 +1684,8 @@
 
   .table tbody tr {
     @apply transition-colors;
-    @apply hover:bg-gray-100;
-    @apply dark:hover:bg-gray-700;
+    @apply even:bg-gray-50 hover:bg-gray-100;
+    @apply dark:even:bg-gray-700/30 dark:hover:bg-gray-700;
   }
 
   /* Form input sizing */
@@ -1515,6 +1707,8 @@
 
   .virtual-scroll-viewport table {
     @apply w-full border-collapse;
+    /* Use fixed layout to ensure columns fill width and align with header */
+    table-layout: fixed;
   }
 
   .virtual-scroll-viewport table.table-fixed {
@@ -1811,5 +2005,584 @@
     @apply absolute bottom-4 left-1/2 -translate-x-1/2;
     @apply px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full;
     @apply text-white text-sm font-medium;
+  }
+
+  /* === Theme-Specific Overrides === */
+
+  /* Utilitarian themes: Dramatic data-first design with minimal styling */
+  .theme-utilitarian-light,
+  .theme-utilitarian-dark {
+    /* Disable shadows completely */
+    & .btn,
+    & .card,
+    & .modal-dialog,
+    & .stat-card,
+    & .help-menu-dropdown,
+    & .data-table,
+    & .filter-dropdown,
+    & .card-showcase,
+    & .showcase-thumbnail {
+      box-shadow: none !important;
+    }
+
+    /* Remove gradients from all elements */
+    & .card-overview,
+    & .ecosystem-card,
+    & .badge-info,
+    & .stat-card,
+    & .role-card {
+      background-image: none !important;
+    }
+
+    /* Sharp corners - no border radius except minimal on inputs */
+    & .btn,
+    & .card,
+    & .modal-dialog,
+    & .badge,
+    & .stat-card,
+    & .data-table,
+    & .alert,
+    & .info-box,
+    & .code-block,
+    & .tag,
+    & .nested-item-card,
+    & .field-group-collapsible,
+    & .filter-dropdown,
+    & .autocomplete-dropdown,
+    & .help-menu-dropdown,
+    & .lightbox-image,
+    & .card-showcase,
+    & .showcase-thumbnail {
+      border-radius: 0 !important;
+    }
+
+    /* Minimal radius only for form inputs for usability */
+    & .form-input,
+    & .form-textarea,
+    & .form-select,
+    & .form-checkbox {
+      border-radius: 2px !important;
+    }
+
+    /* Simplify all hover effects - no transforms */
+    & .btn:hover:not(:disabled),
+    & .stat-card:hover,
+    & .card-showcase:hover,
+    & .showcase-thumbnail:hover,
+    & .quick-link:hover,
+    & .role-card:hover {
+      transform: none !important;
+    }
+
+    /* Remove backdrop blur effects */
+    & .modal-overlay,
+    & .lightbox-overlay {
+      backdrop-filter: none !important;
+    }
+
+    /* Dramatically reduced padding and spacing for dense layouts */
+    & .page-container {
+      @apply p-2 space-y-2;
+    }
+
+    & .card-body {
+      @apply px-3 py-2;
+    }
+
+    & .card-header {
+      @apply px-3 py-1.5;
+    }
+
+    & .card-footer {
+      @apply px-3 py-2;
+    }
+
+    & .btn {
+      @apply px-3 py-1.5 text-xs font-normal;
+    }
+
+    & .btn-sm {
+      @apply px-2 py-1 text-[10px];
+    }
+
+    & .btn-lg {
+      @apply px-4 py-2 text-sm;
+    }
+
+    /* Compact form controls */
+    & .form-input,
+    & .form-textarea,
+    & .form-select {
+      @apply px-2 py-1 text-xs;
+    }
+
+    & .form-label {
+      @apply text-xs font-semibold mb-0.5;
+    }
+
+    & .form-label-sm {
+      @apply text-[10px] mb-0.5;
+    }
+
+    /* Data table styling aligned with audit layout */
+    & .data-table th {
+      @apply px-4 py-2.5 text-xs font-semibold uppercase tracking-wider;
+    }
+
+    & .data-table td {
+      @apply px-4 py-2.5 text-sm text-gray-900;
+      @apply dark:text-gray-100;
+    }
+
+    & .stat-table th {
+      @apply px-2 py-1 text-[10px];
+    }
+
+    & .stat-table td {
+      @apply px-2 py-1 text-xs;
+    }
+
+    /* Compact badges and tags */
+    & .badge {
+      @apply px-1.5 py-0 text-[10px] tracking-normal;
+    }
+
+    & .badge-xs,
+    & .badge-sm {
+      @apply text-[9px] px-1 py-0;
+    }
+
+    & .tag {
+      @apply text-[10px] px-1.5 py-0;
+    }
+
+    /* Compact stat cards */
+    & .stat-card {
+      @apply gap-2 px-2 py-1.5;
+    }
+
+    & .stat-card-icon {
+      @apply w-5 h-5;
+    }
+
+    & .stat-card-label {
+      @apply text-[9px];
+    }
+
+    & .stat-card-value {
+      @apply text-base;
+    }
+
+    /* Compact modals */
+    & .modal-dialog {
+      @apply p-4;
+    }
+
+    & .modal-title {
+      @apply text-base mb-2;
+    }
+
+    & .modal-content {
+      @apply mb-3;
+    }
+
+    /* Dense field groups */
+    & .field-group-header {
+      @apply px-3 py-1.5 min-h-[36px];
+    }
+
+    & .field-group-header-title {
+      @apply text-sm;
+    }
+
+    & .field-group-header-help {
+      @apply text-[10px];
+    }
+
+    & .field-group-content {
+      @apply px-3 py-2;
+    }
+
+    /* Compact nested items */
+    & .nested-item-card {
+      @apply p-2 space-y-2;
+    }
+
+    & .nested-item-remove-btn {
+      @apply px-2 py-1 text-[10px];
+    }
+
+    /* Dense navigation */
+    & .nav-content {
+      @apply px-3 py-0.5;
+    }
+
+    & .nav-title-button {
+      @apply text-base;
+    }
+
+    & .nav-button,
+    & .nav-badge,
+    & .nav-badge-writable,
+    & .nav-badge-readonly {
+      @apply px-2 py-1 text-xs;
+    }
+
+    /* Compact sidebar */
+    & .sidebar-header {
+      @apply px-3 py-2;
+    }
+
+    & .sidebar-nav-item {
+      @apply px-3 py-1.5 text-xs;
+    }
+
+    /* Minimal form spacing */
+    & .form-field {
+      @apply space-y-1;
+    }
+
+    & .form-grid-2,
+    & .form-grid-3,
+    & .form-grid-4 {
+      @apply gap-2;
+    }
+
+    & .form-section {
+      @apply space-y-2;
+    }
+
+    & .card-section {
+      @apply space-y-2;
+    }
+
+    /* Thicker, more visible borders for data separation */
+    & .card,
+    & .field-group-collapsible,
+    & .modal-dialog,
+    & .nested-item-card {
+      border-width: 2px !important;
+    }
+
+    & .data-table {
+      border-width: 1px !important;
+    }
+
+    & .data-table th,
+    & .data-table td {
+      border-width: 1px !important;
+    }
+
+    /* Table row interactions */
+    & .data-table tbody tr:nth-child(even) {
+      @apply bg-transparent;
+    }
+
+    & .data-table tbody tr:hover {
+      @apply bg-gray-100;
+      @apply dark:bg-gray-800;
+      outline: none;
+    }
+
+    /* Remove image hover effects for performance */
+    & .card-showcase img,
+    & .showcase-thumbnail img {
+      transition: none !important;
+    }
+
+    & .card-showcase:hover img,
+    & .showcase-thumbnail:hover img {
+      transform: none !important;
+    }
+
+    /* Compact overview cards */
+    & .card-overview {
+      @apply p-3;
+    }
+
+    & .card-overview-title {
+      @apply text-base;
+    }
+
+    & .card-overview-description {
+      @apply text-xs;
+    }
+
+    /* Compact role cards */
+    & .role-card {
+      @apply p-3;
+    }
+
+    & .role-card-icon {
+      @apply w-6 h-6;
+    }
+
+    & .role-card-title {
+      @apply text-sm;
+    }
+
+    & .role-card-content {
+      @apply text-xs space-y-1;
+    }
+
+    /* Compact ecosystem cards */
+    & .ecosystem-card {
+      @apply p-3;
+    }
+
+    & .ecosystem-card-icon {
+      @apply w-8 h-8 mb-2;
+    }
+
+    & .ecosystem-card-title {
+      @apply text-base mb-2;
+    }
+
+    & .ecosystem-card-content {
+      @apply text-xs leading-relaxed space-y-2;
+    }
+
+    /* Dense quick links */
+    & .quick-link {
+      @apply px-2 py-1.5 gap-1.5;
+    }
+
+    & .quick-link-icon {
+      @apply w-4 h-4;
+    }
+
+    & .quick-link-text {
+      @apply text-xs;
+    }
+
+    /* Reduce all transition durations for snappier feel */
+    & * {
+      transition-duration: 50ms !important;
+    }
+
+    /* Compact alerts */
+    & .alert {
+      @apply px-3 py-2 text-xs;
+    }
+
+    & .info-box {
+      @apply p-2 text-xs;
+    }
+
+    /* Dense filter dropdowns */
+    & .filter-dropdown {
+      @apply w-48;
+    }
+
+    & .filter-dropdown-header,
+    & .filter-dropdown-search,
+    & .filter-dropdown-content {
+      @apply p-1.5;
+    }
+
+    & .filter-dropdown-item {
+      @apply px-1.5 py-0.5 text-xs;
+    }
+
+    /* Compact validation sections */
+    & .validation-section {
+      @apply space-y-1;
+    }
+
+    & .validation-heading,
+    & .validation-heading-error,
+    & .validation-heading-warning {
+      @apply text-xs;
+    }
+
+    & .validation-list-item,
+    & .validation-list-item-error,
+    & .validation-list-item-warning {
+      @apply text-[10px];
+    }
+
+    /* Remove sticky header shadow */
+    & .sticky-header {
+      @apply shadow-none border-b-2 pb-2;
+    }
+
+    /* Maximize visible content in modals */
+    & .modal-dialog--lg {
+      width: 85vw;
+      max-width: none;
+    }
+
+    & .modal-dialog--xl {
+      max-width: none;
+      width: 90vw;
+    }
+
+    /* Compact notification styling */
+    & .notification-alert {
+      @apply px-3 py-2 text-xs min-w-[200px] max-w-[300px];
+    }
+
+    /* Dense help text */
+    & .help-text,
+    & .form-hint,
+    & .form-error,
+    & .checkbox-hint {
+      @apply text-[9px];
+    }
+
+    /* Compact headings for data density */
+    & .heading-page {
+      @apply text-lg;
+    }
+
+    & .heading-section {
+      @apply text-base;
+    }
+
+    & .heading-card {
+      @apply text-sm;
+    }
+
+    /* All text slightly smaller for data density */
+    & body,
+    & .text-sm {
+      @apply text-xs;
+    }
+
+    & .text-xs {
+      @apply text-[10px];
+    }
+
+    /* Ultra-compact showcase grids */
+    & .showcase-thumbnail-grid {
+      @apply gap-1;
+    }
+
+    /* Minimal field impact hints */
+    & .field-impact,
+    & .field-best-practice {
+      @apply text-[9px] px-1.5 py-0.5;
+    }
+
+    /* Compact inline items */
+    & .inline-item-row {
+      @apply gap-1;
+    }
+
+    /* Dense checkbox groups */
+    & .checkbox-group {
+      @apply gap-1;
+    }
+
+    & .checkbox-label {
+      @apply text-xs;
+    }
+
+    /* Maximize data density in virtual scroll */
+    & .virtual-scroll-viewport {
+      padding-inline-end: 8px;
+    }
+
+    /* Match header padding to virtual scroll viewport */
+    & .data-table-header {
+      padding-inline-end: 8px;
+    }
+
+    /* Emphasize data with stronger borders on focus */
+    & .form-input:focus,
+    & .form-textarea:focus,
+    & .form-select:focus {
+      border-width: 2px !important;
+      @apply ring-0;
+    }
+  }
+
+  /* Utilitarian light specific */
+  .theme-utilitarian-light {
+    & .card {
+      @apply bg-white border-gray-400;
+    }
+
+    & .btn-primary {
+      @apply bg-primary-700 hover:bg-primary-800 border border-primary-800;
+    }
+
+    & .btn-secondary {
+      @apply bg-gray-100 hover:bg-gray-200 border border-gray-400;
+    }
+
+    & .data-table tbody tr:nth-child(odd) {
+      @apply bg-transparent;
+    }
+
+    /* High contrast text */
+    & body {
+      @apply text-gray-900;
+    }
+
+    /* Strong borders for visual separation */
+    & .card,
+    & .data-table,
+    & .form-input,
+    & .form-textarea,
+    & .form-select {
+      @apply border-gray-400;
+    }
+
+    /* Emphasized table headers */
+    & .data-table thead {
+      @apply bg-gray-100 border-b border-gray-300;
+    }
+
+    & .stat-table thead {
+      @apply bg-gray-200 border-b-2 border-gray-500;
+    }
+  }
+
+  /* Utilitarian dark specific */
+  .theme-utilitarian-dark {
+    & .card {
+      @apply bg-gray-950 border-gray-600;
+    }
+
+    & .btn-primary {
+      @apply bg-primary-600 hover:bg-primary-700 border border-primary-700;
+    }
+
+    & .btn-secondary {
+      @apply bg-gray-800 hover:bg-gray-700 border border-gray-600;
+    }
+
+    & .data-table tbody tr:nth-child(odd) {
+      @apply bg-transparent;
+    }
+
+    /* High contrast text */
+    & body {
+      @apply text-gray-50;
+    }
+
+    /* Strong borders for visual separation */
+    & .card,
+    & .data-table,
+    & .form-input,
+    & .form-textarea,
+    & .form-select {
+      @apply border-gray-600;
+    }
+
+    /* Emphasized table headers */
+    & .data-table thead {
+      @apply bg-gray-900 border-b border-gray-600;
+    }
+
+    & .stat-table thead {
+      @apply bg-gray-900 border-b-2 border-gray-500;
+    }
+
+    /* Better background contrast */
+    & .page-container {
+      @apply bg-black;
+    }
   }
 }

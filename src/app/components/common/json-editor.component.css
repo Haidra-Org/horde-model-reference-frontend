@@ -3,19 +3,19 @@
 }
 
 :host(.json-editor-error) .json-editor-wrapper {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 1px #ef4444;
+  border-color: var(--color-danger-500);
+  box-shadow: 0 0 0 1px var(--color-danger-500);
 }
 
 :host(.json-editor-error) .json-editor-textarea:focus {
-  outline-color: #ef4444;
+  outline-color: var(--color-danger-500);
 }
 
 .json-editor-wrapper {
   position: relative;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.5rem;
-  background-color: #f9fafb;
+  background-color: var(--color-gray-50);
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -52,7 +52,7 @@
   outline: none;
   background-color: transparent;
   color: transparent;
-  caret-color: #000;
+  caret-color: var(--color-gray-900);
   resize: vertical;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.875rem;
@@ -66,18 +66,18 @@
 }
 
 .json-editor-textarea::selection {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
   color: transparent;
 }
 
 .json-editor-textarea::-moz-selection {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
   color: transparent;
 }
 
 .json-editor-textarea::placeholder {
-  color: #9ca3af;
-  -webkit-text-fill-color: #9ca3af;
+  color: var(--color-gray-400);
+  -webkit-text-fill-color: var(--color-gray-400);
 }
 
 .json-editor-textarea:read-only {
@@ -85,64 +85,44 @@
 }
 
 .json-editor-textarea:focus {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--color-primary-500);
   outline-offset: -2px;
   border-radius: 0.5rem;
 }
 
 /* JSON syntax highlighting colors - NO font-weight changes to prevent width misalignment */
 :host ::ng-deep .json-key {
-  color: #0451a5;
+  color: var(--json-key);
 }
 
 :host ::ng-deep .json-string {
-  color: #a31515;
+  color: var(--json-string);
 }
 
 :host ::ng-deep .json-number {
-  color: #098658;
+  color: var(--json-number);
 }
 
 :host ::ng-deep .json-boolean {
-  color: #0000ff;
+  color: var(--json-boolean);
 }
 
 :host ::ng-deep .json-null {
-  color: #808080;
+  color: var(--json-null);
   font-style: italic;
 }
 
 /* Dark mode colors */
 :host-context(.dark) .json-editor-wrapper {
-  background-color: #1f2937;
-  border-color: #374151;
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-700);
 }
 
 :host-context(.dark) .json-editor-textarea {
-  caret-color: #fff;
+  caret-color: var(--color-gray-50);
 }
 
 :host-context(.dark) .json-editor-textarea::placeholder {
-  color: #6b7280;
-  -webkit-text-fill-color: #6b7280;
-}
-
-:host-context(.dark) ::ng-deep .json-key {
-  color: #9cdcfe;
-}
-
-:host-context(.dark) ::ng-deep .json-string {
-  color: #ce9178;
-}
-
-:host-context(.dark) ::ng-deep .json-number {
-  color: #b5cea8;
-}
-
-:host-context(.dark) ::ng-deep .json-boolean {
-  color: #569cd6;
-}
-
-:host-context(.dark) ::ng-deep .json-null {
-  color: #808080;
+  color: var(--color-gray-500);
+  -webkit-text-fill-color: var(--color-gray-500);
 }

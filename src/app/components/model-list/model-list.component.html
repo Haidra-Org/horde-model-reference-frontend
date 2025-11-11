@@ -616,9 +616,9 @@
     </div>
   } @else {
     <!-- Data Table with Virtual Scrolling -->
-    <div class="data-table">
+    <div class="card overflow-hidden">
       <div class="data-table-header">
-        <table class="table-fixed">
+        <table class="table table-fixed">
           <colgroup>
             <col class="w-12" />
             <col class="w-16" />
@@ -658,11 +658,12 @@
 
       <cdk-virtual-scroll-viewport
         itemSize="50"
-        class="virtual-scroll-viewport h-[800px]"
+        class="virtual-scroll-viewport"
+        [style.height.px]="viewportHeight()"
         [minBufferPx]="400"
         [maxBufferPx]="800"
       >
-        <table class="table-fixed">
+        <table class="table table-fixed">
           <colgroup>
             <col class="w-12" />
             <col class="w-16" />
