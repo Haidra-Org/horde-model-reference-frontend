@@ -1,20 +1,19 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
-import { DarkModeService } from '../../services/dark-mode.service';
 import { AuthService } from '../../services/auth.service';
 import { LoginModalComponent } from '../login-modal/login-modal.component';
+import { ThemeSwitcherComponent } from '../common/theme-switcher.component';
 
 @Component({
   selector: 'app-navigation',
-  imports: [LoginModalComponent, RouterLink],
+  imports: [LoginModalComponent, RouterLink, ThemeSwitcherComponent],
   templateUrl: './navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationComponent {
   private readonly router = inject(Router);
   readonly api = inject(ModelReferenceApiService);
-  readonly darkMode = inject(DarkModeService);
   readonly auth = inject(AuthService);
 
   readonly showLoginModal = signal(false);
@@ -22,10 +21,6 @@ export class NavigationComponent {
 
   goHome(): void {
     this.router.navigate(['/']);
-  }
-
-  toggleDarkMode(): void {
-    this.darkMode.toggle();
   }
 
   toggleHelpMenu(): void {

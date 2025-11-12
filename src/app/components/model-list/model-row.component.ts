@@ -64,7 +64,7 @@ import { hasShowcases } from './model-row.utils';
           {{ legacyModel().description || '-' }}
         </div>
       </td>
-      <td class="text-sm">
+      <td class="text-sm whitespace-normal break-words">
         @if (isStableDiffusionRecord()) {
           {{ baselineDisplay() }}
         } @else if (isTextGenerationRecord()) {
@@ -98,7 +98,7 @@ import { hasShowcases } from './model-row.utils';
           }
         </td>
       }
-      <td (click)="$event.stopPropagation()">
+      <td class="text-right whitespace-nowrap" (click)="$event.stopPropagation()">
         <app-model-row-actions
           [model]="model()"
           layout="horizontal"

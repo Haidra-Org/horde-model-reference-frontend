@@ -59,7 +59,7 @@ export type CategoryStatType =
 
 export const CATEGORY_STATS_CONFIG: Record<string, CategoryStatType[]> = {
   image_generation: ['baseline', 'tags', 'nsfw', 'size'],
-  text_generation: ['tags', 'parameters', 'style'],
+  text_generation: ['baseline', 'tags', 'parameters'],
   blip: ['nsfw'],
   clip: ['nsfw'],
   codeformer: ['nsfw'],

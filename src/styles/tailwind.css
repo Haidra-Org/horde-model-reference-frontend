@@ -2585,4 +2585,627 @@
       @apply bg-black;
     }
   }
+
+  /* === Compact Themes === */
+  /* Modern, space-efficient themes with minimal decoration but stylish accents */
+
+  .theme-compact-light,
+  .theme-compact-dark {
+    /* Minimal shadows - only on interactive elements */
+    & .btn {
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+    }
+
+    & .btn:hover:not(:disabled) {
+      box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.1) !important;
+    }
+
+    & .card,
+    & .modal-dialog,
+    & .stat-card,
+    & .help-menu-dropdown,
+    & .data-table,
+    & .filter-dropdown,
+    & .card-showcase,
+    & .showcase-thumbnail {
+      box-shadow: none !important;
+    }
+
+    /* Subtle gradients only on key UI elements */
+    & .card-overview,
+    & .ecosystem-card {
+      background-image: none !important;
+    }
+
+    & .stat-card,
+    & .role-card {
+      background-image: none !important;
+    }
+
+    /* Minimal border radius for modern look */
+    & .btn,
+    & .badge,
+    & .tag,
+    & .form-checkbox {
+      border-radius: 3px !important;
+    }
+
+    & .card,
+    & .modal-dialog,
+    & .stat-card,
+    & .data-table,
+    & .alert,
+    & .info-box,
+    & .code-block,
+    & .nested-item-card,
+    & .field-group-collapsible,
+    & .filter-dropdown,
+    & .autocomplete-dropdown,
+    & .help-menu-dropdown,
+    & .card-showcase,
+    & .showcase-thumbnail {
+      border-radius: 4px !important;
+    }
+
+    & .form-input,
+    & .form-textarea,
+    & .form-select {
+      border-radius: 3px !important;
+    }
+
+    /* Remove decorative hover transforms */
+    & .btn:hover:not(:disabled) {
+      transform: none !important;
+    }
+
+    & .stat-card:hover,
+    & .card-showcase:hover,
+    & .showcase-thumbnail:hover,
+    & .quick-link:hover,
+    & .role-card:hover {
+      transform: none !important;
+    }
+
+    /* Efficient spacing - compact but readable */
+    & .page-container {
+      @apply p-3 space-y-3;
+    }
+
+    & .card-body {
+      @apply px-3 py-2.5;
+    }
+
+    & .card-header {
+      @apply px-3 py-2;
+    }
+
+    & .card-footer {
+      @apply px-3 py-2.5;
+    }
+
+    & .btn {
+      @apply px-3 py-1.5 text-sm;
+    }
+
+    & .btn-sm {
+      @apply px-2 py-1 text-xs;
+    }
+
+    & .btn-lg {
+      @apply px-4 py-2 text-base;
+    }
+
+    /* Streamlined form controls */
+    & .form-input,
+    & .form-textarea,
+    & .form-select {
+      @apply px-2.5 py-1.5 text-sm;
+    }
+
+    & .form-label {
+      @apply text-sm font-semibold mb-1;
+    }
+
+    & .form-label-sm {
+      @apply text-xs mb-0.5;
+    }
+
+    /* Efficient data table layout */
+    & .data-table th {
+      @apply px-3 py-2 text-xs;
+    }
+
+    & .data-table td {
+      @apply px-3 py-2 text-sm;
+    }
+
+    & .stat-table th {
+      @apply px-2 py-1.5 text-xs;
+    }
+
+    & .stat-table td {
+      @apply px-2 py-1.5 text-xs;
+    }
+
+    /* Compact badges */
+    & .badge {
+      @apply px-2 py-0.5 text-xs;
+    }
+
+    & .badge-xs,
+    & .badge-sm {
+      @apply text-[10px] px-1.5 py-0;
+    }
+
+    & .tag {
+      @apply text-xs px-2 py-0.5;
+    }
+
+    /* Modern stat cards with subtle styling */
+    & .stat-card {
+      @apply gap-2 px-3 py-2;
+      border-width: 1px !important;
+    }
+
+    & .stat-card-icon {
+      @apply w-6 h-6;
+    }
+
+    & .stat-card-label {
+      @apply text-[10px];
+    }
+
+    & .stat-card-value {
+      @apply text-xl;
+    }
+
+    /* Efficient modals */
+    & .modal-dialog {
+      @apply p-5;
+    }
+
+    & .modal-title {
+      @apply text-lg mb-3;
+    }
+
+    & .modal-content {
+      @apply mb-4;
+    }
+
+    /* Compact field groups */
+    & .field-group-header {
+      @apply px-3 py-2 min-h-[40px];
+    }
+
+    & .field-group-header-title {
+      @apply text-sm;
+    }
+
+    & .field-group-header-help {
+      @apply text-xs;
+    }
+
+    & .field-group-content {
+      @apply px-3 py-2.5;
+    }
+
+    /* Efficient nested items */
+    & .nested-item-card {
+      @apply p-2.5 space-y-2;
+    }
+
+    & .nested-item-remove-btn {
+      @apply px-2 py-1 text-xs;
+    }
+
+    /* Streamlined navigation */
+    & .nav-content {
+      @apply px-3 py-1;
+    }
+
+    & .nav-title-button {
+      @apply text-lg;
+    }
+
+    & .nav-button,
+    & .nav-badge,
+    & .nav-badge-writable,
+    & .nav-badge-readonly {
+      @apply px-2.5 py-1 text-sm;
+    }
+
+    /* Compact sidebar */
+    & .sidebar-header {
+      @apply px-3 py-2;
+    }
+
+    & .sidebar-nav-item {
+      @apply px-3 py-2 text-sm;
+    }
+
+    /* Balanced form spacing */
+    & .form-field {
+      @apply space-y-1.5;
+    }
+
+    & .form-grid-2,
+    & .form-grid-3,
+    & .form-grid-4 {
+      @apply gap-2.5;
+    }
+
+    & .form-section {
+      @apply space-y-2.5;
+    }
+
+    & .card-section {
+      @apply space-y-2.5;
+    }
+
+    /* Clean borders - single pixel for elegance */
+    & .card,
+    & .field-group-collapsible,
+    & .modal-dialog,
+    & .nested-item-card,
+    & .data-table {
+      border-width: 1px !important;
+    }
+
+    /* Subtle row alternation */
+    & .data-table tbody tr:nth-child(even) {
+      @apply bg-gray-50/50;
+      @apply dark:bg-gray-800/30;
+    }
+
+    & .data-table tbody tr:hover {
+      @apply bg-gray-100;
+      @apply dark:bg-gray-700/50;
+    }
+
+    /* Subtle image interactions */
+    & .card-showcase img,
+    & .showcase-thumbnail img {
+      transition: transform 200ms ease-out !important;
+    }
+
+    & .card-showcase:hover img,
+    & .showcase-thumbnail:hover img {
+      transform: scale(1.05) !important;
+    }
+
+    /* Balanced overview cards */
+    & .card-overview {
+      @apply p-4;
+    }
+
+    & .card-overview-title {
+      @apply text-lg;
+    }
+
+    & .card-overview-description {
+      @apply text-sm;
+    }
+
+    /* Stylish role cards */
+    & .role-card {
+      @apply p-4;
+      border-width: 1px !important;
+    }
+
+    & .role-card-icon {
+      @apply w-8 h-8;
+    }
+
+    & .role-card-title {
+      @apply text-base;
+    }
+
+    & .role-card-content {
+      @apply text-sm space-y-1.5;
+    }
+
+    /* Modern ecosystem cards */
+    & .ecosystem-card {
+      @apply p-4;
+      border-width: 1px !important;
+    }
+
+    & .ecosystem-card-icon {
+      @apply w-10 h-10 mb-3;
+    }
+
+    & .ecosystem-card-title {
+      @apply text-lg mb-2;
+    }
+
+    & .ecosystem-card-content {
+      @apply text-sm space-y-2;
+    }
+
+    /* Efficient quick links */
+    & .quick-link {
+      @apply px-3 py-2 gap-2;
+    }
+
+    & .quick-link-icon {
+      @apply w-4 h-4;
+    }
+
+    & .quick-link-text {
+      @apply text-sm;
+    }
+
+    /* Snappy transitions for modern feel */
+    & * {
+      transition-duration: 150ms !important;
+    }
+
+    /* Compact alerts */
+    & .alert {
+      @apply px-3 py-2 text-sm;
+    }
+
+    & .info-box {
+      @apply p-2.5 text-sm;
+    }
+
+    /* Efficient filter dropdowns */
+    & .filter-dropdown {
+      @apply w-56;
+    }
+
+    & .filter-dropdown-header,
+    & .filter-dropdown-search,
+    & .filter-dropdown-content {
+      @apply p-2;
+    }
+
+    & .filter-dropdown-item {
+      @apply px-2 py-1 text-sm;
+    }
+
+    /* Compact validation */
+    & .validation-section {
+      @apply space-y-1.5;
+    }
+
+    & .validation-heading,
+    & .validation-heading-error,
+    & .validation-heading-warning {
+      @apply text-sm;
+    }
+
+    & .validation-list-item,
+    & .validation-list-item-error,
+    & .validation-list-item-warning {
+      @apply text-xs;
+    }
+
+    /* Clean sticky header */
+    & .sticky-header {
+      @apply shadow-sm border-b pb-3;
+    }
+
+    /* Efficient modal sizing */
+    & .modal-dialog--lg {
+      width: 70vw;
+    }
+
+    & .modal-dialog--xl {
+      width: 85vw;
+    }
+
+    /* Streamlined notifications */
+    & .notification-alert {
+      @apply px-3 py-2 text-sm min-w-[240px] max-w-[360px];
+    }
+
+    /* Readable help text */
+    & .help-text,
+    & .form-hint,
+    & .form-error,
+    & .checkbox-hint {
+      @apply text-xs;
+    }
+
+    /* Balanced headings */
+    & .heading-page {
+      @apply text-xl;
+    }
+
+    & .heading-section {
+      @apply text-lg;
+    }
+
+    & .heading-card {
+      @apply text-base;
+    }
+
+    /* Efficient showcase grid */
+    & .showcase-thumbnail-grid {
+      @apply gap-1.5;
+    }
+
+    /* Subtle field hints */
+    & .field-impact,
+    & .field-best-practice {
+      @apply text-xs px-2 py-0.5;
+    }
+
+    /* Clean inline items */
+    & .inline-item-row {
+      @apply gap-1.5;
+    }
+
+    /* Compact checkboxes */
+    & .checkbox-group {
+      @apply gap-1.5;
+    }
+
+    & .checkbox-label {
+      @apply text-sm;
+    }
+
+    /* Efficient virtual scroll */
+    & .virtual-scroll-viewport {
+      padding-inline-end: 10px;
+    }
+
+    & .data-table-header {
+      padding-inline-end: 10px;
+    }
+
+    /* Subtle focus indicators */
+    & .form-input:focus,
+    & .form-textarea:focus,
+    & .form-select:focus {
+      @apply ring-1;
+    }
+  }
+
+  /* Compact light theme - clean and modern with excellent readability */
+  .theme-compact-light {
+    --color-gray-50: #fafafa;
+    --color-gray-100: #f5f5f5;
+    --color-gray-200: #e5e5e5;
+    --color-gray-300: #d4d4d4;
+    --color-gray-400: #a3a3a3;
+    --color-gray-500: #737373;
+    --color-gray-600: #525252;
+    --color-gray-700: #404040;
+    --color-gray-800: #262626;
+    --color-gray-900: #171717;
+    --color-gray-950: #0a0a0a;
+
+    /* Vibrant primary color for modern feel */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    --color-primary-950: #172554;
+
+    --json-key: #1d4ed8;
+    --json-string: #b91c1c;
+    --json-number: #15803d;
+    --json-boolean: #2563eb;
+    --json-null: #737373;
+
+    --scrollbar-track: #f5f5f5;
+    --scrollbar-thumb: #d4d4d4;
+    --scrollbar-thumb-hover: #a3a3a3;
+
+    & .card {
+      @apply bg-white border-gray-300;
+    }
+
+    & .btn-primary {
+      @apply bg-primary-600 hover:bg-primary-700 text-white;
+    }
+
+    & .btn-secondary {
+      @apply bg-gray-100 hover:bg-gray-200 border-gray-300 text-gray-900;
+    }
+
+    & body {
+      @apply text-gray-900 bg-gray-50;
+    }
+
+    & .data-table thead {
+      @apply bg-gray-100 border-b border-gray-300;
+    }
+
+    & .stat-table thead {
+      @apply bg-gray-100 border-b border-gray-400;
+    }
+
+    /* Subtle accent on hover */
+    & .stat-card:hover {
+      @apply border-primary-400;
+    }
+
+    & .role-card:hover {
+      @apply border-primary-400;
+    }
+  }
+
+  /* Compact dark theme - sleek and modern with excellent contrast */
+  .theme-compact-dark {
+    --color-gray-50: #fafafa;
+    --color-gray-100: #f5f5f5;
+    --color-gray-200: #e5e5e5;
+    --color-gray-300: #d4d4d4;
+    --color-gray-400: #a3a3a3;
+    --color-gray-500: #737373;
+    --color-gray-600: #525252;
+    --color-gray-700: #404040;
+    --color-gray-800: #262626;
+    --color-gray-900: #171717;
+    --color-gray-950: #0a0a0a;
+
+    /* Slightly brighter primary for dark theme visibility */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    --color-primary-950: #172554;
+
+    --json-key: #93c5fd;
+    --json-string: #fca5a5;
+    --json-number: #86efac;
+    --json-boolean: #60a5fa;
+    --json-null: #a3a3a3;
+
+    --scrollbar-track: #262626;
+    --scrollbar-thumb: #525252;
+    --scrollbar-thumb-hover: #737373;
+
+    & .card {
+      @apply bg-gray-900 border-gray-700;
+    }
+
+    & .btn-primary {
+      @apply bg-primary-600 hover:bg-primary-700 text-white;
+    }
+
+    & .btn-secondary {
+      @apply bg-gray-800 hover:bg-gray-700 border-gray-600 text-gray-100;
+    }
+
+    & body {
+      @apply text-gray-50 bg-gray-950;
+    }
+
+    & .data-table thead {
+      @apply bg-gray-800 border-b border-gray-700;
+    }
+
+    & .stat-table thead {
+      @apply bg-gray-800 border-b border-gray-600;
+    }
+
+    /* Vibrant accent on hover for dark theme */
+    & .stat-card:hover {
+      @apply border-primary-500;
+    }
+
+    & .role-card:hover {
+      @apply border-primary-500;
+    }
+
+    & .page-container {
+      @apply bg-gray-950;
+    }
+  }
 }

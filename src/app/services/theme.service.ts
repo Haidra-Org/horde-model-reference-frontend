@@ -1,7 +1,13 @@
 import { Injectable, signal, effect, PLATFORM_ID, inject, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { ThemeDefinition, ThemeId } from '../models/theme.model';
-import { THEME_DEFINITIONS } from '../models/theme-presets';
+import {
+  ThemeCategory,
+  ThemeCategoryId,
+  ThemeDefinition,
+  ThemeId,
+  ThemeMode,
+} from '../models/theme.model';
+import { THEME_CATEGORIES, THEME_DEFINITIONS } from '../models/theme-presets';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +20,32 @@ export class ThemeService {
   // Signal for the current theme
   readonly currentTheme = signal<ThemeDefinition>(this.getInitialTheme());
   readonly availableThemes = computed(() => THEME_DEFINITIONS);
+  readonly availableCategories = computed(() => {
+    const categories = new Map<ThemeCategoryId, ThemeCategory>(
+      THEME_CATEGORIES.map((category) => [category.id, category]),
+    );
+
+    for (const theme of this.availableThemes()) {
+      if (!categories.has(theme.family)) {
+        categories.set(theme.family, {
+          id: theme.family,
+          name: this.formatCategoryName(theme.family),
+          description: theme.description,
+        });
+      }
+    }
+
+    return Array.from(categories.values());
+  });
 
   // Computed signals for easy access
   readonly themeId = computed(() => this.currentTheme().id);
   readonly themeName = computed(() => this.currentTheme().name);
   readonly isDark = computed(() => this.currentTheme().colorMode === 'dark');
+  readonly currentCategoryId = computed<ThemeCategoryId>(() => this.currentTheme().family);
+  readonly currentCategory = computed<ThemeCategory | undefined>(() =>
+    this.availableCategories().find((category) => category.id === this.currentCategoryId()),
+  );
 
   constructor() {
     // Effect to apply theme when it changes
@@ -46,6 +73,23 @@ export class ThemeService {
   }
 
   /**
+   * Update the theme family while preserving the current color mode when possible
+   */
+  setThemeFamily(familyId: ThemeCategoryId | string): void {
+    const normalizedId = familyId as ThemeCategoryId;
+    const currentMode = this.currentTheme().colorMode;
+
+    const theme =
+      this.findThemeInFamily(normalizedId, currentMode) ??
+      this.findThemeInFamily(normalizedId, currentMode === 'dark' ? 'light' : 'dark') ??
+      this.availableThemes().find((t) => t.family === normalizedId);
+
+    if (theme) {
+      this.currentTheme.set(theme);
+    }
+  }
+
+  /**
    * Toggle between light and dark mode within the same theme family
    */
   toggleDarkMode(): void {
@@ -53,9 +97,7 @@ export class ThemeService {
     const targetMode = current.colorMode === 'light' ? 'dark' : 'light';
 
     // Find theme in the same family with the opposite mode
-    const newTheme = this.availableThemes().find(
-      (t) => t.family === current.family && t.colorMode === targetMode,
-    );
+    const newTheme = this.findThemeInFamily(current.family, targetMode);
 
     if (newTheme) {
       this.currentTheme.set(newTheme);
@@ -74,9 +116,7 @@ export class ThemeService {
     }
 
     // Find theme in the same family with the target mode
-    const newTheme = this.availableThemes().find(
-      (t) => t.family === current.family && t.colorMode === targetMode,
-    );
+    const newTheme = this.findThemeInFamily(current.family, targetMode);
 
     if (newTheme) {
       this.currentTheme.set(newTheme);
@@ -153,5 +193,16 @@ export class ThemeService {
 
     // Fallback to first theme in presets
     return THEME_DEFINITIONS[0];
+  }
+
+  private findThemeInFamily(family: ThemeCategoryId, mode: ThemeMode): ThemeDefinition | undefined {
+    return this.availableThemes().find((t) => t.family === family && t.colorMode === mode);
+  }
+
+  private formatCategoryName(category: ThemeCategoryId): string {
+    return category
+      .split('-')
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(' ');
   }
 }

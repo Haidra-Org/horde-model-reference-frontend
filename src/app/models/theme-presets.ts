@@ -1,4 +1,17 @@
-import { ThemeDefinition } from './theme.model';
+import { ThemeCategory, ThemeDefinition } from './theme.model';
+
+export const THEME_CATEGORIES: ThemeCategory[] = [
+  {
+    id: 'default',
+    name: 'Default',
+    description: 'Modern, colorful theme with gradients and shadows',
+  },
+  {
+    id: 'utilitarian',
+    name: 'Utilitarian',
+    description: 'Dense, data-first design with compact spacing and sharp edges',
+  },
+];
 
 /**
  * Enumerates the themes offered to users. The actual color tokens and

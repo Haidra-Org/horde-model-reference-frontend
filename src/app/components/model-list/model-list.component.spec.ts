@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, Subject } from 'rxjs';
 import { ModelListComponent } from './model-list.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
@@ -14,6 +14,7 @@ import {
 import { AuthService } from '../../services/auth.service';
 import { LegacyRecordUnion } from '../../models';
 import { HordeModelType } from '../../models/horde-api.models';
+import { StatisticsService } from '../../api-client';
 
 class MockNotificationService {
   readonly error = jasmine.createSpy('error');
@@ -78,6 +79,12 @@ class MockHordeApiService {
   }
 }
 
+class MockStatisticsService {
+  readV2CategoryStatistics(): Observable<unknown> {
+    return EMPTY;
+  }
+}
+
 describe('ModelListComponent race conditions', () => {
   let fixture: ComponentFixture<ModelListComponent>;
   let component: ModelListComponent;
@@ -95,6 +102,7 @@ describe('ModelListComponent race conditions', () => {
         { provide: HordeApiService, useClass: MockHordeApiService },
         { provide: NotificationService, useClass: MockNotificationService },
         { provide: AuthService, useClass: MockAuthService },
+        { provide: StatisticsService, useClass: MockStatisticsService },
         { provide: ActivatedRoute, useValue: { params: paramsSubject.asObservable() } },
       ],
     }).compileComponents();

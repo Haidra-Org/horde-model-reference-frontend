@@ -27,6 +27,7 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { HordeApiService } from '../../services/horde-api.service';
+import { StatisticsService, CategoryStatistics, ParameterBucketStats } from '../../api-client';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -82,6 +83,7 @@ export class ModelListComponent implements OnInit {
   private readonly notification = inject(NotificationService);
   private readonly auth = inject(AuthService);
   readonly hordeApi = inject(HordeApiService);
+  private readonly statisticsService = inject(StatisticsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -89,6 +91,7 @@ export class ModelListComponent implements OnInit {
   readonly category = signal<string>('');
   readonly models = signal<(UnifiedModelData | GroupedTextModel)[]>([]);
   readonly loading = signal(true);
+  readonly categoryStatistics = signal<CategoryStatistics | null>(null);
   readonly searchTerm = signal('');
   readonly searchTermSubject = new Subject<string>();
   readonly debouncedSearchTerm = signal('');
@@ -201,7 +204,7 @@ export class ModelListComponent implements OnInit {
   });
 
   readonly filteredModels = computed(() => {
-    const search = this.debouncedSearchTerm().toLowerCase();
+    const searchFilters = this.parseSearchFilters(this.debouncedSearchTerm());
     const selectedTags = this.selectedTags();
     const selectedParameterTags = this.selectedParameterTags();
     const activeFilter = this.filterByActive();
@@ -233,56 +236,10 @@ export class ModelListComponent implements OnInit {
       });
     }
 
-    if (search) {
-      filtered = filtered.filter((model) => {
-        const legacyModel = model as LegacyRecordUnion;
-
-        // Check base name
-        if (model.name.toLowerCase().includes(search)) {
-          return true;
-        }
-
-        // Check description
-        if (legacyModel.description && legacyModel.description.toLowerCase().includes(search)) {
-          return true;
-        }
-
-        // Check baseline
-        if (
-          isLegacyStableDiffusionRecord(legacyModel) &&
-          legacyModel.baseline?.toLowerCase().includes(search)
-        ) {
-          return true;
-        }
-
-        // Check tags
-        if (
-          isLegacyStableDiffusionRecord(legacyModel) &&
-          legacyModel.tags?.some((tag) => tag.toLowerCase().includes(search))
-        ) {
-          return true;
-        }
-
-        // For grouped text models, also check variations and backends
-        if (isGroupedTextModel(model)) {
-          // Check if search matches any backend name
-          if (model.availableBackends.some((backend) => backend.toLowerCase().includes(search))) {
-            return true;
-          }
-
-          // Check if search matches any variation name
-          if (model.variations.some((variation) => variation.name.toLowerCase().includes(search))) {
-            return true;
-          }
-
-          // Check if search matches any author
-          if (model.availableAuthors.some((author) => author.toLowerCase().includes(search))) {
-            return true;
-          }
-        }
-
-        return false;
-      });
+    if (searchFilters.length > 0) {
+      filtered = filtered.filter((model) =>
+        searchFilters.every((filter) => this.modelMatchesFilter(model, filter)),
+      );
     }
 
     return filtered;
@@ -351,17 +308,39 @@ export class ModelListComponent implements OnInit {
       .sort((a, b) => b.count - a.count);
   });
 
+  readonly topBaselinesDisplay = computed(() => {
+    const allBaselines = this.baselineStats();
+    const topBaselines = allBaselines.slice(0, 7);
+    const remainingCount = allBaselines.length - topBaselines.length;
+    return { topBaselines, remainingCount, totalCount: allBaselines.length };
+  });
+
   readonly tagStats = computed(() => {
-    const uniqueTags = new Set<string>();
+    const tagCounts = new Map<string, number>();
+    const isTextGen = this.isTextGeneration();
     this.filteredModels().forEach((model) => {
       const legacyModel = model as LegacyRecordUnion;
       if (isLegacyStableDiffusionRecord(legacyModel) && legacyModel.tags) {
-        legacyModel.tags.forEach((tag) => uniqueTags.add(tag));
+        legacyModel.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));
       } else if (isLegacyTextGenerationRecord(legacyModel) && legacyModel.tags) {
-        legacyModel.tags.forEach((tag) => uniqueTags.add(tag));
+        legacyModel.tags.forEach((tag) => {
+          // For text generation, exclude parameter count tags
+          if (!isTextGen || !this.isParameterTag(tag)) {
+            tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+          }
+        });
       }
     });
-    return uniqueTags.size;
+    return Array.from(tagCounts.entries())
+      .map(([tag, count]) => ({ tag, count }))
+      .sort((a, b) => b.count - a.count);
+  });
+
+  readonly topTagsDisplay = computed(() => {
+    const allTags = this.tagStats();
+    const topTags = allTags.slice(0, 7);
+    const remainingCount = allTags.length - topTags.length;
+    return { topTags, remainingCount, totalCount: allTags.length };
   });
 
   readonly nsfwStats = computed(() => {
@@ -381,6 +360,15 @@ export class ModelListComponent implements OnInit {
     return { nsfw, sfw, unknown };
   });
 
+  readonly nsfwStatsDisplay = computed(() => {
+    const stats = this.nsfwStats();
+    const items = [];
+    if (stats.nsfw > 0) items.push({ label: 'NSFW', count: stats.nsfw, value: 'nsfw:true' });
+    if (stats.sfw > 0) items.push({ label: 'SFW', count: stats.sfw, value: 'nsfw:false' });
+    if (stats.unknown > 0) items.push({ label: 'Unknown', count: stats.unknown, value: 'nsfw:unknown' });
+    return items;
+  });
+
   readonly sizeStats = computed(() => {
     let totalBytes = 0;
     this.filteredModels().forEach((model) => {
@@ -392,6 +380,16 @@ export class ModelListComponent implements OnInit {
   });
 
   readonly parameterBucketStats = computed(() => {
+    // Use backend statistics if available
+    const stats = this.categoryStatistics();
+    if (stats?.parameter_buckets && stats.parameter_buckets.length > 0) {
+      return {
+        buckets: stats.parameter_buckets,
+        modelsWithoutParams: stats.models_without_param_info ?? 0,
+      };
+    }
+
+    // Fallback to client-side computation if backend stats not available
     const parameterCounts = new Map<number, number>();
     this.filteredModels().forEach((model) => {
       const legacyModel = model as LegacyRecordUnion;
@@ -410,7 +408,7 @@ export class ModelListComponent implements OnInit {
     const topBuckets = sorted.slice(0, 100);
     const otherCount = sorted.slice(100).reduce((sum, bucket) => sum + bucket.count, 0);
 
-    return { topBuckets, otherCount };
+    return { topBuckets, otherCount, buckets: undefined, modelsWithoutParams: 0 };
   });
 
   readonly requirementsStats = computed(() => {
@@ -446,7 +444,11 @@ export class ModelListComponent implements OnInit {
 
   readonly hasParametersStats = computed(() => {
     const config = this.categoryStatsConfig();
-    return config.includes('parameters') && this.parameterBucketStats().topBuckets.length > 0;
+    const bucketStats = this.parameterBucketStats();
+    return (
+      config.includes('parameters') &&
+      ((bucketStats.buckets?.length ?? 0) > 0 || (bucketStats.topBuckets?.length ?? 0) > 0)
+    );
   });
 
   readonly baselineModalData = computed((): CountValueDescriptionTriple[] => {
@@ -522,14 +524,36 @@ export class ModelListComponent implements OnInit {
   });
 
   readonly parametersModalData = computed((): CountValueDetailTriple[] => {
-    const { topBuckets, otherCount } = this.parameterBucketStats();
-    const data: CountValueDetailTriple[] = topBuckets.map((bucket) => ({
+    const bucketStats = this.parameterBucketStats();
+
+    // Use backend buckets if available
+    if (bucketStats.buckets && bucketStats.buckets.length > 0) {
+      const data: CountValueDetailTriple[] = bucketStats.buckets.map((bucket) => ({
+        count: bucket.count,
+        value: bucket.bucket_label,
+        wrapperClass: 'pc-badge badge-info',
+        detail: `${bucket.percentage.toFixed(1)}%`,
+      }));
+      if (bucketStats.modelsWithoutParams > 0) {
+        data.push({
+          count: bucketStats.modelsWithoutParams,
+          value: 'No parameter info',
+          detail: '',
+          isOtherRow: true,
+        });
+      }
+      return data;
+    }
+
+    // Fallback to old exact parameter display
+    const { topBuckets, otherCount } = bucketStats;
+    const data: CountValueDetailTriple[] = (topBuckets ?? []).map((bucket) => ({
       count: bucket.count,
       value: this.formatParametersInBillions(bucket.params),
       wrapperClass: `pc-badge ${this.getParameterHeatmapClass(bucket.params)}`,
       detail: bucket.params.toLocaleString(),
     }));
-    if (otherCount > 0) {
+    if (otherCount && otherCount > 0) {
       data.push({
         count: otherCount,
         value: 'Other parameter counts',
@@ -576,10 +600,6 @@ export class ModelListComponent implements OnInit {
 
   getParameterHeatmapClass(params: number): string {
     return getParameterHeatmapClass(params);
-  }
-
-  getBaselineDisplayName(baseline: string): string {
-    return BASELINE_SHORTHAND_MAP[baseline] || baseline;
   }
 
   showBaselineDetails(): void {
@@ -670,6 +690,18 @@ export class ModelListComponent implements OnInit {
 
   getBaselineTooltip(baseline: string): string {
     return BASELINE_DISPLAY_MAP[baseline] || baseline;
+  }
+
+  getBaselineDisplayName(baseline: string): string {
+    // For text generation, just capitalize and clean up underscores
+    // For image generation, use the shorthand map
+    if (this.isTextGeneration()) {
+      return baseline
+        .split(/[-_]/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+    return BASELINE_SHORTHAND_MAP[baseline] || baseline;
   }
 
   ngOnInit(): void {
@@ -781,6 +813,23 @@ export class ModelListComponent implements OnInit {
     } else {
       this.selectedTags.set([...current, tag]);
     }
+  }
+
+  addTagToSearch(tag: string): void {
+    this.addFilterToSearch(tag);
+  }
+
+  addBaselineToSearch(baseline: string): void {
+    this.addFilterToSearch(baseline);
+  }
+
+  addNsfwFilterToSearch(filterValue: string): void {
+    const currentSearch = this.searchTerm();
+    // Remove any existing nsfw filter first
+    const withoutNsfw = currentSearch.replace(/nsfw:(true|false|unknown)/gi, '').trim();
+    this.searchTerm.set(withoutNsfw);
+    this.searchTermSubject.next(withoutNsfw);
+    this.addFilterToSearch(filterValue);
   }
 
   isTagSelected(tag: string): boolean {
@@ -902,6 +951,104 @@ export class ModelListComponent implements OnInit {
       'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%272%27%3E%3Crect x=%273%27 y=%273%27 width=%2718%27 height=%2718%27 rx=%272%27/%3E%3Ccircle cx=%278.5%27 cy=%278.5%27 r=%271.5%27/%3E%3Cpath d=%27M21 15l-5-5L5 21%27/%3E%3C/svg%3E';
   }
 
+  private addFilterToSearch(term: string): void {
+    const trimmed = term.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    const currentSearch = this.searchTerm();
+    const existingFilters = new Set(this.parseSearchFilters(currentSearch));
+    const normalized = trimmed.toLowerCase();
+    if (existingFilters.has(normalized)) {
+      return;
+    }
+
+    const needsQuotes = /\s/.test(trimmed) && !(trimmed.startsWith('"') && trimmed.endsWith('"'));
+    const termToAdd = needsQuotes ? `"${trimmed}"` : trimmed;
+    const newSearch = currentSearch ? `${currentSearch} ${termToAdd}`.trim() : termToAdd;
+    this.searchTerm.set(newSearch);
+    this.searchTermSubject.next(newSearch);
+  }
+
+  private parseSearchFilters(term: string): string[] {
+    if (!term.trim()) {
+      return [];
+    }
+
+    const filters: string[] = [];
+    const regex = /"([^"]+)"|(\S+)/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(term)) !== null) {
+      const token = match[1] ?? match[2];
+      if (token) {
+        filters.push(token.toLowerCase());
+      }
+    }
+
+    return filters;
+  }
+
+  private modelMatchesFilter(model: UnifiedModelData | GroupedTextModel, filter: string): boolean {
+    const legacyModel = model as LegacyRecordUnion;
+
+    if (model.name.toLowerCase().includes(filter)) {
+      return true;
+    }
+
+    if (
+      typeof legacyModel.description === 'string' &&
+      legacyModel.description.toLowerCase().includes(filter)
+    ) {
+      return true;
+    }
+
+    if (
+      typeof legacyModel.baseline === 'string' &&
+      legacyModel.baseline.toLowerCase().includes(filter)
+    ) {
+      return true;
+    }
+
+    if (
+      Array.isArray(legacyModel.tags) &&
+      legacyModel.tags.some((tag) => tag.toLowerCase().includes(filter))
+    ) {
+      return true;
+    }
+
+    if (filter.startsWith('nsfw:')) {
+      const [, nsfwValue] = filter.split(':', 2);
+      const nsfwFlag = (legacyModel as { nsfw?: boolean }).nsfw;
+      if (nsfwValue === 'true') {
+        return nsfwFlag === true;
+      }
+      if (nsfwValue === 'false') {
+        return nsfwFlag === false;
+      }
+      if (nsfwValue === 'unknown') {
+        return nsfwFlag !== true && nsfwFlag !== false;
+      }
+    }
+
+    if (isGroupedTextModel(model)) {
+      if (model.availableBackends.some((backend) => backend.toLowerCase().includes(filter))) {
+        return true;
+      }
+
+      if (model.variations.some((variation) => variation.name.toLowerCase().includes(filter))) {
+        return true;
+      }
+
+      if (model.availableAuthors.some((author) => author.toLowerCase().includes(filter))) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private getCategoryHordeType(category: string): HordeModelType | null {
     if (category === 'image_generation') {
       return 'image';
@@ -915,6 +1062,23 @@ export class ModelListComponent implements OnInit {
   private loadModelsForCategory(category: string): Observable<void> {
     const isTextGen = category === 'text_generation';
     const hordeType = this.getCategoryHordeType(category);
+
+    // Fetch category statistics
+    this.statisticsService
+      .readV2CategoryStatistics(
+        category as any,
+        isTextGen, // group_text_models
+      )
+      .pipe(
+        tap((stats) => this.categoryStatistics.set(stats)),
+        catchError(() => {
+          this.categoryStatistics.set(null);
+          return of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+
     const models$ = this.getModelsForCategory$(category, hordeType, isTextGen).pipe(
       tap((models) => {
         this.models.set(models);
@@ -959,9 +1123,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-          startWith<BackendStatisticsResponse | null>(null),
-          catchError(() => of(null)),
-        )
+        startWith<BackendStatisticsResponse | null>(null),
+        catchError(() => of(null)),
+      )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(
