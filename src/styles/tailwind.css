@@ -424,11 +424,7 @@
     @apply dark:bg-warning-900/30 dark:text-warning-300;
   }
 
-  .badge-info {
-    @apply bg-info-100 text-info-800;
-    @apply dark:bg-gray-800 dark:text-gray-300 dark:border dark:border-gray-700;
-  }
-
+  .badge-info,
   .badge-secondary {
     @apply bg-gray-100 text-gray-700;
     @apply dark:bg-gray-800 dark:text-gray-400 dark:border dark:border-gray-700;
@@ -439,13 +435,13 @@
     @apply text-[10px] px-1.5 py-0;
   }
 
-  .badge-sm {
+  .badge-sm,
+  .badge-priority {
     @apply text-[10px] px-1.5 py-0.5;
   }
 
-  /* Priority badge variant - combines badge with small sizing */
   .badge-priority {
-    @apply ml-2 text-[10px] px-1.5 py-0.5;
+    @apply ml-2;
   }
 
   /* Form controls with enhanced focus and validation states */
@@ -462,7 +458,7 @@
     @apply dark:placeholder:text-gray-500;
   }
 
-  /* Error state for form inputs */
+  /* Validation states for form inputs */
   .form-input-error,
   .form-textarea-error,
   .form-select-error {
@@ -470,7 +466,6 @@
     @apply dark:border-danger-400 dark:focus:ring-danger-400 dark:focus:border-danger-400;
   }
 
-  /* Success state for form inputs */
   .form-input-success,
   .form-textarea-success,
   .form-select-success {
@@ -478,14 +473,17 @@
     @apply dark:border-success-400 dark:focus:ring-success-400 dark:focus:border-success-400;
   }
 
-  .form-label {
-    @apply block text-sm font-semibold text-gray-700 mb-1.5;
-    @apply dark:text-gray-300;
+  .form-label,
+  .form-label-sm {
+    @apply block text-gray-700 dark:text-gray-300;
   }
 
-  /* Small form label variant for compact layouts */
+  .form-label {
+    @apply text-sm font-semibold mb-1.5;
+  }
+
   .form-label-sm {
-    @apply text-xs font-medium text-gray-600 dark:text-gray-400 block mb-1;
+    @apply text-xs font-medium text-gray-600 dark:text-gray-400 mb-1;
   }
 
   .form-textarea {
@@ -726,25 +724,32 @@
   }
 
   /* Muted/helper text */
-  .text-muted {
-    @apply text-gray-500;
-    @apply dark:text-gray-400;
+  .text-muted,
+  .text-muted-sm {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  .text-muted-sm {
+    @apply text-sm;
   }
 
   /* Headings */
+  .heading-page,
+  .heading-section,
+  .heading-card {
+    @apply font-semibold text-gray-900 dark:text-gray-100;
+  }
+
   .heading-page {
-    @apply text-2xl font-semibold text-gray-900;
-    @apply dark:text-gray-100;
+    @apply text-2xl;
   }
 
   .heading-section {
-    @apply text-lg font-semibold text-gray-900;
-    @apply dark:text-gray-100;
+    @apply text-lg;
   }
 
   .heading-card {
-    @apply text-base font-semibold text-gray-900;
-    @apply dark:text-gray-100;
+    @apply text-base;
   }
 
   /* Inline label annotations */
@@ -1261,9 +1266,19 @@
   }
 
   /* Empty state message */
+  .empty-state,
+  .dropdown-empty-state,
+  .empty-state-text {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+  }
+
   .empty-state {
-    @apply text-gray-500 text-sm italic;
-    @apply dark:text-gray-400;
+    @apply italic;
+  }
+
+  .dropdown-empty-state,
+  .empty-state-text {
+    @apply text-center py-2;
   }
 
   /* Inline item row (for key-value pairs) */
@@ -1276,46 +1291,49 @@
     @apply space-y-2;
   }
 
+  .validation-section-error,
+  .validation-section-warning {
+    @apply border-l-4 pl-3;
+  }
+
   .validation-section-error {
-    @apply border-l-4 border-l-danger-500 pl-3;
-    @apply dark:border-l-danger-400;
+    @apply border-l-danger-500 dark:border-l-danger-400;
   }
 
   .validation-section-warning {
-    @apply border-l-4 border-l-warning-500 pl-3;
-    @apply dark:border-l-warning-400;
+    @apply border-l-warning-500 dark:border-l-warning-400;
   }
 
-  .validation-heading {
+  .validation-heading,
+  .validation-heading-error,
+  .validation-heading-warning {
     @apply text-sm font-semibold;
   }
 
   .validation-heading-error {
-    @apply text-sm font-semibold text-danger-700;
-    @apply dark:text-danger-300;
+    @apply text-danger-700 dark:text-danger-300;
   }
 
   .validation-heading-warning {
-    @apply text-sm font-semibold text-warning-700;
-    @apply dark:text-warning-300;
+    @apply text-warning-700 dark:text-warning-300;
   }
 
   .validation-list {
     @apply space-y-1;
   }
 
-  .validation-list-item {
+  .validation-list-item,
+  .validation-list-item-error,
+  .validation-list-item-warning {
     @apply text-sm;
   }
 
   .validation-list-item-error {
-    @apply text-sm text-danger-600;
-    @apply dark:text-danger-400;
+    @apply text-danger-600 dark:text-danger-400;
   }
 
   .validation-list-item-warning {
-    @apply text-sm text-warning-600;
-    @apply dark:text-warning-400;
+    @apply text-warning-600 dark:text-warning-400;
   }
 
   /* Form section header for subsections */
@@ -1331,9 +1349,10 @@
   }
 
   /* Loading state */
-  .loading-state {
-    @apply text-center py-12 text-gray-500;
-    @apply dark:text-gray-400;
+  .loading-state,
+  .page-loading-state,
+  .loading-text {
+    @apply text-center py-12 text-gray-500 dark:text-gray-400;
   }
 
   /* Form legend for color coding explanation */
@@ -1385,16 +1404,6 @@
 
   .toggle-switch-slider {
     @apply absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200;
-  }
-
-  /* Dropdown and filter states */
-  .dropdown-empty-state {
-    @apply text-sm text-gray-500 dark:text-gray-400 text-center py-2;
-  }
-
-  /* Page loading state */
-  .page-loading-state {
-    @apply text-center py-12 text-gray-500 dark:text-gray-400;
   }
 
   /* Navigation and toolbar buttons */
@@ -1540,18 +1549,22 @@
   }
 
   /* Active filter tag with close button */
-  .active-filter-tag {
+  .active-filter-tag,
+  .active-filter-tag-info {
     @apply text-xs px-2 py-0.5 rounded border;
+    @apply inline-flex items-center gap-1 cursor-pointer transition-colors focus:outline-none focus:ring-2;
+  }
+
+  .active-filter-tag {
     @apply bg-primary-50 text-primary-700 border-primary-300;
     @apply dark:bg-primary-950 dark:text-primary-300 dark:border-primary-700;
-    @apply inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500;
+    @apply hover:bg-primary-100 dark:hover:bg-primary-900 focus:ring-primary-500;
   }
 
   .active-filter-tag-info {
-    @apply text-xs px-2 py-0.5 rounded border;
     @apply bg-info-50 text-info-700 border-info-300;
     @apply dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600;
-    @apply inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500 dark:focus:ring-gray-500;
+    @apply hover:bg-info-100 dark:hover:bg-gray-700 focus:ring-info-500 dark:focus:ring-gray-500;
   }
 
   /* Danger text variants */
@@ -1819,14 +1832,19 @@
   }
 
   /* Field impact and best practice hints */
+  .field-impact,
+  .field-best-practice {
+    @apply text-xs px-2 py-1 rounded border-l-2 mt-1;
+  }
+
   .field-impact {
-    @apply text-xs text-primary-700 bg-primary-50 px-2 py-1 rounded border-l-2 border-primary-500 mt-1;
-    @apply dark:text-primary-300 dark:bg-primary-900/20 dark:border-primary-500;
+    @apply text-primary-700 bg-primary-50 border-primary-500;
+    @apply dark:text-primary-300 dark:bg-primary-900/20;
   }
 
   .field-best-practice {
-    @apply text-xs text-success-700 bg-success-50 px-2 py-1 rounded border-l-2 border-success-500 mt-1;
-    @apply dark:text-success-300 dark:bg-success-900/20 dark:border-success-500;
+    @apply text-success-700 bg-success-50 border-success-500;
+    @apply dark:text-success-300 dark:bg-success-900/20;
   }
 
   .inline-warning {
@@ -1834,9 +1852,15 @@
     @apply dark:bg-warning-900/30 dark:text-warning-300 dark:border-warning-700;
   }
 
-  /* GPU requirement badges */
-  .badge-gpu-requirement {
+  /* GPU requirement and speed tier badges - shared base styles */
+  .badge-gpu-requirement,
+  .badge-speed-fast,
+  .badge-speed-medium,
+  .badge-speed-slow {
     @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
+  }
+
+  .badge-gpu-requirement {
     @apply bg-info-100 text-info-800 border border-info-300;
     @apply dark:bg-info-900/30 dark:text-info-300 dark:border-info-700;
   }
@@ -1845,46 +1869,45 @@
     @apply w-3 h-3;
   }
 
-  /* Speed tier badges */
   .badge-speed-fast {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
     @apply bg-success-100 text-success-800 border border-success-300;
     @apply dark:bg-success-900/30 dark:text-success-300 dark:border-success-700;
   }
 
   .badge-speed-medium {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
     @apply bg-warning-100 text-warning-800 border border-warning-300;
     @apply dark:bg-warning-900/30 dark:text-warning-300 dark:border-warning-700;
   }
 
   .badge-speed-slow {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
     @apply bg-danger-100 text-danger-800 border border-danger-300;
     @apply dark:bg-danger-900/30 dark:text-danger-300 dark:border-danger-700;
   }
 
   /* Popularity and availability badges */
-  .badge-popular {
+  .badge-popular,
+  .badge-trending,
+  .badge-needs-workers,
+  .badge-new {
     @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
+  }
+
+  .badge-popular {
     @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white;
     @apply dark:from-primary-600 dark:to-primary-700;
   }
 
   .badge-trending {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
     @apply bg-gradient-to-r from-success-500 to-success-600 text-white;
     @apply dark:from-success-600 dark:to-success-700;
   }
 
   .badge-needs-workers {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
     @apply bg-warning-100 text-warning-800 border border-warning-300;
     @apply dark:bg-warning-900/30 dark:text-warning-300 dark:border-warning-700;
   }
 
   .badge-new {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold;
     @apply bg-info-100 text-info-800 border border-info-300;
     @apply dark:bg-info-900/30 dark:text-info-300 dark:border-info-700;
   }
@@ -1942,16 +1965,18 @@
     @apply px-3 py-1.5 rounded-lg text-sm font-medium bg-white/10 hover:bg-white/20 transition-colors;
   }
 
-  .nav-badge {
+  .nav-badge,
+  .nav-badge-writable,
+  .nav-badge-readonly {
     @apply px-3 py-1.5 rounded-lg text-sm font-medium;
   }
 
   .nav-badge-writable {
-    @apply px-3 py-1.5 rounded-lg text-sm font-medium bg-success-500/25 text-success-100;
+    @apply bg-success-500/25 text-success-100;
   }
 
   .nav-badge-readonly {
-    @apply px-3 py-1.5 rounded-lg text-sm font-medium bg-warning-500/25 text-warning-100;
+    @apply bg-warning-500/25 text-warning-100;
   }
 
   /* Help menu dropdown */
@@ -3207,5 +3232,309 @@
     & .page-container {
       @apply bg-gray-950;
     }
+  }
+
+  /* === Additional Utility Classes === */
+
+  /* Text and typography utilities */
+  .text-mono-metadata {
+    @apply text-xs text-gray-400 dark:text-gray-500 font-mono;
+  }
+
+  .text-page-title {
+    @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .text-section-title-lg {
+    @apply text-3xl font-bold text-gray-900 dark:text-gray-100;
+  }
+
+  .text-section-title-xl {
+    @apply text-xl font-bold;
+  }
+
+  .text-icon-lg {
+    @apply text-lg;
+  }
+
+  .text-icon-xl {
+    @apply text-xl;
+  }
+
+  /* Icon sizing */
+  .icon-sm,
+  .badge-gpu-icon {
+    @apply w-4 h-4;
+  }
+
+  .icon-md {
+    @apply w-5 h-5;
+  }
+
+  .icon-lg {
+    @apply w-6 h-6;
+  }
+
+  /* Layout and spacing utilities */
+  .flex-between-start,
+  .flex-between-center {
+    @apply flex justify-between;
+  }
+
+  .flex-between-start {
+    @apply items-start;
+  }
+
+  .flex-between-center {
+    @apply items-center;
+  }
+
+  .flex-start-gap-2 {
+    @apply flex items-start gap-2;
+  }
+
+  .flex-center-gap-3,
+  .flex-center-gap-4 {
+    @apply flex items-center;
+  }
+
+  .flex-center-gap-3 {
+    @apply gap-3;
+  }
+
+  .flex-center-gap-4 {
+    @apply gap-4;
+  }
+
+  .flex-gap-2-wrap {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .flex-gap-3-wrap {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .flex-gap-6 {
+    @apply flex gap-6;
+  }
+
+  .grid-cols-2-md {
+    @apply grid md:grid-cols-2 gap-6;
+  }
+
+  .grid-cols-3-lg {
+    @apply grid md:grid-cols-2 lg:grid-cols-3 gap-2;
+  }
+
+  /* Button with icon */
+  .btn-icon-wrapper {
+    @apply w-auto flex items-center gap-2;
+  }
+
+  /* Toggle label */
+  .toggle-label {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-200;
+  }
+
+  /* Checkbox label with toggle */
+  .checkbox-toggle-label {
+    @apply flex items-center gap-2 cursor-pointer select-none;
+  }
+
+  /* Filter button styling */
+  .filter-button-text {
+    @apply truncate;
+  }
+
+  .filter-button-icon {
+    @apply w-4 h-4 ml-2 flex-shrink-0;
+  }
+
+  /* Filter dropdown header text */
+  .filter-dropdown-header-text {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-300;
+  }
+
+  /* Filter dropdown item label */
+  .filter-dropdown-item-label {
+    @apply ml-2 text-sm text-gray-700 dark:text-gray-300;
+  }
+
+  /* Filter dropdown checkbox */
+  .filter-dropdown-checkbox {
+    @apply w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500;
+  }
+
+  /* Empty state text utilities */
+  .loading-text-inline {
+    @apply ml-3 text-lg text-gray-500 dark:text-gray-400;
+  }
+
+  /* Table cell utilities */
+  .table-cell-medium {
+    @apply font-medium;
+  }
+
+  .table-cell-right-muted {
+    @apply text-right text-gray-500 dark:text-gray-400 text-sm;
+  }
+
+  .table-cell-right-mono {
+    @apply text-right text-gray-500 dark:text-gray-400 font-mono text-xs;
+  }
+
+  .table-cell-right-semibold {
+    @apply text-right font-semibold;
+  }
+
+  .table-cell-muted-xs {
+    @apply text-gray-500 dark:text-gray-400 text-xs;
+  }
+
+  .table-cell-small {
+    @apply text-sm;
+  }
+
+  /* Breadcrumb navigation */
+  .breadcrumb {
+    @apply text-sm mb-4;
+  }
+
+  /* Stat display utilities */
+  .stat-percentage-inline {
+    @apply text-sm text-gray-500 dark:text-gray-400 ml-1;
+  }
+
+  .stat-note-text {
+    @apply text-xs text-gray-500 dark:text-gray-400 mt-2;
+  }
+
+  .stat-info-text {
+    @apply text-xs text-info-700 dark:text-info-300 mt-2;
+  }
+
+  /* List utilities */
+  .list-disc-inside-sm {
+    @apply list-disc list-inside mt-2 text-xs space-y-1;
+  }
+
+  .list-muted-sm {
+    @apply text-sm text-gray-500 dark:text-gray-400 space-y-1 list-disc list-inside;
+  }
+
+  .list-simple-sm {
+    @apply space-y-1 text-sm;
+  }
+
+  /* Validation and message styling */
+  .validation-title-error {
+    @apply text-sm font-semibold text-danger-700 dark:text-danger-300 mb-2;
+  }
+
+  .validation-title-warning {
+    @apply text-sm font-semibold text-warning-700 dark:text-warning-300 mb-2;
+  }
+
+  /* Special text colors and weights */
+  .text-description {
+    @apply text-lg text-gray-600 dark:text-gray-400;
+  }
+
+  .text-centered-container {
+    @apply max-w-3xl mx-auto;
+  }
+
+  .text-title-with-icon {
+    @apply font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2;
+  }
+
+  .text-info-description {
+    @apply text-sm text-gray-600 dark:text-gray-400 mb-3;
+  }
+
+  .text-legend-title {
+    @apply font-semibold text-info-900 dark:text-info-100 mb-2;
+  }
+
+  /* Table header utilities for audit and data tables */
+  .table-header-cell-xs,
+  .table-header-cell-xs-center,
+  .table-header-cell-xs-right {
+    @apply px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-400;
+  }
+
+  .table-header-cell-xs {
+    @apply text-left;
+  }
+
+  .table-header-cell-xs-center {
+    @apply text-center;
+  }
+
+  .table-header-cell-xs-right {
+    @apply text-right;
+  }
+
+  /* Table cell utilities */
+  .table-cell-mono-xs {
+    @apply px-3 py-2 font-mono text-xs text-gray-900 dark:text-gray-100;
+  }
+
+  .table-cell-xs {
+    @apply px-3 py-2 text-gray-700 dark:text-gray-300 text-xs;
+  }
+
+  .table-cell-muted-xs-inline {
+    @apply text-gray-400 dark:text-gray-500 text-xs;
+  }
+
+  /* Detailed title styles */
+  .detail-subtitle {
+    @apply text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2;
+  }
+
+  /* Small tables for details */
+  .detail-table {
+    @apply w-full text-sm;
+  }
+
+  /* Special flag indicators */
+  .flag-icon-container {
+    @apply flex items-center justify-center gap-1 text-lg;
+  }
+
+  /* Special utility for model name display */
+  .model-name-display {
+    @apply font-medium text-gray-900 dark:text-gray-100;
+  }
+
+  /* Close button in modals and overlays */
+  .close-icon {
+    @apply w-3 h-3;
+  }
+
+  /* User name display in nav */
+  .user-name-display {
+    @apply text-sm font-medium;
+  }
+
+  /* Help menu item text */
+  .help-menu-item-text {
+    @apply text-sm text-gray-700 dark:text-gray-200;
+  }
+
+  /* Sidebar text */
+  .sidebar-loading-text {
+    @apply p-6 text-center text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  /* Navigation title transitions */
+  .nav-title-text {
+    @apply text-xl font-bold transition-opacity;
+  }
+
+  /* Flex utility with full width items */
+  .flex-col-full-gap-2 {
+    @apply flex items-center gap-2 w-full;
   }
 }

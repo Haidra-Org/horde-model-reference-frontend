@@ -27,7 +27,8 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { HordeApiService } from '../../services/horde-api.service';
-import { StatisticsService, CategoryStatistics, ParameterBucketStats } from '../../api-client';
+import { StatisticsService, CategoryStatistics } from '../../api-client';
+import { MODEL_REFERENCE_CATEGORY } from '../../api-client/model/mODELREFERENCECATEGORY';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -365,7 +366,8 @@ export class ModelListComponent implements OnInit {
     const items = [];
     if (stats.nsfw > 0) items.push({ label: 'NSFW', count: stats.nsfw, value: 'nsfw:true' });
     if (stats.sfw > 0) items.push({ label: 'SFW', count: stats.sfw, value: 'nsfw:false' });
-    if (stats.unknown > 0) items.push({ label: 'Unknown', count: stats.unknown, value: 'nsfw:unknown' });
+    if (stats.unknown > 0)
+      items.push({ label: 'Unknown', count: stats.unknown, value: 'nsfw:unknown' });
     return items;
   });
 
@@ -457,6 +459,7 @@ export class ModelListComponent implements OnInit {
       value: this.getBaselineDisplayName(stat.baseline),
       wrapperClass: 'badge badge-info',
       description: this.getBaselineTooltip(stat.baseline),
+      originalValue: stat.baseline, // Store the actual baseline ID for searching
     }));
   });
 
@@ -823,8 +826,18 @@ export class ModelListComponent implements OnInit {
     this.addFilterToSearch(String(baseline));
   }
 
+  addBaselineToSearchAndClose(baseline: string | number): void {
+    this.addFilterToSearch(String(baseline));
+    this.showBaselineModal.set(false);
+  }
+
   addStatValueToSearch(value: string | number): void {
     this.addFilterToSearch(String(value));
+  }
+
+  addParameterToSearch(value: string | number): void {
+    this.addFilterToSearch(String(value));
+    this.showParametersModal.set(false);
   }
 
   addNsfwModalValueToSearch(value: string | number): void {
@@ -1087,7 +1100,7 @@ export class ModelListComponent implements OnInit {
     // Fetch category statistics
     this.statisticsService
       .readV2CategoryStatistics(
-        category as any,
+        category as MODEL_REFERENCE_CATEGORY,
         isTextGen, // group_text_models
       )
       .pipe(

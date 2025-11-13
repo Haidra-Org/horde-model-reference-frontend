@@ -17,6 +17,8 @@ export interface StatCell {
   /** CSS class(es) applied directly to the <td> element */
   class?: string;
   colspan?: number;
+  /** The original unformatted value to use when clicking (e.g., actual baseline ID vs display name) */
+  originalValue?: string | number;
 }
 
 // Builder types for simpler API
@@ -33,6 +35,8 @@ export interface CountValueDescriptionTriple {
   /** CSS class(es) to wrap the value. Use 'badge badge-info' for badges or custom classes */
   wrapperClass?: string;
   description?: string;
+  /** The original unformatted value to use when clicking (e.g., actual baseline ID vs display name) */
+  originalValue?: string | number;
 }
 
 /** Three-column builder for: Count | Styled Value (with custom wrapper) | Detail (right-aligned) */
@@ -146,8 +150,12 @@ export class StatModalComponent {
     // For CountValueDescriptionTriple, it's also at index 1
     // For CountValueDetailTriple, it's also at index 1
     const valueCell = row.cells[1];
-    if (valueCell && typeof valueCell.value === 'string') {
-      this.rowClick.emit(valueCell.value);
+    if (valueCell) {
+      // Use originalValue if available (e.g., for baseline IDs), otherwise use display value
+      const valueToEmit = valueCell.originalValue ?? valueCell.value;
+      if (typeof valueToEmit === 'string' || typeof valueToEmit === 'number') {
+        this.rowClick.emit(valueToEmit);
+      }
     }
   }
 
@@ -198,14 +206,14 @@ export class StatModalComponent {
       return this.countValueDetailData()!.map((item) => ({
         cells: item.isOtherRow
           ? [
-            { value: item.count, class: 'font-medium' } as StatCell,
-            { value: item.value, class: 'text-muted italic', colspan: 2 } as StatCell,
-          ]
+              { value: item.count, class: 'font-medium' } as StatCell,
+              { value: item.value, class: 'text-muted italic', colspan: 2 } as StatCell,
+            ]
           : [
-            { value: item.count, class: 'font-medium' } as StatCell,
-            { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
-            { value: item.detail, class: 'text-right text-muted font-mono text-xs' } as StatCell,
-          ],
+              { value: item.count, class: 'font-medium' } as StatCell,
+              { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
+              { value: item.detail, class: 'text-right text-muted font-mono text-xs' } as StatCell,
+            ],
       }));
     }
 
@@ -213,7 +221,11 @@ export class StatModalComponent {
       return this.countValueDescriptionData()!.map((item) => ({
         cells: [
           { value: item.count, class: 'font-medium' } as StatCell,
-          { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
+          {
+            value: item.value,
+            wrapperClass: item.wrapperClass,
+            originalValue: item.originalValue,
+          } as StatCell,
           { value: item.description || '', class: 'text-muted' } as StatCell,
         ],
       }));

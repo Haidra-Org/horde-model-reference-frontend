@@ -1,24 +1,16 @@
 <div class="notification-container">
   <div class="notification-wrapper">
     @for (notification of notificationService.notifications(); track notification.id) {
-      <div
-        class="notification-alert"
-        [class.alert-success]="notification.type === 'success'"
-        [class.alert-danger]="notification.type === 'error'"
-        [class.alert-warning]="notification.type === 'warning'"
-        [class.alert-info]="notification.type === 'info'"
-      >
-        <div class="flex justify-between items-start gap-3">
-          <span class="flex-1 break-words">{{ notification.message }}</span>
-          <button
-            class="notification-close-button"
-            (click)="close(notification.id)"
-            aria-label="Close notification"
-          >
-            ×
-          </button>
-        </div>
+    <div class="notification-alert" [class.alert-success]="notification.type === 'success'"
+      [class.alert-danger]="notification.type === 'error'" [class.alert-warning]="notification.type === 'warning'"
+      [class.alert-info]="notification.type === 'info'">
+      <div class="flex-between-start gap-3">
+        <span class="flex-1 break-words">{{ notification.message }}</span>
+        <button class="notification-close-button" (click)="close(notification.id)" aria-label="Close notification">
+          ×
+        </button>
       </div>
+    </div>
     }
   </div>
 </div>
