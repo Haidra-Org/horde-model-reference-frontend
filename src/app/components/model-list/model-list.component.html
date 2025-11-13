@@ -590,21 +590,23 @@
 
 <!-- Reusable Stat Modals -->
 <app-stat-modal [isOpen]="showBaselineModal()" [title]="'Baseline Breakdown'"
-  [countValueDescriptionData]="baselineModalData()" (closeModal)="showBaselineModal.set(false)" />
+  [countValueDescriptionData]="baselineModalData()" (closeModal)="showBaselineModal.set(false)"
+  (rowClick)="addBaselineToSearch($event)" />
 
 <app-stat-modal [isOpen]="showStyleModal()" [title]="'Style Breakdown'" [countValueData]="styleModalData()"
-  (closeModal)="showStyleModal.set(false)" />
+  (closeModal)="showStyleModal.set(false)" (rowClick)="addStatValueToSearch($event)" />
 
 <app-stat-modal [isOpen]="showNsfwModal()" [title]="'Content Rating Breakdown'"
   [countValueDescriptionData]="nsfwModalData()" [countValueDescriptionHeaders]="['Count', 'Rating', 'Description']"
-  (closeModal)="showNsfwModal.set(false)" />
+  (closeModal)="showNsfwModal.set(false)" (rowClick)="addNsfwModalValueToSearch($event)" />
 
 <app-stat-modal [isOpen]="showTagsModal()" [title]="'All Tags (' + tagsModalData().length + ')'"
-  [countValueData]="tagsModalData()" [countValueHeaders]="['Count', 'Tag']" (closeModal)="showTagsModal.set(false)" />
+  [countValueData]="tagsModalData()" [countValueHeaders]="['Count', 'Tag']" (closeModal)="showTagsModal.set(false)"
+  (rowClick)="addTagToSearch($event)" />
 
 <app-stat-modal [isOpen]="showParametersModal()" [title]="'Parameter Distribution'"
   [countValueDetailData]="parametersModalData()" [countValueDetailHeaders]="['Count', 'Parameters', 'Exact Value']"
-  (closeModal)="showParametersModal.set(false)" />
+  (closeModal)="showParametersModal.set(false)" (rowClick)="addStatValueToSearch($event)" />
 
 <!-- Stat Details Modal (for text-based stats) -->
 @if (statDetailsToShow()) {

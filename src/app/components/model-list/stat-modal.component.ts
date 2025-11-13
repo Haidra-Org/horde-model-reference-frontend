@@ -81,7 +81,12 @@ export interface CountValueDetailTriple {
                 </thead>
                 <tbody>
                   @for (row of computedRows(); track $index) {
-                    <tr>
+                    <tr
+                      class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      tabindex="0"
+                      (click)="onRowClick(row)"
+                      (keydown)="($event.key === 'Enter' || $event.key === ' ') && onRowClick(row)"
+                    >
                       @for (cell of row.cells; track $index) {
                         <td [attr.colspan]="cell.colspan || null" [class]="cell.class || ''">
                           @if (cell.wrapperClass) {
@@ -133,6 +138,18 @@ export class StatModalComponent {
   readonly countValueDetailHeaders = input<[string, string, string]>();
 
   readonly closeModal = output<void>();
+  readonly rowClick = output<string | number>();
+
+  onRowClick(row: StatRow): void {
+    // Extract the actual value from the second cell (the value cell)
+    // For CountValuePair, it's at index 1
+    // For CountValueDescriptionTriple, it's also at index 1
+    // For CountValueDetailTriple, it's also at index 1
+    const valueCell = row.cells[1];
+    if (valueCell && typeof valueCell.value === 'string') {
+      this.rowClick.emit(valueCell.value);
+    }
+  }
 
   readonly computedColumns = computed(() => {
     // If explicit columns provided, use them
@@ -181,14 +198,14 @@ export class StatModalComponent {
       return this.countValueDetailData()!.map((item) => ({
         cells: item.isOtherRow
           ? [
-              { value: item.count, class: 'font-medium' } as StatCell,
-              { value: item.value, class: 'text-muted italic', colspan: 2 } as StatCell,
-            ]
+            { value: item.count, class: 'font-medium' } as StatCell,
+            { value: item.value, class: 'text-muted italic', colspan: 2 } as StatCell,
+          ]
           : [
-              { value: item.count, class: 'font-medium' } as StatCell,
-              { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
-              { value: item.detail, class: 'text-right text-muted font-mono text-xs' } as StatCell,
-            ],
+            { value: item.count, class: 'font-medium' } as StatCell,
+            { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
+            { value: item.detail, class: 'text-right text-muted font-mono text-xs' } as StatCell,
+          ],
       }));
     }
 

@@ -815,12 +815,33 @@ export class ModelListComponent implements OnInit {
     }
   }
 
-  addTagToSearch(tag: string): void {
-    this.addFilterToSearch(tag);
+  addTagToSearch(tag: string | number): void {
+    this.addFilterToSearch(String(tag));
   }
 
-  addBaselineToSearch(baseline: string): void {
-    this.addFilterToSearch(baseline);
+  addBaselineToSearch(baseline: string | number): void {
+    this.addFilterToSearch(String(baseline));
+  }
+
+  addStatValueToSearch(value: string | number): void {
+    this.addFilterToSearch(String(value));
+  }
+
+  addNsfwModalValueToSearch(value: string | number): void {
+    // Map the display value to the filter format
+    const displayValue = String(value).toUpperCase();
+    let filterValue: string;
+    if (displayValue === 'NSFW') {
+      filterValue = 'nsfw:true';
+    } else if (displayValue === 'SFW') {
+      filterValue = 'nsfw:false';
+    } else if (displayValue === 'UNKNOWN') {
+      filterValue = 'nsfw:unknown';
+    } else {
+      // If already in filter format or unknown format, use as-is
+      filterValue = String(value);
+    }
+    this.addNsfwFilterToSearch(filterValue);
   }
 
   addNsfwFilterToSearch(filterValue: string): void {
@@ -1103,6 +1124,10 @@ export class ModelListComponent implements OnInit {
     );
 
     return models$.pipe(map(() => undefined));
+  }
+
+  trackByModelName(index: number, model: UnifiedModelData | GroupedTextModel): string {
+    return model.name;
   }
 
   private getModelsForCategory$(
