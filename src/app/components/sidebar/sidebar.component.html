@@ -1,29 +1,42 @@
 <aside class="sidebar-container" [class]="isCollapsed() ? 'w-0' : 'w-64'">
   @if (!isCollapsed()) {
-  <div class="sidebar-header">
-    <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden">Model Categories</h2>
-  </div>
+    <div class="sidebar-header">
+      <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden">Model Categories</h2>
+    </div>
   }
 
   @if (loading()) {
-  <div class="sidebar-loading-text">Loading...</div>
+    <div class="sidebar-loading-text">Loading...</div>
   } @else if (categories().length === 0) {
-  <div class="sidebar-loading-text">No categories available</div>
+    <div class="sidebar-loading-text">No categories available</div>
   } @else {
-  <nav class="flex-1 overflow-y-auto">
-    @for (category of sortedCategories(); track category) {
-    <button class="sidebar-nav-item" [class]="
+    <nav class="flex-1 overflow-y-auto">
+      @for (category of sortedCategories(); track category) {
+        <button
+          class="sidebar-nav-item"
+          [class]="
             currentCategory() === category
               ? 'sidebar-nav-item sidebar-nav-item-active'
               : 'sidebar-nav-item sidebar-nav-item-inactive'
-          " (click)="selectCategory(category)">
-      <span [class.opacity-100]="!isCollapsed()" [class.opacity-0]="isCollapsed()" class="capitalize break-words">
-        {{ recordDisplayMap[category] || category }}
-      </span>
-      <span class="nav-title-text" [class.opacity-0]="!isCollapsed()" [class.opacity-100]="isCollapsed()"
-        [class.text-primary-400]="currentCategory() === category">›</span>
-    </button>
-    }
-  </nav>
+          "
+          (click)="selectCategory(category)"
+        >
+          <span
+            [class.opacity-100]="!isCollapsed()"
+            [class.opacity-0]="isCollapsed()"
+            class="capitalize break-words"
+          >
+            {{ recordDisplayMap[category] || category }}
+          </span>
+          <span
+            class="nav-title-text"
+            [class.opacity-0]="!isCollapsed()"
+            [class.opacity-100]="isCollapsed()"
+            [class.text-primary-400]="currentCategory() === category"
+            >›</span
+          >
+        </button>
+      }
+    </nav>
   }
 </aside>

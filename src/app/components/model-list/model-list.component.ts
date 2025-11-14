@@ -1161,9 +1161,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-        startWith<BackendStatisticsResponse | null>(null),
-        catchError(() => of(null)),
-      )
+          startWith<BackendStatisticsResponse | null>(null),
+          catchError(() => of(null)),
+        )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(

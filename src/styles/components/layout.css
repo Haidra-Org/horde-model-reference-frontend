@@ -1,0 +1,632 @@
+@layer components {
+  /* Form Layout Utilities */
+
+  /* Standard form field wrapper */
+  .form-field {
+    @apply space-y-2;
+  }
+
+  /* Common grid layouts for forms */
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-3;
+  }
+
+  .form-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-3;
+  }
+
+  .form-grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-4;
+  }
+
+  /* Column span utilities for flexible field sizing */
+  .grid-col-span-1 {
+    @apply col-span-1;
+  }
+
+  .grid-col-span-2 {
+    @apply col-span-1 md:col-span-2;
+  }
+
+  .grid-col-span-3 {
+    @apply col-span-1 md:col-span-3;
+  }
+
+  .grid-col-span-4 {
+    @apply col-span-1 md:col-span-4;
+  }
+
+  /* Two-column layout for major form sections on large screens */
+  .form-main-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-4 items-start;
+  }
+
+  /* Mobile-optimized form layouts */
+  @media (max-width: 767px) {
+    .form-grid-2,
+    .form-grid-3,
+    .form-grid-4 {
+      @apply grid-cols-1 gap-3;
+    }
+
+    /* Larger touch targets on mobile */
+    .btn,
+    .field-group-header,
+    .card-header-collapsible {
+      @apply min-h-[44px];
+    }
+
+    /* More compact spacing on mobile */
+    .page-container {
+      @apply p-3 space-y-3;
+    }
+
+    .card-body {
+      @apply p-3;
+    }
+
+    /* Reduce badge padding on mobile */
+    .badge {
+      @apply text-xs px-2 py-0.5;
+    }
+  }
+
+  /* Section header with action button */
+  .section-header {
+    @apply flex justify-between items-center;
+  }
+
+  .section-title {
+    @apply text-xs font-bold text-gray-500 uppercase tracking-wider;
+    @apply dark:text-gray-400;
+  }
+
+  /* Collapsible card header with toggle */
+  .card-header-collapsible {
+    @apply px-4 py-2 border-b border-gray-200;
+    @apply flex justify-between items-center w-full text-left cursor-pointer;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors;
+    @apply dark:border-gray-700;
+  }
+
+  .card-header-collapsible-icon {
+    @apply text-lg text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  /* Enhanced field group styles with better touch targets */
+  .field-group-collapsible {
+    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+    @apply transition-shadow duration-150;
+  }
+
+  /* Color-coded field group variants */
+  .field-group-collapsible-primary {
+    @apply border-l-4 border-l-primary-500 bg-primary-50/30;
+    @apply dark:border-l-primary-400 dark:bg-primary-900/10;
+  }
+
+  .field-group-collapsible-success {
+    @apply border-l-4 border-l-success-500 bg-success-50/30;
+    @apply dark:border-l-success-400 dark:bg-success-900/10;
+  }
+
+  .field-group-collapsible-info {
+    @apply border-l-4 border-l-info-500 bg-info-50/30;
+    @apply dark:border-l-info-400 dark:bg-info-900/10;
+  }
+
+  .field-group-collapsible-warning {
+    @apply border-l-4 border-l-warning-500 bg-warning-50/30;
+    @apply dark:border-l-warning-400 dark:bg-warning-900/10;
+  }
+
+  /* Priority-based field group variants with progressive border weights */
+  .field-group-required {
+    @apply border-l-4 border-l-primary-600 bg-primary-50/40;
+    @apply dark:border-l-primary-500 dark:bg-primary-900/15;
+  }
+
+  .field-group-recommended {
+    @apply border-l-[3px] border-l-success-500 bg-success-50/30;
+    @apply dark:border-l-success-400 dark:bg-success-900/10;
+  }
+
+  .field-group-optional {
+    @apply border-l-2 border-l-info-400 bg-info-50/20;
+    @apply dark:border-l-info-400 dark:bg-info-900/5;
+  }
+
+  .field-group-advanced {
+    @apply border-l-2 border-l-gray-400 bg-gray-50/20;
+    @apply dark:border-l-gray-500 dark:bg-gray-800/10;
+  }
+
+  /* Spacing between field groups */
+  .card-section > .field-group-collapsible + .field-group-collapsible {
+    @apply mt-4;
+  }
+
+  .field-group-header {
+    @apply w-full text-left px-4 py-3 min-h-[44px];
+    @apply border-b border-gray-200 dark:border-gray-700;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
+    @apply transition-colors duration-150;
+    @apply cursor-pointer;
+  }
+
+  .field-group-header-content {
+    @apply flex items-start gap-3;
+  }
+
+  .field-group-header-icon {
+    @apply text-base text-gray-500 dark:text-gray-400;
+    @apply transition-transform duration-150;
+    @apply flex-shrink-0 mt-0.5;
+  }
+
+  .field-group-header-title {
+    @apply text-base font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .field-group-header-help {
+    @apply text-xs text-gray-500 dark:text-gray-400 mt-1;
+  }
+
+  .field-group-content {
+    @apply px-4 py-4 bg-white dark:bg-gray-800;
+  }
+
+  /* Form section groupings */
+  .form-section {
+    @apply space-y-3;
+  }
+
+  .form-section-divider {
+    @apply pt-4 border-t border-gray-200;
+    @apply dark:border-gray-700;
+  }
+
+  /* Nested item card (for file/download entries) */
+  .nested-item-card {
+    @apply p-4 bg-gray-50 rounded-lg space-y-3 relative;
+    @apply dark:bg-gray-800;
+  }
+
+  .nested-item-remove-btn {
+    @apply absolute top-2 right-2;
+    @apply px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-150 shadow-sm;
+    @apply bg-danger-600 text-white;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply dark:bg-danger-500;
+  }
+
+  .nested-item-remove-btn:hover:not(:disabled) {
+    @apply shadow-md -translate-y-px;
+    @apply bg-danger-700;
+    @apply dark:bg-danger-600;
+  }
+
+  .nested-item-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-3 pr-10;
+  }
+
+  /* Key-value editor item card */
+  .key-value-item-card {
+    @apply bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700;
+  }
+
+  /* Requirements section header */
+  .requirements-section-header {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-1.5;
+  }
+
+  /* Empty state message */
+  .empty-state,
+  .dropdown-empty-state,
+  .empty-state-text {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  .empty-state {
+    @apply italic;
+  }
+
+  .dropdown-empty-state,
+  .empty-state-text {
+    @apply text-center py-2;
+  }
+
+  /* Inline item row (for key-value pairs) */
+  .inline-item-row {
+    @apply flex gap-2 items-center;
+  }
+
+  /* Validation issue lists */
+  .validation-section {
+    @apply space-y-2;
+  }
+
+  .validation-section-error,
+  .validation-section-warning {
+    @apply border-l-4 pl-3;
+  }
+
+  .validation-section-error {
+    @apply border-l-danger-500 dark:border-l-danger-400;
+  }
+
+  .validation-section-warning {
+    @apply border-l-warning-500 dark:border-l-warning-400;
+  }
+
+  .validation-heading,
+  .validation-heading-error,
+  .validation-heading-warning {
+    @apply text-sm font-semibold;
+  }
+
+  .validation-heading-error {
+    @apply text-danger-700 dark:text-danger-300;
+  }
+
+  .validation-heading-warning {
+    @apply text-warning-700 dark:text-warning-300;
+  }
+
+  .validation-list {
+    @apply space-y-1;
+  }
+
+  .validation-list-item,
+  .validation-list-item-error,
+  .validation-list-item-warning {
+    @apply text-sm;
+  }
+
+  .validation-list-item-error {
+    @apply text-danger-600 dark:text-danger-400;
+  }
+
+  .validation-list-item-warning {
+    @apply text-warning-600 dark:text-warning-400;
+  }
+
+  /* Form section header for subsections */
+  .form-subsection-header {
+    @apply text-sm font-semibold text-gray-700 mb-2;
+    @apply dark:text-gray-300;
+  }
+
+  /* Validation success message */
+  .validation-success {
+    @apply text-sm text-success-600 font-medium;
+    @apply dark:text-success-300;
+  }
+
+  /* Loading state */
+  .loading-state,
+  .page-loading-state,
+  .loading-text {
+    @apply text-center py-12 text-gray-500 dark:text-gray-400;
+  }
+
+  /* Form legend for color coding explanation */
+  .form-legend {
+    @apply flex flex-wrap gap-4 text-xs text-gray-600 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200;
+    @apply dark:text-gray-400 dark:bg-gray-800/50 dark:border-gray-700;
+  }
+
+  .form-legend-item {
+    @apply flex items-center gap-1.5;
+  }
+
+  /* Page container with consistent spacing */
+  .page-container {
+    @apply p-4 space-y-4;
+  }
+
+  /* Card section with title and content spacing */
+  .card-section {
+    @apply space-y-4;
+  }
+
+  /* Action buttons container */
+  .form-actions {
+    @apply flex justify-end gap-3;
+  }
+
+  /* Input with inline button */
+  .input-with-button {
+    @apply flex gap-2 relative;
+  }
+
+  .input-with-button input {
+    @apply flex-1;
+  }
+
+  /* Toggle switch component */
+  .toggle-switch {
+    @apply w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200;
+  }
+
+  .toggle-switch-primary {
+    @apply peer-checked:bg-primary-600 dark:peer-checked:bg-primary-400;
+  }
+
+  .toggle-switch-success {
+    @apply peer-checked:bg-success-600 dark:peer-checked:bg-success-400;
+  }
+
+  .toggle-switch-slider {
+    @apply absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200;
+  }
+
+  /* Navigation and toolbar buttons */
+  .nav-icon-button {
+    @apply p-2 rounded-lg hover:bg-white/10 transition-colors;
+  }
+
+  .icon-button-gray {
+    @apply p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0;
+  }
+
+  /* Section dividers with spacing */
+  .section-divider-sm {
+    @apply mt-4 pt-4 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  .section-divider-md {
+    @apply mt-6 pt-6 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  /* Common layout patterns */
+  .flex-center-gap-2 {
+    @apply flex items-center gap-2;
+  }
+
+  .checkbox-item-label {
+    @apply flex items-center gap-2 cursor-pointer;
+  }
+
+  /* Sidebar section headers */
+  .sidebar-section-header {
+    @apply text-sm font-semibold text-gray-700 dark:text-gray-300;
+  }
+
+  /* Text muted variations */
+  .text-muted-sm {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  /* Collapsible card header icon styles */
+  .collapse-icon {
+    @apply w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200;
+  }
+
+  /* JSON display/readonly textarea */
+  .json-readonly-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50;
+    @apply transition-all duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
+    @apply placeholder:italic placeholder:text-gray-400;
+    @apply dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
+    @apply dark:placeholder:text-gray-500;
+    @apply resize-y min-h-[80px];
+    @apply font-mono cursor-not-allowed;
+  }
+
+  /* Readonly label badge */
+  .readonly-badge {
+    @apply absolute top-2 right-2 px-2 py-1 bg-gray-700 text-white text-xs rounded;
+  }
+
+  /* JSON display container */
+  .json-display-container {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap break-words;
+  }
+
+  /* Sidebar borders and backgrounds */
+  .sidebar-container {
+    @apply h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden;
+  }
+
+  .sidebar-header {
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50;
+  }
+
+  /* Sidebar navigation item */
+  .sidebar-nav-item {
+    @apply w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3;
+  }
+
+  .sidebar-nav-item-active {
+    @apply bg-primary-50 dark:bg-primary-900/20 border-primary-600 text-primary-700 dark:text-primary-300;
+  }
+
+  .sidebar-nav-item-inactive {
+    @apply border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50;
+  }
+
+  /* Navigation bar styling */
+  .nav-bar {
+    @apply sticky top-0 z-50 bg-primary-600 dark:bg-primary-700 text-white shadow-md;
+  }
+
+  .nav-content {
+    @apply flex justify-between items-center px-4 py-1;
+  }
+
+  .nav-title-button {
+    @apply text-lg font-semibold hover:opacity-90 transition-opacity;
+  }
+
+  /* Notification container */
+  .notification-container {
+    @apply fixed inset-0 z-[9999] pointer-events-none;
+  }
+
+  .notification-wrapper {
+    @apply absolute top-4 right-4 space-y-3 max-w-[calc(100vw-2rem)] w-auto;
+  }
+
+  .notification-alert {
+    @apply px-4 py-3 rounded-lg text-sm font-medium border;
+    @apply pointer-events-auto shadow-lg min-w-[280px] max-w-[400px];
+  }
+
+  .notification-close-button {
+    @apply text-current opacity-70 hover:opacity-100 transition-opacity text-xl leading-none flex-shrink-0;
+  }
+
+  /* Card header with collapsible styling - for hover effects */
+  .card-header-hover {
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  /* Model list filter button */
+  .filter-button {
+    @apply w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white;
+    @apply transition-all duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
+    @apply placeholder:italic placeholder:text-gray-400;
+    @apply dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
+    @apply dark:placeholder:text-gray-500;
+    @apply text-left flex items-center justify-between;
+  }
+
+  /* Collapsible section toggle */
+  .collapsible-toggle {
+    @apply flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors;
+  }
+
+  /* Active filter tag with close button */
+  .active-filter-tag,
+  .active-filter-tag-info {
+    @apply text-xs px-2 py-0.5 rounded border;
+    @apply inline-flex items-center gap-1 cursor-pointer transition-colors focus:outline-none focus:ring-2;
+  }
+
+  .active-filter-tag {
+    @apply bg-primary-50 text-primary-700 border-primary-300;
+    @apply dark:bg-primary-950 dark:text-primary-300 dark:border-primary-700;
+    @apply hover:bg-primary-100 dark:hover:bg-primary-900 focus:ring-primary-500;
+  }
+
+  .active-filter-tag-info {
+    @apply bg-info-50 text-info-700 border-info-300;
+    @apply dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600;
+    @apply hover:bg-info-100 dark:hover:bg-gray-700 focus:ring-info-500 dark:focus:ring-gray-500;
+  }
+
+  /* Danger text variants */
+  .text-danger {
+    @apply text-danger-600 dark:text-danger-400;
+  }
+
+  .text-danger-bold {
+    @apply text-danger-600 dark:text-danger-400 font-medium;
+  }
+
+  /* Autocomplete dropdown for tag inputs */
+  .autocomplete-dropdown {
+    @apply absolute left-0 top-full mt-1;
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-300 dark:border-gray-600;
+    @apply rounded-lg shadow-lg;
+    @apply overflow-y-auto;
+    /* Use z-[9999] to ensure it stays above all other content including modals and containers */
+    z-index: 9999;
+  }
+
+  /* Fixed positioning variant to avoid container clipping */
+  .autocomplete-dropdown-fixed {
+    @apply fixed;
+    /* Override relative positioning properties when using fixed */
+    /* Width is set dynamically via inline styles to match input width */
+    left: auto;
+    top: auto;
+    margin-top: 0;
+  }
+
+  /* Autocomplete dropdown with 6-item visible limit */
+  .autocomplete-dropdown-6 {
+    max-height: calc(6 * 2.5rem); /* 6 items at ~2.5rem each */
+  }
+
+  .autocomplete-item {
+    @apply w-full text-left px-4 py-2;
+    @apply text-sm text-gray-700 dark:text-gray-300;
+    @apply hover:bg-primary-50 dark:hover:bg-primary-900/30;
+    @apply transition-colors duration-150;
+    @apply focus:outline-none focus:bg-primary-50 dark:focus:bg-primary-900/30;
+  }
+
+  .autocomplete-item-selected {
+    @apply bg-primary-100 dark:bg-primary-900/50;
+    @apply text-primary-900 dark:text-primary-100;
+  }
+
+  /* Matched item styling for filtered suggestions */
+  .autocomplete-item-matched {
+    @apply font-semibold;
+  }
+
+  /* Stat card value display */
+  .stat-card-value {
+    @apply text-2xl font-bold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  /* Help text for form fields */
+  .help-text {
+    @apply text-xs text-gray-500 mt-1;
+    @apply dark:text-gray-400;
+  }
+
+  /* Sticky section header with shadow */
+  .sticky-header {
+    @apply sticky top-0 z-40 flex flex-col gap-2 items-start;
+    @apply bg-gray-50 dark:bg-gray-900 pt-2 pb-4 -mx-4 px-4 shadow-md;
+    @apply before:absolute before:inset-x-0 before:bottom-full before:h-4;
+    @apply before:bg-gray-50 dark:before:bg-gray-900;
+  }
+
+  /* Filter dropdown container */
+  .filter-dropdown {
+    @apply absolute z-50 mt-1 w-64 bg-white dark:bg-gray-800;
+    @apply border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg;
+    @apply max-h-80 flex flex-col;
+  }
+
+  .filter-dropdown-header {
+    @apply p-2 border-b border-gray-200 dark:border-gray-700;
+    @apply flex justify-between items-center;
+  }
+
+  .filter-dropdown-search {
+    @apply p-2 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .filter-dropdown-content {
+    @apply p-2 overflow-y-auto flex-1;
+  }
+
+  .filter-dropdown-item {
+    @apply flex items-center px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer;
+  }
+
+  .filter-dropdown-backdrop {
+    @apply fixed inset-0 z-40;
+  }
+
+  /* Form input sizing */
+  .form-input-sm {
+    @apply px-2 py-1 text-xs;
+  }
+}
