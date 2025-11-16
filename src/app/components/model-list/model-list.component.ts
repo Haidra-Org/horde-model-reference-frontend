@@ -6,11 +6,12 @@ import {
   computed,
   ChangeDetectionStrategy,
   DestroyRef,
+  ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ScrollingModule, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subject, combineLatest, EMPTY, Observable, of, fromEvent } from 'rxjs';
 import {
   catchError,
@@ -51,6 +52,8 @@ import {
   CATEGORY_STATS_CONFIG,
 } from '../../models/maps';
 import { ModelRowComponent } from './model-row.component';
+import { ModelRowHeaderComponent } from './model-row-header.component';
+import { ModelRowFieldsComponent } from './model-row-fields.component';
 import {
   getParameterHeatmapClass,
   formatParametersInBillions,
@@ -64,12 +67,17 @@ import {
 import { JsonDisplayComponent } from '../common/json-display.component';
 import type { BackendStatisticsResponse } from '../../services/horde-api.service';
 
+type ViewMode = 'table' | 'card';
+
 @Component({
   selector: 'app-model-list',
   imports: [
     FormsModule,
     RouterLink,
+    RouterLinkActive,
     ModelRowComponent,
+    ModelRowHeaderComponent,
+    ModelRowFieldsComponent,
     StatModalComponent,
     JsonDisplayComponent,
     ScrollingModule,
@@ -116,17 +124,21 @@ export class ModelListComponent implements OnInit {
   readonly showNsfwModal = signal(false);
   readonly showTagsModal = signal(false);
   readonly headerCollapsed = signal(false);
+  readonly viewMode = signal<ViewMode>('table');
+  readonly isCardView = computed(() => this.viewMode() === 'card');
+
+  @ViewChild(CdkVirtualScrollViewport) viewport?: CdkVirtualScrollViewport;
 
   // Dynamic viewport height (minimum 400px)
   private readonly VIEWPORT_MIN_HEIGHT = 400;
-  private readonly VIEWPORT_OVERHEAD = 450; // Header, search, filters, etc.
+  private readonly VIEWPORT_OVERHEAD = 250; // Reduced from 450: compact header, inline stats, compact filters
   readonly windowHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 800);
   readonly viewportHeight = computed(() =>
     Math.max(this.VIEWPORT_MIN_HEIGHT, this.windowHeight() - this.VIEWPORT_OVERHEAD),
   );
 
   // Sorting
-  readonly sortColumn = signal<'name' | 'active' | 'index' | null>(null);
+  readonly sortColumn = signal<'name' | 'active' | 'index' | 'workers' | null>(null);
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
   private initialSortSet = false;
 
@@ -202,6 +214,15 @@ export class ModelListComponent implements OnInit {
       return this.availableParameterTags();
     }
     return this.availableParameterTags().filter((tag) => tag.toLowerCase().includes(search));
+  });
+
+  readonly hasActiveFilters = computed(() => {
+    return (
+      this.searchTerm() !== '' ||
+      this.filterByActive() ||
+      this.selectedTags().length > 0 ||
+      this.selectedParameterTags().length > 0
+    );
   });
 
   readonly filteredModels = computed(() => {
@@ -281,6 +302,14 @@ export class ModelListComponent implements OnInit {
         const aIndex = ((a as Record<string, unknown>)['originalIndex'] as number) ?? 0;
         const bIndex = ((b as Record<string, unknown>)['originalIndex'] as number) ?? 0;
         return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
+      } else if (column === 'workers') {
+        const aWorkers = a.workerCount ?? 0;
+        const bWorkers = b.workerCount ?? 0;
+        // Sort by worker count, then by name for ties
+        if (aWorkers !== bWorkers) {
+          return direction === 'asc' ? aWorkers - bWorkers : bWorkers - aWorkers;
+        }
+        return a.name.localeCompare(b.name);
       }
       return 0;
     });
@@ -605,6 +634,13 @@ export class ModelListComponent implements OnInit {
     return getParameterHeatmapClass(params);
   }
 
+  setViewMode(mode: ViewMode): void {
+    if (this.viewMode() === mode) {
+      return;
+    }
+    this.viewMode.set(mode);
+  }
+
   showBaselineDetails(): void {
     this.showBaselineModal.set(true);
   }
@@ -818,6 +854,15 @@ export class ModelListComponent implements OnInit {
     }
   }
 
+  clearAllFilters(): void {
+    this.searchTerm.set('');
+    this.searchTermSubject.next('');
+    this.debouncedSearchTerm.set('');
+    this.filterByActive.set(false);
+    this.selectedTags.set([]);
+    this.selectedParameterTags.set([]);
+  }
+
   addTagToSearch(tag: string | number): void {
     this.addFilterToSearch(String(tag));
   }
@@ -891,7 +936,7 @@ export class ModelListComponent implements OnInit {
     this.selectedParameterTags.set([]);
   }
 
-  toggleSort(column: 'name' | 'active' | 'index'): void {
+  toggleSort(column: 'name' | 'active' | 'index' | 'workers'): void {
     const currentColumn = this.sortColumn();
     const currentDirection = this.sortDirection();
 
@@ -908,7 +953,7 @@ export class ModelListComponent implements OnInit {
     }
   }
 
-  getSortIcon(column: 'name' | 'active' | 'index'): string {
+  getSortIcon(column: 'name' | 'active' | 'index' | 'workers'): string {
     if (this.sortColumn() !== column) return '↕';
     return this.sortDirection() === 'asc' ? '↑' : '↓';
   }
@@ -943,6 +988,34 @@ export class ModelListComponent implements OnInit {
 
   isRowExpanded(modelName: string): boolean {
     return this.expandedModels().has(modelName);
+  }
+
+  seeDetailsInTable(modelName: string): void {
+    // Clear all filters
+    this.clearAllFilters();
+
+    // Add the model name to the search filter
+    this.searchTerm.set(modelName);
+    this.searchTermSubject.next(modelName);
+
+    // Switch to table view
+    this.setViewMode('table');
+
+    // Expand the model details
+    const expanded = new Set(this.expandedModels());
+    expanded.add(modelName);
+    this.expandedModels.set(expanded);
+
+    // Wait for the view to update, then scroll to the model
+    setTimeout(() => {
+      const allModels = this.sortedFilteredModels();
+      const modelIndex = allModels.findIndex((m) => m.name === modelName);
+
+      if (modelIndex !== -1 && this.viewport) {
+        // Scroll to the model in the virtual viewport
+        this.viewport.scrollToIndex(modelIndex, 'smooth');
+      }
+    }, 100);
   }
 
   toggleShowcases(modelName: string): void {
@@ -1141,6 +1214,41 @@ export class ModelListComponent implements OnInit {
 
   trackByModelName(index: number, model: UnifiedModelData | GroupedTextModel): string {
     return model.name;
+  }
+
+  getModelDisplayIndex(model: UnifiedModelData | GroupedTextModel): number {
+    const originalIndex = ((model as Record<string, unknown>)['originalIndex'] as number) ?? 0;
+    return originalIndex + 1;
+  }
+
+  isModelActive(model: UnifiedModelData | GroupedTextModel): boolean {
+    return hasActiveWorkers(model);
+  }
+
+  getModelStatusBadgeClass(model: UnifiedModelData | GroupedTextModel): string {
+    if (this.hordeApi.hordeStatsState() === 'loading') {
+      return 'status-dot status-dot--loading';
+    }
+    return this.isModelActive(model)
+      ? 'status-dot status-dot--active'
+      : 'status-dot status-dot--inactive';
+  }
+
+  getWorkerCountTooltip(model: UnifiedModelData | GroupedTextModel): string {
+    const statsState = this.hordeApi.hordeStatsState();
+    const count = model.workerCount ?? 0;
+    const suffix = isGroupedTextModel(model) ? ' (across all backends)' : '';
+
+    if (statsState === 'loading') {
+      return 'Loading Horde statistics...';
+    }
+    if (statsState === 'error') {
+      return 'Failed to load Horde statistics';
+    }
+    if (statsState === 'idle') {
+      return 'Horde statistics not available for this category';
+    }
+    return `${count} worker${count === 1 ? '' : 's'} serving this model${suffix}`;
   }
 
   private getModelsForCategory$(

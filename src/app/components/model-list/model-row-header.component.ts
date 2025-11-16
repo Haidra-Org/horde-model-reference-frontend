@@ -29,33 +29,16 @@ import {
         }
       </span>
     } @else {
-      <div class="flex items-start justify-between gap-4">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2 min-w-0">
-            <div class="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">
-              {{ model().name }}
-            </div>
-            @if (model().version) {
-              <span class="badge badge-secondary">v{{ model().version }}</span>
-            }
-          </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {{ model().description || 'No description' }}
-          </div>
-          @if (hasTags()) {
-            <div class="flex flex-wrap gap-2 mt-2">
-              @for (tag of tags(); track tag) {
-                <span class="tag tag-primary">{{ tag }}</span>
-              }
-              @if (hasInpainting()) {
-                <span class="tag tag-success">Inpainting</span>
-              }
-            </div>
+      <div class="model-card-header">
+        <div class="flex items-center gap-2 mb-2">
+          <h3 class="model-card-title flex-1">{{ model().name }}</h3>
+          @if (model().version) {
+            <span class="badge badge-secondary flex-shrink-0">v{{ model().version }}</span>
           }
         </div>
-        <div class="flex flex-col items-end gap-2 flex-shrink-0">
-          <!-- Status Badges (Popular, Trending, Needs Workers, New) -->
-          <div class="flex flex-wrap gap-1 justify-end">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="model-card-badges flex-wrap">
+            <!-- Status Badges (Popular, Trending, Needs Workers, New) -->
             @if (statusBadges(); as badges) {
               @if (badges.isPopular) {
                 <span class="badge-popular" [title]="getStatusTooltip('isPopular')">
@@ -120,55 +103,84 @@ import {
                 </span>
               }
             }
+            <!-- Worker Count Badge (always shown) -->
+            <span class="badge badge-info" [title]="workerCountTooltip()">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              {{ workerCount() }} {{ workerCount() === 1 ? 'worker' : 'workers' }}
+            </span>
           </div>
+        </div>
 
-          <!-- GPU Requirements Badge -->
-          @if (gpuRequirement(); as req) {
-            <span class="badge-gpu-requirement" [title]="req.speedDescription">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-                />
-              </svg>
-              {{ formatVram(req.minVramGb) }}
-            </span>
-          }
+        <div class="model-card-description">
+          {{ model().description || 'No description available' }}
+        </div>
 
-          <!-- Speed Tier Badge -->
-          @if (speedTierBadge(); as speed) {
-            <span [class]="speed.class" [title]="speed.description">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              {{ speed.label }}
-            </span>
-          }
-
-          <!-- NSFW Badge -->
-          <div>
-            @if (model().nsfw === true) {
-              <span class="badge badge-warning">NSFW</span>
-            } @else if (model().nsfw === false) {
-              <span class="badge badge-success">Safe</span>
-            } @else {
-              <span class="badge badge-secondary">Unknown</span>
+        <div class="flex items-center justify-between gap-3">
+          <div class="model-card-tags">
+            @if (hasTags()) {
+              @for (tag of tags(); track tag) {
+                <span class="tag tag-primary">{{ tag }}</span>
+              }
+              @if (hasInpainting()) {
+                <span class="tag tag-success">Inpainting</span>
+              }
             }
           </div>
 
-          <!-- Download Count Badge -->
-          <div>
-            @if (downloadCount() > 0) {
-              <span class="badge badge-info">{{ downloadCount() }} files</span>
-            } @else {
-              <span class="badge badge-secondary">No files</span>
+          <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+            @if (!isTextModel()) {
+              <!-- GPU Requirements Badge -->
+              @if (gpuRequirement(); as req) {
+                <span class="badge-gpu-requirement" [title]="req.speedDescription">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                    />
+                  </svg>
+                  {{ formatVram(req.minVramGb) }}
+                </span>
+              }
+
+              <!-- Speed Tier Badge -->
+              @if (speedTierBadge(); as speed) {
+                <span [class]="speed.class" [title]="speed.description">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  {{ speed.label }}
+                </span>
+              }
+
+              <!-- NSFW Badge -->
+              @if (model().nsfw === true) {
+                <span class="badge badge-warning">NSFW</span>
+              } @else if (model().nsfw === false) {
+                <span class="badge badge-success">Safe</span>
+              } @else {
+                <span class="badge badge-secondary">Unknown</span>
+              }
+
+              <!-- Download Count Badge -->
+              @if (downloadCount() > 0) {
+                <span class="badge badge-info">{{ downloadCount() }} files</span>
+              } @else {
+                <span class="badge badge-secondary">No files</span>
+              }
             }
           </div>
         </div>
@@ -205,11 +217,29 @@ export class ModelRowHeaderComponent {
     return isLegacyTextGenerationRecord(model);
   };
 
+  readonly isTextModel = computed(() => {
+    return isLegacyTextGenerationRecord(this.model());
+  });
+
   readonly gpuRequirement = computed(() => {
     const model = this.model();
 
     if (isLegacyStableDiffusionRecord(model) && model.baseline) {
-      return getImageModelGpuRequirements(model.baseline);
+      let requirement = getImageModelGpuRequirements(model.baseline);
+
+      // Override VRAM requirement if file size is over 16GB
+      if (requirement && model.size_on_disk_bytes) {
+        const sizeInGB = model.size_on_disk_bytes / (1024 * 1024 * 1024);
+        if (sizeInGB > 16) {
+          requirement = {
+            ...requirement,
+            minVramGb: 24,
+            recommendedVramGb: 24,
+          };
+        }
+      }
+
+      return requirement;
     }
 
     if (isLegacyTextGenerationRecord(model) && model.parameters) {
@@ -243,7 +273,7 @@ export class ModelRowHeaderComponent {
       month_usage_count: (model as Record<string, unknown>)['month_usage_count'] as
         | number
         | undefined,
-      active_workers: (model as Record<string, unknown>)['active_workers'] as number | undefined,
+      active_workers: (model as Record<string, unknown>)['workerCount'] as number | undefined,
       created_at: (model as Record<string, unknown>)['created_at'] as string | undefined,
     };
 
@@ -252,6 +282,18 @@ export class ModelRowHeaderComponent {
     }));
 
     return getModelStatusBadges(modelData, allModelsData);
+  });
+
+  readonly workerCount = computed(() => {
+    const model = this.model();
+    return ((model as Record<string, unknown>)['workerCount'] as number | undefined) ?? 0;
+  });
+
+  readonly workerCountTooltip = computed(() => {
+    const count = this.workerCount();
+    return count === 0
+      ? 'No workers are currently serving this model'
+      : `${count} worker${count === 1 ? ' is' : 's are'} currently serving this model`;
   });
 
   formatVram(vramGb: number): string {

@@ -9,7 +9,7 @@ import {
   EnvironmentInjector,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { Subject, Observable, combineLatest, EMPTY, of, fromEvent } from 'rxjs';
@@ -98,7 +98,7 @@ type SortDirection = 'asc' | 'desc' | null;
 
 @Component({
   selector: 'app-model-audit',
-  imports: [FormsModule, RouterLink, ScrollingModule],
+  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule],
   templateUrl: './model-audit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -150,9 +150,14 @@ export class ModelAuditComponent implements OnInit {
   // Row expansion for grouped models
   readonly expandedRows = signal<Set<string>>(new Set());
 
+  // Header, filter, and help collapsed state
+  readonly headerCollapsed = signal(false);
+  readonly filtersCollapsed = signal(false);
+  readonly helpCollapsed = signal(true); // Help starts collapsed to save space
+
   // Dynamic viewport height (minimum 400px)
   private readonly VIEWPORT_MIN_HEIGHT = 400;
-  private readonly VIEWPORT_OVERHEAD = 450; // Header, search, filters, etc.
+  private readonly VIEWPORT_OVERHEAD = 280; // Reduced from 450: compact header, inline stats, collapsible filters
   readonly windowHeight = signal(typeof window !== 'undefined' ? window.innerHeight : 800);
   readonly viewportHeight = computed(() =>
     Math.max(this.VIEWPORT_MIN_HEIGHT, this.windowHeight() - this.VIEWPORT_OVERHEAD),
@@ -790,6 +795,18 @@ export class ModelAuditComponent implements OnInit {
       }),
       shareReplay({ bufferSize: 1, refCount: true }),
     );
+
+    // Read initial search term from query params
+    this.route.queryParams
+      .pipe(
+        map((params) => params['search'] as string | undefined),
+        filter((search): search is string => !!search),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((search) => {
+        this.searchTerm.set(search);
+        this.searchTermSubject.next(search);
+      });
 
     category$
       .pipe(

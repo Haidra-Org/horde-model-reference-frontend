@@ -590,7 +590,12 @@ export class ModelRowFieldsComponent {
   });
 
   readonly arrayFieldsWithValues = computed(() => {
+    const mode = this.mode();
     return this.arrayFields().filter((field) => {
+      // Skip triggers in card mode
+      if (mode === 'card' && field.label === 'Triggers') {
+        return false;
+      }
       const arrayValue = this.getArrayValue(field);
       return arrayValue && arrayValue.length > 0;
     });

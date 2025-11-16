@@ -351,6 +351,10 @@
     @apply w-11 h-6 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200;
   }
 
+  .toggle-switch-compact {
+    @apply w-9 h-5 bg-gray-300 dark:bg-gray-700 rounded-full relative transition-colors duration-200;
+  }
+
   .toggle-switch-primary {
     @apply peer-checked:bg-primary-600 dark:peer-checked:bg-primary-400;
   }
@@ -361,6 +365,17 @@
 
   .toggle-switch-slider {
     @apply absolute top-1 left-1 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform duration-200;
+  }
+
+  /* Compact view mode label */
+  .view-mode-label-xs {
+    @apply uppercase text-xs tracking-wide text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  /* Inline stats row with compact padding */
+  .inline-stats-row-compact {
+    @apply flex flex-wrap items-center gap-3 text-sm px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700;
   }
 
   /* Navigation and toolbar buttons */
@@ -505,6 +520,64 @@
     @apply flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors;
   }
 
+  /* Compact collapsible header for space-efficient layouts */
+  .collapsible-toggle-compact {
+    @apply flex items-center gap-3 px-4 py-2 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors;
+  }
+
+  /* Compact page header with minimal padding */
+  .page-header-compact {
+    @apply space-y-2;
+  }
+
+  /* Inline stats row for compact header */
+  .inline-stats-row {
+    @apply flex flex-wrap items-center gap-3 text-sm px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  .inline-stat-item {
+    @apply flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/60 dark:bg-gray-900/40 border border-gray-200/50 dark:border-gray-600/50;
+  }
+
+  /* Visual separator between stat groups */
+  .inline-stat-separator {
+    @apply w-px h-5 bg-gray-300 dark:bg-gray-600;
+  }
+
+  .inline-stat-label {
+    @apply text-gray-600 dark:text-gray-400 font-medium;
+  }
+
+  .inline-stat-value {
+    @apply text-gray-900 dark:text-gray-100 font-semibold;
+  }
+
+  .inline-stat-badge {
+    @apply text-xs px-2 py-0.5 rounded font-medium;
+  }
+
+  /* Compact filter panel */
+  .filter-panel-compact {
+    @apply space-y-2;
+  }
+
+  .filter-section-compact {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  /* Collapsible section with smooth animation */
+  .collapsible-section {
+    @apply overflow-hidden transition-all duration-200 ease-in-out;
+  }
+
+  .collapsible-section-collapsed {
+    @apply max-h-0 opacity-0;
+  }
+
+  .collapsible-section-expanded {
+    @apply max-h-[2000px] opacity-100;
+  }
+
   /* Active filter tag with close button */
   .active-filter-tag,
   .active-filter-tag-info {
@@ -623,6 +696,7 @@
 
   .filter-dropdown-backdrop {
     @apply fixed inset-0 z-40;
+    @apply bg-transparent border-0 p-0 cursor-default;
   }
 
   /* Form input sizing */

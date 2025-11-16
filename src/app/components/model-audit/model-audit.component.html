@@ -1,83 +1,151 @@
-<div class="container mx-auto px-4 py-6">
-  <!-- Breadcrumb -->
-  <nav class="text-sm mb-4">
-    <ol class="flex items-center gap-2 text-muted">
-      <li><a [routerLink]="['/']" class="link">Home</a></li>
-      <li>›</li>
-      <li>
-        <a [routerLink]="['/categories', category()]" class="link">{{ recordDisplayName() }}</a>
-      </li>
-      <li>›</li>
-      <li class="text-gray-900 dark:text-gray-100">Audit</li>
-    </ol>
-  </nav>
-
-  <!-- Page Header -->
-  <div class="flex items-center justify-between mb-6">
-    <div>
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
-        Model Audit: {{ recordDisplayName() }}
-      </h1>
-      <p class="text-muted mt-1">Evaluate model usage, availability, and deletion candidates</p>
-    </div>
-    <div class="flex gap-2">
+<div class="p-4 space-y-4">
+  <!-- Compact Page Header -->
+  <div class="card page-header-compact">
+    <div class="collapsible-toggle-compact">
       <button
         type="button"
-        class="btn btn-secondary"
-        (click)="refreshAuditData()"
-        [disabled]="auditLoading()"
-        [class.opacity-50]="auditLoading()"
+        class="icon-button-gray"
+        (click)="headerCollapsed.set(!headerCollapsed())"
+        [attr.aria-label]="headerCollapsed() ? 'Expand header' : 'Collapse header'"
       >
         <svg
-          class="w-4 h-4"
-          [class.animate-spin]="auditLoading()"
+          class="collapse-icon"
+          [class.rotate-180]="!headerCollapsed()"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          ></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
         </svg>
-        @if (auditLoading()) {
-          Refreshing...
-        } @else if (isDataStale()) {
-          <span class="text-warning-600 dark:text-warning-400">Refresh Data</span>
-        } @else {
-          Refresh
-        }
       </button>
-      <button type="button" class="btn btn-secondary" (click)="viewModelList()">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          ></path>
-        </svg>
-        View Full List
-      </button>
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="exportToCSV()"
-        [disabled]="filteredCount() === 0"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          ></path>
-        </svg>
-        Export CSV
-      </button>
+      <div class="flex-1 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {{ recordDisplayName() }}
+          </h1>
+          <div class="tab-navigation-compact">
+            <a
+              [routerLink]="['/categories', category()]"
+              routerLinkActive="tab-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="tab-link-compact"
+            >
+              Model List
+            </a>
+            <a
+              [routerLink]="['/categories', category(), 'audit']"
+              routerLinkActive="tab-active"
+              [attr.aria-current]="'page'"
+              class="tab-link-compact"
+            >
+              Audit
+            </a>
+          </div>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary"
+            (click)="refreshAuditData()"
+            [disabled]="auditLoading()"
+            [class.opacity-50]="auditLoading()"
+          >
+            <svg
+              class="w-3 h-3"
+              [class.animate-spin]="auditLoading()"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              ></path>
+            </svg>
+            @if (auditLoading()) {
+              Refreshing...
+            } @else if (isDataStale()) {
+              <span class="text-warning-600 dark:text-warning-400">Refresh</span>
+            } @else {
+              Refresh
+            }
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-primary"
+            (click)="exportToCSV()"
+            [disabled]="filteredCount() === 0"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            Export
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- Inline Stats Row (always visible) -->
+    <div class="inline-stats-row">
+      <div class="inline-stat-item">
+        <span class="inline-stat-label">Total:</span>
+        <span class="inline-stat-value">{{ totalModels() }}</span>
+      </div>
+      <div class="inline-stat-item">
+        <span class="inline-stat-label">Active:</span>
+        <span class="inline-stat-value text-success-600 dark:text-success-400">{{
+          modelsWithWorkers()
+        }}</span>
+        <span class="text-muted-sm"
+          >({{ ((modelsWithWorkers() / totalModels()) * 100).toFixed(1) }}%)</span
+        >
+      </div>
+      <div class="inline-stat-item">
+        <span class="inline-stat-label">Zero 30d:</span>
+        <span class="inline-stat-value text-danger-600 dark:text-danger-400">{{
+          modelsWithZeroMonthUsage()
+        }}</span>
+        <span class="text-muted-sm"
+          >({{ ((modelsWithZeroMonthUsage() / totalModels()) * 100).toFixed(1) }}%)</span
+        >
+      </div>
+
+      <div class="inline-stat-separator"></div>
+
+      @if (criticalCount() > 0 || warningCount() > 0) {
+        <div class="inline-stat-item">
+          <span class="inline-stat-badge badge badge-danger">{{ criticalCount() }} critical</span>
+        </div>
+        <div class="inline-stat-item">
+          <span class="inline-stat-badge badge badge-warning">{{ warningCount() }} warnings</span>
+        </div>
+      }
+
+      <div class="inline-stat-separator"></div>
+
+      @if (totalDiskSpace() !== null) {
+        <div class="inline-stat-item">
+          <span class="inline-stat-label">Disk:</span>
+          <span class="inline-stat-value">{{ totalDiskSpace()!.toFixed(1) }} GB</span>
+        </div>
+      }
+    </div>
+
+    <!-- Collapsible Details Section -->
+    @if (!headerCollapsed()) {
+      <div class="collapsible-section collapsible-section-expanded px-4 pb-3">
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">
+          Evaluate model usage, availability, and deletion candidates
+        </p>
+      </div>
+    }
   </div>
 
   <!-- Data Staleness Warning -->
@@ -142,60 +210,70 @@
       <span class="ml-3 text-lg text-muted">Loading models...</span>
     </div>
   } @else {
-    <!-- Summary Dashboard -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-      <div class="stat-card stat-card--column">
-        <div class="stat-card-value">{{ totalModels() }}</div>
-        <div class="stat-card-label">Total Models</div>
-      </div>
-
-      <div class="stat-card stat-card--column">
-        <div class="stat-card-value text-success-600 dark:text-success-400">
-          {{ modelsWithWorkers() }}
-          <span class="text-sm text-muted ml-1"
-            >({{ ((modelsWithWorkers() / totalModels()) * 100).toFixed(1) }}%)</span
-          >
-        </div>
-        <div class="stat-card-label">With Active Workers</div>
-      </div>
-
-      <div class="stat-card stat-card--column">
-        <div class="stat-card-value text-danger-600 dark:text-danger-400">
-          {{ modelsWithZeroMonthUsage() }}
-          <span class="text-sm text-muted ml-1"
-            >({{ ((modelsWithZeroMonthUsage() / totalModels()) * 100).toFixed(1) }}%)</span
-          >
-        </div>
-        <div class="stat-card-label">Zero 30d Usage</div>
-      </div>
-
-      <div class="stat-card stat-card--column">
-        <div class="stat-card-value">{{ averageUsagePercentage().toFixed(3) }}%</div>
-        <div class="stat-card-label">Avg 30d Usage %</div>
-      </div>
-
-      @if (totalDiskSpace() !== null) {
-        <div class="stat-card stat-card--column">
-          <div class="stat-card-value">{{ totalDiskSpace()!.toFixed(1) }} GB</div>
-          <div class="stat-card-label">Total Disk Space</div>
-        </div>
-      }
-
-      @if (flaggedDiskSpace() !== null) {
-        <div class="stat-card stat-card--column">
-          <div class="stat-card-value text-warning-600 dark:text-warning-400">
-            {{ flaggedDiskSpace()!.toFixed(1) }} GB
+    <!-- Audit Data Loading Overlay -->
+    @if (auditLoading()) {
+      <div
+        class="card bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-300 dark:border-primary-700"
+      >
+        <div class="card-body">
+          <div class="flex items-center justify-center gap-3">
+            <svg
+              class="animate-spin h-8 w-8 text-primary-600 dark:text-primary-400"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <div>
+              <p class="text-sm font-semibold text-primary-900 dark:text-primary-100">
+                Loading Audit Data...
+              </p>
+              <p class="text-xs text-primary-700 dark:text-primary-300">Analyzing models</p>
+            </div>
           </div>
-          <div class="stat-card-label">Flagged Space</div>
         </div>
-      }
-    </div>
+      </div>
+    }
 
-    <!-- Filter Panel -->
-    <div class="card mb-6">
-      <div class="card-header">
-        <h3 class="heading-card flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Compact Filter Panel -->
+    <div class="card filter-panel-compact">
+      <button
+        type="button"
+        class="collapsible-toggle-compact w-full text-left"
+        (click)="filtersCollapsed.set(!filtersCollapsed())"
+        [attr.aria-expanded]="!filtersCollapsed()"
+        [attr.aria-label]="filtersCollapsed() ? 'Expand filters' : 'Collapse filters'"
+      >
+        <span class="icon-button-gray">
+          <svg
+            class="collapse-icon"
+            [class.rotate-180]="!filtersCollapsed()"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 15l7-7 7 7"
+            />
+          </svg>
+        </span>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -205,91 +283,82 @@
           </svg>
           Filters
         </h3>
-      </div>
+      </button>
 
-      <div class="card-body space-y-6">
-        <!-- Server-Side Preset Buttons -->
-        @if (availablePresets().length > 0) {
-          <div>
-            <div class="form-label mb-2">Quick Filters (Server-Side Presets)</div>
-            <div class="flex flex-wrap gap-2">
-              @for (preset of availablePresets(); track preset.name) {
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  [class]="selectedPresetName() === preset.name ? 'btn-primary' : 'btn-secondary'"
-                  (click)="applyPreset(preset.name)"
-                  [title]="preset.description"
-                  [disabled]="auditLoading()"
-                >
-                  {{ preset.name }}
-                </button>
+      @if (!filtersCollapsed()) {
+        <div class="collapsible-section collapsible-section-expanded px-4 pb-3 space-y-3">
+          <!-- Server-Side Preset Buttons -->
+          @if (availablePresets().length > 0) {
+            <div class="filter-section-compact">
+              <span class="form-label-inline text-xs">Presets:</span>
+              <div class="flex flex-wrap gap-1.5">
+                @for (preset of availablePresets(); track preset.name) {
+                  <button
+                    type="button"
+                    class="btn-compact"
+                    [class]="
+                      selectedPresetName() === preset.name
+                        ? 'btn-compact-primary'
+                        : 'btn-compact-secondary'
+                    "
+                    (click)="applyPreset(preset.name)"
+                    [title]="preset.description"
+                    [disabled]="auditLoading()"
+                  >
+                    {{ preset.name }}
+                  </button>
+                }
+              </div>
+              @if (degradedMode()) {
+                <p class="text-xs text-warning-600 dark:text-warning-400 italic">
+                  Presets unavailable in degraded mode
+                </p>
               }
             </div>
-            <p class="text-xs text-muted mt-2">
-              @if (degradedMode()) {
-                <em class="text-warning-600 dark:text-warning-400">
-                  Presets unavailable in degraded mode. Only "Show All" is active.
-                </em>
-              } @else {
-                Current preset: <strong>{{ selectedPresetName() }}</strong>
-              }
-            </p>
-          </div>
-        }
+          }
 
-        <!-- Client-Side Filters -->
-        <div>
-          <div class="form-label mb-2">Additional Filters (Client-Side)</div>
-          <div class="flex gap-6 mb-4">
+          <!-- Client-Side Filters Row -->
+          <div class="filter-section-compact">
             <label class="checkbox-item-label select-none">
               <input
                 type="checkbox"
                 class="sr-only peer"
                 [checked]="filterByActive()"
                 (change)="filterByActive.set(!filterByActive())"
-                aria-checked="{{ filterByActive() ? 'true' : 'false' }}"
-                role="switch"
               />
               <span class="toggle-switch toggle-switch-success">
                 <span class="toggle-switch-slider" [class.translate-x-5]="filterByActive()"></span>
               </span>
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-200"
-                >Filter By Active</span
-              >
+              <span class="text-xs font-medium text-gray-700 dark:text-gray-200">Active Only</span>
             </label>
-          </div>
 
-          <div class="flex flex-wrap gap-4">
             <div>
-              <label for="model-search-audit" class="form-label">Search models</label>
               <input
                 id="model-search-audit"
                 type="search"
-                class="form-input w-64 text-gray-400"
-                placeholder="Enter a name, description, or tag"
+                class="form-input-compact w-48"
+                placeholder="Search..."
                 [(ngModel)]="searchTerm"
                 (ngModelChange)="searchTerm.set($event); searchTermSubject.next($event)"
               />
             </div>
 
             <div class="relative">
-              <label class="form-label" for="tag-filter-btn-audit">Filter by tags</label>
               <button
                 id="tag-filter-btn-audit"
                 type="button"
-                class="form-input w-64 text-left flex items-center justify-between"
+                class="filter-button-compact"
                 (click)="toggleTagFilterDropdown()"
               >
                 <span class="truncate">
                   @if (selectedTags().length === 0) {
-                    All tags (parameter count tags are hidden)
+                    Tags
                   } @else {
-                    {{ selectedTags().length }} tag(s) selected
+                    {{ selectedTags().length }} tag(s)
                   }
                 </span>
                 <svg
-                  class="w-4 h-4 ml-2 flex-shrink-0"
+                  class="w-3 h-3 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -304,55 +373,45 @@
               </button>
 
               @if (tagFilterOpen()) {
-                <!-- Backdrop to close dropdown when clicking outside -->
-                <div
+                <button
+                  type="button"
                   class="filter-dropdown-backdrop"
-                  tabindex="0"
                   (click)="closeTagFilterDropdown()"
-                  (keydown)="
-                    ($event.key === 'Enter' || $event.key === ' ') && closeTagFilterDropdown()
-                  "
                   aria-label="Close tag filter dropdown"
-                ></div>
-
+                ></button>
                 <div class="filter-dropdown">
                   <div class="filter-dropdown-header">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                      >Select tags</span
-                    >
+                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Tags</span>
                     @if (selectedTags().length > 0) {
                       <button type="button" class="text-xs link" (click)="clearAllTags()">
-                        Clear all
+                        Clear
                       </button>
                     }
                   </div>
                   <div class="filter-dropdown-search">
                     <input
                       type="search"
-                      class="form-input w-full text-sm"
-                      placeholder="Search tags..."
+                      class="form-input w-full text-xs"
+                      placeholder="Search..."
                       [(ngModel)]="tagSearchTerm"
                       (ngModelChange)="tagSearchTerm.set($event)"
-                      (click)="$event.stopPropagation()"
                     />
                   </div>
                   <div class="filter-dropdown-content">
                     @if (availableTags().length === 0) {
-                      <div class="dropdown-empty-state">No tags available</div>
+                      <div class="dropdown-empty-state text-xs">No tags</div>
                     } @else if (filteredAvailableTags().length === 0) {
-                      <div class="dropdown-empty-state">No tags match your search</div>
+                      <div class="dropdown-empty-state text-xs">No matches</div>
                     } @else {
                       @for (tag of filteredAvailableTags(); track tag) {
                         <label class="filter-dropdown-item">
                           <input
                             type="checkbox"
-                            class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
+                            class="w-3 h-3 rounded"
                             [checked]="isTagSelected(tag)"
                             (change)="toggleTag(tag)"
                           />
-                          <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{
-                            tag
-                          }}</span>
+                          <span class="ml-2 text-xs">{{ tag }}</span>
                         </label>
                       }
                     }
@@ -361,25 +420,23 @@
               }
             </div>
 
-            <!-- Parameter Count Filter (Text Generation Only) -->
             @if (isTextGeneration()) {
               <div class="relative">
-                <label class="form-label" for="param-filter-btn-audit">Filter by parameters</label>
                 <button
                   id="param-filter-btn-audit"
                   type="button"
-                  class="form-input w-64 text-left flex items-center justify-between"
+                  class="filter-button-compact"
                   (click)="toggleParameterTagFilterDropdown()"
                 >
                   <span class="truncate">
                     @if (selectedParameterTags().length === 0) {
-                      All parameter counts
+                      Parameters
                     } @else {
-                      {{ selectedParameterTags().length }} selected
+                      {{ selectedParameterTags().length }} param(s)
                     }
                   </span>
                   <svg
-                    class="w-4 h-4 ml-2 flex-shrink-0"
+                    class="w-3 h-3 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -394,62 +451,49 @@
                 </button>
 
                 @if (parameterTagFilterOpen()) {
-                  <!-- Backdrop to close dropdown when clicking outside -->
-                  <div
+                  <button
+                    type="button"
                     class="filter-dropdown-backdrop"
-                    tabindex="0"
                     (click)="closeParameterTagFilterDropdown()"
-                    (keydown)="
-                      ($event.key === 'Enter' || $event.key === ' ') &&
-                        closeParameterTagFilterDropdown()
-                    "
                     aria-label="Close parameter filter dropdown"
-                  ></div>
-
+                  ></button>
                   <div class="filter-dropdown">
                     <div class="filter-dropdown-header">
-                      <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                        >Select parameters</span
-                      >
+                      <span class="text-xs font-medium">Parameters</span>
                       @if (selectedParameterTags().length > 0) {
                         <button
                           type="button"
                           class="text-xs link"
                           (click)="clearAllParameterTags()"
                         >
-                          Clear all
+                          Clear
                         </button>
                       }
                     </div>
                     <div class="filter-dropdown-search">
                       <input
                         type="search"
-                        class="form-input w-full text-sm"
-                        placeholder="Search parameter counts..."
+                        class="form-input w-full text-xs"
+                        placeholder="Search..."
                         [(ngModel)]="parameterTagSearchTerm"
                         (ngModelChange)="parameterTagSearchTerm.set($event)"
-                        (click)="$event.stopPropagation()"
                       />
                     </div>
                     <div class="filter-dropdown-content">
                       @if (availableParameterTags().length === 0) {
-                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                          No parameter counts available
-                        </div>
+                        <div class="dropdown-empty-state text-xs">None</div>
                       } @else if (filteredAvailableParameterTags().length === 0) {
-                        <div class="dropdown-empty-state">No parameter tags match your search</div>
+                        <div class="dropdown-empty-state text-xs">No matches</div>
                       } @else {
                         @for (tag of filteredAvailableParameterTags(); track tag) {
                           <label class="filter-dropdown-item">
                             <input
                               type="checkbox"
-                              class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500"
+                              class="w-3 h-3 rounded"
                               [checked]="isParameterTagSelected(tag)"
                               (change)="toggleParameterTag(tag)"
                             />
-                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{
-                              tag
-                            }}</span>
+                            <span class="ml-2 text-xs">{{ tag }}</span>
                           </label>
                         }
                       }
@@ -461,151 +505,82 @@
           </div>
 
           <!-- Selected Tags Display -->
-          @if (selectedTags().length > 0) {
-            <div class="mt-4">
-              <span class="form-label block">Active tag filters</span>
-              <div class="flex flex-wrap gap-2">
-                @for (tag of selectedTags(); track tag) {
-                  <button
-                    type="button"
-                    class="tag tag-primary inline-flex items-center gap-1 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    (click)="toggleTag(tag)"
-                    [title]="'Remove ' + tag + ' filter'"
-                  >
-                    <span>{{ tag }}</span>
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
-                }
-              </div>
-            </div>
-          }
-
-          <!-- Selected Parameter Tags Display (Text Generation Only) -->
-          @if (isTextGeneration() && selectedParameterTags().length > 0) {
-            <div class="mt-4">
-              <span class="form-label block">Active parameter filters</span>
-              <div class="flex flex-wrap gap-2">
-                @for (tag of selectedParameterTags(); track tag) {
-                  <button
-                    type="button"
-                    class="tag tag-info inline-flex items-center gap-1 cursor-pointer hover:bg-info-100 dark:hover:bg-info-900 transition-colors focus:outline-none focus:ring-2 focus:ring-info-500"
-                    (click)="toggleParameterTag(tag)"
-                    [title]="'Remove ' + tag + ' parameter filter'"
-                  >
-                    <span>{{ tag }}</span>
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
-                }
-              </div>
+          @if (selectedTags().length > 0 || selectedParameterTags().length > 0) {
+            <div class="filter-section-compact gap-tight">
+              @for (tag of selectedTags(); track tag) {
+                <button
+                  type="button"
+                  class="active-filter-tag-compact"
+                  (click)="toggleTag(tag)"
+                  [title]="'Remove ' + tag"
+                >
+                  <span>{{ tag }}</span>
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                </button>
+              }
+              @for (tag of selectedParameterTags(); track tag) {
+                <button
+                  type="button"
+                  class="active-filter-tag-info-compact"
+                  (click)="toggleParameterTag(tag)"
+                  [title]="'Remove ' + tag"
+                >
+                  <span>{{ tag }}</span>
+                  <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                </button>
+              }
             </div>
           }
         </div>
-      </div>
+      }
     </div>
 
-    <!-- Selection Summary -->
+    <!-- Compact Selection Summary & Legend -->
     @if (selectedCount() > 0 || criticalCount() > 0 || warningCount() > 0) {
-      <div
-        class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 flex items-center justify-between"
-      >
-        <div class="flex items-center gap-4 text-sm">
-          <span class="font-semibold text-gray-900 dark:text-gray-100">
-            {{ selectedCount() }} of {{ filteredCount() }} models selected
-          </span>
-          @if (selectedCriticalCount() > 0) {
-            <span class="text-danger-600 dark:text-danger-400">
-              {{ selectedCriticalCount() }} critical
-            </span>
-          }
-          @if (selectedWarningCount() > 0) {
-            <span class="text-warning-600 dark:text-warning-400">
-              {{ selectedWarningCount() }} warnings
-            </span>
-          }
-          <span class="text-muted">|</span>
-          <span class="text-danger-600 dark:text-danger-400">
-            {{ criticalCount() }} critical models
-          </span>
-          <span class="text-warning-600 dark:text-warning-400">
-            {{ warningCount() }} warnings
-          </span>
+      <div class="inline-stats-row-compact">
+        <div class="inline-stat-item">
+          <span class="inline-stat-label">Selected:</span>
+          <span class="inline-stat-value">{{ selectedCount() }}/{{ filteredCount() }}</span>
         </div>
-        <div class="flex gap-2">
-          <button type="button" class="btn btn-sm btn-secondary" (click)="selectAll()">
-            Select All
+        @if (selectedCriticalCount() > 0 || selectedWarningCount() > 0) {
+          <div class="inline-stat-item">
+            @if (selectedCriticalCount() > 0) {
+              <span class="inline-stat-badge badge badge-danger"
+                >{{ selectedCriticalCount() }} critical</span
+              >
+            }
+            @if (selectedWarningCount() > 0) {
+              <span class="inline-stat-badge badge badge-warning"
+                >{{ selectedWarningCount() }} warnings</span
+              >
+            }
+          </div>
+        }
+        <div class="flex gap-1.5 ml-auto">
+          <button type="button" class="btn btn-xs btn-secondary" (click)="selectAll()">All</button>
+          <button type="button" class="btn btn-xs btn-secondary" (click)="selectFlagged()">
+            Flagged
           </button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="selectFlagged()">
-            Select Flagged
-          </button>
-          <button type="button" class="btn btn-sm btn-secondary" (click)="selectNone()">
+          <button type="button" class="btn btn-xs btn-secondary" (click)="selectNone()">
             Clear
           </button>
         </div>
       </div>
     }
-
-    <!-- Flag Legend -->
-    <div
-      class="bg-info-50 dark:bg-info-900/20 border border-info-200 dark:border-info-800 rounded-lg p-4 mb-4"
-    >
-      <h4 class="font-semibold text-info-900 dark:text-info-100 mb-2">Flag Legend</h4>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">⚠️</span>
-          <span class="text-gray-700 dark:text-gray-300">No active workers</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-lg">🚫</span>
-          <span class="text-gray-700 dark:text-gray-300">Zero month usage</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-lg">🔗</span>
-          <span class="text-gray-700 dark:text-gray-300">Multiple hosts</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-lg">🌐</span>
-          <span class="text-gray-700 dark:text-gray-300">Non-preferred host</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-lg">❓</span>
-          <span class="text-gray-700 dark:text-gray-300">Unknown host</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-lg">📥</span>
-          <span class="text-gray-700 dark:text-gray-300">No download URLs</span>
-        </div>
-      </div>
-      <p class="text-xs text-info-700 dark:text-info-300 mt-2">
-        <strong>Red border:</strong> Critical (zero month usage AND no workers) |
-        <strong>Yellow border:</strong> Warning (low usage, multiple hosts, or non-preferred host)
-      </p>
-    </div>
 
     <!-- Models Table -->
     <div class="card overflow-hidden">
@@ -773,7 +748,12 @@
                   </div>
                 </td>
                 <td>
-                  <span class="badge badge-info">{{ getBaselineDisplayName(item.baseline) }}</span>
+                  <span
+                    class="badge badge-info block max-w-full truncate md:break-words md:line-clamp-2 md:whitespace-normal"
+                    [title]="item.baseline"
+                  >
+                    {{ getBaselineDisplayName(item.baseline) }}
+                  </span>
                 </td>
                 <td class="text-right">
                   <span
@@ -971,61 +951,58 @@
       </cdk-virtual-scroll-viewport>
     </div>
 
-    <!-- Help Panel -->
-    <div class="card mt-6">
-      <div class="card-header">
-        <h4 class="heading-card">Audit Criteria & Guidelines</h4>
-      </div>
-      <div class="card-body space-y-4">
-        <div>
-          <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Preferred File Hosts</h5>
-          <p class="text-sm text-muted">
-            Models hosted on HuggingFace (huggingface.co) are preferred for reliability and
-            performance. Models from other hosts may require additional review.
-          </p>
+    <!-- Compact Help Panel -->
+    <div class="card filter-panel-compact">
+      <button
+        type="button"
+        class="collapsible-toggle-compact w-full text-left"
+        (click)="helpCollapsed.set(!helpCollapsed())"
+        [attr.aria-expanded]="!helpCollapsed()"
+        [attr.aria-label]="helpCollapsed() ? 'Expand help' : 'Collapse help'"
+      >
+        <span class="icon-button-gray">
+          <svg
+            class="collapse-icon"
+            [class.rotate-180]="!helpCollapsed()"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 15l7-7 7 7"
+            />
+          </svg>
+        </span>
+        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+          Audit Criteria & Guidelines
+        </h4>
+      </button>
+
+      @if (!helpCollapsed()) {
+        <div class="collapsible-section collapsible-section-expanded px-4 pb-3 space-y-2 text-xs">
+          <div>
+            <strong class="text-gray-900 dark:text-gray-100">Flags:</strong>
+            ⚠️ No workers | 🚫 Zero 30d | 🔗 Multi-host | 🌐 Non-preferred | ❓ Unknown | 📥 No URLs
+          </div>
+          <div>
+            <strong class="text-danger-600 dark:text-danger-400">Critical:</strong> Zero 30d usage
+            AND no workers |
+            <strong class="text-warning-600 dark:text-warning-400">Warning:</strong> Low usage,
+            multi-host, or non-preferred
+          </div>
+          <div>
+            <strong class="text-gray-900 dark:text-gray-100">30d %:</strong> Model's 30d usage /
+            category total × 100 |
+            <strong class="text-gray-900 dark:text-gray-100">Cost/Benefit:</strong>
+            <span class="text-success-600 dark:text-success-400">&gt;0.5 Good</span>,
+            <span class="text-warning-600 dark:text-warning-400">0.2-0.5 Moderate</span>,
+            <span class="text-danger-600 dark:text-danger-400">&lt;0.2 Poor</span>
+          </div>
         </div>
-        <div>
-          <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Deletion Risk Levels</h5>
-          <ul class="text-sm text-muted space-y-1 list-disc list-inside">
-            <li>
-              <strong class="text-danger-600 dark:text-danger-400">Critical:</strong> Zero 30-day
-              usage AND no active workers
-            </li>
-            <li>
-              <strong class="text-warning-600 dark:text-warning-400">Warning:</strong> Below usage
-              threshold, multiple hosts, or non-preferred host
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            30-Day Usage Percentage
-          </h5>
-          <p class="text-sm text-muted">
-            Calculated as (model's 30-day usage / category's total 30-day usage) × 100. Shows each
-            model's share of the category's 30-day request volume.
-          </p>
-        </div>
-        <div class="hidden">
-          <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Short-Term Usage (1h, 1m)
-          </h5>
-          <p class="text-sm text-muted">
-            Displays recent activity: usage in the last hour (1h) and last minute (1m). Helps
-            identify models with real-time demand spikes or sustained short-term usage patterns.
-          </p>
-        </div>
-        <div>
-          <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Cost-Benefit Score</h5>
-          <p class="text-sm text-muted">
-            Backend-calculated metric balancing model size/cost against usage demand. Higher scores
-            indicate better value.
-            <strong class="text-success-600 dark:text-success-400">&gt;0.5 = Good</strong>,
-            <strong class="text-warning-600 dark:text-warning-400">0.2-0.5 = Moderate</strong>,
-            <strong class="text-danger-600 dark:text-danger-400">&lt;0.2 = Poor</strong>.
-          </p>
-        </div>
-      </div>
+      }
     </div>
   }
 </div>

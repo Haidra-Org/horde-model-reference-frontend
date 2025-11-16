@@ -211,6 +211,7 @@ describe('ModelAuditComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             params: paramsSubject.asObservable(),
+            queryParams: of({}),
           },
         },
       ],

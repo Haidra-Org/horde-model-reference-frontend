@@ -1,4 +1,5 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -20,6 +21,7 @@ import { hasShowcases } from './model-row.utils';
 @Component({
   selector: 'app-model-row',
   imports: [
+    RouterLink,
     ModelRowHeaderComponent,
     ModelRowFieldsComponent,
     ModelRowShowcasesComponent,
@@ -87,6 +89,15 @@ import { hasShowcases } from './model-row.utils';
           -
         }
       </td>
+      @if (isTextGeneration()) {
+        <td class="text-center text-sm text-gray-700 dark:text-gray-300">
+          @if (isGrouped() && groupedModel()) {
+            {{ groupedModel()!.variations.length }}
+          } @else {
+            1
+          }
+        </td>
+      }
       @if (!isTextGeneration()) {
         <td>
           @if (legacyModel().nsfw === true) {
@@ -98,9 +109,12 @@ import { hasShowcases } from './model-row.utils';
           }
         </td>
       }
-      <td class="text-right whitespace-nowrap" (click)="$event.stopPropagation()">
+      <td class="text-center text-sm text-gray-700 dark:text-gray-300">
+        {{ model().workerCount ?? 0 }}
+      </td>
+      <td class="text-center">
         <app-model-row-actions
-          [model]="model()"
+          [model]="legacyModel()"
           layout="horizontal"
           [writable]="writable()"
           (showJson)="showJson.emit($event)"
@@ -156,6 +170,25 @@ import { hasShowcases } from './model-row.utils';
                       }
                     </div>
                   }
+                  <div class="mt-2">
+                    <app-model-row-actions
+                      [model]="model()"
+                      layout="vertical"
+                      [writable]="writable()"
+                      (showJson)="showJson.emit($event)"
+                      (edit)="edit.emit($event)"
+                      (delete)="delete.emit($event)"
+                    />
+                  </div>
+                  <div class="mt-2">
+                    <a
+                      [routerLink]="['/categories', category(), 'audit']"
+                      [queryParams]="{ search: model().name }"
+                      class="btn btn-sm btn-secondary w-full"
+                    >
+                      See Performance Info
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -312,6 +345,7 @@ export class ModelRowComponent {
   readonly writable = input<boolean>(false);
   readonly isEven = input<boolean>(false);
   readonly isTextGeneration = input<boolean>(false);
+  readonly category = input<string>('');
   readonly expandedRows = input<Set<string>>(new Set());
   readonly expandedShowcases = input<Set<string>>(new Set());
   readonly hordeStatsState = input<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -436,7 +470,7 @@ export class ModelRowComponent {
 
   readonly showcaseExpanded = computed(() => this.expandedShowcases().has(this.model().name));
 
-  readonly detailColspan = computed(() => (this.isTextGeneration() ? 8 : 9));
+  readonly detailColspan = computed(() => (this.isTextGeneration() ? 10 : 10));
 
   toggleExpansion(): void {
     this.toggleRow.emit(this.model().name);
