@@ -5,6 +5,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ModelReferenceApiService } from './model-reference-api.service';
 import { environment } from '../../environments/environment';
 import type { CategoryStatistics, CategoryAuditResponse } from '../api-client';
+import { withDone } from '../../testing/with-done';
 
 describe('ModelReferenceApiService', () => {
   let service: ModelReferenceApiService;
@@ -29,7 +30,7 @@ describe('ModelReferenceApiService', () => {
   });
 
   describe('getCategoryStatistics', () => {
-    it('should fetch category statistics successfully', (done) => {
+    it('should fetch category statistics successfully', withDone((done) => {
       const category = 'image_generation';
       const mockStatistics: CategoryStatistics = {
         category: 'image_generation',
@@ -86,9 +87,9 @@ describe('ModelReferenceApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockStatistics);
-    });
+    }));
 
-    it('should return null on error', (done) => {
+    it('should return null on error', withDone((done) => {
       const category = 'image_generation';
 
       service.getCategoryStatistics(category).subscribe((result) => {
@@ -100,9 +101,9 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}?group_text_models=false&offset=0`,
       );
       req.error(new ProgressEvent('Network error'));
-    });
+    }));
 
-    it('should pass group_text_models parameter when true', (done) => {
+    it('should pass group_text_models parameter when true', withDone((done) => {
       const category = 'text_generation';
       const mockStatistics: CategoryStatistics = {
         category: 'text_generation',
@@ -150,9 +151,9 @@ describe('ModelReferenceApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockStatistics);
-    });
+    }));
 
-    it('should handle statistics with minimal data', (done) => {
+    it('should handle statistics with minimal data', withDone((done) => {
       const category = 'clip';
       const mockStatistics: CategoryStatistics = {
         category: 'clip',
@@ -183,11 +184,11 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}?group_text_models=false&offset=0`,
       );
       req.flush(mockStatistics);
-    });
+    }));
   });
 
   describe('getCategoryAudit', () => {
-    it('should fetch category audit successfully with default parameters', (done) => {
+    it('should fetch category audit successfully with default parameters', withDone((done) => {
       const category = 'image_generation';
       const mockAudit: CategoryAuditResponse = {
         category: 'image_generation',
@@ -270,9 +271,9 @@ describe('ModelReferenceApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockAudit);
-    });
+    }));
 
-    it('should return null on error', (done) => {
+    it('should return null on error', withDone((done) => {
       const category = 'image_generation';
 
       service.getCategoryAudit(category).subscribe((result) => {
@@ -284,9 +285,9 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
       );
       req.error(new ProgressEvent('Network error'));
-    });
+    }));
 
-    it('should pass preset parameter when provided', (done) => {
+    it('should pass preset parameter when provided', withDone((done) => {
       const category = 'image_generation';
       const preset = 'deletion_candidates';
       const mockAudit: CategoryAuditResponse = {
@@ -327,9 +328,9 @@ describe('ModelReferenceApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockAudit);
-    });
+    }));
 
-    it('should handle group_text_models and preset together', (done) => {
+    it('should handle group_text_models and preset together', withDone((done) => {
       const category = 'text_generation';
       const preset = 'zero_usage';
       const mockAudit: CategoryAuditResponse = {
@@ -370,9 +371,9 @@ describe('ModelReferenceApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockAudit);
-    });
+    }));
 
-    it('should handle audit response with critical flags', (done) => {
+    it('should handle audit response with critical flags', withDone((done) => {
       const category = 'image_generation';
       const mockAudit: CategoryAuditResponse = {
         category: 'image_generation',
@@ -459,9 +460,9 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
       );
       req.flush(mockAudit);
-    });
+    }));
 
-    it('should validate all deletion risk flags are present', (done) => {
+    it('should validate all deletion risk flags are present', withDone((done) => {
       const category = 'image_generation';
       const mockAudit: CategoryAuditResponse = {
         category: 'image_generation',
@@ -543,9 +544,9 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
       );
       req.flush(mockAudit);
-    });
+    }));
 
-    it('should handle preset filtering with different presets', (done) => {
+    it('should handle preset filtering with different presets', withDone((done) => {
       const category = 'image_generation';
       const preset = 'critical';
       const mockAudit: CategoryAuditResponse = {
@@ -617,11 +618,11 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&preset=${preset}&offset=0`,
       );
       req.flush(mockAudit);
-    });
+    }));
   });
 
   describe('error handling', () => {
-    it('should handle 404 errors gracefully for statistics', (done) => {
+    it('should handle 404 errors gracefully for statistics', withDone((done) => {
       const category = 'nonexistent';
 
       service.getCategoryStatistics(category).subscribe((result) => {
@@ -633,9 +634,9 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}?group_text_models=false&offset=0`,
       );
       req.flush('Not found', { status: 404, statusText: 'Not Found' });
-    });
+    }));
 
-    it('should handle 500 errors gracefully for audit', (done) => {
+    it('should handle 500 errors gracefully for audit', withDone((done) => {
       const category = 'image_generation';
 
       service.getCategoryAudit(category).subscribe((result) => {
@@ -647,6 +648,6 @@ describe('ModelReferenceApiService', () => {
         `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
       );
       req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
-    });
+    }));
   });
 });

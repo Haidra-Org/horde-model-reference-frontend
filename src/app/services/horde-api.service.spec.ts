@@ -10,6 +10,7 @@ import {
 } from '../models/horde-api.models';
 import { provideHttpClient } from '@angular/common/http';
 import { provideZonelessChangeDetection } from '@angular/core';
+import { withDone } from '../../testing/with-done';
 
 describe('HordeApiService', () => {
   let service: HordeApiService;
@@ -38,7 +39,7 @@ describe('HordeApiService', () => {
   });
 
   describe('getModelStatus', () => {
-    it('should fetch image model status', (done) => {
+    it('should fetch image model status', withDone((done) => {
       const mockResponse: HordeModelStatus[] = [
         {
           performance: 884156.6,
@@ -66,9 +67,9 @@ describe('HordeApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
-    });
+    }));
 
-    it('should handle errors gracefully', (done) => {
+    it('should handle errors gracefully', withDone((done) => {
       service.getModelStatus('image').subscribe((data) => {
         expect(data).toEqual([]);
         expect(service.isLoading()).toBe(false);
@@ -77,11 +78,11 @@ describe('HordeApiService', () => {
 
       const req = httpMock.expectOne((request) => request.url.includes('status/models'));
       req.error(new ProgressEvent('Network error'));
-    });
+    }));
   });
 
   describe('getModelStats', () => {
-    it('should fetch image model stats', (done) => {
+    it('should fetch image model stats', withDone((done) => {
       const mockResponse: HordeModelStatsResponse = {
         day: { 'AlbedoBase XL (SDXL)': 12010 },
         month: { 'AlbedoBase XL (SDXL)': 509919 },
@@ -101,9 +102,9 @@ describe('HordeApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
-    });
+    }));
 
-    it('should fetch text model stats', (done) => {
+    it('should fetch text model stats', withDone((done) => {
       const mockResponse: HordeModelStatsResponse = {
         day: { 'Test Model': 1975 },
         month: { 'Test Model': 15000 },
@@ -117,9 +118,9 @@ describe('HordeApiService', () => {
 
       const req = httpMock.expectOne((request) => request.url.includes('stats/text/models'));
       req.flush(mockResponse);
-    });
+    }));
 
-    it('should handle errors gracefully', (done) => {
+    it('should handle errors gracefully', withDone((done) => {
       service.getModelStats('image').subscribe((data) => {
         expect(data).toEqual({ day: {}, month: {}, total: {} });
         done();
@@ -127,11 +128,11 @@ describe('HordeApiService', () => {
 
       const req = httpMock.expectOne((request) => request.url.includes('stats/img/models'));
       req.error(new ProgressEvent('Network error'));
-    });
+    }));
   });
 
   describe('getTotalStats', () => {
-    it('should fetch total image stats', (done) => {
+    it('should fetch total image stats', withDone((done) => {
       const mockResponse: HordeTotalStatsResponse = {
         minute: { images: 114, ps: 2406862848 },
         hour: { images: 4641, ps: 104515403776 },
@@ -148,9 +149,9 @@ describe('HordeApiService', () => {
       const req = httpMock.expectOne(`${baseUrl}/stats/img/totals`);
       expect(req.request.method).toBe('GET');
       req.flush(mockResponse);
-    });
+    }));
 
-    it('should fetch total text stats', (done) => {
+    it('should fetch total text stats', withDone((done) => {
       const mockResponse: HordeTotalStatsResponse = {
         minute: { requests: 100, tokens: 29309 },
         hour: { requests: 5952, tokens: 1597720 },
@@ -166,11 +167,11 @@ describe('HordeApiService', () => {
 
       const req = httpMock.expectOne(`${baseUrl}/stats/text/totals`);
       req.flush(mockResponse);
-    });
+    }));
   });
 
   describe('getWorkers', () => {
-    it('should fetch worker by name', (done) => {
+    it('should fetch worker by name', withDone((done) => {
       const mockImageWorker: HordeImageWorker = {
         name: 'CausticLogic',
         id: '12345678-1234-1234-1234-123456789abc',
@@ -218,9 +219,9 @@ describe('HordeApiService', () => {
       );
       expect(req.request.method).toBe('GET');
       req.flush([mockImageWorker]);
-    });
+    }));
 
-    it('should fetch workers by type', (done) => {
+    it('should fetch workers by type', withDone((done) => {
       const mockTextWorker: HordeTextWorker = {
         name: 'hugalafutro_hetzner2',
         id: '87654321-4321-4321-4321-cba987654321',
@@ -260,9 +261,9 @@ describe('HordeApiService', () => {
         (request) => request.url === `${baseUrl}/workers` && request.params.get('type') === 'text',
       );
       req.flush([mockTextWorker]);
-    });
+    }));
 
-    it('should fetch all workers when no options provided', (done) => {
+    it('should fetch all workers when no options provided', withDone((done) => {
       const mockWorkers = [
         {
           name: 'Worker1',
@@ -306,9 +307,9 @@ describe('HordeApiService', () => {
           !request.params.has('type'),
       );
       req.flush(mockWorkers);
-    });
+    }));
 
-    it('should handle errors gracefully', (done) => {
+    it('should handle errors gracefully', withDone((done) => {
       service.getWorkers({ name: 'NonExistent' }).subscribe((data) => {
         expect(data).toEqual([]);
         expect(service.isLoading()).toBe(false);
@@ -317,6 +318,6 @@ describe('HordeApiService', () => {
 
       const req = httpMock.expectOne((request) => request.url.includes('workers'));
       req.error(new ProgressEvent('Network error'));
-    });
+    }));
   });
 });

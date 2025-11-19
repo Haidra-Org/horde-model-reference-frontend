@@ -31,10 +31,15 @@ async function waitForAsync(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 10));
 }
 
+interface ApiServiceSpy {
+  getLegacyModelsAsArray: ReturnType<typeof vi.fn>;
+}
+
 describe('CommonFieldsComponent - Style Autocomplete Per Category', () => {
   let component: CommonFieldsComponent;
   let fixture: ComponentFixture<CommonFieldsComponent>;
-  let apiService: jasmine.SpyObj<ModelReferenceApiService>;
+  let apiService: ApiServiceSpy;
+  let apiServiceSpy: ApiServiceSpy;
 
   // Mock data for different categories
   const imageGenerationModels: LegacyRecordUnion[] = [
@@ -94,9 +99,9 @@ describe('CommonFieldsComponent - Style Autocomplete Per Category', () => {
   };
 
   beforeEach(() => {
-    const apiServiceSpy = jasmine.createSpyObj('ModelReferenceApiService', [
-      'getLegacyModelsAsArray',
-    ]);
+    apiServiceSpy = {
+      getLegacyModelsAsArray: vi.fn(),
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -108,14 +113,12 @@ describe('CommonFieldsComponent - Style Autocomplete Per Category', () => {
       ],
     });
 
-    apiService = TestBed.inject(
-      ModelReferenceApiService,
-    ) as jasmine.SpyObj<ModelReferenceApiService>;
+    apiService = apiServiceSpy;
   });
 
   describe('Image Generation Category', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.and.returnValue(of(imageGenerationModels));
+      apiService.getLegacyModelsAsArray.mockReturnValue(of(imageGenerationModels));
 
       fixture = TestBed.createComponent(CommonFieldsComponent);
       fixture.componentRef.setInput('data', commonData);
@@ -156,7 +159,7 @@ describe('CommonFieldsComponent - Style Autocomplete Per Category', () => {
 
   describe('Text Generation Category', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.and.returnValue(of(textGenerationModels));
+      apiService.getLegacyModelsAsArray.mockReturnValue(of(textGenerationModels));
 
       fixture = TestBed.createComponent(CommonFieldsComponent);
       fixture.componentRef.setInput('data', commonData);
@@ -191,7 +194,7 @@ describe('CommonFieldsComponent - Style Autocomplete Per Category', () => {
 
   describe('Error Handling', () => {
     it('should fall back to empty suggestions when API fails', async () => {
-      apiService.getLegacyModelsAsArray.and.returnValue(throwError(() => new Error('API Error')));
+      apiService.getLegacyModelsAsArray.mockReturnValue(throwError(() => new Error('API Error')));
 
       fixture = TestBed.createComponent(CommonFieldsComponent);
       fixture.componentRef.setInput('data', commonData);

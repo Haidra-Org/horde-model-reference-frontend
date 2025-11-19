@@ -6,13 +6,20 @@ import { of, throwError } from 'rxjs';
 import { LoginModalComponent } from './login-modal.component';
 import { AuthService } from '../../services/auth.service';
 
+interface AuthServiceSpy {
+  login: ReturnType<typeof vi.fn<AuthService['login']>>;
+}
+
 describe('LoginModalComponent', () => {
   let component: LoginModalComponent;
   let fixture: ComponentFixture<LoginModalComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
+  let authService: AuthServiceSpy;
+  let authServiceSpy: AuthServiceSpy;
 
   beforeEach(async () => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['login']);
+    authServiceSpy = {
+      login: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [LoginModalComponent],
@@ -24,7 +31,7 @@ describe('LoginModalComponent', () => {
       ],
     }).compileComponents();
 
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    authService = authServiceSpy;
     fixture = TestBed.createComponent(LoginModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -47,32 +54,32 @@ describe('LoginModalComponent', () => {
   });
 
   it('should emit close event on cancel', () => {
-    spyOn(component.closed, 'emit');
+    const closeSpy = vi.spyOn(component.closed, 'emit');
 
     component.onCancel();
 
-    expect(component.closed.emit).toHaveBeenCalled();
+    expect(closeSpy).toHaveBeenCalled();
   });
 
   it('should login successfully and emit close', () => {
     const testKey = 'test-api-key';
     component.apiKey.set(testKey);
-    authService.login.and.returnValue(of('testuser'));
-    spyOn(component.closed, 'emit');
+    authService.login.mockReturnValue(of('testuser'));
+    const closeSpy = vi.spyOn(component.closed, 'emit');
 
     component.onSubmit();
 
     expect(authService.login).toHaveBeenCalledWith(testKey);
     expect(component.loading()).toBe(false);
     expect(component.error()).toBe(null);
-    expect(component.closed.emit).toHaveBeenCalled();
+    expect(closeSpy).toHaveBeenCalled();
   });
 
   it('should show error on login failure', () => {
     const testKey = 'invalid-key';
     const errorMessage = 'Invalid API key';
     component.apiKey.set(testKey);
-    authService.login.and.returnValue(throwError(() => new Error(errorMessage)));
+    authService.login.mockReturnValue(throwError(() => new Error(errorMessage)));
 
     component.onSubmit();
 
@@ -83,7 +90,7 @@ describe('LoginModalComponent', () => {
 
   it('should set loading to true during login', () => {
     component.apiKey.set('test-key');
-    authService.login.and.returnValue(of('testuser'));
+    authService.login.mockReturnValue(of('testuser'));
 
     component.onSubmit();
 
@@ -93,7 +100,7 @@ describe('LoginModalComponent', () => {
   it('should clear error on submit', () => {
     component.error.set('Previous error');
     component.apiKey.set('test-key');
-    authService.login.and.returnValue(of('testuser'));
+    authService.login.mockReturnValue(of('testuser'));
 
     component.onSubmit();
 

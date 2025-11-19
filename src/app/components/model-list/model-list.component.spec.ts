@@ -17,9 +17,9 @@ import { HordeModelType } from '../../models/horde-api.models';
 import { StatisticsService } from '../../api-client';
 
 class MockNotificationService {
-  readonly error = jasmine.createSpy('error');
-  readonly warning = jasmine.createSpy('warning');
-  readonly success = jasmine.createSpy('success');
+  readonly error = vi.fn();
+  readonly warning = vi.fn();
+  readonly success = vi.fn();
 }
 
 class MockAuthService {
@@ -136,12 +136,12 @@ describe('ModelListComponent race conditions', () => {
     fixture.detectChanges();
 
     expect(component.category()).toBe('text_generation');
-    expect(component.models().some((model) => model.name.includes('text'))).toBeTrue();
+    expect(component.models().some((model) => model.name.includes('text'))).toBe(true);
 
     api.emit('image_generation', [imageModel]);
     fixture.detectChanges();
 
     expect(component.category()).toBe('text_generation');
-    expect(component.models().some((model) => model.name === 'image-alpha')).toBeFalse();
+    expect(component.models().some((model) => model.name === 'image-alpha')).toBe(false);
   });
 });

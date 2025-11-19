@@ -44,7 +44,7 @@ describe('ModelRequirementsEditorComponent', () => {
   });
 
   it('should emit combined values when structured fields change', () => {
-    const onChangeSpy = jasmine.createSpy('onChange');
+    const onChangeSpy = vi.fn();
     fixture.componentRef.setInput('values', {});
     component.valuesChange.subscribe(onChangeSpy);
     fixture.detectChanges();
@@ -55,7 +55,7 @@ describe('ModelRequirementsEditorComponent', () => {
   });
 
   it('should prevent reserved field names in custom fields', () => {
-    const onChangeSpy = jasmine.createSpy('onChange');
+    const onChangeSpy = vi.fn();
     component.valuesChange.subscribe(onChangeSpy);
     fixture.detectChanges();
 

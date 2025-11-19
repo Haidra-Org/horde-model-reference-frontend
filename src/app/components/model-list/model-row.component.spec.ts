@@ -19,11 +19,11 @@ describe('ModelRowComponent', () => {
     },
   };
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [ModelRowComponent],
       providers: [provideZonelessChangeDetection()],
-    });
+    }).compileComponents();
   });
 
   it('derives expansion state from expanded rows input signals', () => {
@@ -33,11 +33,11 @@ describe('ModelRowComponent', () => {
     fixture.componentRef.setInput('model', baseModel);
     fixture.componentRef.setInput('expandedRows', new Set());
 
-    expect(component.expanded()).toBeFalse();
+    expect(component.expanded()).toBe(false);
 
     fixture.componentRef.setInput('expandedRows', new Set([baseModel.name]));
 
-    expect(component.expanded()).toBeTrue();
+    expect(component.expanded()).toBe(true);
   });
 
   it('maps baseline values to shorthand labels', () => {
@@ -56,9 +56,9 @@ describe('ModelRowComponent', () => {
     fixture.componentRef.setInput('model', baseModel);
     fixture.componentRef.setInput('expandedShowcases', new Set([baseModel.name]));
 
-    expect(component.hasShowcaseContent()).toBeTrue();
+    expect(component.hasShowcaseContent()).toBe(true);
     expect(component.showcases()).toEqual(baseModel.showcases ?? null);
-    expect(component.showcaseExpanded()).toBeTrue();
+    expect(component.showcaseExpanded()).toBe(true);
   });
 
   it('returns tags for stable diffusion models', () => {

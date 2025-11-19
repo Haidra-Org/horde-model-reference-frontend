@@ -1021,10 +1021,7 @@ describe('Unified Model Utilities', () => {
 
         // Should only have ONE entry for Qwen/Qwen3-1.7B, not two
         const qwenEntries = result.filter((m) => m.name === 'Qwen/Qwen3-1.7B');
-        expect(qwenEntries.length).toBe(
-          1,
-          'Should not create duplicate entries for canonical model',
-        );
+        expect(qwenEntries.length).toBe(1);
 
         // Verify the entry has the correct stats
         expect(qwenEntries[0].usageStats).toEqual({
@@ -1089,17 +1086,17 @@ describe('Unified Model Utilities', () => {
         });
 
         // Should have exactly 2 entries: canonical and koboldcpp
-        expect(result.length).toBe(2, 'Should have exactly two entries (canonical + koboldcpp)');
+        expect(result.length).toBe(2);
 
         const canonicalEntry = result.find((m) => m.name === 'Qwen/Qwen3-8B');
         const koboldcppEntry = result.find((m) => m.name === 'koboldcpp/Qwen3-8B');
 
-        expect(canonicalEntry).toBeDefined('Should have canonical entry');
-        expect(koboldcppEntry).toBeDefined('Should have koboldcpp entry');
+        expect(canonicalEntry).toBeDefined();
+        expect(koboldcppEntry).toBeDefined();
 
         // Verify no duplicate canonical entries
         const canonicalEntries = result.filter((m) => m.name === 'Qwen/Qwen3-8B');
-        expect(canonicalEntries.length).toBe(1, 'Should have exactly one canonical entry');
+        expect(canonicalEntries.length).toBe(1);
       });
     });
   });

@@ -8,21 +8,19 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 
 class MockModelReferenceApiService {
-  createLegacyModel = jasmine.createSpy('createLegacyModel').and.returnValue(of({}));
-  updateLegacyModel = jasmine.createSpy('updateLegacyModel').and.returnValue(of({}));
-  deleteModel = jasmine.createSpy('deleteModel').and.returnValue(of({}));
-  getLegacyModelsInCategory = jasmine
-    .createSpy('getLegacyModelsInCategory')
-    .and.returnValue(of({}));
+  createLegacyModel = vi.fn().mockReturnValue(of({}));
+  updateLegacyModel = vi.fn().mockReturnValue(of({}));
+  deleteModel = vi.fn().mockReturnValue(of({}));
+  getLegacyModelsInCategory = vi.fn().mockReturnValue(of({}));
 }
 
 class MockNotificationService {
-  error = jasmine.createSpy('error');
-  success = jasmine.createSpy('success');
+  error = vi.fn();
+  success = vi.fn();
 }
 
 class MockRouter {
-  navigate = jasmine.createSpy('navigate');
+  navigate = vi.fn();
 }
 
 describe('ModelFormComponent (exploded variations)', () => {
@@ -83,11 +81,11 @@ describe('ModelFormComponent (exploded variations)', () => {
 
     const updatedNames = component.modelVariations().map((variation) => variation.name);
 
-    expect(initialNames.every((name: string) => name.includes('base-model'))).toBeTrue();
+    expect(initialNames.every((name: string) => name.includes('base-model'))).toBe(true);
     expect(updatedNames.length).toBeGreaterThan(1);
-    expect(updatedNames.every((name: string) => name.includes('renamed-model'))).toBeTrue();
+    expect(updatedNames.every((name: string) => name.includes('renamed-model'))).toBe(true);
     expect(
       updatedNames.some((name: string) => name.startsWith('aphrodite/renamed-model')),
-    ).toBeTrue();
+    ).toBe(true);
   });
 });

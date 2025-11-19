@@ -41,6 +41,13 @@ const TEST_CONFIG = testEnvironment;
 describe('API Models - OpenAPI Schema Validation', () => {
   let openApiSchema: OpenApiSchema;
   let schemaFetchError: Error | null = null;
+  const skipIfSchemaUnavailable = (message: string) => {
+    if (schemaFetchError) {
+      console.warn(message);
+      return true;
+    }
+    return false;
+  };
 
   beforeAll(async () => {
     // Log which schema source we're testing against
@@ -61,8 +68,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Schema Availability', () => {
     it('should successfully fetch the OpenAPI schema from the service', () => {
-      if (schemaFetchError) {
-        pending(`OpenAPI schema not available: ${schemaFetchError.message}`);
+      if (skipIfSchemaUnavailable(`OpenAPI schema not available: ${schemaFetchError?.message}`)) {
         return;
       }
 
@@ -70,8 +76,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have a valid OpenAPI version', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -80,8 +85,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have component schemas defined', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -92,8 +96,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Response Models', () => {
     it('ContainsMessage should match schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -115,8 +118,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('BackendCapabilities should have correct mode values', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -140,8 +142,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('ErrorResponse should match schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -157,8 +158,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('ModelReferenceCategory should match MODEL_REFERENCE_CATEGORY enum', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -182,8 +182,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Legacy Model Records', () => {
     it('LegacyConfigFile should have correct properties', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -205,8 +204,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyConfigDownload should have correct properties', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -228,8 +226,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyGenericRecord should have required fields', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -248,8 +245,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyStableDiffusionRecord should match ImageGenerationModelRecord schema properties', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -284,8 +280,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyTextGenerationRecord should match TextGenerationModelRecord schema properties', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -310,8 +305,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyClipRecord should have correct structure', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -329,8 +323,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('requirements field should support various value types', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -357,8 +350,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Request/Response Types', () => {
     it('CategoryModelsResponse should be a record of model names to records', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -383,8 +375,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyModelsResponse should be a record of model names to legacy records', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -412,8 +403,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Schema Enum Validation', () => {
     it('MODEL_REFERENCE_CATEGORY enum should match OpenAPI schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -433,8 +423,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('KNOWN_IMAGE_GENERATION_BASELINE enum should match OpenAPI schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -457,8 +446,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('MODEL_STYLE enum should match OpenAPI schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -478,8 +466,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('CONTROLNET_STYLE enum should match OpenAPI schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -500,8 +487,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('API Endpoint Validation', () => {
     it('should have expected v1 endpoints in schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -515,8 +501,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have expected v2 endpoints in schema', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -533,8 +518,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have heartbeat and status endpoints', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -546,8 +530,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Schema Component Completeness', () => {
     it('should have all expected model record schemas', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -563,8 +546,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have all expected metadata schemas', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -575,8 +557,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have all expected enum schemas', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
@@ -590,8 +571,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have all expected response schemas', () => {
-      if (schemaFetchError) {
-        pending('OpenAPI schema not available');
+      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
         return;
       }
 
