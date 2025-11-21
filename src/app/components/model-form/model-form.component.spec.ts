@@ -84,8 +84,8 @@ describe('ModelFormComponent (exploded variations)', () => {
     expect(initialNames.every((name: string) => name.includes('base-model'))).toBe(true);
     expect(updatedNames.length).toBeGreaterThan(1);
     expect(updatedNames.every((name: string) => name.includes('renamed-model'))).toBe(true);
-    expect(
-      updatedNames.some((name: string) => name.startsWith('aphrodite/renamed-model')),
-    ).toBe(true);
+    expect(updatedNames.some((name: string) => name.startsWith('aphrodite/renamed-model'))).toBe(
+      true,
+    );
   });
 });

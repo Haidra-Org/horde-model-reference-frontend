@@ -281,8 +281,18 @@ export class ModelAuditComponent implements OnInit {
         const isGrouped = isGroupedTextModel(model);
 
         if (isGrouped) {
-          // For grouped models, aggregate audit data from all variations
           const groupedModel = model as GroupedTextModel;
+          const groupedAuditInfo = auditResp.models.find((a) => a.name === groupedModel.name);
+
+          if (groupedAuditInfo) {
+            return this.createGroupedMetricsFromAuditInfo(
+              groupedModel,
+              groupedAuditInfo,
+              categoryTotal,
+            );
+          }
+
+          // For grouped models without a direct aggregated entry, aggregate audit data from all variations
           const variationAuditInfos = groupedModel.variations
             .map((v) => auditResp.models.find((a) => a.name === v.name))
             .filter((a): a is ModelAuditInfo => a !== undefined);
@@ -445,6 +455,45 @@ export class ModelAuditComponent implements OnInit {
     // Degraded mode: create basic metrics from reference data only
     return models.map((model) => this.createDegradedMetrics(model, categoryTotal));
   });
+
+  private createGroupedMetricsFromAuditInfo(
+    groupedModel: GroupedTextModel,
+    auditInfo: ModelAuditInfo,
+    categoryTotal: number,
+  ): ModelWithAuditMetrics {
+    const usageMonth = auditInfo.usage_month ?? 0;
+    const usagePercentage =
+      auditInfo.usage_percentage_of_category ??
+      (categoryTotal > 0 ? (usageMonth / categoryTotal) * 100 : 0);
+
+    return {
+      model: groupedModel,
+      auditInfo,
+      name: auditInfo.name,
+      workerCount: auditInfo.worker_count ?? 0,
+      usagePercentage,
+      usageTrend: {
+        dayToMonthRatio: auditInfo.usage_trend?.day_to_month_ratio ?? null,
+        monthToTotalRatio: auditInfo.usage_trend?.month_to_total_ratio ?? null,
+      },
+      usageHour: auditInfo.usage_hour ?? 0,
+      usageMinute: auditInfo.usage_minute ?? 0,
+      costBenefitScore: auditInfo.cost_benefit_score ?? null,
+      nsfw: auditInfo.nsfw ?? null,
+      hasDescription: auditInfo.has_description ?? false,
+      downloadCount: auditInfo.download_count ?? 0,
+      flags: auditInfo.deletion_risk_flags ?? null,
+      isCritical: auditInfo.is_critical,
+      hasWarning: auditInfo.has_warning,
+      flagCount: auditInfo.risk_score ?? 0,
+      fileHosts: auditInfo.download_hosts ? [...auditInfo.download_hosts] : [],
+      baseline: auditInfo.baseline ?? null,
+      sizeGB: auditInfo.size_gb ?? null,
+      isGrouped: true,
+      variations: groupedModel.variations,
+      variationCount: groupedModel.variations.length,
+    };
+  }
 
   /**
    * Create metrics in degraded mode (when audit API fails)

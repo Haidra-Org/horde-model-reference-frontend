@@ -14,13 +14,16 @@ import type {
   MODEL_REFERENCE_CATEGORY,
 } from '../../api-client';
 import { LegacyRecordUnion } from '../../models';
+import type { GroupedTextModel, UnifiedModelData } from '../../models/unified-model';
 import {
   ModelAuditInfoBuilder,
   CategoryAuditResponseBuilder,
   generateLargeAuditResponse,
 } from '../../models/test-helpers/audit-test-helpers';
 
-type Spy<T extends (...args: any[]) => unknown> = ReturnType<typeof vi.fn<T>>;
+type Spy<T> = T extends (...args: infer P) => infer R
+  ? ReturnType<typeof vi.fn<(...args: P) => R>>
+  : never;
 
 interface ModelReferenceApiServiceSpy {
   getLegacyModelsAsArray: Spy<ModelReferenceApiService['getLegacyModelsAsArray']>;
@@ -364,6 +367,68 @@ describe('ModelAuditComponent', () => {
       expect(trend.dayToMonthRatio).toBeCloseTo(0.1);
       // month_to_total: 100 / 500 = 0.2
       expect(trend.monthToTotalRatio).toBeCloseTo(0.2);
+    });
+  });
+
+  describe('grouped text model mapping', () => {
+    it('uses aggregated audit info when it matches the grouped base name', () => {
+      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
+
+      fixture.detectChanges();
+
+      const variation: UnifiedModelData = {
+        name: 'koboldcpp/deepseek-ai/DeepSeek-V3',
+        workerCount: 3,
+        usageStats: {
+          day: 100,
+          month: 1000,
+          total: 2000,
+        },
+      };
+
+      const groupedModel: GroupedTextModel = {
+        name: 'deepseek-ai/DeepSeek-V3',
+        isGrouped: true,
+        hasAggregatedStats: true,
+        variations: [variation],
+        availableBackends: ['koboldcpp'],
+        availableAuthors: ['deepseek-ai'],
+        workerCount: 3,
+        usageStats: {
+          day: 100,
+          month: 1000,
+          total: 2000,
+        },
+      };
+
+      component.category.set('text_generation');
+      component.models.set([groupedModel]);
+
+      const groupedAuditInfo = new ModelAuditInfoBuilder()
+        .withName('deepseek-ai/DeepSeek-V3')
+        .withCategory('text_generation' as MODEL_REFERENCE_CATEGORY)
+        .withUsage(4202, 55515, 241645)
+        .withUsagePercentage(12.5)
+        .withWorkerCount(11)
+        .withDownloads(4, ['huggingface.co'])
+        .withBaseline('deepseek')
+        .build();
+
+      const auditResponse = new CategoryAuditResponseBuilder()
+        .withCategory('text_generation' as MODEL_REFERENCE_CATEGORY)
+        .withCategoryTotalUsage(60000)
+        .withModels([groupedAuditInfo])
+        .build();
+
+      component.auditResponse.set(auditResponse);
+      component.degradedMode.set(false);
+
+      const metrics = component.modelsWithAuditMetrics();
+      expect(metrics[0].auditInfo).toEqual(groupedAuditInfo);
+      expect(component.getUsageMonth(metrics[0])).toBe(55515);
+      expect(metrics[0].usagePercentage).toBeCloseTo(12.5);
+      expect(metrics[0].fileHosts).toEqual(['huggingface.co']);
     });
   });
 
