@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, vi } from 'vitest';
 
-const noop = () => { };
+const noop = (): void => undefined;
 
 // Polyfill `window.matchMedia` for services (e.g., ThemeService) that rely on it.
 if (!window.matchMedia) {
