@@ -9,6 +9,7 @@ import {
   parseTextModelName,
   getBaseModelName,
   getNameWithoutBackend,
+  TextBackend,
   type ParsedTextModelName,
 } from './text-model-name';
 
@@ -323,9 +324,19 @@ export function mergeMultipleBackendStatistics<T extends { name: string }>(
 
         // Create a UnifiedModelData entry for each backend variation
         for (const variation of Object.values(stats.backend_variations)) {
+          // Determine the display name based on backend type
+          // For 'canonical' backend, keep the original name (no prefix)
+          // For other backends (aphrodite, koboldcpp), prefix with backend name
+          const isKnownBackend =
+            variation.backend === TextBackend.Aphrodite ||
+            variation.backend === TextBackend.KoboldCpp;
+          const displayName = isKnownBackend
+            ? `${variation.backend}/${variation.variant_name}`
+            : variation.variant_name;
+
           const backendVariation: UnifiedModelData = {
             ...model, // Copy reference data
-            name: variation.variant_name, // Use the backend-prefixed name
+            name: displayName,
             workerCount: variation.worker_count ?? undefined,
             queuedJobs: variation.queued ?? undefined,
             performance: variation.performance ?? undefined,
@@ -333,12 +344,19 @@ export function mergeMultipleBackendStatistics<T extends { name: string }>(
             queued: variation.queued ?? undefined,
           };
 
-          // Parse the backend-prefixed name
+          // Parse the variant name and set backend explicitly from the variation data
           if (options?.parseTextModelNames) {
-            backendVariation.parsedName = parseTextModelName(variation.variant_name);
+            const parsed = parseTextModelName(variation.variant_name);
+            // Set backend from the variation's backend field (more reliable than parsing)
+            if (isKnownBackend) {
+              parsed.backend = variation.backend as TextBackend;
+            }
+            // Update fullName to include backend prefix for display consistency
+            parsed.fullName = displayName;
+            backendVariation.parsedName = parsed;
           }
 
-          // Add usage stats if available
+          // Add usage stats if available - these are the INDIVIDUAL backend stats
           if (
             variation.usage_day !== undefined ||
             variation.usage_month !== undefined ||

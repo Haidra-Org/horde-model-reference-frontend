@@ -1067,7 +1067,7 @@ describe('Unified Model Utilities', () => {
               },
               koboldcpp: {
                 backend: 'koboldcpp',
-                variant_name: 'koboldcpp/Qwen3-8B',
+                variant_name: 'Qwen/Qwen3-8B',
                 worker_count: 1,
                 performance: 50.5,
                 queued: 0,
@@ -1089,10 +1089,13 @@ describe('Unified Model Utilities', () => {
         expect(result.length).toBe(2);
 
         const canonicalEntry = result.find((m) => m.name === 'Qwen/Qwen3-8B');
-        const koboldcppEntry = result.find((m) => m.name === 'koboldcpp/Qwen3-8B');
+        const koboldcppEntry = result.find((m) => m.name === 'koboldcpp/Qwen/Qwen3-8B');
 
         expect(canonicalEntry).toBeDefined();
         expect(koboldcppEntry).toBeDefined();
+
+        // Verify backend is set on parsedName for koboldcpp
+        expect(koboldcppEntry?.parsedName?.backend).toBe('koboldcpp');
 
         // Verify no duplicate canonical entries
         const canonicalEntries = result.filter((m) => m.name === 'Qwen/Qwen3-8B');
