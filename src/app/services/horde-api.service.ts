@@ -11,49 +11,16 @@ import {
 } from '../models/horde-api.models';
 import { NotificationService } from './notification.service';
 import { environment } from '../../environments/environment';
+import type { BackendStatisticsResponse } from '../models/api.models';
 
-/**
- * Backend response types for model statistics
- */
-export interface BackendWorkerSummary {
-  id: string;
-  name: string;
-  performance: string;
-  online: boolean;
-  trusted: boolean;
-  uptime: number;
-}
-
-export interface BackendUsageStats {
-  day: number;
-  month: number;
-  total: number;
-}
-
-export interface BackendVariation {
-  backend: string;
-  variant_name: string;
-  worker_count?: number;
-  performance?: number | null;
-  queued?: number | null;
-  eta?: number | null;
-  usage_day?: number;
-  usage_month?: number;
-  usage_total?: number;
-}
-
-export interface BackendCombinedModelStatistics {
-  worker_count: number;
-  queued_jobs: number | null;
-  performance: number | null;
-  eta: number | null;
-  queued: number | null;
-  usage_stats: BackendUsageStats | null;
-  worker_summaries: Record<string, BackendWorkerSummary> | null;
-  backend_variations?: Record<string, BackendVariation> | null;
-}
-
-export type BackendStatisticsResponse = Record<string, BackendCombinedModelStatistics>;
+// Re-export backend statistics types from canonical location
+export type {
+  BackendCombinedModelStatistics,
+  BackendStatisticsResponse,
+  BackendVariation,
+  HordeWorkerSummary,
+  HordeModelUsageStats as BackendUsageStats,
+} from '../models/api.models';
 
 export type HordeStatsState = 'idle' | 'loading' | 'success' | 'error';
 

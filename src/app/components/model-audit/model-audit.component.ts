@@ -37,7 +37,7 @@ import {
   createGroupedTextModels,
   GroupedTextModel,
   isGroupedTextModel,
-  mergeMultipleModels,
+  mergeMultipleBackendStatistics,
 } from '../../models/unified-model';
 import { HordeModelUsageStats } from '../../models/horde-api.models';
 import { ModelAuditInfo, DeletionRiskFlags, CategoryAuditResponse } from '../../api-client';
@@ -904,10 +904,15 @@ export class ModelAuditComponent implements OnInit {
   private fetchModelsForCategory$(category: string): Observable<void> {
     const isTextGen = category === 'text_generation';
 
-    return this.api.getLegacyModelsAsArray(category).pipe(
-      map((referenceModels) => {
+    const reference$ = this.api.getLegacyModelsAsArray(category);
+    const stats$ = isTextGen
+      ? this.api.getModelsWithStats(category, true).pipe(catchError(() => of(null)))
+      : of(null);
+
+    return combineLatest([reference$, stats$]).pipe(
+      map(([referenceModels, statsResponse]) => {
         const canonical: UnifiedModelData[] = isTextGen
-          ? mergeMultipleModels(referenceModels, undefined, undefined, {
+          ? mergeMultipleBackendStatistics(referenceModels, statsResponse ?? undefined, {
               parseTextModelNames: true,
             })
           : (referenceModels.map((model) => ({ ...model })) as UnifiedModelData[]);

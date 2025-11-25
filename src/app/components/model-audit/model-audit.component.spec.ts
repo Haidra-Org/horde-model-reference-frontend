@@ -28,6 +28,7 @@ type Spy<T> = T extends (...args: infer P) => infer R
 interface ModelReferenceApiServiceSpy {
   getLegacyModelsAsArray: Spy<ModelReferenceApiService['getLegacyModelsAsArray']>;
   getCategoryAudit: Spy<ModelReferenceApiService['getCategoryAudit']>;
+  getModelsWithStats: Spy<ModelReferenceApiService['getModelsWithStats']>;
 }
 
 interface NotificationServiceSpy {
@@ -207,6 +208,7 @@ describe('ModelAuditComponent', () => {
     apiServiceSpy = {
       getLegacyModelsAsArray: vi.fn(),
       getCategoryAudit: vi.fn(),
+      getModelsWithStats: vi.fn(),
     };
     notificationServiceSpy = {
       error: vi.fn(),
@@ -240,6 +242,7 @@ describe('ModelAuditComponent', () => {
 
     apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
     apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
+    apiService.getModelsWithStats.mockReturnValue(of(null)); // Default: no stats for non-text categories
 
     fixture = TestBed.createComponent(ModelAuditComponent);
     component = fixture.componentInstance;

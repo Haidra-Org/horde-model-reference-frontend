@@ -33,7 +33,12 @@ import {
   CategoryStatistics,
   CategoryAuditResponse,
 } from '../api-client';
-import { BackendCapabilities, LegacyModelsResponse, LegacyRecordUnion } from '../models/api.models';
+import {
+  BackendCapabilities,
+  BackendStatisticsResponse,
+  LegacyModelsResponse,
+  LegacyRecordUnion,
+} from '../models/api.models';
 
 type LegacyRecordInputUnion =
   | LegacyStableDiffusionRecordInput
@@ -339,6 +344,32 @@ export class ModelReferenceApiService {
       .pipe(
         map(() => undefined),
         catchError(this.handleError),
+      );
+  }
+
+  /**
+   * Get models with Horde statistics including optional backend variations.
+   *
+   * @param category The category to get statistics for
+   * @param includeBackendVariations Whether to include per-backend stats for text models
+   * @returns Observable of BackendStatisticsResponse or null on error
+   */
+  getModelsWithStats(
+    category: string,
+    includeBackendVariations = false,
+  ): Observable<BackendStatisticsResponse | null> {
+    return this.statisticsService
+      .readModelsWithStats(
+        category as MODEL_REFERENCE_CATEGORY,
+        false, // include_workers
+        includeBackendVariations,
+      )
+      .pipe(
+        map((response) => response as BackendStatisticsResponse),
+        catchError((error: HttpErrorResponse) => {
+          console.warn('Failed to fetch models with stats:', error);
+          return of(null);
+        }),
       );
   }
 

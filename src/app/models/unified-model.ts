@@ -4,7 +4,7 @@ import {
   HordeModelUsageStats,
   HordeWorker,
 } from './horde-api.models';
-import type { BackendCombinedModelStatistics } from '../services/horde-api.service';
+import type { BackendCombinedModelStatistics } from './api.models';
 import {
   parseTextModelName,
   getBaseModelName,

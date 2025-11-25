@@ -90,14 +90,14 @@ export type LegacyRequirementValue = number | string | boolean | number[] | stri
 export interface BackendVariation {
   backend: string; // e.g., 'aphrodite', 'koboldcpp', 'canonical'
   variant_name: string; // Full model name as reported by Horde API
-  worker_count: number;
+  worker_count?: number;
   performance?: number | null;
   queued?: number | null;
   queued_jobs?: number | null;
   eta?: number | null;
-  usage_day: number;
-  usage_month: number;
-  usage_total: number;
+  usage_day?: number;
+  usage_month?: number;
+  usage_total?: number;
 }
 
 export interface HordeModelUsageStats {
