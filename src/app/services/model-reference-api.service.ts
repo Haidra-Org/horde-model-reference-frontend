@@ -400,17 +400,20 @@ export class ModelReferenceApiService {
    * @param category The category to audit
    * @param groupTextModels Whether to group text models by base name (strips quantization)
    * @param preset Optional preset filter to apply (deletion_candidates, zero_usage, etc.)
+   * @param includeBackendVariations Whether to include per-backend breakdown for text models (ungrouped view)
    * @returns Observable of CategoryAuditResponse or null on error
    */
   getCategoryAudit(
     category: string,
     groupTextModels = false,
     preset?: string,
+    includeBackendVariations = false,
   ): Observable<CategoryAuditResponse | null> {
     return this.auditService
       .readV2CategoryAudit(
         category as MODEL_REFERENCE_CATEGORY,
         groupTextModels,
+        includeBackendVariations,
         preset,
         undefined,
         0,

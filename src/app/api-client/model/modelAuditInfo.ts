@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { BackendAuditVariation } from './backendAuditVariation';
 import { DeletionRiskFlags } from './deletionRiskFlags';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 import { UsageTrend } from './usageTrend';
@@ -78,7 +79,11 @@ export interface ModelAuditInfo {
    */
   download_hosts?: Array<string>;
   /**
-   * Determine if model is in critical state.  Critical = zero month usage AND no active workers.  Returns:     True if model meets critical criteria.
+   * Per-backend statistics for text generation models (ungrouped view).
+   */
+  backend_variations?: Array<BackendAuditVariation> | null;
+  /**
+   * Determine if model is in critical state.  For text_generation: usage_month < threshold AND worker_count < threshold For other models: zero month usage AND no active workers (original logic)  Returns:     True if model meets critical criteria.
    */
   readonly is_critical: boolean;
   /**

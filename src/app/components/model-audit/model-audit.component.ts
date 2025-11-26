@@ -8,6 +8,7 @@ import {
   DestroyRef,
   EnvironmentInjector,
 } from '@angular/core';
+import { KeyValuePipe } from '@angular/common';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +41,12 @@ import {
   mergeMultipleBackendStatistics,
 } from '../../models/unified-model';
 import { HordeModelUsageStats } from '../../models/horde-api.models';
-import { ModelAuditInfo, DeletionRiskFlags, CategoryAuditResponse } from '../../api-client';
+import {
+  ModelAuditInfo,
+  DeletionRiskFlags,
+  CategoryAuditResponse,
+  BackendAuditVariation,
+} from '../../api-client';
 import { BASELINE_SHORTHAND_MAP, RECORD_DISPLAY_MAP } from '../../models/maps';
 import {
   getModelFileHosts,
@@ -98,7 +104,7 @@ type SortDirection = 'asc' | 'desc' | null;
 
 @Component({
   selector: 'app-model-audit',
-  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule],
+  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule, KeyValuePipe],
   templateUrl: './model-audit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -149,6 +155,10 @@ export class ModelAuditComponent implements OnInit {
 
   // Row expansion for grouped models
   readonly expandedRows = signal<Set<string>>(new Set());
+
+  // View mode toggle for text models
+  // When true, shows ungrouped view with per-backend breakdown
+  readonly showUngroupedView = signal(false);
 
   // Header, filter, and help collapsed state
   readonly headerCollapsed = signal(false);
@@ -274,8 +284,14 @@ export class ModelAuditComponent implements OnInit {
     const auditResp = this.auditResponse();
     const models = this.models();
     const categoryTotal = this.categoryTotalUsage();
+    const showUngrouped = this.showUngroupedView();
 
     if (auditResp && !this.degradedMode()) {
+      // In ungrouped view mode, use audit response models directly with backend_variations
+      if (showUngrouped && this.isTextGeneration()) {
+        return this.createUngroupedMetricsFromAudit(auditResp, categoryTotal);
+      }
+
       // Backend mode: match audit data to models (including grouped models)
       return models.map((model) => {
         const isGrouped = isGroupedTextModel(model);
@@ -553,6 +569,63 @@ export class ModelAuditComponent implements OnInit {
       variations: isGrouped ? (model as GroupedTextModel).variations : undefined,
       variationCount: isGrouped ? (model as GroupedTextModel).variations.length : 0,
     };
+  }
+
+  /**
+   * Create metrics for ungrouped view from audit response
+   * Each model entry shows the model with backend_variations for per-backend breakdown
+   */
+  private createUngroupedMetricsFromAudit(
+    auditResp: CategoryAuditResponse,
+    categoryTotal: number,
+  ): ModelWithAuditMetrics[] {
+    return auditResp.models.map((auditInfo) => {
+      const fileHosts = auditInfo.download_hosts ?? [];
+      const flags = auditInfo.deletion_risk_flags;
+
+      // Create a minimal model object for the ungrouped view
+      // The actual model data comes from the audit response
+      const pseudoModel: UnifiedModelData = {
+        name: auditInfo.name,
+        workerCount: auditInfo.worker_count ?? 0,
+        usageStats: {
+          day: auditInfo.usage_day ?? 0,
+          month: auditInfo.usage_month ?? 0,
+          total: auditInfo.usage_total ?? 0,
+        },
+      };
+
+      return {
+        model: pseudoModel,
+        auditInfo,
+        name: auditInfo.name,
+        workerCount: auditInfo.worker_count ?? 0,
+        usagePercentage: auditInfo.usage_percentage_of_category ?? 0,
+        usageTrend: {
+          dayToMonthRatio: auditInfo.usage_trend?.day_to_month_ratio ?? null,
+          monthToTotalRatio: auditInfo.usage_trend?.month_to_total_ratio ?? null,
+        },
+        usageHour: auditInfo.usage_hour ?? 0,
+        usageMinute: auditInfo.usage_minute ?? 0,
+        costBenefitScore: auditInfo.cost_benefit_score ?? null,
+        nsfw: auditInfo.nsfw ?? null,
+        hasDescription: auditInfo.has_description ?? false,
+        downloadCount: auditInfo.download_count ?? 0,
+        flags: flags ?? null,
+        isCritical: auditInfo.is_critical,
+        hasWarning: auditInfo.has_warning,
+        flagCount: auditInfo.risk_score ?? 0,
+        fileHosts,
+        baseline: auditInfo.baseline ?? null,
+        sizeGB: auditInfo.size_gb ?? null,
+        // In ungrouped view, each model can have backend_variations for expandable details
+        isGrouped: false,
+        variations: undefined,
+        variationCount: auditInfo.backend_variations
+          ? Object.keys(auditInfo.backend_variations).length
+          : 0,
+      };
+    });
   }
 
   readonly availableHosts = computed(() => {
@@ -865,15 +938,18 @@ export class ModelAuditComponent implements OnInit {
       .subscribe();
 
     const preset$ = toObservable(this.selectedPresetName, { injector: this.injector });
+    const ungrouped$ = toObservable(this.showUngroupedView, { injector: this.injector });
     const auditTrigger$ = this.auditRefreshTrigger.asObservable().pipe(startWith(void 0));
 
-    combineLatest([category$, preset$, auditTrigger$])
+    combineLatest([category$, preset$, ungrouped$, auditTrigger$])
       .pipe(
         tap(() => {
           this.auditLoading.set(true);
           this.degradedMode.set(false);
         }),
-        switchMap(([category, presetName]) => this.fetchAuditForCategory$(category, presetName)),
+        switchMap(([category, presetName, showUngrouped]) =>
+          this.fetchAuditForCategory$(category, presetName, showUngrouped),
+        ),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((audit) => {
@@ -913,8 +989,8 @@ export class ModelAuditComponent implements OnInit {
       map(([referenceModels, statsResponse]) => {
         const canonical: UnifiedModelData[] = isTextGen
           ? mergeMultipleBackendStatistics(referenceModels, statsResponse ?? undefined, {
-              parseTextModelNames: true,
-            })
+            parseTextModelNames: true,
+          })
           : (referenceModels.map((model) => ({ ...model })) as UnifiedModelData[]);
 
         const displayModels: (UnifiedModelData | GroupedTextModel)[] = isTextGen
@@ -939,12 +1015,16 @@ export class ModelAuditComponent implements OnInit {
   private fetchAuditForCategory$(
     category: string,
     presetName: string,
+    showUngroupedView: boolean,
   ): Observable<CategoryAuditResponse | null> {
-    const groupModels = category === 'text_generation';
+    const isTextGen = category === 'text_generation';
+    // When ungrouped view is enabled for text models, we don't group but request backend variations
+    const groupModels = isTextGen && !showUngroupedView;
+    const includeBackendVariations = isTextGen && showUngroupedView;
     const preset = PRESET_NAME_TO_BACKEND[presetName];
 
     return this.api
-      .getCategoryAudit(category, groupModels, preset)
+      .getCategoryAudit(category, groupModels, preset, includeBackendVariations)
       .pipe(catchError(() => of(null)));
   }
 
@@ -1036,6 +1116,16 @@ export class ModelAuditComponent implements OnInit {
 
   isRowExpanded(modelName: string): boolean {
     return this.expandedRows().has(modelName);
+  }
+
+  /**
+   * Toggle between grouped and ungrouped view for text models
+   * Ungrouped view shows per-backend breakdown (aphrodite, koboldcpp)
+   */
+  toggleUngroupedView(): void {
+    this.showUngroupedView.update((v) => !v);
+    // Clear expanded rows when toggling view mode
+    this.expandedRows.set(new Set());
   }
 
   // Preset selection (filters are now server-side)

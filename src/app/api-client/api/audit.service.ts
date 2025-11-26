@@ -48,9 +48,10 @@ export class AuditService extends BaseService {
 
   /**
    * Get audit analysis for a model category
-   * Get comprehensive audit analysis for a model reference category.  Analyzes all models in the category to identify deletion risks including: - Missing or invalid download URLs - Non-preferred file hosts - Missing required fields (description, baseline) - Zero active workers - Low or no recent usage  Returns both per-model audit information and aggregate summary statistics. Audit results are cached (default 300s TTL) and automatically invalidated when model data changes.  Args:     model_category_name: The model reference category to audit.     manager: The model reference manager (injected).     horde_api: The Horde API integration (injected).     audit_cache: The audit cache (injected).     group_text_models: Group text models by base name (strips quantization info).     preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).     limit: Maximum number of models to return (None &#x3D; all).     offset: Number of models to skip (for pagination).  Returns:     CategoryAuditResponse with per-model audit info and summary.  Raises:     HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.
+   * Get comprehensive audit analysis for a model reference category.  Analyzes all models in the category to identify deletion risks including: - Missing or invalid download URLs - Non-preferred file hosts - Missing required fields (description, baseline) - Zero active workers - Low or no recent usage  Returns both per-model audit information and aggregate summary statistics. Audit results are cached (default 300s TTL) and automatically invalidated when model data changes.  Args:     model_category_name: The model reference category to audit.     manager: The model reference manager (injected).     horde_api: The Horde API integration (injected).     audit_cache: The audit cache (injected).     group_text_models: Group text models by base name (strips quantization info).     include_backend_variations: Include per-backend breakdown for text models (ungrouped view).     preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).     limit: Maximum number of models to return (None &#x3D; all).     offset: Number of models to skip (for pagination).  Returns:     CategoryAuditResponse with per-model audit info and summary.  Raises:     HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.
    * @param modelCategoryName
    * @param groupTextModels Group text models by base name (strips quantization)
+   * @param includeBackendVariations Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models=False.
    * @param preset Apply preset filter to results. Valid presets: deletion_candidates, zero_usage, no_workers, missing_data, host_issues, critical, low_usage
    * @param limit Maximum number of models to return (None &#x3D; all)
    * @param offset Number of models to skip (for pagination)
@@ -60,6 +61,7 @@ export class AuditService extends BaseService {
   public readV2CategoryAudit(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
+    includeBackendVariations?: boolean,
     preset?: string,
     limit?: number,
     offset?: number,
@@ -74,6 +76,7 @@ export class AuditService extends BaseService {
   public readV2CategoryAudit(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
+    includeBackendVariations?: boolean,
     preset?: string,
     limit?: number,
     offset?: number,
@@ -88,6 +91,7 @@ export class AuditService extends BaseService {
   public readV2CategoryAudit(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
+    includeBackendVariations?: boolean,
     preset?: string,
     limit?: number,
     offset?: number,
@@ -102,6 +106,7 @@ export class AuditService extends BaseService {
   public readV2CategoryAudit(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
+    includeBackendVariations?: boolean,
     preset?: string,
     limit?: number,
     offset?: number,
@@ -124,6 +129,11 @@ export class AuditService extends BaseService {
       localVarQueryParameters,
       <any>groupTextModels,
       'group_text_models',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>includeBackendVariations,
+      'include_backend_variations',
     );
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>preset, 'preset');
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
