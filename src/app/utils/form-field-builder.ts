@@ -295,6 +295,7 @@ export class FormFieldBuilder {
       colorVariant?: 'primary' | 'success' | 'info' | 'warning';
       icon?: string;
       priority?: FormFieldPriority;
+      showWhen?: () => boolean;
     },
   ): FormFieldGroup {
     // Map priority to colorVariant and defaultCollapsed if priority is specified
@@ -332,6 +333,7 @@ export class FormFieldBuilder {
       colorVariant,
       icon: options?.icon,
       priority: options?.priority,
+      showWhen: options?.showWhen,
     };
   }
 }
@@ -340,7 +342,7 @@ export class FormFieldBuilder {
  * Base builder class with common fluent methods
  */
 abstract class BaseFieldBuilder<T extends FormFieldConfig> {
-  constructor(protected config: T) {}
+  constructor(protected config: T) { }
 
   placeholder(text: string): this {
     this.config.placeholder = text;
@@ -412,9 +414,9 @@ abstract class BaseFieldBuilder<T extends FormFieldConfig> {
   }
 }
 
-class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> {}
+class TextFieldBuilder extends BaseFieldBuilder<TextFieldConfig> { }
 
-class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> {}
+class NumberFieldBuilder extends BaseFieldBuilder<NumberFieldConfig> { }
 
 class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   rows(count: number): this {
@@ -423,7 +425,7 @@ class TextareaFieldBuilder extends BaseFieldBuilder<TextareaFieldConfig> {
   }
 }
 
-class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> {}
+class SelectFieldBuilder extends BaseFieldBuilder<SelectFieldConfig> { }
 
 class CheckboxFieldBuilder extends BaseFieldBuilder<CheckboxFieldConfig> {
   checkboxLabel(text: string): this {
@@ -452,7 +454,7 @@ class TagInputFieldBuilder extends BaseFieldBuilder<TagInputFieldConfig> {
   }
 }
 
-class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> {}
+class KeyValueFieldBuilder extends BaseFieldBuilder<KeyValueFieldConfig> { }
 
 class RequirementsFieldBuilder extends BaseFieldBuilder<RequirementsFieldConfig> {
   /**

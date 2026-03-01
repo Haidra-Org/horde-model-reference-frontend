@@ -21,6 +21,8 @@ export const KNOWN_IMAGE_GENERATION_BASELINE = {
   Flux1: 'flux_1',
   FluxSchnell: 'flux_schnell',
   FluxDev: 'flux_dev',
+  QwenImage: 'qwen_image',
+  ZImageTurbo: 'z_image_turbo',
 } as const;
 export type KNOWN_IMAGE_GENERATION_BASELINE =
   (typeof KNOWN_IMAGE_GENERATION_BASELINE)[keyof typeof KNOWN_IMAGE_GENERATION_BASELINE];

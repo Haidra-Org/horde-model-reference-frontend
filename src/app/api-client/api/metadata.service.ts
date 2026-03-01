@@ -23,13 +23,13 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
+import { CategoryLastUpdatedResponse } from '../model/categoryLastUpdatedResponse';
+// @ts-ignore
 import { CategoryMetadata } from '../model/categoryMetadata';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
-import { HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse } from '../model/hordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse';
-// @ts-ignore
-import { HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse } from '../model/hordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse';
+import { LastUpdatedResponse } from '../model/lastUpdatedResponse';
 // @ts-ignore
 import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
 
@@ -394,7 +394,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>;
+  ): Observable<CategoryLastUpdatedResponse>;
   public readLegacyCategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
@@ -404,9 +404,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<
-    HttpResponse<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>
-  >;
+  ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
   public readLegacyCategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
@@ -416,7 +414,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>>;
+  ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
   public readLegacyCategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
@@ -458,7 +456,7 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>(
+    return this.httpClient.request<CategoryLastUpdatedResponse>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -489,7 +487,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>;
+  ): Observable<CategoryLastUpdatedResponse>;
   public readLegacyCategoryLastUpdated_3(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
@@ -499,9 +497,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<
-    HttpResponse<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>
-  >;
+  ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
   public readLegacyCategoryLastUpdated_3(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
@@ -511,7 +507,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>>;
+  ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
   public readLegacyCategoryLastUpdated_3(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
@@ -553,7 +549,7 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>(
+    return this.httpClient.request<CategoryLastUpdatedResponse>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -760,7 +756,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>;
+  ): Observable<LastUpdatedResponse>;
   public readLegacyLastUpdated(
     observe?: 'response',
     reportProgress?: boolean,
@@ -769,7 +765,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpResponse<LastUpdatedResponse>>;
   public readLegacyLastUpdated(
     observe?: 'events',
     reportProgress?: boolean,
@@ -778,7 +774,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpEvent<LastUpdatedResponse>>;
   public readLegacyLastUpdated(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -813,19 +809,15 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<LastUpdatedResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -842,7 +834,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>;
+  ): Observable<LastUpdatedResponse>;
   public readLegacyLastUpdated_5(
     observe?: 'response',
     reportProgress?: boolean,
@@ -851,7 +843,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpResponse<LastUpdatedResponse>>;
   public readLegacyLastUpdated_5(
     observe?: 'events',
     reportProgress?: boolean,
@@ -860,7 +852,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpEvent<LastUpdatedResponse>>;
   public readLegacyLastUpdated_5(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -895,19 +887,15 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<LastUpdatedResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -926,7 +914,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>;
+  ): Observable<CategoryLastUpdatedResponse>;
   public readV2CategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
@@ -936,9 +924,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<
-    HttpResponse<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>
-  >;
+  ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
   public readV2CategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
@@ -948,7 +934,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>>;
+  ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
   public readV2CategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
@@ -990,7 +976,7 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v2/metadata/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>(
+    return this.httpClient.request<CategoryLastUpdatedResponse>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -1021,7 +1007,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>;
+  ): Observable<CategoryLastUpdatedResponse>;
   public readV2CategoryLastUpdated_6(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
@@ -1031,9 +1017,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<
-    HttpResponse<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>
-  >;
+  ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
   public readV2CategoryLastUpdated_6(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
@@ -1043,7 +1027,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>>;
+  ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
   public readV2CategoryLastUpdated_6(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
@@ -1085,7 +1069,7 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v2/metadata/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>(
+    return this.httpClient.request<CategoryLastUpdatedResponse>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -1292,7 +1276,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>;
+  ): Observable<LastUpdatedResponse>;
   public readV2LastUpdated(
     observe?: 'response',
     reportProgress?: boolean,
@@ -1301,7 +1285,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpResponse<LastUpdatedResponse>>;
   public readV2LastUpdated(
     observe?: 'events',
     reportProgress?: boolean,
@@ -1310,7 +1294,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpEvent<LastUpdatedResponse>>;
   public readV2LastUpdated(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1345,19 +1329,15 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v2/metadata/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<LastUpdatedResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -1374,7 +1354,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>;
+  ): Observable<LastUpdatedResponse>;
   public readV2LastUpdated_8(
     observe?: 'response',
     reportProgress?: boolean,
@@ -1383,7 +1363,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpResponse<LastUpdatedResponse>>;
   public readV2LastUpdated_8(
     observe?: 'events',
     reportProgress?: boolean,
@@ -1392,7 +1372,7 @@ export class MetadataService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpEvent<LastUpdatedResponse>>;
   public readV2LastUpdated_8(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1427,18 +1407,14 @@ export class MetadataService extends BaseService {
 
     let localVarPath = `/model_references/v2/metadata/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<LastUpdatedResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 }

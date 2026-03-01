@@ -2,36 +2,42 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import {
+  FormModelData,
+  formToLegacyApi,
+  formToV2Api,
+  legacyApiToForm,
+  v2ApiToForm,
+} from '../adapters/model-format-adapter';
+import {
   DefaultService,
   V1Service,
-  V2Service,
   V1CreateUpdateService,
+  V2Service,
   StatisticsService,
   AuditService,
   MODEL_REFERENCE_CATEGORY,
+  BackendInfo,
+  CanonicalFormat,
   ReplicateMode,
   ResponseReadV2ReferenceValue,
-  LegacyStableDiffusionRecordInput,
-  LegacyTextGenerationRecordInput,
-  LegacyClipRecordInput,
+  CategoryStatistics,
+  CategoryAuditResponse,
+  PendingChangeRecord,
+  HTTPValidationError,
+  NewModelRecord,
+  ImageGenerationModelRecordInput,
+  TextGenerationModelRecordInput,
+  ControlNetModelRecordInput,
   LegacyBlipRecordInput,
+  LegacyClipRecordInput,
+  LegacyCodeformerRecordInput,
   LegacyControlnetRecordInput,
   LegacyEsrganRecordInput,
   LegacyGfpganRecordInput,
-  LegacyCodeformerRecordInput,
-  LegacySafetyCheckerRecordInput,
   LegacyMiscellaneousRecordInput,
-  LegacyBlipRecordOutput,
-  LegacyClipRecordOutput,
-  LegacyCodeformerRecordOutput,
-  LegacyControlnetRecordOutput,
-  LegacyEsrganRecordOutput,
-  LegacyGfpganRecordOutput,
-  LegacyMiscellaneousRecordOutput,
-  LegacySafetyCheckerRecordOutput,
-  LegacyTextGenerationRecordOutput,
-  CategoryStatistics,
-  CategoryAuditResponse,
+  LegacySafetyCheckerRecordInput,
+  LegacyStableDiffusionRecordInput,
+  LegacyTextGenerationRecordInput,
 } from '../api-client';
 import {
   BackendCapabilities,
@@ -39,30 +45,8 @@ import {
   LegacyModelsResponse,
   LegacyRecordUnion,
 } from '../models/api.models';
-
-type LegacyRecordInputUnion =
-  | LegacyStableDiffusionRecordInput
-  | LegacyTextGenerationRecordInput
-  | LegacyClipRecordInput
-  | LegacyBlipRecordInput
-  | LegacyControlnetRecordInput
-  | LegacyEsrganRecordInput
-  | LegacyGfpganRecordInput
-  | LegacyCodeformerRecordInput
-  | LegacySafetyCheckerRecordInput
-  | LegacyMiscellaneousRecordInput;
-
-type LegacyRecordOutputUnion =
-  | LegacyBlipRecordOutput
-  | LegacyClipRecordOutput
-  | LegacyCodeformerRecordOutput
-  | LegacyControlnetRecordOutput
-  | LegacyEsrganRecordOutput
-  | LegacyGfpganRecordOutput
-  | LegacyMiscellaneousRecordOutput
-  | LegacySafetyCheckerRecordOutput
-  | LegacyTextGenerationRecordOutput
-  | Record<string, unknown>;
+import { ModelValidationService } from './model-validation.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -70,10 +54,12 @@ type LegacyRecordOutputUnion =
 export class ModelReferenceApiService {
   private readonly defaultService = inject(DefaultService);
   private readonly legacyService = inject(V1Service);
-  private readonly v2Service = inject(V2Service);
   private readonly v1CreateUpdateService = inject(V1CreateUpdateService);
+  private readonly v2Service = inject(V2Service);
   private readonly statisticsService = inject(StatisticsService);
   private readonly auditService = inject(AuditService);
+  private readonly validationService = inject(ModelValidationService);
+  private readonly notifications = inject(NotificationService);
 
   readonly backendCapabilities = signal<BackendCapabilities>({
     writable: false,
@@ -83,15 +69,29 @@ export class ModelReferenceApiService {
 
   detectBackendCapabilities(): Observable<BackendCapabilities> {
     return this.defaultService.replicateModeReplicateModeGet().pipe(
-      map((mode: ReplicateMode) => {
-        const isPrimary = mode === ReplicateMode.Primary;
-        const capabilities: BackendCapabilities = {
-          writable: isPrimary,
-          mode: isPrimary ? 'PRIMARY' : 'REPLICA',
-          canonicalFormat: 'legacy',
-        };
+      map((info: BackendInfo) => {
+        // Handle both old (string) and new (BackendInfo) response formats for backward compatibility
+        const isBackendInfo = typeof info === 'object' && 'canonical_format' in info;
 
-        return capabilities;
+        if (isBackendInfo) {
+          // New BackendInfo response
+          const capabilities: BackendCapabilities = {
+            writable: info.writable,
+            mode: info.replicate_mode === ReplicateMode.Primary ? 'PRIMARY' : 'REPLICA',
+            canonicalFormat: info.canonical_format === CanonicalFormat.Legacy ? 'legacy' : 'v2',
+          };
+          return capabilities;
+        } else {
+          // Fallback for old ReplicateMode-only response (backward compatibility)
+          const mode = info as unknown as ReplicateMode;
+          const isPrimary = mode === ReplicateMode.Primary;
+          const capabilities: BackendCapabilities = {
+            writable: isPrimary,
+            mode: isPrimary ? 'PRIMARY' : 'REPLICA',
+            canonicalFormat: 'legacy', // Default assumption for old backends
+          };
+          return capabilities;
+        }
       }),
       tap((capabilities) => this.backendCapabilities.set(capabilities)),
       catchError(() => {
@@ -168,168 +168,163 @@ export class ModelReferenceApiService {
     );
   }
 
-  createLegacyModel(
+  /**
+   * Format-aware model array fetch for display contexts (list, audit).
+   * Returns flat records with `name` suitable for `mergeMultipleBackendStatistics`.
+   */
+  getDisplayModelsAsArray(
     category: string,
-    modelName: string,
-    modelData: LegacyRecordInputUnion,
-  ): Observable<LegacyRecordOutputUnion> {
-    if (!this.backendCapabilities().writable) {
-      return throwError(
-        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
-      );
+  ): Observable<(LegacyRecordUnion | ResponseReadV2ReferenceValue)[]> {
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
+
+    if (canonicalFormat === 'legacy' || canonicalFormat === 'UNKNOWN') {
+      return this.getLegacyModelsAsArray(category);
     }
 
-    const basePayload = {
-      ...modelData,
-      name: modelData.name ?? modelName,
-    };
-
-    let createObservable: Observable<LegacyRecordOutputUnion>;
-
-    switch (category) {
-      case 'image_generation':
-        createObservable = this.v1CreateUpdateService.createLegacyImageGenerationModel(
-          basePayload as LegacyStableDiffusionRecordInput,
-        );
-        break;
-      case 'text_generation':
-        createObservable = this.v1CreateUpdateService.createLegacyTextGenerationModel(
-          basePayload as LegacyTextGenerationRecordInput,
-        );
-        break;
-      case 'clip':
-        createObservable = this.v1CreateUpdateService.createLegacyClipModel(
-          basePayload as LegacyClipRecordInput,
-        );
-        break;
-      case 'controlnet':
-        createObservable = this.v1CreateUpdateService.createLegacyControlnetModel(
-          basePayload as LegacyControlnetRecordInput,
-        );
-        break;
-      case 'blip':
-        createObservable = this.v1CreateUpdateService.createLegacyBlipModel(
-          basePayload as LegacyBlipRecordInput,
-        );
-        break;
-      case 'esrgan':
-        createObservable = this.v1CreateUpdateService.createLegacyEsrganModel(
-          basePayload as LegacyEsrganRecordInput,
-        );
-        break;
-      case 'gfpgan':
-        createObservable = this.v1CreateUpdateService.createLegacyGfpganModel(
-          basePayload as LegacyGfpganRecordInput,
-        );
-        break;
-      case 'codeformer':
-        createObservable = this.v1CreateUpdateService.createLegacyCodeformerModel(
-          basePayload as LegacyCodeformerRecordInput,
-        );
-        break;
-      case 'safety_checker':
-        createObservable = this.v1CreateUpdateService.createLegacySafetyCheckerModel(
-          basePayload as LegacySafetyCheckerRecordInput,
-        );
-        break;
-      case 'miscellaneous':
-        createObservable = this.v1CreateUpdateService.createLegacyMiscellaneousModel(
-          basePayload as LegacyMiscellaneousRecordInput,
-        );
-        break;
-      default:
-        return throwError(() => new Error(`Unsupported category: ${category}`));
-    }
-
-    return createObservable.pipe(
-      map((response: LegacyRecordOutputUnion) => ({
-        ...response,
-        name: response.name ?? modelName,
-      })),
-      catchError(this.handleError),
+    return this.getModelsInCategory(category).pipe(
+      map((response) => Object.values(response)),
     );
   }
 
-  updateLegacyModel(
+  /**
+   * Fetch a single model as FormModelData for form population.
+   * Returns null if the model is not found.
+   */
+  getFormModel(category: string, modelName: string): Observable<FormModelData | null> {
+    return this.getFormModelsInCategory(category).pipe(
+      map((models) => models[modelName] ?? null),
+    );
+  }
+
+  getFormModelsInCategory(category: string): Observable<Record<string, FormModelData>> {
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
+
+    if (canonicalFormat === 'legacy' || canonicalFormat === 'UNKNOWN') {
+      return this.getLegacyModelsInCategory(category).pipe(
+        map((response) => {
+          const result: Record<string, FormModelData> = {};
+          Object.entries(response).forEach(([name, data]) => {
+            result[name] = legacyApiToForm(data, categoryEnum);
+          });
+          return result;
+        }),
+      );
+    }
+
+    return this.getModelsInCategory(category).pipe(
+      map((response) => {
+        const result: Record<string, FormModelData> = {};
+        Object.entries(response).forEach(([name, data]) => {
+          result[name] = v2ApiToForm(data, categoryEnum);
+        });
+        return result;
+      }),
+    );
+  }
+
+  /**
+   * Format-native model creation. Accepts FormModelData and dispatches to the
+   * correct API version based on canonical format, using the adapter layer for
+   * type-safe payload conversion.
+   */
+  createModel(
     category: string,
     modelName: string,
-    modelData: Partial<LegacyRecordInputUnion>,
-  ): Observable<LegacyRecordOutputUnion> {
+    formData: FormModelData,
+  ): Observable<PendingChangeRecord> {
     if (!this.backendCapabilities().writable) {
       return throwError(
         () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
       );
     }
 
-    const basePayload = {
-      ...modelData,
-      name: modelName,
-    };
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
 
-    let updateObservable: Observable<LegacyRecordOutputUnion>;
+    if (canonicalFormat === 'legacy') {
+      const payload = formToLegacyApi(formData, modelName, categoryEnum);
+      return this.createViaV1Api(category, modelName, payload);
+    } else {
+      const payload = formToV2Api(formData, modelName, categoryEnum);
+      return this.createViaV2Api(category, payload);
+    }
+  }
 
-    switch (category) {
-      case 'image_generation':
-        updateObservable = this.v1CreateUpdateService.updateLegacyModel(
-          basePayload as LegacyStableDiffusionRecordInput,
-        );
-        break;
-      case 'text_generation':
-        updateObservable = this.v1CreateUpdateService.updateLegacyTextGenerationModel(
-          basePayload as LegacyTextGenerationRecordInput,
-        );
-        break;
-      case 'clip':
-        updateObservable = this.v1CreateUpdateService.updateLegacyClipModel(
-          basePayload as LegacyClipRecordInput,
-        );
-        break;
-      case 'controlnet':
-        updateObservable = this.v1CreateUpdateService.updateLegacyControlnetModel(
-          basePayload as LegacyControlnetRecordInput,
-        );
-        break;
-      case 'blip':
-        updateObservable = this.v1CreateUpdateService.updateLegacyBlipModel(
-          basePayload as LegacyBlipRecordInput,
-        );
-        break;
-      case 'esrgan':
-        updateObservable = this.v1CreateUpdateService.updateLegacyEsrganModel(
-          basePayload as LegacyEsrganRecordInput,
-        );
-        break;
-      case 'gfpgan':
-        updateObservable = this.v1CreateUpdateService.updateLegacyGfpganModel(
-          basePayload as LegacyGfpganRecordInput,
-        );
-        break;
-      case 'codeformer':
-        updateObservable = this.v1CreateUpdateService.updateLegacyCodeformerModel(
-          basePayload as LegacyCodeformerRecordInput,
-        );
-        break;
-      case 'safety_checker':
-        updateObservable = this.v1CreateUpdateService.updateLegacySafetyCheckerModel(
-          basePayload as LegacySafetyCheckerRecordInput,
-        );
-        break;
-      case 'miscellaneous':
-        updateObservable = this.v1CreateUpdateService.updateLegacyMiscellaneousModel(
-          basePayload as LegacyMiscellaneousRecordInput,
-        );
-        break;
-      default:
-        return throwError(() => new Error(`Unsupported category: ${category}`));
+  /**
+   * Format-native model update. Accepts FormModelData and dispatches to the
+   * correct API version based on canonical format.
+   */
+  updateModel(
+    category: string,
+    modelName: string,
+    formData: FormModelData,
+  ): Observable<PendingChangeRecord> {
+    if (!this.backendCapabilities().writable) {
+      return throwError(
+        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
+      );
     }
 
-    return updateObservable.pipe(
-      map((response: LegacyRecordOutputUnion) => ({
-        ...response,
-        name: response.name ?? modelName,
-      })),
-      catchError(this.handleError),
-    );
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
+
+    if (canonicalFormat === 'legacy') {
+      const payload = formToLegacyApi(formData, modelName, categoryEnum);
+      return this.updateViaV1Api(category, modelName, payload);
+    } else {
+      const payload = formToV2Api(formData, modelName, categoryEnum);
+      return this.updateViaV2Api(category, modelName, payload);
+    }
+  }
+
+  /** @deprecated Use createModel() with FormModelData instead. */
+  createLegacyModel(
+    category: string,
+    modelName: string,
+    modelData: LegacyRecordUnion,
+  ): Observable<PendingChangeRecord> {
+    if (!this.backendCapabilities().writable) {
+      return throwError(
+        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
+      );
+    }
+
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
+
+    if (canonicalFormat === 'legacy') {
+      return this.createViaV1Api(category, modelName, modelData);
+    } else {
+      const formData = legacyApiToForm(modelData, categoryEnum);
+      const payload = formToV2Api(formData, modelName, categoryEnum);
+      return this.createViaV2Api(category, payload);
+    }
+  }
+
+  /** @deprecated Use updateModel() with FormModelData instead. */
+  updateLegacyModel(
+    category: string,
+    modelName: string,
+    modelData: Partial<LegacyRecordUnion>,
+  ): Observable<PendingChangeRecord> {
+    if (!this.backendCapabilities().writable) {
+      return throwError(
+        () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
+      );
+    }
+
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
+
+    if (canonicalFormat === 'legacy') {
+      return this.updateViaV1Api(category, modelName, modelData);
+    } else {
+      const normalized: LegacyRecordUnion = { ...(modelData as LegacyRecordUnion), name: modelName };
+      const formData = legacyApiToForm(normalized, categoryEnum);
+      const payload = formToV2Api(formData, modelName, categoryEnum);
+      return this.updateViaV2Api(category, modelName, payload);
+    }
   }
 
   deleteModel(category: string, modelName: string): Observable<void> {
@@ -339,12 +334,153 @@ export class ModelReferenceApiService {
       );
     }
 
-    return this.v1CreateUpdateService
-      .deleteLegacyModel(category as MODEL_REFERENCE_CATEGORY, modelName)
-      .pipe(
+    const canonicalFormat = this.backendCapabilities().canonicalFormat;
+
+    // Route to the appropriate API based on canonical format
+    if (canonicalFormat === 'legacy') {
+      return this.v1CreateUpdateService
+        .deleteLegacyModel(category as MODEL_REFERENCE_CATEGORY, modelName)
+        .pipe(
+          map(() => undefined),
+          catchError(this.handleError),
+        );
+    } else {
+      return this.v2Service.deleteV2Model(category as MODEL_REFERENCE_CATEGORY, modelName).pipe(
         map(() => undefined),
         catchError(this.handleError),
       );
+    }
+  }
+
+  /**
+   * Create a model using the V1 (legacy) API.
+   * Routes to the category-specific endpoint based on the category.
+   *
+   * All generated Legacy*RecordInput types share `[key: string]: any` index signatures.
+   * Typing the payload with the same index signature makes it directly assignable to
+   * every generated input type without per-branch type assertions.
+   */
+  private createViaV1Api(
+    category: string,
+    modelName: string,
+    modelData: LegacyRecordUnion,
+  ): Observable<PendingChangeRecord> {
+    const payload: Record<string, unknown> & { name: string } = {
+      ...modelData,
+      name: modelData.name ?? modelName,
+    };
+
+    const svc = this.v1CreateUpdateService;
+    const categoryMethodMap: Record<string, () => Observable<unknown>> = {
+      blip: () => svc.createLegacyBlipModel(payload as LegacyBlipRecordInput),
+      clip: () => svc.createLegacyClipModel(payload as LegacyClipRecordInput),
+      codeformer: () => svc.createLegacyCodeformerModel(payload as LegacyCodeformerRecordInput),
+      controlnet: () => svc.createLegacyControlnetModel(payload as LegacyControlnetRecordInput),
+      esrgan: () => svc.createLegacyEsrganModel(payload as LegacyEsrganRecordInput),
+      gfpgan: () => svc.createLegacyGfpganModel(payload as LegacyGfpganRecordInput),
+      image_generation: () =>
+        svc.createLegacyImageGenerationModel(payload as LegacyStableDiffusionRecordInput),
+      miscellaneous: () =>
+        svc.createLegacyMiscellaneousModel(payload as LegacyMiscellaneousRecordInput),
+      safety_checker: () =>
+        svc.createLegacySafetyCheckerModel(payload as LegacySafetyCheckerRecordInput),
+      text_generation: () =>
+        svc.createLegacyTextGenerationModel(payload as LegacyTextGenerationRecordInput),
+    };
+
+    const createFn = categoryMethodMap[category];
+    if (!createFn) {
+      return throwError(() => new Error(`Unknown category: ${category}`));
+    }
+
+    return createFn().pipe(
+      map((response) => response as PendingChangeRecord),
+      catchError(this.handleError),
+    );
+  }
+
+  /**
+   * Create a model using the V2 API.
+   * Accepts a pre-built NewModelRecord payload (no legacy-to-V2 conversion here).
+   */
+  private createViaV2Api(
+    category: string,
+    payload: NewModelRecord,
+  ): Observable<PendingChangeRecord> {
+    const categoryMethodMap: Record<string, () => Observable<PendingChangeRecord>> = {
+      image_generation: () =>
+        this.v2Service.createV2ImageGenerationModel(
+          payload as ImageGenerationModelRecordInput,
+        ),
+      text_generation: () =>
+        this.v2Service.createV2TextGenerationModel(
+          payload as TextGenerationModelRecordInput,
+        ),
+      controlnet: () =>
+        this.v2Service.createV2ControlnetModel(payload as ControlNetModelRecordInput),
+    };
+
+    const createFn = categoryMethodMap[category];
+    if (createFn) {
+      return createFn().pipe(catchError(this.handleError));
+    }
+
+    return this.v2Service
+      .createV2Model(category as MODEL_REFERENCE_CATEGORY, payload)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Update a model using the V1 (legacy) API.
+   * Routes to the category-specific endpoint based on the category.
+   */
+  private updateViaV1Api(
+    category: string,
+    modelName: string,
+    modelData: Partial<LegacyRecordUnion>,
+  ): Observable<PendingChangeRecord> {
+    const payload: Record<string, unknown> & { name: string } = { ...modelData, name: modelName };
+
+    const svc = this.v1CreateUpdateService;
+    const categoryMethodMap: Record<string, () => Observable<unknown>> = {
+      blip: () => svc.updateLegacyBlipModel(payload as LegacyBlipRecordInput),
+      clip: () => svc.updateLegacyClipModel(payload as LegacyClipRecordInput),
+      codeformer: () => svc.updateLegacyCodeformerModel(payload as LegacyCodeformerRecordInput),
+      controlnet: () => svc.updateLegacyControlnetModel(payload as LegacyControlnetRecordInput),
+      esrgan: () => svc.updateLegacyEsrganModel(payload as LegacyEsrganRecordInput),
+      gfpgan: () => svc.updateLegacyGfpganModel(payload as LegacyGfpganRecordInput),
+      image_generation: () => svc.updateLegacyModel(payload as LegacyStableDiffusionRecordInput),
+      miscellaneous: () =>
+        svc.updateLegacyMiscellaneousModel(payload as LegacyMiscellaneousRecordInput),
+      safety_checker: () =>
+        svc.updateLegacySafetyCheckerModel(payload as LegacySafetyCheckerRecordInput),
+      text_generation: () =>
+        svc.updateLegacyTextGenerationModel(payload as LegacyTextGenerationRecordInput),
+    };
+
+    const updateFn = categoryMethodMap[category];
+    if (!updateFn) {
+      return throwError(() => new Error(`Unknown category: ${category}`));
+    }
+
+    return updateFn().pipe(
+      map((response) => response as PendingChangeRecord),
+      catchError(this.handleError),
+    );
+  }
+
+  /**
+   * Update a model using the V2 API.
+   * Accepts a pre-built NewModelRecord payload (no legacy-to-V2 conversion here).
+   */
+  private updateViaV2Api(
+    category: string,
+    modelName: string,
+    payload: NewModelRecord,
+  ): Observable<PendingChangeRecord> {
+    return this.v2Service
+      .updateV2Model(category as MODEL_REFERENCE_CATEGORY, modelName, payload)
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -426,7 +562,7 @@ export class ModelReferenceApiService {
       );
   }
 
-  private handleError(error: HttpErrorResponse): Observable<never> {
+  private handleError = (error: HttpErrorResponse): Observable<never> => {
     let errorMessage = 'An unknown error occurred';
 
     if (error.error instanceof ErrorEvent) {
@@ -442,9 +578,20 @@ export class ModelReferenceApiService {
         case 409:
           errorMessage = `Conflict: ${error.error?.detail || 'Resource already exists'}`;
           break;
-        case 422:
+        case 422: {
+          // Handle validation errors from FastAPI
+          const validationError = error.error as HTTPValidationError;
+          if (validationError?.detail && Array.isArray(validationError.detail)) {
+            // Map errors to fields and format for display
+            this.validationService.mapServerErrors(validationError);
+            errorMessage = `Validation Error: ${this.validationService.formatServerErrors(validationError)}`;
+            // Show persistent notification for validation errors
+            this.notifications.error(errorMessage, { persistent: true });
+            return throwError(() => new Error(errorMessage));
+          }
           errorMessage = `Validation Error: ${error.error?.detail || 'Invalid data'}`;
           break;
+        }
         case 503:
           errorMessage = `Service Unavailable: ${error.error?.detail || 'Backend does not support this operation'}`;
           break;
@@ -454,5 +601,6 @@ export class ModelReferenceApiService {
     }
 
     return throwError(() => new Error(errorMessage));
-  }
+  };
+
 }

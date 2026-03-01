@@ -23,11 +23,11 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
+import { BackendInfo } from '../model/backendInfo';
+// @ts-ignore
 import { ContainsMessage } from '../model/containsMessage';
 // @ts-ignore
 import { ContainsStatus } from '../model/containsStatus';
-// @ts-ignore
-import { ReplicateMode } from '../model/replicateMode';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -204,7 +204,7 @@ export class DefaultService extends BaseService {
 
   /**
    * Replicate Mode
-   * Endpoint to get the current replication mode.
+   * Get backend configuration and capabilities.  Returns information about the backend\&#39;s replication mode, canonical format, and whether write operations are supported.  Clients should use this endpoint on startup to determine: - Whether the backend supports write operations (writable&#x3D;True) - Which API version to use for CRUD operations (based on canonical_format)  Note: For backward compatibility, this endpoint path is retained but now returns a richer BackendInfo response instead of just the ReplicateMode.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -216,7 +216,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<ReplicateMode>;
+  ): Observable<BackendInfo>;
   public replicateModeReplicateModeGet(
     observe?: 'response',
     reportProgress?: boolean,
@@ -225,7 +225,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<ReplicateMode>>;
+  ): Observable<HttpResponse<BackendInfo>>;
   public replicateModeReplicateModeGet(
     observe?: 'events',
     reportProgress?: boolean,
@@ -234,7 +234,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<ReplicateMode>>;
+  ): Observable<HttpEvent<BackendInfo>>;
   public replicateModeReplicateModeGet(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -269,7 +269,7 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/replicate_mode`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<ReplicateMode>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<BackendInfo>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),

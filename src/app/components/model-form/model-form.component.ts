@@ -15,20 +15,10 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { ModelValidationService } from '../../services/model-validation.service';
 import { LegacyRecordUnion, LegacyConfig, ModelReferenceCategory } from '../../models/api.models';
-import {
-  createDefaultRecordForCategory,
-  isLegacyStableDiffusionRecord,
-  isLegacyTextGenerationRecord,
-  isLegacyClipRecord,
-} from '../../models/legacy-type-guards';
-import {
-  validateLegacyRecord,
-  hasErrorIssues,
-  groupIssuesBySeverity,
-  ValidationIssue,
-} from '../../models/legacy-validators';
-import { applyFixedFields } from '../../models/legacy-fixed-fields.config';
+import { createDefaultRecordForCategory } from '../../models/legacy-type-guards';
+import { type ValidationIssue } from '../../models/legacy-validators';
 import {
   CommonFieldsComponent,
   CommonFieldsData,
@@ -45,6 +35,10 @@ import {
   ClipFieldsComponent,
   ClipFieldsData,
 } from '../model-fields/clip-fields/clip-fields.component';
+import {
+  ControlNetFieldsComponent,
+  ControlNetFieldsData,
+} from '../model-fields/controlnet-fields/controlnet-fields.component';
 import { ConfigFormSectionSimplifiedComponent } from '../form-fields/config-form-section/config-form-section-simplified.component';
 import {
   parseTextModelName,
@@ -53,8 +47,8 @@ import {
   extractBackends,
   TextBackend,
 } from '../../models/text-model-name';
-import { DownloadRecord } from '../../api-client';
-import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../../utils/config-converter';
+import { DownloadRecord, MODEL_REFERENCE_CATEGORY } from '../../api-client';
+import { FormModelData, formToLegacyApi, legacyApiToForm } from '../../adapters/model-format-adapter';
 import { JsonEditorComponent } from '../common/json-editor.component';
 
 @Component({
@@ -65,6 +59,7 @@ import { JsonEditorComponent } from '../common/json-editor.component';
     StableDiffusionFieldsComponent,
     TextGenerationFieldsComponent,
     ClipFieldsComponent,
+    ControlNetFieldsComponent,
     ConfigFormSectionSimplifiedComponent,
     JsonEditorComponent,
   ],
@@ -74,6 +69,7 @@ import { JsonEditorComponent } from '../common/json-editor.component';
 export class ModelFormComponent implements OnInit {
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
+  private readonly validationService = inject(ModelValidationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
@@ -96,20 +92,29 @@ export class ModelFormComponent implements OnInit {
   });
   readonly textGenerationData = signal<TextGenerationFieldsData>({});
   readonly clipData = signal<ClipFieldsData>({});
+  readonly controlnetData = signal<ControlNetFieldsData>({ controlnet_style: '' });
   // Store simplified download records for form editing
   readonly simplifiedDownloads = signal<DownloadRecord[]>([]);
   // Store legacy files array to preserve when converting back
   private readonly legacyFiles = signal<LegacyConfig['files']>([]);
   private readonly formNameValue = signal<string>('');
   private readonly jsonDataText = signal<string>('');
+  // Track original form model state for edit-mode delta computation
+  private readonly originalFormData = signal<FormModelData | null>(null);
+  private readonly initialFormData = signal<FormModelData | null>(null);
+  // Preserve loaded FormModelData for format-aware round-trip
+  private readonly loadedFormModel = signal<FormModelData | null>(null);
 
   readonly isImageGeneration = computed(() => this.category() === 'image_generation');
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
   readonly isClip = computed(() => this.category() === 'clip');
+  readonly isControlnet = computed(() => this.category() === 'controlnet');
+  readonly canonicalFormat = computed(() => this.api.backendCapabilities().canonicalFormat);
 
   readonly groupedIssues = computed(() => {
     const backendIssues = this.validationIssues();
     const configErrors = this.configValidationErrors();
+    const serverErrors = this.validationService.serverErrors();
 
     // Convert config errors to ValidationIssue format
     const configIssues: ValidationIssue[] = configErrors.map((error) => ({
@@ -118,18 +123,32 @@ export class ModelFormComponent implements OnInit {
       message: error,
     }));
 
-    return groupIssuesBySeverity([...backendIssues, ...configIssues]);
+    // Convert server errors to ValidationIssue format
+    const serverIssues: ValidationIssue[] = serverErrors.map((error) => ({
+      severity: 'error' as const,
+      field: error.path,
+      message: error.message,
+    }));
+
+    return this.validationService.analyzeIssues([
+      ...backendIssues,
+      ...configIssues,
+      ...serverIssues,
+    ]);
   });
   readonly hasErrors = computed(() => {
     const backendIssues = this.validationIssues();
     const configErrors = this.configValidationErrors();
-    return hasErrorIssues(backendIssues) || configErrors.length > 0;
+    const serverErrors = this.validationService.serverErrors();
+    const analysis = this.validationService.analyzeIssues(backendIssues);
+    return analysis.hasErrors || configErrors.length > 0 || serverErrors.length > 0;
   });
 
   /**
-   * For text generation models, compute the model variations based on selected backends
+   * For text generation models, compute the model variations based on selected backends.
+   * Returns FormModelData for each variation with the appropriate name.
    */
-  readonly modelVariations = computed<{ name: string; data: LegacyRecordUnion }[]>(() => {
+  readonly modelVariations = computed<{ name: string; data: FormModelData }[]>(() => {
     if (!this.isTextGeneration()) {
       return [];
     }
@@ -140,21 +159,22 @@ export class ModelFormComponent implements OnInit {
     }
 
     const selectedBackends = this.textGenerationData().selectedBackends || [];
-    const baseModelData =
-      this.viewMode() === 'json'
-        ? this.buildModelDataFromJson(baseModelName)
-        : this.buildModelDataFromForm(baseModelName);
 
-    if (!baseModelData) {
-      return [];
+    let baseFormData: FormModelData | null;
+    if (this.viewMode() === 'json') {
+      const jsonModel = this.buildModelDataFromJson(baseModelName);
+      if (!jsonModel) return [];
+      baseFormData = legacyApiToForm(jsonModel, this.category() as MODEL_REFERENCE_CATEGORY);
+    } else {
+      baseFormData = this.buildFormModelData();
     }
 
-    const variations: { name: string; data: LegacyRecordUnion }[] = [];
+    const variations: { name: string; data: FormModelData }[] = [];
 
     // Always include base model (without backend prefix)
     variations.push({
       name: baseModelName,
-      data: { ...baseModelData, name: baseModelName },
+      data: baseFormData,
     });
 
     // Add variation for each selected backend
@@ -165,7 +185,7 @@ export class ModelFormComponent implements OnInit {
       });
       variations.push({
         name: variantName,
-        data: { ...baseModelData, name: variantName },
+        data: baseFormData,
       });
     }
 
@@ -182,15 +202,15 @@ export class ModelFormComponent implements OnInit {
     }
 
     const variations = this.modelVariations();
-    // Only show exploded variations if there are backend-prefixed models (length > 1)
     if (variations.length <= 1) {
       return null;
     }
 
-    // Get only the backend-prefixed variations (exclude base model)
+    const category = this.category() as MODEL_REFERENCE_CATEGORY;
     const explodedVariations = variations.slice(1).map((v) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { name: _name, ...jsonData } = v.data;
+      const legacyRecord = formToLegacyApi(v.data, v.name, category);
+      const { name: _name, ...jsonData } = legacyRecord;
+      void _name;
       return { name: v.name, ...jsonData };
     });
 
@@ -207,6 +227,7 @@ export class ModelFormComponent implements OnInit {
       this.stableDiffusionData();
       this.textGenerationData();
       this.clipData();
+      this.controlnetData();
       this.simplifiedDownloads();
 
       // Only sync if in JSON view mode and form exists
@@ -227,7 +248,10 @@ export class ModelFormComponent implements OnInit {
         this.initFormForEdit(modelName);
       } else {
         this.isEditMode.set(false);
-        this.initFormForCreate();
+        const nav = this.router.getCurrentNavigation();
+        const prefill = nav?.extras?.state?.['prefill'] as Record<string, unknown> | undefined;
+        const prefillName = nav?.extras?.state?.['modelName'] as string | undefined;
+        this.initFormForCreate(prefill, prefillName);
       }
     });
   }
@@ -259,7 +283,7 @@ export class ModelFormComponent implements OnInit {
     if (this.viewMode() === 'form') {
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     }
@@ -278,7 +302,7 @@ export class ModelFormComponent implements OnInit {
       const modelName = formValue.name || 'new-model';
       const modelData: LegacyRecordUnion = { name: modelName, ...jsonData };
 
-      const issues = validateLegacyRecord(modelData);
+      const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
       this.validationIssues.set(issues);
     } catch {
       this.validationIssues.set([
@@ -351,7 +375,8 @@ export class ModelFormComponent implements OnInit {
       const jsonData = JSON.parse(formValue.jsonData);
       const modelName = formValue.name || 'new-model';
       const modelData: LegacyRecordUnion = { name: modelName, ...jsonData };
-      this.populateFormFromModel(modelData);
+      const formModel = legacyApiToForm(modelData, this.category() as MODEL_REFERENCE_CATEGORY);
+      this.populateFormFromFormModel(formModel);
 
       // Restore preserved UI state
       if (this.isTextGeneration() && preservedBackends) {
@@ -365,7 +390,7 @@ export class ModelFormComponent implements OnInit {
       // Validate after a microtask to ensure all signals have propagated through child components
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     } catch {
@@ -388,32 +413,102 @@ export class ModelFormComponent implements OnInit {
     }
   }
 
-  buildModelDataFromForm(modelName: string): LegacyRecordUnion {
-    // Convert simplified downloads back to legacy config format
-    const legacyConfig = simplifiedToLegacyConfig(
-      { download: this.simplifiedDownloads() },
-      this.legacyFiles(),
-    );
-    const hasConfig =
-      (legacyConfig.download?.length ?? 0) > 0 || (legacyConfig.files?.length ?? 0) > 0;
-    const base: LegacyRecordUnion = {
-      name: modelName,
-      ...this.commonData(),
-      config: hasConfig ? legacyConfig : undefined,
-    };
+  /**
+   * Build format-agnostic FormModelData from current form signals.
+   * This is the primary data assembly method — components produce FormModelData,
+   * and adapters convert to the API-specific shape at submission time.
+   */
+  buildFormModelData(): FormModelData {
+    const category = this.category() as MODEL_REFERENCE_CATEGORY;
+    const commonData = this.commonData();
+    const downloads = this.simplifiedDownloads();
+    const legacyFiles = this.legacyFiles() ?? [];
 
+    let categoryData: FormModelData['categoryData'];
     if (this.isImageGeneration()) {
-      return { ...base, ...this.stableDiffusionData() };
+      categoryData = { kind: 'image_generation', data: this.stableDiffusionData() };
     } else if (this.isTextGeneration()) {
-      // Exclude selectedBackends from the model data
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { selectedBackends: _selectedBackends, ...textGenData } = this.textGenerationData();
-      return { ...base, ...textGenData };
+      categoryData = { kind: 'text_generation', data: this.textGenerationData() };
     } else if (this.isClip()) {
-      return { ...base, ...this.clipData() };
+      categoryData = { kind: 'clip', data: this.clipData() };
+    } else if (this.isControlnet()) {
+      categoryData = { kind: 'controlnet', data: this.controlnetData() };
+    } else {
+      categoryData = { kind: 'generic', data: null };
     }
 
-    return base;
+    // Preserve V2 fields from loaded model when editing in V2 mode
+    const loaded = this.loadedFormModel();
+    const v2Fields = loaded?.v2Fields ?? null;
+    // Sync model_classification and finetune_series back from common fields if they were edited
+    const resolvedV2Fields = v2Fields
+      ? {
+        ...v2Fields,
+        modelClassification: commonData.modelClassification ?? v2Fields.modelClassification,
+        finetuneSeries: commonData.finetuneSeries ?? v2Fields.finetuneSeries,
+      }
+      : null;
+
+    // Ensure record_type is set for V2 round-trip
+    void category;
+
+    return {
+      commonData,
+      categoryData,
+      downloads,
+      legacyFiles,
+      v2Fields: resolvedV2Fields,
+    };
+  }
+
+  /**
+   * Build a legacy-format record from form signals.
+   * Used for JSON view serialization and legacy validation.
+   */
+  buildModelDataFromForm(modelName: string): LegacyRecordUnion {
+    const formData = this.buildFormModelData();
+    return formToLegacyApi(formData, modelName, this.category() as MODEL_REFERENCE_CATEGORY);
+  }
+
+  /**
+   * Build an edit delta by comparing FormModelData snapshots.
+   * Only fields that changed between initial and current form state are included
+   * in the resulting FormModelData, preventing phantom diffs from form defaults.
+   */
+  private buildFormEditDelta(
+    original: FormModelData,
+    initialForm: FormModelData,
+    currentForm: FormModelData,
+  ): FormModelData {
+    const result = structuredClone(original);
+
+    // Compare common data fields individually
+    for (const [key, currentVal] of Object.entries(currentForm.commonData)) {
+      const initialVal = initialForm.commonData[key as keyof CommonFieldsData];
+      if (JSON.stringify(currentVal) !== JSON.stringify(initialVal)) {
+        Object.assign(result.commonData, { [key]: currentVal });
+      }
+    }
+
+    // Compare downloads
+    if (JSON.stringify(currentForm.downloads) !== JSON.stringify(initialForm.downloads)) {
+      result.downloads = currentForm.downloads;
+    }
+
+    // Compare legacy files
+    if (JSON.stringify(currentForm.legacyFiles) !== JSON.stringify(initialForm.legacyFiles)) {
+      result.legacyFiles = currentForm.legacyFiles;
+    }
+
+    // Compare category data
+    if (JSON.stringify(currentForm.categoryData) !== JSON.stringify(initialForm.categoryData)) {
+      result.categoryData = currentForm.categoryData;
+    }
+
+    // Always use current V2 fields
+    result.v2Fields = currentForm.v2Fields;
+
+    return result;
   }
 
   private setupFormValueTracking(): void {
@@ -435,70 +530,13 @@ export class ModelFormComponent implements OnInit {
       .subscribe((value) => this.jsonDataText.set((value ?? '') as string));
   }
 
-  populateFormFromModel(model: LegacyRecordUnion): void {
-    const common: CommonFieldsData = {
-      description: model.description,
-      type: model.type,
-      version: model.version,
-      style: model.style,
-      nsfw: model.nsfw ?? false,
-      download_all: model.download_all,
-      available: model.available,
-      features_not_supported: model.features_not_supported,
-    };
-    this.commonData.set(common);
-
-    // Convert legacy config to simplified downloads for editing
-    if (model.config) {
-      const simplified = legacyConfigToSimplified(model.config);
-      this.simplifiedDownloads.set(simplified.download);
-      // Preserve legacy files array (usually empty in new format)
-      this.legacyFiles.set(model.config.files || []);
-    } else {
-      this.simplifiedDownloads.set([]);
-      this.legacyFiles.set([]);
-    }
-
-    if (this.isImageGeneration() && isLegacyStableDiffusionRecord(model)) {
-      const sdData: StableDiffusionFieldsData = {
-        inpainting: model.inpainting,
-        baseline: model.baseline,
-        tags: model.tags,
-        showcases: model.showcases,
-        min_bridge_version: model.min_bridge_version,
-        trigger: model.trigger,
-        homepage: model.homepage,
-        size_on_disk_bytes: model.size_on_disk_bytes,
-        optimization: model.optimization,
-        requirements: model.requirements,
-      };
-      this.stableDiffusionData.set(sdData);
-    } else if (this.isTextGeneration() && isLegacyTextGenerationRecord(model)) {
-      const tgData: TextGenerationFieldsData = {
-        parameters: model.parameters,
-        model_name: model.model_name,
-        baseline: model.baseline,
-        display_name: model.display_name,
-        url: model.url,
-        tags: model.tags,
-        settings: model.settings,
-      };
-      this.textGenerationData.set(tgData);
-    } else if (this.isClip() && isLegacyClipRecord(model)) {
-      const clipData: ClipFieldsData = {
-        pretrained_name: model.pretrained_name,
-      };
-      this.clipData.set(clipData);
-    }
-  }
-
   onCommonDataChange(data: CommonFieldsData): void {
     this.commonData.set(data);
     if (this.viewMode() === 'form') {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     }
@@ -510,7 +548,7 @@ export class ModelFormComponent implements OnInit {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     }
@@ -522,7 +560,7 @@ export class ModelFormComponent implements OnInit {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     }
@@ -534,7 +572,18 @@ export class ModelFormComponent implements OnInit {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
+        this.validationIssues.set(issues);
+      }, 0);
+    }
+  }
+
+  onControlnetDataChange(data: ControlNetFieldsData): void {
+    this.controlnetData.set(data);
+    if (this.viewMode() === 'form') {
+      setTimeout(() => {
+        const modelData = this.buildModelDataFromForm(this.formNameValue());
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     }
@@ -546,7 +595,7 @@ export class ModelFormComponent implements OnInit {
       // Use setTimeout to ensure signal has propagated through all computed dependencies
       setTimeout(() => {
         const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = validateLegacyRecord(modelData);
+        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
         this.validationIssues.set(issues);
       }, 0);
     }
@@ -573,28 +622,42 @@ export class ModelFormComponent implements OnInit {
   private submitSingleModel(): void {
     const formValue = this.form.getRawValue();
     const modelName = formValue.name;
-    let modelData: LegacyRecordUnion;
+    const category = this.category() as ModelReferenceCategory;
+
+    // Build submission data — format-native when using form view, legacy for JSON view
+    let formData: FormModelData;
 
     if (this.viewMode() === 'form') {
-      modelData = this.buildModelDataFromForm(modelName);
+      const currentFormData = this.buildFormModelData();
+      const original = this.originalFormData();
+      const initial = this.initialFormData();
+
+      if (this.isEditMode() && original && initial) {
+        formData = this.buildFormEditDelta(original, initial, currentFormData);
+      } else {
+        formData = currentFormData;
+      }
     } else {
+      // JSON view: parse as legacy, convert through adapter
       try {
         const jsonData = JSON.parse(formValue.jsonData);
-        modelData = { name: modelName, ...jsonData };
+        const legacyModel: LegacyRecordUnion = { name: modelName, ...jsonData };
+        formData = legacyApiToForm(legacyModel, category as MODEL_REFERENCE_CATEGORY);
       } catch {
         this.notification.error('Invalid JSON format');
         return;
       }
     }
 
-    // Apply fixed field values for legacy compatibility
-    const category = this.category() as ModelReferenceCategory;
-    modelData = applyFixedFields(category, modelData) as LegacyRecordUnion;
+    // Validate via legacy representation (validator expects LegacyRecordUnion)
+    const legacyForValidation = formToLegacyApi(formData, modelName, category as MODEL_REFERENCE_CATEGORY);
 
-    const issues = validateLegacyRecord(modelData);
+    this.validationService.clearServerErrors();
+    const issues = this.validationService.validateRecord(legacyForValidation, this.canonicalFormat());
     this.validationIssues.set(issues);
 
-    if (hasErrorIssues(issues)) {
+    const analysis = this.validationService.analyzeIssues(issues);
+    if (analysis.hasErrors) {
       this.notification.error('Please fix validation errors before submitting');
       return;
     }
@@ -602,8 +665,8 @@ export class ModelFormComponent implements OnInit {
     this.submitting.set(true);
 
     const operation = this.isEditMode()
-      ? this.api.updateLegacyModel(this.category(), modelName, modelData)
-      : this.api.createLegacyModel(this.category(), modelName, modelData);
+      ? this.api.updateModel(this.category(), modelName, formData)
+      : this.api.createModel(this.category(), modelName, formData);
 
     operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
@@ -621,18 +684,22 @@ export class ModelFormComponent implements OnInit {
   private submitTextGenerationWithBackends(): void {
     const variations = this.modelVariations();
     const category = this.category() as ModelReferenceCategory;
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
 
-    // Validate all variations
+    this.validationService.clearServerErrors();
+
+    // Validate all variations via legacy representation
     const allIssues: ValidationIssue[] = [];
     for (const variation of variations) {
-      const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
-      const issues = validateLegacyRecord(modelData);
+      const legacyForValidation = formToLegacyApi(variation.data, variation.name, categoryEnum);
+      const issues = this.validationService.validateRecord(legacyForValidation, this.canonicalFormat());
       allIssues.push(...issues);
     }
 
     this.validationIssues.set(allIssues);
 
-    if (hasErrorIssues(allIssues)) {
+    const analysis = this.validationService.analyzeIssues(allIssues);
+    if (analysis.hasErrors) {
       this.notification.error('Please fix validation errors before submitting');
       return;
     }
@@ -652,12 +719,11 @@ export class ModelFormComponent implements OnInit {
     }
   }
 
-  private createAllVariations(variations: { name: string; data: LegacyRecordUnion }[]): void {
+  private createAllVariations(variations: { name: string; data: FormModelData }[]): void {
     const category = this.category() as ModelReferenceCategory;
-    const operations: Observable<unknown>[] = variations.map((variation) => {
-      const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
-      return this.api.createLegacyModel(category, variation.name, modelData);
-    });
+    const operations: Observable<unknown>[] = variations.map((variation) =>
+      this.api.createModel(category, variation.name, variation.data),
+    );
 
     forkJoin(operations)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -677,12 +743,11 @@ export class ModelFormComponent implements OnInit {
   }
 
   private handleEditModeBackendChanges(
-    newVariations: { name: string; data: LegacyRecordUnion }[],
+    newVariations: { name: string; data: FormModelData }[],
   ): void {
     const category = this.category() as ModelReferenceCategory;
     const baseModelName = this.form.getRawValue().name;
 
-    // First, fetch all existing models to determine what exists
     this.api
       .getLegacyModelsInCategory(category)
       .pipe(
@@ -705,13 +770,14 @@ export class ModelFormComponent implements OnInit {
 
           // Update or create variations
           for (const variation of newVariations) {
-            const modelData = applyFixedFields(category, variation.data) as LegacyRecordUnion;
             if (existingNames.has(variation.name)) {
-              // Update existing
-              operations.push(this.api.updateLegacyModel(category, variation.name, modelData));
+              operations.push(
+                this.api.updateModel(category, variation.name, variation.data),
+              );
             } else {
-              // Create new
-              operations.push(this.api.createLegacyModel(category, variation.name, modelData));
+              operations.push(
+                this.api.createModel(category, variation.name, variation.data),
+              );
             }
           }
 
@@ -730,14 +796,19 @@ export class ModelFormComponent implements OnInit {
       });
   }
 
-  private initFormForCreate(): void {
+  private initFormForCreate(
+    prefill?: Record<string, unknown>,
+    prefillName?: string,
+  ): void {
     const category = this.category() as ModelReferenceCategory;
-    const defaultRecord = createDefaultRecordForCategory(category, 'new-model');
+    const record = prefill
+      ? ({ name: prefillName ?? 'new-model', ...prefill } as LegacyRecordUnion)
+      : createDefaultRecordForCategory(category, 'new-model');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { name: _name, ...jsonData } = defaultRecord;
+    const { name: _name, ...jsonData } = record;
 
     this.form = this.fb.group({
-      name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_-]+$/)]],
+      name: [prefillName ?? '', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_-]+$/)]],
       jsonData: [JSON.stringify(jsonData, null, 2), Validators.required],
     });
 
@@ -749,7 +820,8 @@ export class ModelFormComponent implements OnInit {
 
     this.setupFormValueTracking();
 
-    this.populateFormFromModel(defaultRecord);
+    const formModel = legacyApiToForm(record, category as MODEL_REFERENCE_CATEGORY);
+    this.populateFormFromFormModel(formModel);
 
     // For text generation, select all backends by default
     if (this.isTextGeneration()) {
@@ -768,7 +840,7 @@ export class ModelFormComponent implements OnInit {
     this.loading.set(true);
 
     this.api
-      .getLegacyModelsInCategory(this.category())
+      .getFormModelsInCategory(this.category())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -788,21 +860,18 @@ export class ModelFormComponent implements OnInit {
 
   private initFormForEditSingle(
     modelName: string,
-    response: Record<string, LegacyRecordUnion>,
+    response: Record<string, FormModelData>,
   ): void {
-    const model = response[modelName];
-    if (!model) {
+    const formModel = response[modelName];
+    if (!formModel) {
       this.notification.error(`Model "${modelName}" not found`);
       this.router.navigate(['/categories', this.category()]);
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { name: _modelName, ...jsonData } = model;
-
     this.form = this.fb.group({
-      name: [{ value: model.name, disabled: true }, Validators.required],
-      jsonData: [JSON.stringify(jsonData, null, 2), Validators.required],
+      name: [{ value: modelName, disabled: true }, Validators.required],
+      jsonData: ['', Validators.required],
     });
 
     this.form.get('jsonData')?.valueChanges.subscribe(() => {
@@ -812,8 +881,14 @@ export class ModelFormComponent implements OnInit {
     });
 
     this.setupFormValueTracking();
+    this.populateFormFromFormModel(formModel);
+    this.loadedFormModel.set(formModel);
 
-    this.populateFormFromModel(model);
+    // Store FormModelData snapshots for edit-mode delta computation
+    const currentFormData = this.buildFormModelData();
+    this.originalFormData.set(structuredClone(currentFormData));
+    this.initialFormData.set(structuredClone(currentFormData));
+    this.syncFormToJsonSilent();
 
     // Delay validation to allow signals to propagate
     setTimeout(() => {
@@ -824,10 +899,9 @@ export class ModelFormComponent implements OnInit {
 
   private initFormForEditTextGeneration(
     modelName: string,
-    response: Record<string, LegacyRecordUnion>,
+    response: Record<string, FormModelData>,
   ): void {
     // Find all variations of this model (with different backend prefixes)
-    const allModels = Object.values(response);
     const parsed = parseTextModelName(modelName);
     const baseModelName = buildTextModelName({
       author: parsed.author,
@@ -836,7 +910,7 @@ export class ModelFormComponent implements OnInit {
 
     // Find all variations (models with same base name but different backends)
     const variations = getModelNameVariations(modelName);
-    const existingVariations = allModels.filter((m) => variations.includes(m.name));
+    const existingVariations = Object.keys(response).filter((name) => variations.includes(name));
 
     if (existingVariations.length === 0) {
       this.notification.error(`Model "${modelName}" not found`);
@@ -845,17 +919,20 @@ export class ModelFormComponent implements OnInit {
     }
 
     // Use the first variation as the primary model data
-    const primaryModel = existingVariations[0];
+    const primaryModelName = existingVariations.includes(modelName) ? modelName : existingVariations[0];
+    const primaryModel = response[primaryModelName];
+    if (!primaryModel) {
+      this.notification.error(`Model "${modelName}" not found`);
+      this.router.navigate(['/categories', this.category()]);
+      return;
+    }
 
     // Detect which backends currently exist
-    const existingBackends = extractBackends(existingVariations.map((v) => v.name));
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { name: _modelName, ...jsonData } = primaryModel;
+    const existingBackends = extractBackends(existingVariations);
 
     this.form = this.fb.group({
       name: [{ value: baseModelName, disabled: true }, Validators.required],
-      jsonData: [JSON.stringify(jsonData, null, 2), Validators.required],
+      jsonData: ['', Validators.required],
     });
 
     this.form.get('jsonData')?.valueChanges.subscribe(() => {
@@ -866,10 +943,12 @@ export class ModelFormComponent implements OnInit {
 
     this.setupFormValueTracking();
 
-    this.populateFormFromModel(primaryModel);
+    this.populateFormFromFormModel(primaryModel);
+    this.loadedFormModel.set(primaryModel);
+    this.originalFormData.set(structuredClone(this.buildFormModelData()));
 
     // Set the existing backends as selected
-    if (isLegacyTextGenerationRecord(primaryModel)) {
+    if (primaryModel.categoryData.kind === 'text_generation') {
       const tgData = this.textGenerationData();
       this.textGenerationData.set({
         ...tgData,
@@ -877,10 +956,34 @@ export class ModelFormComponent implements OnInit {
       });
     }
 
+    this.initialFormData.set(structuredClone(this.buildFormModelData()));
+    this.syncFormToJsonSilent();
+
     // Delay validation to allow signals to propagate
     setTimeout(() => {
       this.validateJson();
       this.loading.set(false);
     }, 0);
+  }
+
+  private populateFormFromFormModel(model: FormModelData): void {
+    const common = { ...model.commonData };
+    if (model.v2Fields) {
+      common.modelClassification = model.v2Fields.modelClassification ?? null;
+      common.finetuneSeries = model.v2Fields.finetuneSeries ?? null;
+    }
+    this.commonData.set(common);
+    this.simplifiedDownloads.set(model.downloads);
+    this.legacyFiles.set(model.legacyFiles);
+
+    if (model.categoryData.kind === 'image_generation') {
+      this.stableDiffusionData.set(model.categoryData.data);
+    } else if (model.categoryData.kind === 'text_generation') {
+      this.textGenerationData.set(model.categoryData.data);
+    } else if (model.categoryData.kind === 'clip') {
+      this.clipData.set(model.categoryData.data);
+    } else if (model.categoryData.kind === 'controlnet') {
+      this.controlnetData.set(model.categoryData.data);
+    }
   }
 }

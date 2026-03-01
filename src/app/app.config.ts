@@ -5,11 +5,12 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { Configuration, BASE_PATH } from './api-client';
 import { environment } from '../environments/environment';
 import { AuthService } from './services/auth.service';
+import { ApiKeyHttpInterceptor } from './interceptors/api-key.interceptor';
 
 import { routes } from './app.routes';
 
@@ -19,6 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: ApiKeyHttpInterceptor, multi: true },
     { provide: BASE_PATH, useValue: environment.apiBaseUrl },
     {
       provide: Configuration,

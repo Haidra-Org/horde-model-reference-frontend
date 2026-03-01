@@ -4,7 +4,9 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ModelReferenceApiService } from './model-reference-api.service';
 import { environment } from '../../environments/environment';
+import { BASE_PATH, MODEL_REFERENCE_CATEGORY, PendingChangeRecord } from '../api-client';
 import type { CategoryStatistics, CategoryAuditResponse } from '../api-client';
+import { FormModelData } from '../adapters/model-format-adapter';
 import { withDone } from '../../testing/with-done';
 
 describe('ModelReferenceApiService', () => {
@@ -19,6 +21,7 @@ describe('ModelReferenceApiService', () => {
         ModelReferenceApiService,
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: BASE_PATH, useValue: environment.apiBaseUrl },
       ],
     });
     service = TestBed.inject(ModelReferenceApiService);
@@ -281,7 +284,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         expect(req.request.method).toBe('GET');
         req.flush(mockAudit);
@@ -299,7 +302,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.error(new ProgressEvent('Network error'));
       }),
@@ -344,7 +347,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&preset=${preset}&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&preset=${preset}&offset=0`,
         );
         expect(req.request.method).toBe('GET');
         req.flush(mockAudit);
@@ -390,7 +393,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=true&preset=${preset}&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=true&include_backend_variations=false&preset=${preset}&offset=0`,
         );
         expect(req.request.method).toBe('GET');
         req.flush(mockAudit);
@@ -483,7 +486,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.flush(mockAudit);
       }),
@@ -570,7 +573,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.flush(mockAudit);
       }),
@@ -647,7 +650,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&preset=${preset}&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&preset=${preset}&offset=0`,
         );
         req.flush(mockAudit);
       }),
@@ -683,9 +686,291 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
+      }),
+    );
+  });
+
+  // ---------------------------------------------------------------------------
+  // Write-path tests for createModel / updateModel
+  // ---------------------------------------------------------------------------
+
+  function makeImageGenFormData(): FormModelData {
+    return {
+      commonData: {
+        nsfw: true,
+        description: 'Test model',
+        version: '1.0',
+        style: 'realistic',
+      },
+      categoryData: {
+        kind: 'image_generation',
+        data: {
+          inpainting: false,
+          baseline: 'stable_diffusion_xl',
+          tags: ['anime'],
+          showcases: null,
+          trigger: null,
+          homepage: null,
+          size_on_disk_bytes: null,
+          optimization: null,
+          requirements: null,
+          min_bridge_version: null,
+        },
+      },
+      downloads: [
+        {
+          file_name: 'model.safetensors',
+          file_url: 'https://example.com/model.safetensors',
+        },
+      ],
+      legacyFiles: [],
+      v2Fields: null,
+    };
+  }
+
+  function makeTextGenFormData(): FormModelData {
+    return {
+      commonData: {
+        nsfw: false,
+        description: 'A test LLM',
+        version: '2.0',
+        style: null,
+      },
+      categoryData: {
+        kind: 'text_generation',
+        data: {
+          parameters: 7000000000,
+          baseline: 'llama',
+          display_name: 'TestLLM 7B',
+          url: null,
+          tags: ['chat'],
+          settings: null,
+        },
+      },
+      downloads: [
+        { file_name: 'model.gguf', file_url: 'https://example.com/model.gguf' },
+      ],
+      legacyFiles: [],
+      v2Fields: null,
+    };
+  }
+
+  const mockPendingChange: PendingChangeRecord = {
+    change_id: 1,
+    category: MODEL_REFERENCE_CATEGORY.ImageGeneration,
+    model_name: 'test-model',
+    operation: 'create' as PendingChangeRecord['operation'],
+    requested_by: 'test',
+    requested_username: 'test-user',
+  };
+
+  describe('createModel (format-native)', () => {
+    it(
+      'should reject when backend is not writable',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: false,
+          mode: 'REPLICA',
+          canonicalFormat: 'legacy',
+        });
+
+        service.createModel('image_generation', 'test-model', makeImageGenFormData()).subscribe({
+          error: (err: Error) => {
+            expect(err.message).toContain('does not support write operations');
+            done();
+          },
+        });
+      }),
+    );
+
+    it(
+      'should route to V1 API when canonical format is legacy',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'legacy',
+        });
+
+        service
+          .createModel('image_generation', 'test-sd-model', makeImageGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/image_generation`,
+        );
+        expect(req.request.method).toBe('POST');
+
+        // Verify the payload is legacy-shaped (has name, baseline at top level)
+        const body = req.request.body;
+        expect(body.name).toBe('test-sd-model');
+        expect(body.baseline).toBe('stable_diffusion_xl');
+        expect(body.nsfw).toBe(true);
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route to V2 API when canonical format is v2',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'v2',
+        });
+
+        service
+          .createModel('image_generation', 'test-sd-model', makeImageGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v2/image_generation/create_model`,
+        );
+        expect(req.request.method).toBe('POST');
+
+        // Verify the payload is V2-shaped (has record_type)
+        const body = req.request.body;
+        expect(body.name).toBe('test-sd-model');
+        expect(body.record_type).toBe(MODEL_REFERENCE_CATEGORY.ImageGeneration);
+        expect(body.baseline).toBe('stable_diffusion_xl');
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route text_generation to correct V1 endpoint',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'legacy',
+        });
+
+        service
+          .createModel('text_generation', 'test-llm', makeTextGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/text_generation`,
+        );
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body.parameters).toBe(7000000000);
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route text_generation to correct V2 endpoint',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'v2',
+        });
+
+        service
+          .createModel('text_generation', 'test-llm', makeTextGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v2/text_generation/create_model`,
+        );
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body.parameters).toBe(7000000000);
+        expect(req.request.body.record_type).toBe(MODEL_REFERENCE_CATEGORY.TextGeneration);
+
+        req.flush(mockPendingChange);
+      }),
+    );
+  });
+
+  describe('updateModel (format-native)', () => {
+    it(
+      'should reject when backend is not writable',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: false,
+          mode: 'REPLICA',
+          canonicalFormat: 'legacy',
+        });
+
+        service.updateModel('image_generation', 'test-model', makeImageGenFormData()).subscribe({
+          error: (err: Error) => {
+            expect(err.message).toContain('does not support write operations');
+            done();
+          },
+        });
+      }),
+    );
+
+    it(
+      'should route to V1 API when canonical format is legacy',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'legacy',
+        });
+
+        service
+          .updateModel('image_generation', 'test-sd-model', makeImageGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/image_generation`,
+        );
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body.name).toBe('test-sd-model');
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route to V2 API when canonical format is v2',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'v2',
+        });
+
+        service
+          .updateModel('image_generation', 'test-sd-model', makeImageGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v2/image_generation/test-sd-model`,
+        );
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body.name).toBe('test-sd-model');
+        expect(req.request.body.record_type).toBe(MODEL_REFERENCE_CATEGORY.ImageGeneration);
+
+        req.flush(mockPendingChange);
       }),
     );
   });

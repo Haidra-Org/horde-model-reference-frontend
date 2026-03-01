@@ -6,7 +6,7 @@
  * while maintaining full legacy format compatibility in JSON view and API.
  */
 
-import { LegacyConfig, LegacyConfigDownload } from '../models/api.models';
+import { LegacyConfig, LegacyConfigDownload, LegacyConfigFile } from '../models/api.models';
 import { DownloadRecord } from '../api-client';
 
 /**
@@ -80,9 +80,17 @@ export function simplifiedToLegacyConfig(
   simplified: SimplifiedDownloadConfig | null | undefined,
   preserveFiles: LegacyConfig['files'] = [],
 ): LegacyConfig {
+  const existingFiles = (preserveFiles ?? []).filter((f): f is LegacyConfigFile => !!f && !!f.path);
+
+  // Maintain stable order: start with existing files as a baseline
+  const orderedFiles: LegacyConfigFile[] = existingFiles.map((file) => ({ ...file }));
+  const filesByPath = new Map<string, LegacyConfigFile>(
+    orderedFiles.map((file) => [file.path, file]),
+  );
+
   if (!simplified || !simplified.download || simplified.download.length === 0) {
     return {
-      files: preserveFiles || [],
+      files: orderedFiles,
       download: [],
     };
   }
@@ -92,14 +100,37 @@ export function simplifiedToLegacyConfig(
       file_name: simpleDownload.file_name || null,
       file_path: '', // Always empty string as per legacy format validation
       file_url: simpleDownload.file_url || null,
-      sha256sum: simpleDownload.sha256sum ?? undefined,
     };
+
+    // Propagate SHA256 into legacy files array (not downloads) for canonical legacy format
+    const sha = simpleDownload.sha256sum;
+    const path = simpleDownload.file_name;
+
+    if (sha && path) {
+      const existing = filesByPath.get(path);
+
+      if (existing) {
+        const updated = { ...existing, sha256sum: sha };
+        filesByPath.set(path, updated);
+        const idx = orderedFiles.findIndex((file) => file.path === path);
+        if (idx >= 0) {
+          orderedFiles[idx] = updated;
+        }
+      } else {
+        const newFile: LegacyConfigFile = {
+          path,
+          sha256sum: sha,
+        };
+        filesByPath.set(path, newFile);
+        orderedFiles.push(newFile);
+      }
+    }
 
     return legacyDownload;
   });
 
   return {
-    files: preserveFiles || [],
+    files: orderedFiles,
     download,
   };
 }

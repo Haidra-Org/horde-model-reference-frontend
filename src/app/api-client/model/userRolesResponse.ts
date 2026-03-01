@@ -9,8 +9,12 @@
  */
 
 /**
- * Response for /last_updated endpoint.
+ * Response model for the user roles endpoint.
  */
-export interface HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse {
-  last_updated: number | null;
+export interface UserRolesResponse {
+  user_id: string;
+  username: string;
+  roles: Array<string>;
+  is_approver: boolean;
+  is_requestor: boolean;
 }

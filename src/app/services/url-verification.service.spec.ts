@@ -101,4 +101,25 @@ describe('UrlVerificationService', () => {
       error: 'Network failure',
     });
   });
+
+  it('should detect CORS-blocked URLs via no-cors probe', async () => {
+    let callCount = 0;
+    const fetchSpy = vi.fn().mockImplementation((_url: string, init: RequestInit) => {
+      callCount++;
+      if (init.mode === 'cors') {
+        return Promise.reject(new TypeError('Failed to fetch'));
+      }
+      // no-cors probe returns an opaque response
+      return Promise.resolve({ type: 'opaque', ok: false, status: 0 } as Response);
+    });
+
+    (globalThis as { fetch: typeof fetch }).fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await firstValueFrom(service.verifyUrl('https://example.com/cors-blocked'));
+
+    expect(callCount).toBe(2);
+    expect(result.success).toBe(false);
+    expect(result.corsBlocked).toBe(true);
+    expect(result.error).toContain('CORS');
+  });
 });

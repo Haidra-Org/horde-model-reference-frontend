@@ -21,6 +21,7 @@ export interface ClipFieldsData {
 })
 export class ClipFieldsComponent {
   readonly data = input.required<ClipFieldsData>();
+  readonly canonicalFormat = input<string>('legacy');
   readonly dataChange = output<ClipFieldsData>();
 
   /**

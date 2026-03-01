@@ -26,7 +26,7 @@ type Spy<T> = T extends (...args: infer P) => infer R
   : never;
 
 interface ModelReferenceApiServiceSpy {
-  getLegacyModelsAsArray: Spy<ModelReferenceApiService['getLegacyModelsAsArray']>;
+  getDisplayModelsAsArray: Spy<ModelReferenceApiService['getDisplayModelsAsArray']>;
   getCategoryAudit: Spy<ModelReferenceApiService['getCategoryAudit']>;
   getModelsWithStats: Spy<ModelReferenceApiService['getModelsWithStats']>;
 }
@@ -206,7 +206,7 @@ describe('ModelAuditComponent', () => {
 
   beforeEach(async () => {
     apiServiceSpy = {
-      getLegacyModelsAsArray: vi.fn(),
+      getDisplayModelsAsArray: vi.fn(),
       getCategoryAudit: vi.fn(),
       getModelsWithStats: vi.fn(),
     };
@@ -240,7 +240,7 @@ describe('ModelAuditComponent', () => {
     apiService = apiServiceSpy;
     notificationService = notificationServiceSpy;
 
-    apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+    apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
     apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
     apiService.getModelsWithStats.mockReturnValue(of(null)); // Default: no stats for non-text categories
 
@@ -254,7 +254,7 @@ describe('ModelAuditComponent', () => {
 
   describe('initialization and data loading', () => {
     it('should load models and audit data on init', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
 
       fixture.detectChanges(); // Triggers ngOnInit
@@ -267,7 +267,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should enter degraded mode when audit API fails', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(null));
 
       fixture.detectChanges();
@@ -279,7 +279,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should handle model loading error', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(throwError(() => new Error('API error')));
+      apiService.getDisplayModelsAsArray.mockReturnValue(throwError(() => new Error('API error')));
 
       fixture.detectChanges();
 
@@ -288,14 +288,14 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should display loading state initially', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
 
       expect(component.loading()).toBe(true);
     });
 
     it('should display category in the header', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
 
       fixture.detectChanges();
@@ -307,7 +307,7 @@ describe('ModelAuditComponent', () => {
 
   describe('computed properties', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
     });
@@ -341,7 +341,7 @@ describe('ModelAuditComponent', () => {
 
   describe('degraded mode', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(null));
       fixture.detectChanges();
     });
@@ -375,7 +375,7 @@ describe('ModelAuditComponent', () => {
 
   describe('grouped text model mapping', () => {
     it('uses aggregated audit info when it matches the grouped base name', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
 
       fixture.detectChanges();
@@ -457,7 +457,7 @@ describe('ModelAuditComponent', () => {
         ],
       };
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(criticalAudit));
 
       fixture.detectChanges();
@@ -485,7 +485,7 @@ describe('ModelAuditComponent', () => {
         ],
       };
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(warningAudit));
 
       fixture.detectChanges();
@@ -497,7 +497,7 @@ describe('ModelAuditComponent', () => {
 
   describe('sorting', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
     });
@@ -542,7 +542,7 @@ describe('ModelAuditComponent', () => {
         models: [mockAuditResponse.models[0]],
       };
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(filteredAudit));
 
       fixture.detectChanges();
@@ -557,6 +557,7 @@ describe('ModelAuditComponent', () => {
         'image_generation',
         false,
         'zero_usage',
+        false,
       );
     });
   });
@@ -565,7 +566,7 @@ describe('ModelAuditComponent', () => {
     it('should discard stale responses when switching categories quickly', () => {
       const imageModelsSubject = new Subject<LegacyRecordUnion[]>();
       const textModelsSubject = new Subject<LegacyRecordUnion[]>();
-      apiService.getLegacyModelsAsArray.mockImplementation((category: string) => {
+      apiService.getDisplayModelsAsArray.mockImplementation((category: string) => {
         if (category === 'image_generation') {
           return imageModelsSubject.asObservable();
         }
@@ -725,7 +726,7 @@ describe('ModelAuditComponent', () => {
 
   describe('data staleness detection', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
     });
@@ -744,7 +745,7 @@ describe('ModelAuditComponent', () => {
 
   describe('selection functionality', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
     });
@@ -781,7 +782,7 @@ describe('ModelAuditComponent', () => {
 
   describe('usage statistics extraction', () => {
     beforeEach(() => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
     });
@@ -830,7 +831,7 @@ describe('ModelAuditComponent', () => {
         ],
       };
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(criticalAudit));
 
       fixture.detectChanges();
@@ -856,7 +857,7 @@ describe('ModelAuditComponent', () => {
         ],
       };
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(warningAudit));
 
       fixture.detectChanges();
@@ -867,7 +868,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should not apply special styling in degraded mode', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(null));
 
       fixture.detectChanges();
@@ -880,7 +881,7 @@ describe('ModelAuditComponent', () => {
 
   describe('CSV export', () => {
     it('should create CSV blob with correct content structure', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
@@ -893,7 +894,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should trigger download with correct filename', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
@@ -907,7 +908,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should include all models in CSV export', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
@@ -941,7 +942,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(specialModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(specialModels));
       apiService.getCategoryAudit.mockReturnValue(of(specialAudit));
 
       fixture.detectChanges();
@@ -969,7 +970,7 @@ describe('ModelAuditComponent', () => {
         inpainting: false,
       }));
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(largeModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(largeModels));
       apiService.getCategoryAudit.mockReturnValue(of(largeDataset));
 
       const startTime = performance.now();
@@ -996,7 +997,7 @@ describe('ModelAuditComponent', () => {
         inpainting: false,
       }));
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(largeModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(largeModels));
       apiService.getCategoryAudit.mockReturnValue(of(largeDataset));
 
       fixture.detectChanges();
@@ -1025,7 +1026,7 @@ describe('ModelAuditComponent', () => {
         inpainting: false,
       }));
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(largeModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(largeModels));
       apiService.getCategoryAudit.mockReturnValue(of(largeDataset));
 
       fixture.detectChanges();
@@ -1042,7 +1043,7 @@ describe('ModelAuditComponent', () => {
 
   describe('edge cases', () => {
     it('should handle empty models array', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of([]));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of([]));
       apiService.getCategoryAudit.mockReturnValue(
         of(
           new CategoryAuditResponseBuilder()
@@ -1073,7 +1074,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(zeroUsageAudit));
 
       fixture.detectChanges();
@@ -1092,7 +1093,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(nullFieldsAudit));
 
       fixture.detectChanges();
@@ -1104,7 +1105,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should detect staleness at exact 5 minute boundary', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
 
       fixture.detectChanges();
@@ -1168,7 +1169,7 @@ describe('ModelAuditComponent', () => {
         },
       ];
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(comboModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(comboModels));
       apiService.getCategoryAudit.mockReturnValue(of(criticalCombos));
 
       fixture.detectChanges();
@@ -1199,7 +1200,7 @@ describe('ModelAuditComponent', () => {
         },
       ];
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(modelsWithoutStats));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(modelsWithoutStats));
       apiService.getCategoryAudit.mockReturnValue(of(null));
 
       fixture.detectChanges();
@@ -1234,7 +1235,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(extremeModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(extremeModels));
       apiService.getCategoryAudit.mockReturnValue(of(extremeAudit));
 
       fixture.detectChanges();
@@ -1256,7 +1257,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(criticalAudit));
       fixture.detectChanges();
 
@@ -1277,7 +1278,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(warningAudit));
       fixture.detectChanges();
 
@@ -1286,7 +1287,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should calculate total models count', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
@@ -1294,7 +1295,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should calculate models with workers count', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
@@ -1302,7 +1303,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should calculate average usage percentage', () => {
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(mockAuditResponse));
       fixture.detectChanges();
 
@@ -1327,7 +1328,7 @@ describe('ModelAuditComponent', () => {
         ])
         .build();
 
-      apiService.getLegacyModelsAsArray.mockReturnValue(of(mockModels));
+      apiService.getDisplayModelsAsArray.mockReturnValue(of(mockModels));
       apiService.getCategoryAudit.mockReturnValue(of(flaggedAudit));
       fixture.detectChanges();
 

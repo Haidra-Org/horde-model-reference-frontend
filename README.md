@@ -68,6 +68,19 @@ npm run build
 
 Build artifacts will be stored in the `dist/` directory.
 
+### End-to-End Tests
+
+We use Playwright for browser-level coverage. The test runner automatically starts `ng serve` on a random port unless you set `E2E_PORT`/`E2E_HOST`.
+
+```bash
+npm run test:e2e
+```
+
+Useful overrides:
+
+- `E2E_API_BASE=http://localhost:19800/api npm run test:e2e` — point the mocked backend routes at a custom origin.
+- `E2E_PORT=5500 npm run test:e2e` — run against a specific dev-server port.
+
 ## Usage
 
 ### Browsing Models

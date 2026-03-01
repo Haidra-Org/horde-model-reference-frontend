@@ -4,8 +4,12 @@ export * from './default.service';
 import { DefaultService } from './default.service';
 export * from './metadata.service';
 import { MetadataService } from './metadata.service';
+export * from './pendingQueue.service';
+import { PendingQueueService } from './pendingQueue.service';
 export * from './statistics.service';
 import { StatisticsService } from './statistics.service';
+export * from './user.service';
+import { UserService } from './user.service';
 export * from './v1.service';
 import { V1Service } from './v1.service';
 export * from './v1CreateUpdate.service';
@@ -16,7 +20,9 @@ export const APIS = [
   AuditService,
   DefaultService,
   MetadataService,
+  PendingQueueService,
   StatisticsService,
+  UserService,
   V1Service,
   V1CreateUpdateService,
   V2Service,

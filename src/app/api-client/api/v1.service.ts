@@ -23,19 +23,57 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
+import { ApplyPendingChangeRequest } from '../model/applyPendingChangeRequest';
+// @ts-ignore
+import { ApplyPendingChangesRequest } from '../model/applyPendingChangesRequest';
+// @ts-ignore
+import { ApplyPendingChangesResponse } from '../model/applyPendingChangesResponse';
+// @ts-ignore
+import { ApplySingleChangeResponse } from '../model/applySingleChangeResponse';
+// @ts-ignore
+import { AuditDomain } from '../model/auditDomain';
+// @ts-ignore
+import { BatchNetChangeResponse } from '../model/batchNetChangeResponse';
+// @ts-ignore
+import { CategoryLastUpdatedResponse } from '../model/categoryLastUpdatedResponse';
+// @ts-ignore
 import { CategoryMetadata } from '../model/categoryMetadata';
 // @ts-ignore
 import { ContainsMessage } from '../model/containsMessage';
 // @ts-ignore
+import { ErrorResponse } from '../model/errorResponse';
+// @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
-import { HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse } from '../model/hordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse';
-// @ts-ignore
-import { HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse } from '../model/hordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse';
+import { LastUpdatedResponse } from '../model/lastUpdatedResponse';
 // @ts-ignore
 import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
 // @ts-ignore
 import { ModelCategoryName } from '../model/modelCategoryName';
+// @ts-ignore
+import { PendingBatchRequest } from '../model/pendingBatchRequest';
+// @ts-ignore
+import { PendingBatchResult } from '../model/pendingBatchResult';
+// @ts-ignore
+import { PendingChangeDiff } from '../model/pendingChangeDiff';
+// @ts-ignore
+import { PendingChangeDiffPage } from '../model/pendingChangeDiffPage';
+// @ts-ignore
+import { PendingChangeRecord } from '../model/pendingChangeRecord';
+// @ts-ignore
+import { PendingChangeStatus } from '../model/pendingChangeStatus';
+// @ts-ignore
+import { PendingQueueAuditBatchDetail } from '../model/pendingQueueAuditBatchDetail';
+// @ts-ignore
+import { PendingQueueAuditBatchPage } from '../model/pendingQueueAuditBatchPage';
+// @ts-ignore
+import { PendingQueueAuditCurrentResponse } from '../model/pendingQueueAuditCurrentResponse';
+// @ts-ignore
+import { PendingQueuePage } from '../model/pendingQueuePage';
+// @ts-ignore
+import { PurgePendingChangesRequest } from '../model/purgePendingChangesRequest';
+// @ts-ignore
+import { PurgePendingChangesResponse } from '../model/purgePendingChangesResponse';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -52,6 +90,2710 @@ export class V1Service extends BaseService {
     @Optional() configuration?: Configuration,
   ) {
     super(basePath, configuration);
+  }
+
+  /**
+   * Apply all approved changes in a specific batch
+   * Apply all APPROVED changes in a batch, skipping already-applied changes.
+   * @param batchId
+   * @param jobId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost(
+    batchId: number,
+    jobId?: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ApplyPendingChangesResponse>;
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost(
+    batchId: number,
+    jobId?: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ApplyPendingChangesResponse>>;
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost(
+    batchId: number,
+    jobId?: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ApplyPendingChangesResponse>>;
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost(
+    batchId: number,
+    jobId?: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>jobId, 'job_id');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/apply_batch/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ApplyPendingChangesResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Apply all approved changes in a specific batch
+   * Apply all APPROVED changes in a batch, skipping already-applied changes.
+   * @param batchId
+   * @param jobId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost_1(
+    batchId: number,
+    jobId?: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ApplyPendingChangesResponse>;
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost_1(
+    batchId: number,
+    jobId?: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ApplyPendingChangesResponse>>;
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost_1(
+    batchId: number,
+    jobId?: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ApplyPendingChangesResponse>>;
+  public applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost_1(
+    batchId: number,
+    jobId?: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling applyBatchEndpointModelReferencesV1PendingQueueApplyBatchBatchIdPost_1.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>jobId, 'job_id');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/apply_batch/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ApplyPendingChangesResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Apply an approved change to the backend
+   * Apply an approved pending change and mark it as applied.
+   * @param changeId
+   * @param applyPendingChangeRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ApplySingleChangeResponse>;
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ApplySingleChangeResponse>>;
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ApplySingleChangeResponse>>;
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeId === null || changeId === undefined) {
+      throw new Error(
+        'Required parameter changeId was null or undefined when calling applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost.',
+      );
+    }
+    if (applyPendingChangeRequest === null || applyPendingChangeRequest === undefined) {
+      throw new Error(
+        'Required parameter applyPendingChangeRequest was null or undefined when calling applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/${this.configuration.encodeParam({ name: 'changeId', value: changeId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/apply`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ApplySingleChangeResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: applyPendingChangeRequest,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Apply an approved change to the backend
+   * Apply an approved pending change and mark it as applied.
+   * @param changeId
+   * @param applyPendingChangeRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost_2(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ApplySingleChangeResponse>;
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost_2(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ApplySingleChangeResponse>>;
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost_2(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ApplySingleChangeResponse>>;
+  public applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost_2(
+    changeId: number,
+    applyPendingChangeRequest: ApplyPendingChangeRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeId === null || changeId === undefined) {
+      throw new Error(
+        'Required parameter changeId was null or undefined when calling applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost_2.',
+      );
+    }
+    if (applyPendingChangeRequest === null || applyPendingChangeRequest === undefined) {
+      throw new Error(
+        'Required parameter applyPendingChangeRequest was null or undefined when calling applyPendingChangeEndpointModelReferencesV1PendingQueueChangesChangeIdApplyPost_2.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/${this.configuration.encodeParam({ name: 'changeId', value: changeId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/apply`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ApplySingleChangeResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: applyPendingChangeRequest,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Apply multiple approved changes
+   * Apply a batch of approved pending changes sequentially.
+   * @param applyPendingChangesRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ApplyPendingChangesResponse>;
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ApplyPendingChangesResponse>>;
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ApplyPendingChangesResponse>>;
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (applyPendingChangesRequest === null || applyPendingChangesRequest === undefined) {
+      throw new Error(
+        'Required parameter applyPendingChangesRequest was null or undefined when calling applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/apply`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ApplyPendingChangesResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: applyPendingChangesRequest,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Apply multiple approved changes
+   * Apply a batch of approved pending changes sequentially.
+   * @param applyPendingChangesRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost_3(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ApplyPendingChangesResponse>;
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost_3(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ApplyPendingChangesResponse>>;
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost_3(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ApplyPendingChangesResponse>>;
+  public applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost_3(
+    applyPendingChangesRequest: ApplyPendingChangesRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (applyPendingChangesRequest === null || applyPendingChangesRequest === undefined) {
+      throw new Error(
+        'Required parameter applyPendingChangesRequest was null or undefined when calling applyPendingChangesEndpointModelReferencesV1PendingQueueApplyPost_3.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/apply`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ApplyPendingChangesResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: applyPendingChangesRequest,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get net changes for a specific batch
+   * Compute the net effect of all changes in a batch.  Analyzes all operations (add, update, delete) applied in the batch and computes the net change for each affected model. Models that are deleted and re-added with identical content show net_operation&#x3D;UNCHANGED.  Results are cached for 5 minutes to match existing audit caching patterns.
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchNetChangeResponse>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/net_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<BatchNetChangeResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get net changes for a specific batch
+   * Compute the net effect of all changes in a batch.  Analyzes all operations (add, update, delete) applied in the batch and computes the net change for each affected model. Models that are deleted and re-added with identical content show net_operation&#x3D;UNCHANGED.  Results are cached for 5 minutes to match existing audit caching patterns.
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_4(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchNetChangeResponse>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_4(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_4(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_4(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_4.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/net_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<BatchNetChangeResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List currently pending (unapproved) changes
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditCurrentResponse>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/current`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditCurrentResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List currently pending (unapproved) changes
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_5(
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditCurrentResponse>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_5(
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_5(
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_5(
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/current`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditCurrentResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get diff for a pending change
+   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.
+   * @param changeId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet(
+    changeId: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeDiff>;
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet(
+    changeId: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeDiff>>;
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet(
+    changeId: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeDiff>>;
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet(
+    changeId: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeId === null || changeId === undefined) {
+      throw new Error(
+        'Required parameter changeId was null or undefined when calling getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/${this.configuration.encodeParam({ name: 'changeId', value: changeId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/diff`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeDiff>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get diff for a pending change
+   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.
+   * @param changeId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet_6(
+    changeId: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeDiff>;
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet_6(
+    changeId: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeDiff>>;
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet_6(
+    changeId: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeDiff>>;
+  public getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet_6(
+    changeId: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeId === null || changeId === undefined) {
+      throw new Error(
+        'Required parameter changeId was null or undefined when calling getPendingChangeDiffModelReferencesV1PendingQueueChangesChangeIdDiffGet_6.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/${this.configuration.encodeParam({ name: 'changeId', value: changeId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/diff`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeDiff>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get diffs for multiple pending changes
+   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.
+   * @param changeIds
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+    changeIds: Array<number>,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeDiffPage>;
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+    changeIds: Array<number>,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeDiffPage>>;
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+    changeIds: Array<number>,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeDiffPage>>;
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+    changeIds: Array<number>,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeIds === null || changeIds === undefined) {
+      throw new Error(
+        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (changeIds) {
+      changeIds.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'change_ids',
+        );
+      });
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/diff`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeDiffPage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get diffs for multiple pending changes
+   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.
+   * @param changeIds
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+    changeIds: Array<number>,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeDiffPage>;
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+    changeIds: Array<number>,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeDiffPage>>;
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+    changeIds: Array<number>,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeDiffPage>>;
+  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+    changeIds: Array<number>,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeIds === null || changeIds === undefined) {
+      throw new Error(
+        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (changeIds) {
+      changeIds.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'change_ids',
+        );
+      });
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/diff`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeDiffPage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get details for a specific batch
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchDetail>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchDetail>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get details for a specific batch
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_8(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchDetail>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_8(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_8(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_8(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_8.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchDetail>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List pending queue entries
+   * Return a filtered, paginated list of pending queue entries.
+   * @param statuses
+   * @param categories
+   * @param batchId
+   * @param modelName
+   * @param requestedBy
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueuePage>;
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueuePage>>;
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueuePage>>;
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (statuses) {
+      statuses.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'statuses',
+        );
+      });
+    }
+    if (categories) {
+      categories.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'categories',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>batchId,
+      'batch_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>modelName,
+      'model_name',
+    );
+    if (requestedBy) {
+      requestedBy.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'requested_by',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueuePage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List pending queue entries
+   * Return a filtered, paginated list of pending queue entries.
+   * @param statuses
+   * @param categories
+   * @param batchId
+   * @param modelName
+   * @param requestedBy
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueuePage>;
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueuePage>>;
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueuePage>>;
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    batchId?: number,
+    modelName?: string,
+    requestedBy?: Array<string>,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (statuses) {
+      statuses.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'statuses',
+        );
+      });
+    }
+    if (categories) {
+      categories.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'categories',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>batchId,
+      'batch_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>modelName,
+      'model_name',
+    );
+    if (requestedBy) {
+      requestedBy.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'requested_by',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueuePage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List historical pending queue batches
+   * @param cursor Return items older than this batch id
+   * @param limit Maximum number of batches to return
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchPage>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>cursor, 'cursor');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List historical pending queue batches
+   * @param cursor Return items older than this batch id
+   * @param limit Maximum number of batches to return
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchPage>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>cursor, 'cursor');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Approve or reject queued changes
+   * Approve and/or reject a set of pending changes in one batch.
+   * @param pendingBatchRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost(
+    pendingBatchRequest: PendingBatchRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingBatchResult>;
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost(
+    pendingBatchRequest: PendingBatchRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingBatchResult>>;
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost(
+    pendingBatchRequest: PendingBatchRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingBatchResult>>;
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost(
+    pendingBatchRequest: PendingBatchRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (pendingBatchRequest === null || pendingBatchRequest === undefined) {
+      throw new Error(
+        'Required parameter pendingBatchRequest was null or undefined when calling processPendingBatchModelReferencesV1PendingQueueBatchesPost.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingBatchResult>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: pendingBatchRequest,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Approve or reject queued changes
+   * Approve and/or reject a set of pending changes in one batch.
+   * @param pendingBatchRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+    pendingBatchRequest: PendingBatchRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingBatchResult>;
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+    pendingBatchRequest: PendingBatchRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingBatchResult>>;
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+    pendingBatchRequest: PendingBatchRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingBatchResult>>;
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+    pendingBatchRequest: PendingBatchRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (pendingBatchRequest === null || pendingBatchRequest === undefined) {
+      throw new Error(
+        'Required parameter pendingBatchRequest was null or undefined when calling processPendingBatchModelReferencesV1PendingQueueBatchesPost_11.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingBatchResult>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: pendingBatchRequest,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Purge pending changes matching filters
+   * Delete queued changes in bulk, optionally as a dry run.
+   * @param purgePendingChangesRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PurgePendingChangesResponse>;
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PurgePendingChangesResponse>>;
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PurgePendingChangesResponse>>;
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (purgePendingChangesRequest === null || purgePendingChangesRequest === undefined) {
+      throw new Error(
+        'Required parameter purgePendingChangesRequest was null or undefined when calling purgePendingChangesModelReferencesV1PendingQueuePurgePost.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/purge`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PurgePendingChangesResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: purgePendingChangesRequest,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Purge pending changes matching filters
+   * Delete queued changes in bulk, optionally as a dry run.
+   * @param purgePendingChangesRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PurgePendingChangesResponse>;
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PurgePendingChangesResponse>>;
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PurgePendingChangesResponse>>;
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+    purgePendingChangesRequest: PurgePendingChangesRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (purgePendingChangesRequest === null || purgePendingChangesRequest === undefined) {
+      throw new Error(
+        'Required parameter purgePendingChangesRequest was null or undefined when calling purgePendingChangesModelReferencesV1PendingQueuePurgePost_12.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/purge`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PurgePendingChangesResponse>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: purgePendingChangesRequest,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
@@ -142,7 +2884,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readAllLegacyMetadata_1(
+  public readAllLegacyMetadata_13(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -151,7 +2893,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: CategoryMetadata }>;
-  public readAllLegacyMetadata_1(
+  public readAllLegacyMetadata_13(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -160,7 +2902,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: CategoryMetadata }>>;
-  public readAllLegacyMetadata_1(
+  public readAllLegacyMetadata_13(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -169,7 +2911,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: CategoryMetadata }>>;
-  public readAllLegacyMetadata_1(
+  public readAllLegacyMetadata_13(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -234,7 +2976,7 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>;
+  ): Observable<CategoryLastUpdatedResponse>;
   public readLegacyCategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
@@ -244,9 +2986,7 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<
-    HttpResponse<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>
-  >;
+  ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
   public readLegacyCategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
@@ -256,7 +2996,7 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>>;
+  ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
   public readLegacyCategoryLastUpdated(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
@@ -298,7 +3038,7 @@ export class V1Service extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>(
+    return this.httpClient.request<CategoryLastUpdatedResponse>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -320,7 +3060,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readLegacyCategoryLastUpdated_2(
+  public readLegacyCategoryLastUpdated_14(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
@@ -329,8 +3069,8 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>;
-  public readLegacyCategoryLastUpdated_2(
+  ): Observable<CategoryLastUpdatedResponse>;
+  public readLegacyCategoryLastUpdated_14(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
@@ -339,10 +3079,8 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<
-    HttpResponse<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>
-  >;
-  public readLegacyCategoryLastUpdated_2(
+  ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
+  public readLegacyCategoryLastUpdated_14(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
@@ -351,8 +3089,8 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>>;
-  public readLegacyCategoryLastUpdated_2(
+  ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
+  public readLegacyCategoryLastUpdated_14(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -364,7 +3102,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryLastUpdated_2.',
+        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryLastUpdated_14.',
       );
     }
 
@@ -393,7 +3131,7 @@ export class V1Service extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse>(
+    return this.httpClient.request<CategoryLastUpdatedResponse>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -504,7 +3242,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readLegacyCategoryMetadata_3(
+  public readLegacyCategoryMetadata_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
@@ -514,7 +3252,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<CategoryMetadata>;
-  public readLegacyCategoryMetadata_3(
+  public readLegacyCategoryMetadata_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
@@ -524,7 +3262,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<CategoryMetadata>>;
-  public readLegacyCategoryMetadata_3(
+  public readLegacyCategoryMetadata_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
@@ -534,7 +3272,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<CategoryMetadata>>;
-  public readLegacyCategoryMetadata_3(
+  public readLegacyCategoryMetadata_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -546,7 +3284,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryMetadata_3.',
+        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryMetadata_15.',
       );
     }
 
@@ -600,7 +3338,7 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>;
+  ): Observable<LastUpdatedResponse>;
   public readLegacyLastUpdated(
     observe?: 'response',
     reportProgress?: boolean,
@@ -609,7 +3347,7 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpResponse<LastUpdatedResponse>>;
   public readLegacyLastUpdated(
     observe?: 'events',
     reportProgress?: boolean,
@@ -618,7 +3356,7 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
+  ): Observable<HttpEvent<LastUpdatedResponse>>;
   public readLegacyLastUpdated(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -653,19 +3391,15 @@ export class V1Service extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<LastUpdatedResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -674,7 +3408,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readLegacyLastUpdated_4(
+  public readLegacyLastUpdated_16(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -682,8 +3416,8 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>;
-  public readLegacyLastUpdated_4(
+  ): Observable<LastUpdatedResponse>;
+  public readLegacyLastUpdated_16(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -691,8 +3425,8 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
-  public readLegacyLastUpdated_4(
+  ): Observable<HttpResponse<LastUpdatedResponse>>;
+  public readLegacyLastUpdated_16(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -700,8 +3434,8 @@ export class V1Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>>;
-  public readLegacyLastUpdated_4(
+  ): Observable<HttpEvent<LastUpdatedResponse>>;
+  public readLegacyLastUpdated_16(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -735,19 +3469,15 @@ export class V1Service extends BaseService {
 
     let localVarPath = `/model_references/v1/metadata/last_updated`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<HordeModelReferenceServiceV1RoutersMetadataLastUpdatedResponse>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<LastUpdatedResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -1081,6 +3811,198 @@ export class V1Service extends BaseService {
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get a single pending change
+   * Return details for a single pending change.
+   * @param changeId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet(
+    changeId: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet(
+    changeId: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet(
+    changeId: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet(
+    changeId: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeId === null || changeId === undefined) {
+      throw new Error(
+        'Required parameter changeId was null or undefined when calling readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/${this.configuration.encodeParam({ name: 'changeId', value: changeId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get a single pending change
+   * Return details for a single pending change.
+   * @param changeId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+    changeId: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+    changeId: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+    changeId: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+    changeId: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (changeId === null || changeId === undefined) {
+      throw new Error(
+        'Required parameter changeId was null or undefined when calling readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/changes/${this.configuration.encodeParam({ name: 'changeId', value: changeId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,

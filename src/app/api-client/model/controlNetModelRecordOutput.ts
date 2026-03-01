@@ -8,7 +8,6 @@
  * Do not edit the class manually.
  */
 import { ModelClassification } from './modelClassification';
-import { CONTROLNET_STYLE } from './cONTROLNETSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
@@ -26,6 +25,6 @@ export interface ControlNetModelRecordOutput {
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
-  controlnet_style: CONTROLNET_STYLE;
+  controlnet_style: string;
 }
 export namespace ControlNetModelRecordOutput {}

@@ -10,6 +10,8 @@ export interface UrlVerificationResult {
   contentLength?: number;
   contentType?: string;
   error?: string;
+  /** True when verification failed due to CORS but the URL may still be valid */
+  corsBlocked?: boolean;
 }
 
 /**
@@ -95,20 +97,33 @@ export class UrlVerificationService {
         .catch((error: Error) => {
           finalizeRequest();
 
-          let errorMessage = 'Failed to verify URL';
           if (error.name === 'AbortError') {
-            errorMessage = 'Request timed out';
-          } else if (error.message.includes('CORS')) {
-            errorMessage = 'CORS error - server may not allow cross-origin requests';
-          } else {
-            errorMessage = error.message || errorMessage;
+            observer.next({
+              success: false,
+              error: 'Request timed out',
+            });
+            observer.complete();
+            return;
           }
 
-          observer.next({
-            success: false,
-            error: errorMessage,
+          // CORS or network errors — retry with no-cors to distinguish
+          // a CORS-blocked server from a truly unreachable URL
+          this.retryCorsProbe(url, timeoutMs).then((probeReachable) => {
+            if (probeReachable) {
+              observer.next({
+                success: false,
+                corsBlocked: true,
+                error:
+                  'CORS policy prevented verification — the URL may still be valid. Please double-check it manually.',
+              });
+            } else {
+              observer.next({
+                success: false,
+                error: error.message || 'Failed to verify URL',
+              });
+            }
+            observer.complete();
           });
-          observer.complete();
         });
 
       return () => {
@@ -126,6 +141,29 @@ export class UrlVerificationService {
         });
       }),
     );
+  }
+
+  /**
+   * Retry a failed request with `no-cors` mode.
+   * An opaque response (type === 'opaque', status === 0) means the server is
+   * reachable but blocking cross-origin reads — i.e. a CORS issue, not a dead link.
+   */
+  private async retryCorsProbe(url: string, timeoutMs: number): Promise<boolean> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        signal: controller.signal,
+      });
+      // Opaque responses have type 'opaque' and status 0
+      return response.type === 'opaque' || response.ok;
+    } catch {
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   /**

@@ -25,6 +25,7 @@ export interface LegacyConfigDownload {
   file_name?: string | null;
   file_path?: string | null;
   file_url?: string | null;
+  sha256sum?: string | null;
   [key: string]: unknown;
 }
 

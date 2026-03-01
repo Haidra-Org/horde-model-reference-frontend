@@ -8,7 +8,7 @@ import {
   DestroyRef,
   EnvironmentInjector,
 } from '@angular/core';
-import { KeyValuePipe } from '@angular/common';
+
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -45,7 +45,6 @@ import {
   ModelAuditInfo,
   DeletionRiskFlags,
   CategoryAuditResponse,
-  BackendAuditVariation,
 } from '../../api-client';
 import { BASELINE_SHORTHAND_MAP, RECORD_DISPLAY_MAP } from '../../models/maps';
 import {
@@ -104,7 +103,7 @@ type SortDirection = 'asc' | 'desc' | null;
 
 @Component({
   selector: 'app-model-audit',
-  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule, KeyValuePipe],
+  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule],
   templateUrl: './model-audit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -289,7 +288,7 @@ export class ModelAuditComponent implements OnInit {
     if (auditResp && !this.degradedMode()) {
       // In ungrouped view mode, use audit response models directly with backend_variations
       if (showUngrouped && this.isTextGeneration()) {
-        return this.createUngroupedMetricsFromAudit(auditResp, categoryTotal);
+        return this.createUngroupedMetricsFromAudit(auditResp);
       }
 
       // Backend mode: match audit data to models (including grouped models)
@@ -577,7 +576,6 @@ export class ModelAuditComponent implements OnInit {
    */
   private createUngroupedMetricsFromAudit(
     auditResp: CategoryAuditResponse,
-    categoryTotal: number,
   ): ModelWithAuditMetrics[] {
     return auditResp.models.map((auditInfo) => {
       const fileHosts = auditInfo.download_hosts ?? [];
@@ -980,7 +978,7 @@ export class ModelAuditComponent implements OnInit {
   private fetchModelsForCategory$(category: string): Observable<void> {
     const isTextGen = category === 'text_generation';
 
-    const reference$ = this.api.getLegacyModelsAsArray(category);
+    const reference$ = this.api.getDisplayModelsAsArray(category);
     const stats$ = isTextGen
       ? this.api.getModelsWithStats(category, true).pipe(catchError(() => of(null)))
       : of(null);

@@ -11,13 +11,12 @@ import { ModelClassification } from './modelClassification';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
-import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
  * A generic model reference record.
  */
 export interface GenericModelRecordOutput {
-  record_type: MODEL_REFERENCE_CATEGORY;
+  record_type: string;
   name: string;
   description?: string | null;
   version?: string | null;
@@ -26,4 +25,3 @@ export interface GenericModelRecordOutput {
   config?: GenericModelRecordConfig;
   model_classification: ModelClassification;
 }
-export namespace GenericModelRecordOutput {}

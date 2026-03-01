@@ -24,6 +24,8 @@ export const MODEL_REFERENCE_CATEGORY = {
   VideoGeneration: 'video_generation',
   AudioGeneration: 'audio_generation',
   Miscellaneous: 'miscellaneous',
+  Lora: 'lora',
+  Ti: 'ti',
 } as const;
 export type MODEL_REFERENCE_CATEGORY =
   (typeof MODEL_REFERENCE_CATEGORY)[keyof typeof MODEL_REFERENCE_CATEGORY];

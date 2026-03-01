@@ -85,7 +85,34 @@
   .badge-info,
   .badge-secondary {
     @apply bg-gray-100 text-gray-700;
-    @apply dark:bg-gray-800 dark:text-gray-400 dark:border dark:border-gray-700;
+    @apply dark:bg-gray-600 dark:text-gray-100 dark:border dark:border-gray-700;
+  }
+
+  /* Operation-specific badge variants for pending queue */
+  .badge-create {
+    @apply bg-primary-100 text-primary-800 border border-primary-300;
+    @apply dark:bg-primary-900/30 dark:text-primary-300 dark:border-primary-700;
+  }
+
+  .badge-update {
+    @apply bg-warning-100 text-warning-800 border border-warning-300;
+    @apply dark:bg-warning-900/30 dark:text-warning-300 dark:border-warning-700;
+  }
+
+  .badge-delete {
+    @apply bg-danger-100 text-danger-800 border border-danger-300;
+    @apply dark:bg-danger-900/30 dark:text-danger-300 dark:border-danger-700;
+  }
+
+  /* Batch-specific badge variants for pending queue */
+  .badge-batch {
+    @apply bg-info-100 text-info-800 border border-info-300;
+    @apply dark:bg-info-900/30 dark:text-info-300 dark:border-info-700;
+  }
+
+  .badge-batch-pending {
+    @apply bg-warning-50 text-warning-700 border border-dashed border-warning-400;
+    @apply dark:bg-warning-900/20 dark:text-warning-300 dark:border-warning-600;
   }
 
   /* Badge size variants */

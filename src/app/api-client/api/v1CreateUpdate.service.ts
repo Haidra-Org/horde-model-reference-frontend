@@ -64,6 +64,8 @@ import { LegacyTextGenerationRecordInput } from '../model/legacyTextGenerationRe
 import { LegacyTextGenerationRecordOutput } from '../model/legacyTextGenerationRecordOutput';
 // @ts-ignore
 import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
+// @ts-ignore
+import { PendingChangeRecord } from '../model/pendingChangeRecord';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -1157,7 +1159,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Delete a legacy model entry.
-   * Delete a model from a legacy model reference category.  Permanently removes the specified model from the category.
+   * Delete a model from a legacy model reference category.  When pending queue is enabled, this enqueues the deletion and returns HTTP 202. When pending queue is disabled, this deletes the model immediately and returns HTTP 200.
    * @param modelCategoryName
    * @param modelName
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

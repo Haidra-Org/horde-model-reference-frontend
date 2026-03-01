@@ -5,6 +5,7 @@ import {
   signal,
   computed,
   effect,
+  untracked,
   ChangeDetectionStrategy,
   inject,
 } from '@angular/core';
@@ -27,6 +28,7 @@ interface DownloadVerificationState {
   verifiedSha256sum?: string; // SHA256 from URL verification
   hasMismatch?: boolean; // True if original and verified don't match
   verifiedUrl?: string; // The URL that was successfully verified
+  corsBlocked?: boolean; // True when CORS prevented verification but URL may be valid
 }
 
 /**
@@ -61,9 +63,11 @@ export class ConfigFormSectionSimplifiedComponent {
     });
 
     // Initialize and synchronize verification states with downloads
+    // Use untracked to read verificationStates to avoid circular dependency
     effect(() => {
       const currentDownloads = this.downloads();
-      const states = this.verificationStates();
+      // Read existing states without tracking to avoid circular dependency
+      const states = untracked(() => this.verificationStates());
       const newStates = new Map<number, DownloadVerificationState>();
 
       currentDownloads.forEach((download, index) => {
@@ -84,8 +88,8 @@ export class ConfigFormSectionSimplifiedComponent {
               originalSha256sum: download.sha256sum || existingState.originalSha256sum,
             });
           }
-        } else if (download.sha256sum) {
-          // Initialize new state with original SHA256
+        } else {
+          // Initialize new state for downloads (with or without SHA256)
           newStates.set(index, {
             verified: false,
             verifying: false,
@@ -121,7 +125,7 @@ export class ConfigFormSectionSimplifiedComponent {
       }
 
       const state = states.get(index);
-      if (!state || !state.verified) {
+      if (!state || (!state.verified && !state.corsBlocked)) {
         errors.push(
           `Download #${index + 1}: URL "${download.file_name || 'unnamed'}" must be verified before submission`,
         );
@@ -235,6 +239,14 @@ export class ConfigFormSectionSimplifiedComponent {
             hasMismatch,
             verifiedUrl: url,
           });
+        } else if (result.corsBlocked) {
+          this.updateVerificationState(index, {
+            verified: false,
+            verifying: false,
+            corsBlocked: true,
+            error: result.error,
+            verifiedUrl: url,
+          });
         } else {
           this.updateVerificationState(index, {
             verified: false,
@@ -286,6 +298,13 @@ export class ConfigFormSectionSimplifiedComponent {
    */
   getVerificationError(index: number): string | undefined {
     return this.getVerificationState(index).error;
+  }
+
+  /**
+   * Check if verification was blocked by CORS (soft-pass state)
+   */
+  isCorsBlocked(index: number): boolean {
+    return this.getVerificationState(index).corsBlocked || false;
   }
 
   /**

@@ -11,7 +11,7 @@
 /**
  * Response for /{category}/last_updated endpoint.
  */
-export interface HordeModelReferenceServiceV1RoutersMetadataCategoryLastUpdatedResponse {
+export interface CategoryLastUpdatedResponse {
   category: string;
   last_updated: number | null;
 }

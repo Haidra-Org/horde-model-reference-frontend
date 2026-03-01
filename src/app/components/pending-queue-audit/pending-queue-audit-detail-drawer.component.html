@@ -1,0 +1,214 @@
+@if (open()) {
+<div class="fixed inset-0 z-50 flex justify-end bg-slate-950/70 backdrop-blur-sm" role="presentation" tabindex="0"
+  (click)="onBackdropInteraction($event)" (keydown.enter)="closeDrawer()" (keydown.space)="closeDrawer()"
+  (keydown.escape)="closeDrawer()">
+  <section
+    class="flex h-full w-full max-w-5xl flex-col gap-6 overflow-y-auto border-l border-slate-800 bg-slate-950 px-6 py-8 shadow-2xl"
+    role="dialog" aria-modal="true" [attr.aria-label]="'Pending queue batch detail'">
+    <header class="flex flex-col gap-4 border-b border-slate-800 pb-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-wide text-primary-300">Batch detail</p>
+        <h2 class="text-2xl font-semibold">
+          Batch #{{ summary()?.batch_id }} · {{ summary()?.batch_title || 'Untitled batch' }}
+        </h2>
+        <p class="text-sm text-slate-300">
+          Approved by {{ summary()?.approved_by || 'unknown' }}
+          @if (summary()?.approved_at) {
+          · {{ toDate(summary()?.approved_at) | date: 'medium' }}
+          }
+          @if (summary()?.applied_at) {
+          · Applied {{ toDate(summary()?.applied_at) | date: 'medium' }}
+          }
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2 text-sm">
+        <button class="nav-button" type="button" (click)="copyBatchJson()" [disabled]="!hasDetail()">
+          Copy JSON
+        </button>
+        <button class="nav-button" type="button" (click)="downloadBatchDetail()" [disabled]="!hasDetail()">
+          Download
+        </button>
+        <button class="nav-button" type="button" (click)="closeDrawer()">Close</button>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="flex gap-2 border-b border-slate-800">
+      <button type="button" class="px-4 py-2 text-sm font-medium transition"
+        [class.border-b-2]="activeTab() === 'timeline'" [class.border-primary-400]="activeTab() === 'timeline'"
+        [class.text-primary-300]="activeTab() === 'timeline'" [class.text-slate-400]="activeTab() !== 'timeline'"
+        (click)="switchTab('timeline')">
+        Timeline
+      </button>
+      <button type="button" class="px-4 py-2 text-sm font-medium transition"
+        [class.border-b-2]="activeTab() === 'net-changes'" [class.border-primary-400]="activeTab() === 'net-changes'"
+        [class.text-primary-300]="activeTab() === 'net-changes'" [class.text-slate-400]="activeTab() !== 'net-changes'"
+        (click)="switchTab('net-changes')">
+        Net Changes
+      </button>
+    </nav>
+
+    <section
+      class="grid gap-4 rounded-xl border border-slate-800 bg-slate-900/30 p-4 text-center sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <p class="text-xs uppercase tracking-wide text-slate-400">Approved changes</p>
+        <p class="text-2xl font-semibold text-emerald-300">{{ summary()?.approved_change_count || 0 }}</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-slate-400">Rejected changes</p>
+        <p class="text-2xl font-semibold text-rose-300">{{ summary()?.rejected_change_count || 0 }}</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-slate-400">Applied changes</p>
+        <p class="text-2xl font-semibold text-sky-300">{{ summary()?.applied_change_count || 0 }}</p>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-slate-400">Total changes</p>
+        <p class="text-2xl font-semibold text-slate-100">
+          {{ summary()?.total_change_count || detail()?.changes?.length || 0 }}
+        </p>
+      </div>
+    </section>
+
+    <!-- Timeline View -->
+    @if (activeTab() === 'timeline') {
+    @if (loading()) {
+    <p class="text-sm text-slate-400">Loading batch timeline…</p>
+    } @else if (error()) {
+    <div class="rounded-lg border border-rose-600/40 bg-rose-950/40 p-4 text-sm text-rose-100">
+      <p>{{ error() }}</p>
+      <button class="nav-button mt-3" type="button" (click)="retry()">Retry</button>
+    </div>
+    } @else if (!hasDetail()) {
+    <p class="text-sm text-slate-400">No detail available for this batch yet.</p>
+    } @else {
+    <section class="flex flex-col gap-4 rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-xs uppercase tracking-wide text-slate-400" for="batch-search">Search</label>
+        <div class="flex items-center gap-2">
+          <input id="batch-search" type="search"
+            class="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" [value]="searchTerm()"
+            (input)="onSearchTermChange($any($event.target).value)"
+            placeholder="Search by change ID, model, user, or operation" />
+          @if (searchTerm()) {
+          <button class="text-xs text-slate-300" type="button" (click)="clearSearch()">Clear</button>
+          }
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
+          [class.bg-primary-500/20]="statusFilter() === 'all'" [class.border-primary-400]="statusFilter() === 'all'"
+          [class.text-primary-100]="statusFilter() === 'all'" (click)="setStatusFilter('all')">
+          All ({{ statusCounts().all }})
+        </button>
+        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
+          [class.bg-amber-500/20]="statusFilter() === 'pending'" [class.border-amber-400]="statusFilter() === 'pending'"
+          [class.text-amber-100]="statusFilter() === 'pending'" (click)="setStatusFilter('pending')">
+          Pending ({{ statusCounts().pending }})
+        </button>
+        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
+          [class.bg-emerald-500/20]="statusFilter() === 'applied'"
+          [class.border-emerald-400]="statusFilter() === 'applied'"
+          [class.text-emerald-100]="statusFilter() === 'applied'" (click)="setStatusFilter('applied')">
+          Applied ({{ statusCounts().applied }})
+        </button>
+        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
+          [class.bg-rose-500/20]="statusFilter() === 'rejected'" [class.border-rose-400]="statusFilter() === 'rejected'"
+          [class.text-rose-100]="statusFilter() === 'rejected'" (click)="setStatusFilter('rejected')">
+          Rejected ({{ statusCounts().rejected }})
+        </button>
+      </div>
+    </section>
+
+    @if (!filteredChanges().length) {
+    <p class="text-sm text-slate-400">No changes match the current filters.</p>
+    } @else {
+    <div class="flex flex-col gap-4">
+      @for (change of filteredChanges(); track change.change_id) {
+      <article class="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+        <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h3 class="text-lg font-semibold">
+              Change #{{ change.change_id }} · {{ change.model_name || 'Unnamed model' }}
+            </h3>
+            <p class="text-sm text-slate-300">
+              {{ change.operation || 'operation' }} · Requested by {{ change.requested_by || 'unknown' }}
+              @if (change.requested_at) {
+              on {{ toDate(change.requested_at) | date: 'short' }}
+              }
+            </p>
+          </div>
+          <span class="rounded-full px-3 py-1 text-sm font-medium"
+            [class.bg-emerald-500/20]="formatStatus(change) === 'applied'"
+            [class.text-emerald-200]="formatStatus(change) === 'applied'"
+            [class.bg-rose-500/20]="formatStatus(change) === 'rejected'"
+            [class.text-rose-200]="formatStatus(change) === 'rejected'"
+            [class.bg-amber-500/20]="formatStatus(change) === 'pending'"
+            [class.text-amber-200]="formatStatus(change) === 'pending'"
+            [class.bg-slate-700/40]="formatStatus(change) !== 'applied' && formatStatus(change) !== 'rejected' && formatStatus(change) !== 'pending'">
+            {{ statusLabel(change) }}
+          </span>
+        </div>
+
+        <dl class="mt-4 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
+          <div>
+            <dt class="uppercase tracking-wide text-xs text-slate-500">Approved by</dt>
+            <dd>{{ change.approved_by || '—' }}</dd>
+          </div>
+          <div>
+            <dt class="uppercase tracking-wide text-xs text-slate-500">Approved at</dt>
+            <dd>
+              @if (change.approved_at) {
+              {{ toDate(change.approved_at) | date: 'short' }}
+              } @else {
+              —
+              }
+            </dd>
+          </div>
+          <div>
+            <dt class="uppercase tracking-wide text-xs text-slate-500">Applied by</dt>
+            <dd>{{ change.applied_by || '—' }}</dd>
+          </div>
+          <div>
+            <dt class="uppercase tracking-wide text-xs text-slate-500">Applied at</dt>
+            <dd>
+              @if (change.applied_at) {
+              {{ toDate(change.applied_at) | date: 'short' }}
+              } @else {
+              —
+              }
+            </dd>
+          </div>
+        </dl>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
+          <p>{{ change.events?.length || 0 }} timeline events</p>
+          <button class="nav-button" type="button" (click)="copyChangeJson(change)">Copy change JSON</button>
+        </div>
+
+        <div class="mt-4">
+          <app-pending-queue-audit-timeline [events]="change.events"></app-pending-queue-audit-timeline>
+        </div>
+      </article>
+      }
+    </div>
+    }
+    }
+    }
+
+    <!-- Net Changes View -->
+    @if (activeTab() === 'net-changes') {
+    @if (netChangesLoading()) {
+    <p class="text-sm text-slate-400">Computing net changes…</p>
+    } @else if (netChangesError()) {
+    <div class="rounded-lg border border-rose-600/40 bg-rose-950/40 p-4 text-sm text-rose-100">
+      <p>{{ netChangesError() }}</p>
+      <button class="nav-button mt-3" type="button" (click)="retryNetChanges()">Retry</button>
+    </div>
+    } @else {
+    <app-pending-queue-batch-net-changes [data]="netChanges()"></app-pending-queue-batch-net-changes>
+    }
+    }
+  </section>
+</div>
+}

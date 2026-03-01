@@ -23,11 +23,23 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
+import { AuditDomain } from '../model/auditDomain';
+// @ts-ignore
+import { BatchNetChangeResponse } from '../model/batchNetChangeResponse';
+// @ts-ignore
 import { CategoryAuditResponse } from '../model/categoryAuditResponse';
+// @ts-ignore
+import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
 import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
+// @ts-ignore
+import { PendingQueueAuditBatchDetail } from '../model/pendingQueueAuditBatchDetail';
+// @ts-ignore
+import { PendingQueueAuditBatchPage } from '../model/pendingQueueAuditBatchPage';
+// @ts-ignore
+import { PendingQueueAuditCurrentResponse } from '../model/pendingQueueAuditCurrentResponse';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -47,11 +59,1751 @@ export class AuditService extends BaseService {
   }
 
   /**
+   * Get net changes for a specific batch
+   * Compute the net effect of all changes in a batch.  Analyzes all operations (add, update, delete) applied in the batch and computes the net change for each affected model. Models that are deleted and re-added with identical content show net_operation&#x3D;UNCHANGED.  Results are cached for 5 minutes to match existing audit caching patterns.
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchNetChangeResponse>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/net_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<BatchNetChangeResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get net changes for a specific batch
+   * Compute the net effect of all changes in a batch.  Analyzes all operations (add, update, delete) applied in the batch and computes the net change for each affected model. Models that are deleted and re-added with identical content show net_operation&#x3D;UNCHANGED.  Results are cached for 5 minutes to match existing audit caching patterns.
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchNetChangeResponse>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/net_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<BatchNetChangeResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get net changes for a specific batch
+   * Compute the net effect of all changes in a batch.  Analyzes all operations (add, update, delete) applied in the batch and computes the net change for each affected model. Models that are deleted and re-added with identical content show net_operation&#x3D;UNCHANGED.  Results are cached for 5 minutes to match existing audit caching patterns.
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchNetChangeResponse>;
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/net_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<BatchNetChangeResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get net changes for a specific batch
+   * Compute the net effect of all changes in a batch.  Analyzes all operations (add, update, delete) applied in the batch and computes the net change for each affected model. Models that are deleted and re-added with identical content show net_operation&#x3D;UNCHANGED.  Results are cached for 5 minutes to match existing audit caching patterns.
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchNetChangeResponse>;
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchNetChangeResponse>>;
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}/net_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<BatchNetChangeResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List currently pending (unapproved) changes
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditCurrentResponse>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/current`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditCurrentResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List currently pending (unapproved) changes
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditCurrentResponse>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/current`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditCurrentResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List currently pending (unapproved) changes
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditCurrentResponse>;
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/current`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditCurrentResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List currently pending (unapproved) changes
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditCurrentResponse>;
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/current`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditCurrentResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get details for a specific batch
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchDetail>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchDetail>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get details for a specific batch
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchDetail>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchDetail>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get details for a specific batch
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchDetail>;
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchDetail>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get details for a specific batch
+   * @param batchId
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchDetail>;
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
+    batchId: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (batchId === null || batchId === undefined) {
+      throw new Error(
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/batches/${this.configuration.encodeParam({ name: 'batchId', value: batchId, in: 'path', style: 'simple', explode: false, dataType: 'number', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchDetail>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List historical pending queue batches
+   * @param cursor Return items older than this batch id
+   * @param limit Maximum number of batches to return
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchPage>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>cursor, 'cursor');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List historical pending queue batches
+   * @param cursor Return items older than this batch id
+   * @param limit Maximum number of batches to return
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchPage>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>cursor, 'cursor');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/audit/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List historical pending queue batches
+   * @param cursor Return items older than this batch id
+   * @param limit Maximum number of batches to return
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchPage>;
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>cursor, 'cursor');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * List historical pending queue batches
+   * @param cursor Return items older than this batch id
+   * @param limit Maximum number of batches to return
+   * @param domainOverride Optional audit domain override
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueueAuditBatchPage>;
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
+    cursor?: number,
+    limit?: number,
+    domainOverride?: AuditDomain,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>cursor, 'cursor');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>domainOverride,
+      'domain_override',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/pending_queue/audit/batches`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
    * Get audit analysis for a model category
    * Get comprehensive audit analysis for a model reference category.  Analyzes all models in the category to identify deletion risks including: - Missing or invalid download URLs - Non-preferred file hosts - Missing required fields (description, baseline) - Zero active workers - Low or no recent usage  Returns both per-model audit information and aggregate summary statistics. Audit results are cached (default 300s TTL) and automatically invalidated when model data changes.  Args:     model_category_name: The model reference category to audit.     manager: The model reference manager (injected).     horde_api: The Horde API integration (injected).     audit_cache: The audit cache (injected).     group_text_models: Group text models by base name (strips quantization info).     include_backend_variations: Include per-backend breakdown for text models (ungrouped view).     preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).     limit: Maximum number of models to return (None &#x3D; all).     offset: Number of models to skip (for pagination).  Returns:     CategoryAuditResponse with per-model audit info and summary.  Raises:     HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.
    * @param modelCategoryName
    * @param groupTextModels Group text models by base name (strips quantization)
-   * @param includeBackendVariations Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models=False.
+   * @param includeBackendVariations Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models&#x3D;False.
    * @param preset Apply preset filter to results. Valid presets: deletion_candidates, zero_usage, no_workers, missing_data, host_issues, critical, low_usage
    * @param limit Maximum number of models to return (None &#x3D; all)
    * @param offset Number of models to skip (for pagination)

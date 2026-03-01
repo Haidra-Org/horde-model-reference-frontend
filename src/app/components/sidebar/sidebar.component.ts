@@ -12,6 +12,7 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { RECORD_DISPLAY_MAP } from '../../models/maps';
 
@@ -27,6 +28,7 @@ export class SidebarComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly sidebarService = inject(SidebarService);
+  readonly pendingSummary = inject(PendingQueueSummaryService);
 
   readonly categories = signal<string[]>([]);
   readonly loading = signal(true);
@@ -61,6 +63,10 @@ export class SidebarComponent implements OnInit {
       )
       .subscribe(() => this.updateCurrentCategory());
     this.updateCurrentCategory();
+  }
+
+  toggle(): void {
+    this.sidebarService.toggle();
   }
 
   selectCategory(category: string): void {

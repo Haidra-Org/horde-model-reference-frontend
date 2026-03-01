@@ -65,7 +65,13 @@ export class FieldGroupComponent implements OnInit {
    */
   readonly asGroup = computed<FormFieldGroup | null>(() => {
     const item = this.item();
-    return 'fields' in item ? item : null;
+    if (!('fields' in item)) {
+      return null;
+    }
+    if (item.showWhen && !item.showWhen()) {
+      return null;
+    }
+    return item;
   });
 
   /**

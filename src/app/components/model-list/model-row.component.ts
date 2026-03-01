@@ -5,6 +5,7 @@ import {
   isLegacyStableDiffusionRecord,
   isLegacyTextGenerationRecord,
 } from '../../models';
+import type { PendingChangeOverlay } from '../../models/pending-change-overlay';
 import {
   UnifiedModelData,
   hasActiveWorkers,
@@ -32,9 +33,10 @@ import { hasShowcases } from './model-row.utils';
     <tr
       [class]="
         'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ' +
-        (isEven() ? 'table-row-even' : 'table-row-odd')
+        (isEven() ? 'table-row-even' : 'table-row-odd') +
+        (pendingRowClass() ? ' ' + pendingRowClass() : '')
       "
-      (click)="toggleExpansion()"
+      (click)="isGhost() ? viewPendingChange.emit(pendingOverlay()!.pendingChangeId) : toggleExpansion()"
     >
       <td class="text-center">
         <svg
@@ -59,7 +61,17 @@ import { hasShowcases } from './model-row.utils';
         <span class="inline-block w-3 h-3 rounded-full" [class]="activeIndicatorClass()"></span>
       </td>
       <td class="font-medium text-gray-900 dark:text-gray-100">
-        <app-model-row-header [model]="model()" [allModels]="allModels()" mode="compact" />
+        <div class="flex items-center gap-2">
+          <app-model-row-header [model]="model()" [allModels]="allModels()" mode="compact" />
+          @if (pendingOverlay()) {
+            <button
+              type="button"
+              [class]="pendingBadgeClass()"
+              (click)="$event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)"
+              [title]="'View pending change #' + pendingOverlay()!.pendingChangeId"
+            >{{ pendingBadgeText() }}</button>
+          }
+        </div>
       </td>
       <td class="field-value">
         <div class="truncate">
@@ -113,19 +125,27 @@ import { hasShowcases } from './model-row.utils';
         {{ model().workerCount ?? 0 }}
       </td>
       <td class="text-center">
-        <app-model-row-actions
-          [model]="legacyModel()"
-          layout="horizontal"
-          [writable]="writable()"
-          (showJson)="showJson.emit($event)"
-          (edit)="edit.emit($event)"
-          (delete)="delete.emit($event)"
-        />
+        @if (isGhost()) {
+          <button
+            type="button"
+            class="btn btn-xs btn-secondary"
+            (click)="$event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)"
+          >View Pending</button>
+        } @else {
+          <app-model-row-actions
+            [model]="legacyModel()"
+            layout="horizontal"
+            [writable]="writable()"
+            (showJson)="showJson.emit($event)"
+            (edit)="edit.emit($event)"
+            (delete)="delete.emit($event)"
+          />
+        }
       </td>
     </tr>
 
     <!-- Expanded Details Row -->
-    @if (expanded()) {
+    @if (expanded() && !isGhost()) {
       <tr [class]="(isEven() ? 'table-row-even' : 'table-row-odd') + ' detail-row'">
         <td [attr.colspan]="detailColspan()">
           <div class="detail-section">
@@ -350,10 +370,43 @@ export class ModelRowComponent {
   readonly expandedShowcases = input<Set<string>>(new Set());
   readonly hordeStatsState = input<'idle' | 'loading' | 'success' | 'error'>('idle');
 
+  readonly pendingOverlay = input<PendingChangeOverlay | undefined>(undefined);
+
   readonly showJson = output<LegacyRecordUnion>();
   readonly edit = output<string>();
   readonly delete = output<string>();
   readonly toggleRow = output<string>();
+  readonly viewPendingChange = output<number>();
+
+  readonly isGhost = computed(() => !!this.pendingOverlay()?.isGhost);
+  readonly hasPendingIndicator = computed(() => {
+    const overlay = this.pendingOverlay();
+    return !!overlay && !overlay.isGhost;
+  });
+  readonly pendingRowClass = computed(() => {
+    const overlay = this.pendingOverlay();
+    if (!overlay) return '';
+    if (overlay.isGhost) return 'ghost-row';
+    if (overlay.pendingOperation === 'delete') return 'pending-indicator-delete';
+    if (overlay.pendingOperation === 'update') return 'pending-indicator-update';
+    return '';
+  });
+  readonly pendingBadgeText = computed(() => {
+    const overlay = this.pendingOverlay();
+    if (!overlay) return '';
+    if (overlay.isGhost) return 'Pending Creation';
+    if (overlay.pendingOperation === 'delete') return 'Pending Deletion';
+    if (overlay.pendingOperation === 'update') return 'Pending Update';
+    return '';
+  });
+  readonly pendingBadgeClass = computed(() => {
+    const overlay = this.pendingOverlay();
+    if (!overlay) return '';
+    if (overlay.isGhost) return 'badge badge-warning badge-xs';
+    if (overlay.pendingOperation === 'delete') return 'badge badge-danger badge-xs';
+    if (overlay.pendingOperation === 'update') return 'badge badge-warning badge-xs';
+    return '';
+  });
 
   readonly expanded = computed(() => this.expandedRows().has(this.model().name));
 

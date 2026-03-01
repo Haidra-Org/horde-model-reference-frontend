@@ -78,9 +78,6 @@ export interface ModelAuditInfo {
    * List of download host domains.
    */
   download_hosts?: Array<string>;
-  /**
-   * Per-backend statistics for text generation models (ungrouped view).
-   */
   backend_variations?: Array<BackendAuditVariation> | null;
   /**
    * Determine if model is in critical state.  For text_generation: usage_month < threshold AND worker_count < threshold For other models: zero month usage AND no active workers (original logic)  Returns:     True if model meets critical criteria.

@@ -33,15 +33,16 @@ export interface OpenApiSchema {
  * @param timeout Timeout in milliseconds
  * @returns The OpenAPI schema
  */
-export async function fetchOpenApiSchema(baseUrl: string, timeout = 10000): Promise<OpenApiSchema> {
+export async function fetchOpenApiSchema(
+  baseUrl: string,
+  _timeout = 10000,
+): Promise<OpenApiSchema> {
   // Determine the URL based on whether it's a local file or remote service
   const url = baseUrl.startsWith('/')
-    ? `${baseUrl}/openapi-schema.json` // Local file in assets
+    ? new URL(`${baseUrl}/openapi-schema.json`, window.location.origin).toString() // Local file in assets
     : `${baseUrl}/api/openapi.json`; // Remote service
 
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(timeout),
-  });
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch OpenAPI schema: ${response.status} ${response.statusText}`);

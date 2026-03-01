@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NotificationDisplayComponent } from './components/notification-display/notification-display.component';
 import { ModelReferenceApiService } from './services/model-reference-api.service';
-import { SidebarService } from './services/sidebar.service';
+import { AuthService } from './services/auth.service';
+import { PendingQueueSummaryService } from './services/pending-queue-summary.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -15,15 +16,20 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class App {
   private readonly api = inject(ModelReferenceApiService);
-  private readonly sidebarService = inject(SidebarService);
-
-  readonly sidebarCollapsed = this.sidebarService.isCollapsed;
+  private readonly auth = inject(AuthService);
+  private readonly pendingSummary = inject(PendingQueueSummaryService);
 
   constructor() {
     this.api.detectBackendCapabilities().pipe(takeUntilDestroyed()).subscribe();
+
+    // Start/stop pending queue polling based on auth state
+    effect(() => {
+      if (this.auth.isAuthenticated()) {
+        this.pendingSummary.startPolling();
+      } else {
+        this.pendingSummary.clear();
+      }
+    });
   }
 
-  toggleSidebar(): void {
-    this.sidebarService.toggle();
-  }
 }

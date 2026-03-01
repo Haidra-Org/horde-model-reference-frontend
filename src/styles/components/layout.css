@@ -446,11 +446,36 @@
 
   /* Sidebar borders and backgrounds */
   .sidebar-container {
-    @apply h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden;
+    @apply h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0;
+  }
+
+  .sidebar-expanded {
+    @apply w-64;
+  }
+
+  /* Collapsed: just the toggle button visible on desktop, fully hidden on mobile */
+  .sidebar-collapsed {
+    @apply w-0 lg:w-12;
   }
 
   .sidebar-header {
-    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50;
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2;
+  }
+
+  /* Compact header when sidebar is collapsed */
+  .sidebar-header-collapsed {
+    @apply px-0 py-3 justify-center;
+  }
+
+  /* Toggle button inside the sidebar */
+  .sidebar-toggle-btn {
+    @apply w-8 h-8 flex items-center justify-center rounded-md flex-shrink-0;
+    @apply text-gray-500 dark:text-gray-400;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  .sidebar-toggle-icon {
+    @apply text-lg font-bold transition-transform duration-300;
   }
 
   /* Sidebar navigation item */
@@ -464,6 +489,11 @@
 
   .sidebar-nav-item-inactive {
     @apply border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50;
+  }
+
+  /* Mobile hamburger toggle in nav bar */
+  .sidebar-mobile-toggle {
+    @apply lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors;
   }
 
   /* Navigation bar styling */
@@ -497,9 +527,24 @@
     @apply text-current opacity-70 hover:opacity-100 transition-opacity text-xl leading-none flex-shrink-0;
   }
 
+  /* Persistent notification styling - stays until dismissed */
+  .notification-alert.alert-persistent {
+    @apply border-l-4 shadow-xl;
+  }
+
+  .notification-persistent-icon {
+    @apply flex-shrink-0 text-base;
+  }
+
   /* Card header with collapsible styling - for hover effects */
   .card-header-hover {
     @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  /* Batch group pending styling for pending queue */
+  .batch-group-pending {
+    @apply border-dashed border-warning-400;
+    @apply dark:border-warning-600;
   }
 
   /* Model list filter button */

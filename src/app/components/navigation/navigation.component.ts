@@ -2,6 +2,8 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { Router, RouterLink } from '@angular/router';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { AuthService } from '../../services/auth.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
+import { SidebarService } from '../../services/sidebar.service';
 import { LoginModalComponent } from '../login-modal/login-modal.component';
 import { ThemeSwitcherComponent } from '../common/theme-switcher.component';
 
@@ -15,6 +17,8 @@ export class NavigationComponent {
   private readonly router = inject(Router);
   readonly api = inject(ModelReferenceApiService);
   readonly auth = inject(AuthService);
+  readonly pendingSummary = inject(PendingQueueSummaryService);
+  private readonly sidebarService = inject(SidebarService);
 
   readonly showLoginModal = signal(false);
   readonly showHelpMenu = signal(false);
@@ -41,5 +45,9 @@ export class NavigationComponent {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarService.toggle();
   }
 }

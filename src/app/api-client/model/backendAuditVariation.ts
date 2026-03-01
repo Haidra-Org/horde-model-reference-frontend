@@ -9,14 +9,11 @@
  */
 
 /**
- * Per-backend statistics for a text generation model in audit context.
- *
- * Provides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical).
- * Used in ungrouped audit view to show backend-specific details for each model.
+ * Per-backend statistics for a text generation model in audit context.  Provides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical). Used in ungrouped audit view to show backend-specific details for each model.
  */
 export interface BackendAuditVariation {
   /**
-   * Backend name (e.g., 'aphrodite', 'koboldcpp', 'canonical').
+   * Backend name (e.g., \'aphrodite\', \'koboldcpp\', \'canonical\').
    */
   backend: string;
   /**
@@ -27,9 +24,6 @@ export interface BackendAuditVariation {
    * Number of workers serving this backend variant.
    */
   worker_count?: number;
-  /**
-   * Performance metric for this backend variant.
-   */
   performance?: number | null;
   /**
    * Usage count for the past day from this backend.

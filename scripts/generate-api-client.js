@@ -164,6 +164,165 @@ function generateModelNameMappings(enumNames) {
 }
 
 /**
+ * Pre-process the OpenAPI schema to fix patterns that openapi-generator handles incorrectly.
+ *
+ * Fixes two issues:
+ * 1. Inline `anyOf` unions (e.g. NewModelRecord, ResponseReadV2ReferenceValue) get flattened
+ *    into a single merged interface with ALL fields required simultaneously. We convert these
+ *    to `oneOf` with a discriminator so the generator emits a proper discriminated union.
+ * 2. Field-level `anyOf: [{$ref: SomeEnum}, {type: string}]` produces empty interfaces
+ *    (Baseline {}, ControlnetStyle {}, etc.). We collapse these to `{type: string}` since
+ *    the enum values are a subset of valid strings.
+ */
+function preprocessSchema(schema) {
+  console.log('\n🔧 Pre-processing OpenAPI schema...');
+  let fixCount = 0;
+
+  // Fix 1: Convert inline anyOf unions to oneOf with discriminator
+  fixCount += fixInlineAnyOfUnions(schema);
+
+  // Fix 2: Collapse field-level anyOf enum+string patterns to string
+  fixCount += collapseEnumStringAnyOf(schema);
+
+  console.log(`✅ Schema pre-processing complete (${fixCount} fixes applied)`);
+  return schema;
+}
+
+/**
+ * Find inline `anyOf` arrays in request/response bodies that reference multiple model record
+ * schemas and convert them to `oneOf` with a `record_type` discriminator. This produces proper
+ * TypeScript discriminated unions instead of a single flat merged interface.
+ */
+function fixInlineAnyOfUnions(schema) {
+  let fixCount = 0;
+  const DISCRIMINATOR_FIELD = 'record_type';
+
+  // Model record $ref patterns that indicate a union of category-specific types
+  const INPUT_REFS = new Set([
+    '#/components/schemas/ImageGenerationModelRecord-Input',
+    '#/components/schemas/TextGenerationModelRecord-Input',
+    '#/components/schemas/ControlNetModelRecord-Input',
+    '#/components/schemas/GenericModelRecord-Input',
+  ]);
+  const OUTPUT_REFS = new Set([
+    '#/components/schemas/ImageGenerationModelRecord-Output',
+    '#/components/schemas/TextGenerationModelRecord-Output',
+    '#/components/schemas/ControlNetModelRecord-Output',
+    '#/components/schemas/GenericModelRecord-Output',
+  ]);
+
+  function isModelRecordUnion(anyOfArray) {
+    if (!Array.isArray(anyOfArray) || anyOfArray.length < 3) return false;
+    const refs = anyOfArray.filter((e) => e.$ref).map((e) => e.$ref);
+    if (refs.length !== anyOfArray.length) return false;
+    const allInput = refs.every((r) => INPUT_REFS.has(r));
+    const allOutput = refs.every((r) => OUTPUT_REFS.has(r));
+    return allInput || allOutput;
+  }
+
+  function convertAnyOfToOneOf(obj) {
+    obj.oneOf = obj.anyOf;
+    delete obj.anyOf;
+    obj.discriminator = { propertyName: DISCRIMINATOR_FIELD };
+    fixCount++;
+  }
+
+  // Walk all paths looking for anyOf in request bodies and response schemas
+  if (schema.paths) {
+    for (const [, pathItem] of Object.entries(schema.paths)) {
+      for (const [, operation] of Object.entries(pathItem)) {
+        if (typeof operation !== 'object' || operation === null) continue;
+
+        // Request body
+        const reqSchema =
+          operation.requestBody?.content?.['application/json']?.schema;
+        if (reqSchema?.anyOf && isModelRecordUnion(reqSchema.anyOf)) {
+          console.log(`   Fixed request body union: ${reqSchema.title || '(inline)'}`);
+          convertAnyOfToOneOf(reqSchema);
+        }
+
+        // Response bodies — check additionalProperties (dict values) and direct schemas
+        const responses = operation.responses;
+        if (responses) {
+          for (const [, resp] of Object.entries(responses)) {
+            const respSchema = resp?.content?.['application/json']?.schema;
+            if (!respSchema) continue;
+
+            if (respSchema.anyOf && isModelRecordUnion(respSchema.anyOf)) {
+              console.log(`   Fixed response union: ${respSchema.title || '(inline)'}`);
+              convertAnyOfToOneOf(respSchema);
+            }
+            if (
+              respSchema.additionalProperties?.anyOf &&
+              isModelRecordUnion(respSchema.additionalProperties.anyOf)
+            ) {
+              console.log(`   Fixed response dict value union: ${respSchema.title || '(inline)'}`);
+              convertAnyOfToOneOf(respSchema.additionalProperties);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return fixCount;
+}
+
+/**
+ * Collapse field-level `anyOf: [{$ref: SomeEnum}, {type: string}]` patterns down to
+ * `{type: string}`. The generator creates empty interfaces for these (e.g. `Baseline {}`)
+ * because it can't represent "enum OR string" as a TypeScript type. Since the enum values
+ * are a valid subset of strings, collapsing to string is safe and eliminates dead types.
+ *
+ * Also handles nullable variants like `[{type: string}, {$ref: SomeEnum}, {type: null}]`
+ * by removing the $ref and keeping `[{type: string}, {type: null}]`.
+ */
+function collapseEnumStringAnyOf(schema) {
+  let fixCount = 0;
+
+  function hasEnumRef(anyOfArray) {
+    return anyOfArray.some((e) => e.$ref);
+  }
+
+  function hasStringType(anyOfArray) {
+    return anyOfArray.some((e) => e.type === 'string');
+  }
+
+  function isEnumPlusString(anyOfArray) {
+    if (!Array.isArray(anyOfArray) || anyOfArray.length < 2) return false;
+    return hasEnumRef(anyOfArray) && hasStringType(anyOfArray);
+  }
+
+  function collapseField(obj) {
+    const remaining = obj.anyOf.filter((e) => !e.$ref);
+    if (remaining.length === 1 && remaining[0].type === 'string') {
+      // Simple case: just enum + string → string
+      delete obj.anyOf;
+      obj.type = 'string';
+    } else {
+      // Nullable or multi-entry: remove $ref entries, keep the rest as anyOf
+      obj.anyOf = remaining;
+    }
+    fixCount++;
+  }
+
+  // Walk all component schema properties
+  if (schema.components?.schemas) {
+    for (const [schemaName, schemaDef] of Object.entries(schema.components.schemas)) {
+      if (!schemaDef.properties) continue;
+      for (const [propName, propDef] of Object.entries(schemaDef.properties)) {
+        if (propDef.anyOf && isEnumPlusString(propDef.anyOf)) {
+          console.log(`   Collapsed ${schemaName}.${propName}: anyOf[enum, string] → string`);
+          collapseField(propDef);
+        }
+      }
+    }
+  }
+
+  return fixCount;
+}
+
+/**
  * Clean *.ts files from api and model folders before generation
  */
 function cleanOutputFolders() {
@@ -238,6 +397,189 @@ function runGenerator(schemaSource, modelNameMappings) {
     console.error('\n❌ Failed to generate API client');
     throw error;
   }
+}
+
+/**
+ * Fix imports broken by openapi-generator's case-insensitive collision renaming.
+ *
+ * On case-insensitive filesystems (Windows/macOS), the generator detects that e.g.
+ * "controlnetStyle.ts" collides with "cONTROLNETSTYLE.ts" and renames the former to
+ * "controlnetStyle0.ts". However, it does NOT update the import paths in other generated
+ * files, leaving them pointing at the non-existent "./controlnetStyle".
+ *
+ * This function finds all such renamed files (ending in a digit before .ts) and rewrites
+ * any stale imports/exports across the model directory.
+ */
+function fixCaseCollisionImports() {
+  const modelDir = path.join(OUTPUT_DIR, 'model');
+  if (!fs.existsSync(modelDir)) return;
+
+  console.log('\n🔧 Checking for case-insensitive filename collision fixups...');
+
+  const allFiles = fs.readdirSync(modelDir).filter((f) => f.endsWith('.ts'));
+  const basenames = new Map(); // lowercase stem → [actual stems]
+
+  for (const file of allFiles) {
+    const stem = file.replace(/\.ts$/, '');
+    const lower = stem.toLowerCase();
+    if (!basenames.has(lower)) basenames.set(lower, []);
+    basenames.get(lower).push(stem);
+  }
+
+  // Find groups where a numeric-suffixed file exists alongside a SCREAMING_CASE file
+  const renames = new Map(); // oldStem (without suffix) → newStem (with suffix)
+  for (const [lower, stems] of basenames) {
+    if (stems.length < 2) continue;
+    for (const stem of stems) {
+      // Detect names like "controlnetStyle0" — ends with digit, and removing it
+      // would collide case-insensitively with another file in the group
+      const suffixMatch = stem.match(/^(.+?)(\d+)$/);
+      if (!suffixMatch) continue;
+      const baseStem = suffixMatch[1];
+      if (baseStem.toLowerCase() === lower.replace(/\d+$/, '') || stems.some((s) => s !== stem && s.toLowerCase() === baseStem.toLowerCase())) {
+        renames.set(baseStem, stem);
+      }
+    }
+  }
+
+  if (renames.size === 0) {
+    console.log('   No collision fixups needed.');
+    return;
+  }
+
+  let fixCount = 0;
+  for (const [oldStem, newStem] of renames) {
+    console.log(`   Fixing: ./${oldStem} → ./${newStem}`);
+
+    // Rewrite imports/exports in all .ts files under the model directory
+    for (const file of allFiles) {
+      const filePath = path.join(modelDir, file);
+      let content = fs.readFileSync(filePath, 'utf8');
+      // Match import/export from './oldStem' (exact stem, not prefix)
+      const pattern = new RegExp(`(from\\s+['\"]\\.\\/)(${oldStem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(['"])`, 'g');
+      const replaced = content.replace(pattern, `$1${newStem}$3`);
+      if (replaced !== content) {
+        fs.writeFileSync(filePath, replaced, 'utf8');
+        fixCount++;
+      }
+    }
+  }
+
+  console.log(`✅ Fixed ${fixCount} import references across ${renames.size} collision(s).`);
+}
+
+/**
+ * Post-process generated TypeScript files to fix types that openapi-generator produced
+ * incorrectly despite schema preprocessing. The generator flattens oneOf/anyOf unions
+ * into a single merged interface regardless of schema structure.
+ *
+ * This rewrites:
+ * 1. `NewModelRecord` interface → union type alias of category-specific Input types
+ * 2. `ResponseReadV2ReferenceValue` interface → union type alias of Output types
+ * 3. Empty interfaces (Baseline, Style, ControlnetStyle, RecordType) → `string` aliases
+ */
+function postProcessGeneratedTypes() {
+  console.log('\n🔧 Post-processing generated types...');
+  const modelDir = path.join(OUTPUT_DIR, 'model');
+  let fixCount = 0;
+
+  fixCount += rewriteUnionType(modelDir, 'newModelRecord.ts', 'NewModelRecord', [
+    { type: 'ImageGenerationModelRecordInput', from: './imageGenerationModelRecordInput' },
+    { type: 'TextGenerationModelRecordInput', from: './textGenerationModelRecordInput' },
+    { type: 'ControlNetModelRecordInput', from: './controlNetModelRecordInput' },
+    { type: 'GenericModelRecordInput', from: './genericModelRecordInput' },
+  ]);
+
+  fixCount += rewriteUnionType(modelDir, 'responseReadV2ReferenceValue.ts', 'ResponseReadV2ReferenceValue', [
+    { type: 'ImageGenerationModelRecordOutput', from: './imageGenerationModelRecordOutput' },
+    { type: 'TextGenerationModelRecordOutput', from: './textGenerationModelRecordOutput' },
+    { type: 'ControlNetModelRecordOutput', from: './controlNetModelRecordOutput' },
+    { type: 'GenericModelRecordOutput', from: './genericModelRecordOutput' },
+  ]);
+
+  fixCount += rewriteEmptyInterfaceToString(modelDir, 'baseline.ts', 'Baseline');
+  fixCount += rewriteEmptyInterfaceToString(modelDir, 'style.ts', 'Style');
+  fixCount += rewriteEmptyInterfaceToString(modelDir, 'recordType.ts', 'RecordType');
+
+  // controlnetStyle may have been renamed by fixCaseCollisionImports
+  const controlnetFile = fs.existsSync(path.join(modelDir, 'controlnetStyle0.ts'))
+    ? 'controlnetStyle0.ts'
+    : 'controlnetStyle.ts';
+  fixCount += rewriteEmptyInterfaceToString(modelDir, controlnetFile, 'ControlnetStyle');
+
+  console.log(`✅ Post-processing complete (${fixCount} types rewritten)`);
+  return fixCount;
+}
+
+/**
+ * Rewrite a flat merged interface into a union type alias.
+ */
+function rewriteUnionType(modelDir, filename, typeName, members) {
+  const filePath = path.join(modelDir, filename);
+  if (!fs.existsSync(filePath)) {
+    console.log(`   ⚠️  ${filename} not found, skipping`);
+    return 0;
+  }
+
+  const imports = members
+    .map((m) => `import { ${m.type} } from '${m.from}';`)
+    .join('\n');
+  const union = members.map((m) => m.type).join('\n  | ');
+
+  const content = [
+    '/**',
+    ' * FastAPI',
+    ' *',
+    ' * NOTE: This class is auto generated by OpenAPI Generator (https://openapi-generator.tech).',
+    ' * https://openapi-generator.tech',
+    ' *',
+    ` * Post-processed by generate-api-client.js to produce a proper union type.`,
+    ' */',
+    imports,
+    '',
+    `export type ${typeName} =`,
+    `  | ${union};`,
+    '',
+  ].join('\n');
+
+  fs.writeFileSync(filePath, content, 'utf8');
+  console.log(`   Rewrote ${filename}: interface → union type`);
+  return 1;
+}
+
+/**
+ * Rewrite an empty interface (e.g. `export interface Baseline {}`) into a string type alias.
+ */
+function rewriteEmptyInterfaceToString(modelDir, filename, typeName) {
+  const filePath = path.join(modelDir, filename);
+  if (!fs.existsSync(filePath)) {
+    console.log(`   ⚠️  ${filename} not found, skipping`);
+    return 0;
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8');
+  if (!content.includes(`export interface ${typeName} {}`)) {
+    console.log(`   ⚠️  ${filename} doesn't contain empty interface, skipping`);
+    return 0;
+  }
+
+  const newContent = [
+    '/**',
+    ' * FastAPI',
+    ' *',
+    ' * NOTE: This class is auto generated by OpenAPI Generator (https://openapi-generator.tech).',
+    ' * https://openapi-generator.tech',
+    ' *',
+    ` * Post-processed by generate-api-client.js to use string instead of empty interface.`,
+    ' */',
+    '',
+    `export type ${typeName} = string;`,
+    '',
+  ].join('\n');
+
+  fs.writeFileSync(filePath, newContent, 'utf8');
+  console.log(`   Rewrote ${filename}: empty interface → string type alias`);
+  return 1;
 }
 
 /**
@@ -336,13 +678,32 @@ async function main() {
     // Step 4: Clean output folders
     cleanOutputFolders();
 
-    // Step 5: Run openapi-generator
-    runGenerator(schemaSource, modelNameMappings);
+    // Step 5: Pre-process schema to fix generator issues
+    preprocessSchema(schema);
 
-    // Step 6: Run prettier
+    // Step 6: Write preprocessed schema to temp file for generator input
+    // Uses relative path — the Java-based generator chokes on absolute Windows paths
+    const preprocessedSchemaPath = './preprocessed-schema.json';
+    fs.writeFileSync(preprocessedSchemaPath, JSON.stringify(schema, null, 2), 'utf8');
+
+    // Step 7: Run openapi-generator (using preprocessed schema)
+    runGenerator(preprocessedSchemaPath, modelNameMappings);
+
+    // Clean up temp file
+    if (fs.existsSync(preprocessedSchemaPath)) {
+      fs.unlinkSync(preprocessedSchemaPath);
+    }
+
+    // Step 7: Fix case-insensitive filename collision imports
+    fixCaseCollisionImports();
+
+    // Step 8: Post-process generated types (rewrite unions and empty interfaces)
+    postProcessGeneratedTypes();
+
+    // Step 9: Run prettier
     runPrettier();
 
-    // Step 7: Save schema locally (if fetched from URL)
+    // Step 10: Save schema locally (if fetched from URL)
     saveSchemaLocally(schema);
 
     console.log('\n╔═══════════════════════════════════════════════════════════════╗');
@@ -366,4 +727,14 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { fetchSchema, extractEnumNames, generateModelNameMappings };
+module.exports = {
+  fetchSchema,
+  extractEnumNames,
+  generateModelNameMappings,
+  preprocessSchema,
+  fixInlineAnyOfUnions,
+  collapseEnumStringAnyOf,
+  postProcessGeneratedTypes,
+  rewriteUnionType,
+  rewriteEmptyInterfaceToString,
+};

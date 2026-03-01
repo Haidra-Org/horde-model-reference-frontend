@@ -10,9 +10,1190 @@
     }
   ],
   "paths": {
+    "/model_references/v2/pending_queue/changes": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "List pending queue entries",
+        "description": "Return a filtered, paginated list of pending queue entries.",
+        "operationId": "list_pending_changes_model_references_v2_pending_queue_changes_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statuses",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PendingChangeStatus"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Statuses"
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categories"
+            }
+          },
+          {
+            "name": "batch_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Model Name"
+            }
+          },
+          {
+            "name": "requested_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Requested By"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered queue entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueuePage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Pending queue disabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/purge": {
+      "post": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Purge pending changes matching filters",
+        "description": "Delete queued changes in bulk, optionally as a dry run.",
+        "operationId": "purge_pending_changes_model_references_v2_pending_queue_purge_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PurgePendingChangesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Filtered changes removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurgePendingChangesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid purge request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/model_references/v2/pending_queue/changes/{change_id}": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Get a single pending change",
+        "description": "Return details for a single pending change.",
+        "operationId": "read_pending_change_model_references_v2_pending_queue_changes__change_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pending change details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Change not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/changes/{change_id}/diff": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Get diff for a pending change",
+        "description": "Return a detailed diff for a pending change.\n\nCompares the pending change payload against the current model state\nin the backend to show exactly what would change if applied.\n\nFor UPDATE operations, returns field-level diffs showing added,\nremoved, and modified fields. For CREATE/DELETE operations, shows\nthe full proposed/current state respectively.",
+        "operationId": "get_pending_change_diff_model_references_v2_pending_queue_changes__change_id__diff_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diff between current and proposed state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeDiff"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Change not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/changes/diff": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Get diffs for multiple pending changes",
+        "description": "Return diffs for multiple pending changes in bulk.\n\nAccepts a list of change IDs and returns diffs for each. Changes\nthat cannot be found or diffed are reported in the errors array.",
+        "operationId": "get_pending_changes_diffs_model_references_v2_pending_queue_changes_diff_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 1,
+              "maxItems": 100,
+              "title": "Change Ids"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diffs for requested changes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeDiffPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/batches": {
+      "post": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Approve or reject queued changes",
+        "description": "Approve and/or reject a set of pending changes in one batch.",
+        "operationId": "process_pending_batch_model_references_v2_pending_queue_batches_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PendingBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Batch processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingBatchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/model_references/v2/pending_queue/changes/{change_id}/apply": {
+      "post": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Apply an approved change to the backend",
+        "description": "Apply an approved pending change and mark it as applied.",
+        "operationId": "apply_pending_change_endpoint_model_references_v2_pending_queue_changes__change_id__apply_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyPendingChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Change applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplySingleChangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Change not ready for apply",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Change not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Writes not supported",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/apply": {
+      "post": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Apply multiple approved changes",
+        "description": "Apply a batch of approved pending changes sequentially.",
+        "operationId": "apply_pending_changes_endpoint_model_references_v2_pending_queue_apply_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyPendingChangesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "All requested changes applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyPendingChangesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or change state"
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the change ids was not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Writes not supported or backend failure"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/model_references/v2/pending_queue/apply_batch/{batch_id}": {
+      "post": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "v2",
+          "pending_queue"
+        ],
+        "summary": "Apply all approved changes in a specific batch",
+        "description": "Apply all APPROVED changes in a batch, skipping already-applied changes.",
+        "operationId": "apply_batch_endpoint_model_references_v2_pending_queue_apply_batch__batch_id__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "job_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All approved changes in batch applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyPendingChangesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch or change state"
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch not found or has no approved changes"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Writes not supported or backend failure"
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/audit/current": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "audit",
+          "v2",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "List currently pending (unapproved) changes",
+        "operationId": "get_current_pending_changes_model_references_v2_pending_queue_audit_current_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueueAuditCurrentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/audit/batches": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "audit",
+          "v2",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "List historical pending queue batches",
+        "operationId": "list_pending_queue_batches_model_references_v2_pending_queue_audit_batches_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Return items older than this batch id",
+              "title": "Cursor"
+            },
+            "description": "Return items older than this batch id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Maximum number of batches to return",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Maximum number of batches to return"
+          },
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueueAuditBatchPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/audit/batches/{batch_id}": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "audit",
+          "v2",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "Get details for a specific batch",
+        "operationId": "get_pending_queue_batch_detail_model_references_v2_pending_queue_audit_batches__batch_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueueAuditBatchDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/pending_queue/audit/batches/{batch_id}/net_changes": {
+      "get": {
+        "tags": [
+          "v2",
+          "pending_queue",
+          "audit",
+          "v2",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "Get net changes for a specific batch",
+        "description": "Compute the net effect of all changes in a batch.\n\nAnalyzes all operations (add, update, delete) applied in the batch and\ncomputes the net change for each affected model. Models that are deleted\nand re-added with identical content show net_operation=UNCHANGED.\n\nResults are cached for 5 minutes to match existing audit caching patterns.",
+        "operationId": "get_batch_net_changes_model_references_v2_pending_queue_audit_batches__batch_id__net_changes_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchNetChangeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/me/roles": {
+      "get": {
+        "tags": [
+          "v2",
+          "user"
+        ],
+        "summary": "Get current user roles",
+        "description": "Returns the authenticated user's roles and permissions for the horde-model-reference service. This endpoint validates the provided API key against the AI Horde API and checks which roles (approver, requestor) the user has been granted.",
+        "operationId": "get_current_user_roles_model_references_v2_me_roles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRolesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
     "/model_references/v2/info": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get info about the v2 model reference API",
         "description": "Get information about the v2 model reference API.\n\nThis is the v2 model reference API, which uses the new format established by horde_model_reference.",
         "operationId": "read_v2_reference_api_info",
@@ -41,7 +1222,9 @@
     },
     "/model_references/v2/model_categories": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get all v2 model reference names",
         "description": "Get all available v2 model reference category names.\n\nReturns a list of all model categories that have v2 format references available.",
         "operationId": "read_v2_references_names",
@@ -77,7 +1260,9 @@
     },
     "/model_references/v2/{model_category_name}": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get a specific v2 model reference by category name",
         "description": "Get all models in a specific v2 model reference category.\n\nReturns the complete v2 format JSON for the requested category.",
         "operationId": "read_v2_reference",
@@ -147,7 +1332,9 @@
     },
     "/model_references/v2/{model_category_name}/{model_name}": {
       "get": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Get a specific model by category and name",
         "description": "Get a specific model by category and name.\n\nArgs:\n    model_category_name: The model reference category (e.g., image_generation).\n    model_name: The name of the model within the category.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The model record data.\n\nRaises:\n    HTTPException: 404 if category or model not found.",
         "operationId": "read_v2_single_model",
@@ -231,10 +1418,17 @@
         }
       },
       "put": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Update an existing model in v2 format",
         "description": "Update an existing model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the specified category. Use POST to create new models.\n\n- Preserves original `created_at` and `created_by` metadata\n- Updates `updated_at` timestamp",
         "operationId": "update_v2_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "parameters": [
           {
             "name": "model_category_name",
@@ -281,29 +1475,17 @@
         },
         "responses": {
           "200": {
-            "description": "Model updated successfully",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ImageGenerationModelRecord-Output"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TextGenerationModelRecord-Output"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ControlNetModelRecord-Output"
-                    },
-                    {
-                      "$ref": "#/components/schemas/GenericModelRecord-Output"
-                    }
-                  ],
-                  "description": "A model record conforming to one of the category-specific schemas",
-                  "title": "Response Update V2 Model"
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
-            },
+            }
+          },
+          "202": {
+            "description": "Model change queued for approval",
             "links": {
               "GetUpdatedModel": {
                 "operationId": "read_v2_single_model",
@@ -380,10 +1562,17 @@
         }
       },
       "delete": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Delete a v2 model entry",
-        "description": "Delete a model from a v2 model reference category.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nPermanently removes the specified model from the category.",
+        "description": "Queue deletion of a model from a v2 model reference category.",
         "operationId": "delete_v2_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "parameters": [
           {
             "name": "model_category_name",
@@ -404,8 +1593,15 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Model deleted successfully",
+          "202": {
+            "description": "Model change queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            },
             "links": {
               "GetRemainingModels": {
                 "operationId": "read_v2_reference",
@@ -458,7 +1654,9 @@
     },
     "/model_references/v2/image_generation/create_model": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new image generation model in v2 format",
         "description": "Create a new image generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the image generation category.",
         "operationId": "create_v2_image_generation_model",
@@ -473,12 +1671,12 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Model created successfully",
+          "202": {
+            "description": "Model change queued for approval",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ImageGenerationModelRecord-Output"
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             },
@@ -551,12 +1749,19 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
       }
     },
     "/model_references/v2/text_generation/create_model": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new text generation model in v2 format",
         "description": "Create a new text generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the text generation category.",
         "operationId": "create_v2_text_generation_model",
@@ -571,12 +1776,12 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Model created successfully",
+          "202": {
+            "description": "Model change queued for approval",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TextGenerationModelRecord-Output"
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             },
@@ -649,12 +1854,19 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
       }
     },
     "/model_references/v2/controlnet/create_model": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new ControlNet model in v2 format",
         "description": "Create a new ControlNet model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the ControlNet category.",
         "operationId": "create_v2_controlnet_model",
@@ -669,12 +1881,12 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Model created successfully",
+          "202": {
+            "description": "Model change queued for approval",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ControlNetModelRecord-Output"
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             },
@@ -747,15 +1959,27 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
       }
     },
     "/model_references/v2/{model_category_name}/add": {
       "post": {
-        "tags": ["v2"],
+        "tags": [
+          "v2"
+        ],
         "summary": "Create a new model in v2 format",
         "description": "Create a new model in the specified category.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the specified category.",
         "operationId": "create_v2_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
         "parameters": [
           {
             "name": "model_category_name",
@@ -792,27 +2016,12 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Model created successfully",
+          "202": {
+            "description": "Model change queued for approval",
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/ImageGenerationModelRecord-Output"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TextGenerationModelRecord-Output"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ControlNetModelRecord-Output"
-                    },
-                    {
-                      "$ref": "#/components/schemas/GenericModelRecord-Output"
-                    }
-                  ],
-                  "description": "A model record conforming to one of the category-specific schemas",
-                  "title": "Response Create V2 Model"
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             },
@@ -898,7 +2107,10 @@
     },
     "/model_references/statistics/{model_category_name}": {
       "get": {
-        "tags": ["v2", "statistics"],
+        "tags": [
+          "v2",
+          "statistics"
+        ],
         "summary": "Get statistics for a model category",
         "description": "Get comprehensive statistics for a model reference category.\n\nReturns aggregate metrics including:\n- Total model counts (overall, NSFW, SFW)\n- Baseline distribution\n- Download statistics\n- Tag and style distributions\n- Category-specific metrics (trigger words, inpainting, etc.)\n\nStatistics are cached with TTL (default 300s) and automatically\ninvalidated when model data changes. Caching is skipped when\ngrouping is enabled.\n\nArgs:\n    model_category_name: The model reference category to get statistics for.\n    manager: The model reference manager (injected).\n    stats_cache: The statistics cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    limit: Maximum number of models to return (for pagination).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryStatistics containing all computed metrics.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if computation fails.",
         "operationId": "read_v2_category_statistics",
@@ -988,7 +2200,10 @@
     },
     "/model_references/statistics/{model_category_name}/with-stats": {
       "get": {
-        "tags": ["v2", "statistics"],
+        "tags": [
+          "v2",
+          "statistics"
+        ],
         "summary": "Get models merged with AI Horde runtime statistics",
         "description": "Get AI Horde statistics data for models in a given category.\n\nCombines live runtime statistics from the AI Horde API:\n- Worker count, queued jobs, performance metrics, ETA\n- Usage statistics (day, month, total)\n- Optional worker details\n- Optional per-backend variations (for text generation models)\n\n**Caching:**\n- Model reference data: cached by ModelReferenceManager (60s TTL)\n- Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available)\n- Merged results: computed on-demand (no caching)\n\nArgs:\n    model_category_name: The model category (image_generation or text_generation).\n    manager: Model reference manager dependency.\n    horde_api: Horde API integration dependency.\n    include_workers: Include detailed worker information for each model.\n    include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.\n    min_worker_count: Filter to models with at least this many workers.\n    sort_by: Sort by field (worker_count, usage_total, usage_month, name).\n    sort_desc: Sort in descending order (default: True).\n\nReturns:\n    JSONResponse: Dict of model_name -> enriched_model_data.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if Horde API fails.",
         "operationId": "read_models_with_stats",
@@ -1121,9 +2336,12 @@
     },
     "/model_references/statistics/{model_category_name}/audit": {
       "get": {
-        "tags": ["v2", "audit"],
+        "tags": [
+          "v2",
+          "audit"
+        ],
         "summary": "Get audit analysis for a model category",
-        "description": "Get comprehensive audit analysis for a model reference category.\n\nAnalyzes all models in the category to identify deletion risks including:\n- Missing or invalid download URLs\n- Non-preferred file hosts\n- Missing required fields (description, baseline)\n- Zero active workers\n- Low or no recent usage\n\nReturns both per-model audit information and aggregate summary statistics.\nAudit results are cached (default 300s TTL) and automatically invalidated\nwhen model data changes.\n\nArgs:\n    model_category_name: The model reference category to audit.\n    manager: The model reference manager (injected).\n    horde_api: The Horde API integration (injected).\n    audit_cache: The audit cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).\n    limit: Maximum number of models to return (None = all).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryAuditResponse with per-model audit info and summary.\n\nRaises:\n    HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.",
+        "description": "Get comprehensive audit analysis for a model reference category.\n\nAnalyzes all models in the category to identify deletion risks including:\n- Missing or invalid download URLs\n- Non-preferred file hosts\n- Missing required fields (description, baseline)\n- Zero active workers\n- Low or no recent usage\n\nReturns both per-model audit information and aggregate summary statistics.\nAudit results are cached (default 300s TTL) and automatically invalidated\nwhen model data changes.\n\nArgs:\n    model_category_name: The model reference category to audit.\n    manager: The model reference manager (injected).\n    horde_api: The Horde API integration (injected).\n    audit_cache: The audit cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    include_backend_variations: Include per-backend breakdown for text models (ungrouped view).\n    preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).\n    limit: Maximum number of models to return (None = all).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryAuditResponse with per-model audit info and summary.\n\nRaises:\n    HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.",
         "operationId": "read_v2_category_audit",
         "parameters": [
           {
@@ -1145,6 +2363,18 @@
               "title": "Group Text Models"
             },
             "description": "Group text models by base name (strips quantization)"
+          },
+          {
+            "name": "include_backend_variations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models=False.",
+              "default": false,
+              "title": "Include Backend Variations"
+            },
+            "description": "Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models=False."
           },
           {
             "name": "preset",
@@ -1232,7 +2462,12 @@
     },
     "/model_references/v2/metadata/last_updated": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for canonical format (v2)",
         "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor v2 format operations. Only available when canonical_format='v2'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'v2'.",
         "operationId": "read_v2_last_updated",
@@ -1242,7 +2477,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/horde_model_reference__service__v1__routers__metadata__LastUpdatedResponse"
+                  "$ref": "#/components/schemas/LastUpdatedResponse"
                 }
               }
             },
@@ -1264,7 +2499,12 @@
     },
     "/model_references/v2/metadata/{model_category_name}/last_updated": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for a specific category (v2)",
         "description": "Get the last update timestamp for a specific category (v2 format).\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryLastUpdatedResponse with the timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_v2_category_last_updated",
@@ -1284,7 +2524,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/horde_model_reference__service__v1__routers__metadata__CategoryLastUpdatedResponse"
+                  "$ref": "#/components/schemas/CategoryLastUpdatedResponse"
                 }
               }
             },
@@ -1319,7 +2559,12 @@
     },
     "/model_references/v2/metadata/metadata": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get all v2 format metadata",
         "description": "Get all v2 format metadata.\n\nReturns a dictionary mapping each category to its v2 format metadata.\n\nArgs:\n    manager: The model reference manager dependency.\n\nReturns:\n    Dict of category to CategoryMetadata.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.",
         "operationId": "read_all_v2_metadata",
@@ -1362,7 +2607,12 @@
     },
     "/model_references/v2/metadata/{model_category_name}": {
       "get": {
-        "tags": ["v2", "metadata", "v2", "metadata"],
+        "tags": [
+          "v2",
+          "metadata",
+          "v2",
+          "metadata"
+        ],
         "summary": "Get v2 format metadata for a specific category",
         "description": "Get v2 format metadata for a specific category.\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryMetadata for the category.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_v2_category_metadata",
@@ -1419,9 +2669,1159 @@
         }
       }
     },
+    "/model_references/v1/pending_queue/changes": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "List pending queue entries",
+        "description": "Return a filtered, paginated list of pending queue entries.",
+        "operationId": "list_pending_changes_model_references_v1_pending_queue_changes_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "statuses",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PendingChangeStatus"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Statuses"
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categories"
+            }
+          },
+          {
+            "name": "batch_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "model_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Model Name"
+            }
+          },
+          {
+            "name": "requested_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Requested By"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filtered queue entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueuePage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Pending queue disabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/purge": {
+      "post": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Purge pending changes matching filters",
+        "description": "Delete queued changes in bulk, optionally as a dry run.",
+        "operationId": "purge_pending_changes_model_references_v1_pending_queue_purge_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PurgePendingChangesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Filtered changes removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurgePendingChangesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid purge request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/model_references/v1/pending_queue/changes/{change_id}": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Get a single pending change",
+        "description": "Return details for a single pending change.",
+        "operationId": "read_pending_change_model_references_v1_pending_queue_changes__change_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pending change details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Change not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/changes/{change_id}/diff": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Get diff for a pending change",
+        "description": "Return a detailed diff for a pending change.\n\nCompares the pending change payload against the current model state\nin the backend to show exactly what would change if applied.\n\nFor UPDATE operations, returns field-level diffs showing added,\nremoved, and modified fields. For CREATE/DELETE operations, shows\nthe full proposed/current state respectively.",
+        "operationId": "get_pending_change_diff_model_references_v1_pending_queue_changes__change_id__diff_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diff between current and proposed state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeDiff"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Change not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/changes/diff": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Get diffs for multiple pending changes",
+        "description": "Return diffs for multiple pending changes in bulk.\n\nAccepts a list of change IDs and returns diffs for each. Changes\nthat cannot be found or diffed are reported in the errors array.",
+        "operationId": "get_pending_changes_diffs_model_references_v1_pending_queue_changes_diff_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "minItems": 1,
+              "maxItems": 100,
+              "title": "Change Ids"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Diffs for requested changes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeDiffPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/batches": {
+      "post": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Approve or reject queued changes",
+        "description": "Approve and/or reject a set of pending changes in one batch.",
+        "operationId": "process_pending_batch_model_references_v1_pending_queue_batches_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PendingBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Batch processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingBatchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/model_references/v1/pending_queue/changes/{change_id}/apply": {
+      "post": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Apply an approved change to the backend",
+        "description": "Apply an approved pending change and mark it as applied.",
+        "operationId": "apply_pending_change_endpoint_model_references_v1_pending_queue_changes__change_id__apply_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Change Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyPendingChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Change applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplySingleChangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Change not ready for apply",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Change not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Writes not supported",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/apply": {
+      "post": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Apply multiple approved changes",
+        "description": "Apply a batch of approved pending changes sequentially.",
+        "operationId": "apply_pending_changes_endpoint_model_references_v1_pending_queue_apply_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyPendingChangesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "All requested changes applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyPendingChangesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or change state"
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One of the change ids was not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Writes not supported or backend failure"
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/model_references/v1/pending_queue/apply_batch/{batch_id}": {
+      "post": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "v1",
+          "pending_queue"
+        ],
+        "summary": "Apply all approved changes in a specific batch",
+        "description": "Apply all APPROVED changes in a batch, skipping already-applied changes.",
+        "operationId": "apply_batch_endpoint_model_references_v1_pending_queue_apply_batch__batch_id__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "job_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All approved changes in batch applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyPendingChangesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch or change state"
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch not found or has no approved changes"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Writes not supported or backend failure"
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/audit/current": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "audit",
+          "v1",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "List currently pending (unapproved) changes",
+        "operationId": "get_current_pending_changes_model_references_v1_pending_queue_audit_current_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueueAuditCurrentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/audit/batches": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "audit",
+          "v1",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "List historical pending queue batches",
+        "operationId": "list_pending_queue_batches_model_references_v1_pending_queue_audit_batches_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Return items older than this batch id",
+              "title": "Cursor"
+            },
+            "description": "Return items older than this batch id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Maximum number of batches to return",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Maximum number of batches to return"
+          },
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueueAuditBatchPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/audit/batches/{batch_id}": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "audit",
+          "v1",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "Get details for a specific batch",
+        "operationId": "get_pending_queue_batch_detail_model_references_v1_pending_queue_audit_batches__batch_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingQueueAuditBatchDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v1/pending_queue/audit/batches/{batch_id}/net_changes": {
+      "get": {
+        "tags": [
+          "v1",
+          "pending_queue",
+          "audit",
+          "v1",
+          "pending_queue",
+          "audit"
+        ],
+        "summary": "Get net changes for a specific batch",
+        "description": "Compute the net effect of all changes in a batch.\n\nAnalyzes all operations (add, update, delete) applied in the batch and\ncomputes the net change for each affected model. Models that are deleted\nand re-added with identical content show net_operation=UNCHANGED.\n\nResults are cached for 5 minutes to match existing audit caching patterns.",
+        "operationId": "get_batch_net_changes_model_references_v1_pending_queue_audit_batches__batch_id__net_changes_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Batch Id"
+            }
+          },
+          {
+            "name": "domain_override",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AuditDomain"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional audit domain override",
+              "title": "Domain Override"
+            },
+            "description": "Optional audit domain override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchNetChangeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/model_references/v1/info": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get info about the legacy model reference API",
         "description": "Get information about the legacy model reference API.\n\nThis is the legacy model reference API, which uses the format originally found at the\ngithub repositories:\n- https://github.com/Haidra-Org/AI-Horde-image-model-reference\n- https://github.com/Haidra-Org/AI-Horde-text-model-reference",
         "operationId": "read_legacy_reference_api_info",
@@ -1444,7 +3844,9 @@
     },
     "/model_references/v1/model_categories": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get all legacy model reference names",
         "description": "Get all available legacy model reference category names.\n\nReturns a list of all model categories that have legacy format references available.",
         "operationId": "read_legacy_references_names",
@@ -1471,7 +3873,9 @@
     },
     "/model_references/v1/text_generation": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get text generation models with optional grouping field",
         "description": "Get all text generation models with optional text_model_group field.\n\nReturns the complete legacy format JSON for text generation models.\n\nBy default, the text_model_group field is not included (legacy format).\nSet include_group=true to dynamically compute and include the text_model_group\nfield, which contains the base model group name for grouping model variants\ntogether (e.g., models with different quantization levels).",
         "operationId": "read_legacy_text_generation_reference",
@@ -1514,7 +3918,9 @@
         }
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new text generation model in legacy format",
         "description": "Create a new text generation model in legacy format.\n\nThe model name in the request body must not already exist in the text generation category.",
         "operationId": "create_legacy_text_generation_model",
@@ -1544,6 +3950,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -1559,7 +3975,9 @@
         }
       },
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_text_generation_model",
@@ -1589,6 +4007,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -1606,7 +4034,9 @@
     },
     "/model_references/v1/{model_category_name}": {
       "get": {
-        "tags": ["v1"],
+        "tags": [
+          "v1"
+        ],
         "summary": "Get a specific legacy model reference by category name",
         "description": "Get all models in a specific legacy model reference category.\n\nReturns the complete legacy format JSON for the requested category.\n\n**Note:** `stable_diffusion` is an alias for `image_generation`.",
         "operationId": "read_legacy_reference",
@@ -1652,9 +4082,11 @@
     },
     "/model_references/v1/{model_category_name}/{model_name}": {
       "delete": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Delete a legacy model entry.",
-        "description": "Delete a model from a legacy model reference category.\n\nPermanently removes the specified model from the category.",
+        "description": "Delete a model from a legacy model reference category.\n\nWhen pending queue is enabled, this enqueues the deletion and returns HTTP 202.\nWhen pending queue is disabled, this deletes the model immediately and returns HTTP 200.",
         "operationId": "delete_legacy_model",
         "security": [
           {
@@ -1689,6 +4121,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model deletion queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Model not found"
           },
@@ -1710,7 +4152,9 @@
     },
     "/model_references/v1/image_generation": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_model",
@@ -1735,6 +4179,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -1755,7 +4209,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new image generation model in legacy format",
         "description": "Create a new image generation model in legacy format.\n\nThe model name in the request body must not already exist in the image generation category.",
         "operationId": "create_legacy_image_generation_model",
@@ -1776,6 +4232,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyStableDiffusionRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -1802,7 +4268,9 @@
     },
     "/model_references/v1/clip": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing CLIP model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_clip_model",
@@ -1827,6 +4295,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -1847,7 +4325,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new clip model in legacy format",
         "description": "Create a new CLIP model in legacy format.\n\nThe model name in the request body must not already exist in the clip category.",
         "operationId": "create_legacy_clip_model",
@@ -1868,6 +4348,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyClipRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -1894,7 +4384,9 @@
     },
     "/model_references/v1/blip": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing BLIP model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_blip_model",
@@ -1919,6 +4411,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -1939,7 +4441,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new BLIP model in legacy format",
         "description": "Create a new BLIP model in legacy format.\n\nThe model name in the request body must not already exist in the blip category.",
         "operationId": "create_legacy_blip_model",
@@ -1960,6 +4464,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyBlipRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -1986,7 +4500,9 @@
     },
     "/model_references/v1/codeformer": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing Codeformer model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_codeformer_model",
@@ -2011,6 +4527,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -2031,7 +4557,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new Codeformer model in legacy format",
         "description": "Create a new Codeformer model in legacy format.\n\nThe model name in the request body must not already exist in the codeformer category.",
         "operationId": "create_legacy_codeformer_model",
@@ -2052,6 +4580,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyCodeformerRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -2078,7 +4616,9 @@
     },
     "/model_references/v1/controlnet": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing ControlNet model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_controlnet_model",
@@ -2103,6 +4643,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -2123,7 +4673,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new ControlNet model in legacy format",
         "description": "Create a new ControlNet model in legacy format.\n\nThe model name in the request body must not already exist in the controlnet category.",
         "operationId": "create_legacy_controlnet_model",
@@ -2144,6 +4696,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyControlnetRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -2170,7 +4732,9 @@
     },
     "/model_references/v1/esrgan": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing ESRGAN model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_esrgan_model",
@@ -2195,6 +4759,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -2215,7 +4789,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new ESRGAN model in legacy format",
         "description": "Create a new ESRGAN model in legacy format.\n\nThe model name in the request body must not already exist in the esrgan category.",
         "operationId": "create_legacy_esrgan_model",
@@ -2236,6 +4812,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyEsrganRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -2262,7 +4848,9 @@
     },
     "/model_references/v1/gfpgan": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing GFPGAN model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_gfpgan_model",
@@ -2287,6 +4875,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -2307,7 +4905,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new GFPGAN model in legacy format",
         "description": "Create a new GFPGAN model in legacy format.\n\nThe model name in the request body must not already exist in the gfpgan category.",
         "operationId": "create_legacy_gfpgan_model",
@@ -2328,6 +4928,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyGfpganRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -2354,7 +4964,9 @@
     },
     "/model_references/v1/safety_checker": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing safety checker model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_safety_checker_model",
@@ -2379,6 +4991,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -2399,7 +5021,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new safety checker model in legacy format",
         "description": "Create a new safety checker model in legacy format.\n\nThe model name in the request body must not already exist in the safety_checker category.",
         "operationId": "create_legacy_safety_checker_model",
@@ -2420,6 +5044,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacySafetyCheckerRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -2446,7 +5080,9 @@
     },
     "/model_references/v1/miscellaneous": {
       "put": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Update an existing miscellaneous model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
         "operationId": "update_legacy_miscellaneous_model",
@@ -2471,6 +5107,16 @@
               }
             }
           },
+          "202": {
+            "description": "Model update queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request"
           },
@@ -2491,7 +5137,9 @@
         ]
       },
       "post": {
-        "tags": ["v1_create_update"],
+        "tags": [
+          "v1_create_update"
+        ],
         "summary": "Create a new miscellaneous model in legacy format",
         "description": "Create a new miscellaneous model in legacy format.\n\nThe model name in the request body must not already exist in the miscellaneous category.",
         "operationId": "create_legacy_miscellaneous_model",
@@ -2512,6 +5160,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LegacyMiscellaneousRecord-Output"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Model creation queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
                 }
               }
             }
@@ -2538,7 +5196,12 @@
     },
     "/model_references/v1/metadata/last_updated": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for canonical format (legacy)",
         "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor legacy format operations. Only available when canonical_format='legacy'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'legacy'.",
         "operationId": "read_legacy_last_updated",
@@ -2548,7 +5211,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/horde_model_reference__service__v1__routers__metadata__LastUpdatedResponse"
+                  "$ref": "#/components/schemas/LastUpdatedResponse"
                 }
               }
             },
@@ -2570,7 +5233,12 @@
     },
     "/model_references/v1/metadata/{model_category_name}/last_updated": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get last update timestamp for a specific category (legacy)",
         "description": "Get the last update timestamp for a specific category (legacy format).\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryLastUpdatedResponse with the timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_legacy_category_last_updated",
@@ -2590,7 +5258,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/horde_model_reference__service__v1__routers__metadata__CategoryLastUpdatedResponse"
+                  "$ref": "#/components/schemas/CategoryLastUpdatedResponse"
                 }
               }
             },
@@ -2625,7 +5293,12 @@
     },
     "/model_references/v1/metadata/metadata": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get all legacy format metadata",
         "description": "Get all legacy format metadata.\n\nReturns a dictionary mapping each category to its legacy format metadata.\n\nArgs:\n    manager: The model reference manager dependency.\n\nReturns:\n    Dict of category to CategoryMetadata.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.",
         "operationId": "read_all_legacy_metadata",
@@ -2668,7 +5341,12 @@
     },
     "/model_references/v1/metadata/{model_category_name}": {
       "get": {
-        "tags": ["v1", "metadata", "v1", "metadata"],
+        "tags": [
+          "v1",
+          "metadata",
+          "v1",
+          "metadata"
+        ],
         "summary": "Get legacy format metadata for a specific category",
         "description": "Get legacy format metadata for a specific category.\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryMetadata for the category.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_legacy_category_metadata",
@@ -2766,7 +5444,7 @@
     "/replicate_mode": {
       "get": {
         "summary": "Replicate Mode",
-        "description": "Endpoint to get the current replication mode.",
+        "description": "Get backend configuration and capabilities.\n\nReturns information about the backend's replication mode, canonical format,\nand whether write operations are supported.\n\nClients should use this endpoint on startup to determine:\n- Whether the backend supports write operations (writable=True)\n- Which API version to use for CRUD operations (based on canonical_format)\n\nNote: For backward compatibility, this endpoint path is retained but now\nreturns a richer BackendInfo response instead of just the ReplicateMode.",
         "operationId": "replicate_mode_replicate_mode_get",
         "responses": {
           "200": {
@@ -2774,7 +5452,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ReplicateMode"
+                  "$ref": "#/components/schemas/BackendInfo"
                 }
               }
             }
@@ -2785,6 +5463,308 @@
   },
   "components": {
     "schemas": {
+      "ApplyPendingChangeRequest": {
+        "properties": {
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          }
+        },
+        "type": "object",
+        "title": "ApplyPendingChangeRequest",
+        "description": "Request payload for applying an approved change."
+      },
+      "ApplyPendingChangesRequest": {
+        "properties": {
+          "change_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Change Ids"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "allow_mixed_batch": {
+            "type": "boolean",
+            "title": "Allow Mixed Batch",
+            "description": "If False, all changes must belong to the same batch",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "change_ids"
+        ],
+        "title": "ApplyPendingChangesRequest",
+        "description": "Request payload for applying multiple approved changes."
+      },
+      "ApplyPendingChangesResponse": {
+        "properties": {
+          "applied": {
+            "items": {
+              "$ref": "#/components/schemas/PendingChangeRecord"
+            },
+            "type": "array",
+            "title": "Applied"
+          },
+          "failed_change_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failed Change Id"
+          },
+          "failed_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failed Error"
+          },
+          "failed_error_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failed Error Type"
+          },
+          "batch_split_occurred": {
+            "type": "boolean",
+            "title": "Batch Split Occurred",
+            "description": "True if applying changes triggered a batch split (remaining changes reassigned)",
+            "default": false
+          },
+          "batch_split_original_batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Split Original Batch Id",
+            "description": "The original batch ID that was partially applied"
+          },
+          "batch_split_new_batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Split New Batch Id",
+            "description": "The new batch ID assigned to remaining unapplied changes"
+          },
+          "batch_split_reassigned_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Split Reassigned Count",
+            "description": "Number of changes that were reassigned to the new batch"
+          }
+        },
+        "type": "object",
+        "title": "ApplyPendingChangesResponse",
+        "description": "Response payload summarizing a bulk apply attempt.\n\nBatch Split Semantics:\nWhen a partial apply occurs (some changes in a batch are applied while others remain),\nthe remaining APPROVED changes are automatically reassigned to a new batch ID. This\ninformation is provided in the batch_split_* fields to help clients update their UI."
+      },
+      "ApplySingleChangeResponse": {
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/PendingChangeRecord",
+            "description": "The applied pending change record with updated status"
+          },
+          "batch_split_occurred": {
+            "type": "boolean",
+            "title": "Batch Split Occurred",
+            "description": "True if applying this change triggered a batch split",
+            "default": false
+          },
+          "batch_split_original_batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Split Original Batch Id",
+            "description": "The original batch ID that was partially applied"
+          },
+          "batch_split_new_batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Split New Batch Id",
+            "description": "The new batch ID assigned to remaining unapplied changes"
+          },
+          "batch_split_reassigned_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Split Reassigned Count",
+            "description": "Number of changes that were reassigned to the new batch"
+          }
+        },
+        "type": "object",
+        "required": [
+          "record"
+        ],
+        "title": "ApplySingleChangeResponse",
+        "description": "Response payload for applying a single pending change.\n\nIncludes the updated record and batch split information when applicable."
+      },
+      "AuditDomain": {
+        "type": "string",
+        "enum": [
+          "legacy",
+          "v2"
+        ],
+        "title": "AuditDomain",
+        "description": "Supported domains for audit events."
+      },
+      "AuditOperation": {
+        "type": "string",
+        "enum": [
+          "create",
+          "update",
+          "delete"
+        ],
+        "title": "AuditOperation",
+        "description": "CRUD operations captured by the audit log."
+      },
+      "BackendAuditVariation": {
+        "properties": {
+          "backend": {
+            "type": "string",
+            "title": "Backend",
+            "description": "Backend name (e.g., 'aphrodite', 'koboldcpp', 'canonical')."
+          },
+          "variant_name": {
+            "type": "string",
+            "title": "Variant Name",
+            "description": "Full model name as reported by Horde API (may include backend prefix)."
+          },
+          "worker_count": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Worker Count",
+            "description": "Number of workers serving this backend variant.",
+            "default": 0
+          },
+          "performance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Performance",
+            "description": "Performance metric for this backend variant."
+          },
+          "usage_day": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Usage Day",
+            "description": "Usage count for the past day from this backend.",
+            "default": 0
+          },
+          "usage_month": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Usage Month",
+            "description": "Usage count for the past month from this backend.",
+            "default": 0
+          },
+          "usage_total": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Usage Total",
+            "description": "Total usage count from this backend.",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "backend",
+          "variant_name"
+        ],
+        "title": "BackendAuditVariation",
+        "description": "Per-backend statistics for a text generation model in audit context.\n\nProvides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical).\nUsed in ungrouped audit view to show backend-specific details for each model."
+      },
+      "BackendInfo": {
+        "properties": {
+          "replicate_mode": {
+            "$ref": "#/components/schemas/ReplicateMode"
+          },
+          "canonical_format": {
+            "$ref": "#/components/schemas/CanonicalFormat"
+          },
+          "writable": {
+            "type": "boolean",
+            "title": "Writable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replicate_mode",
+          "canonical_format",
+          "writable"
+        ],
+        "title": "BackendInfo",
+        "description": "Information about the backend configuration and capabilities.\n\nThis is returned by the /replicate_mode endpoint to provide clients\nwith the information they need to correctly interact with the API."
+      },
       "BaselineStats": {
         "properties": {
           "baseline": {
@@ -2807,9 +5787,84 @@
           }
         },
         "type": "object",
-        "required": ["baseline", "count", "percentage"],
+        "required": [
+          "baseline",
+          "count",
+          "percentage"
+        ],
         "title": "BaselineStats",
         "description": "Statistics about model baselines in a category."
+      },
+      "BatchNetChangeResponse": {
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "title": "Batch Id"
+          },
+          "batch_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Title"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/AuditDomain"
+          },
+          "model_changes": {
+            "items": {
+              "$ref": "#/components/schemas/ModelNetChange"
+            },
+            "type": "array",
+            "title": "Model Changes"
+          },
+          "models_added": {
+            "type": "integer",
+            "title": "Models Added",
+            "default": 0
+          },
+          "models_modified": {
+            "type": "integer",
+            "title": "Models Modified",
+            "default": 0
+          },
+          "models_deleted": {
+            "type": "integer",
+            "title": "Models Deleted",
+            "default": 0
+          },
+          "models_unchanged": {
+            "type": "integer",
+            "title": "Models Unchanged",
+            "default": 0
+          },
+          "total_field_changes": {
+            "type": "integer",
+            "title": "Total Field Changes",
+            "default": 0
+          },
+          "has_critical_changes": {
+            "type": "boolean",
+            "title": "Has Critical Changes",
+            "default": false
+          },
+          "generated_at": {
+            "type": "integer",
+            "title": "Generated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "domain",
+          "generated_at"
+        ],
+        "title": "BatchNetChangeResponse",
+        "description": "Response containing net changes for all models in a batch."
       },
       "CONTROLNET_STYLE": {
         "type": "string",
@@ -2829,6 +5884,15 @@
         ],
         "title": "CONTROLNET_STYLE",
         "description": "An enum of all the ControlNet 'styles' - the process that defines the model's behavior.\n\nExamples include canny, depth, and openpose."
+      },
+      "CanonicalFormat": {
+        "type": "string",
+        "enum": [
+          "LEGACY",
+          "V2"
+        ],
+        "title": "CanonicalFormat",
+        "description": "Which format is the canonical source of truth for model data.\n\nThis controls which API version has write access:\n- 'legacy': v1 API has CRUD operations, v2 API is read-only\n- 'v2': v2 API has CRUD operations, v1 API is read-only"
       },
       "CategoryAuditResponse": {
         "properties": {
@@ -2889,7 +5953,12 @@
           }
         },
         "type": "object",
-        "required": ["category", "category_total_month_usage", "models", "summary"],
+        "required": [
+          "category",
+          "category_total_month_usage",
+          "models",
+          "summary"
+        ],
         "title": "CategoryAuditResponse",
         "description": "Complete audit response for a category.\n\nContains both per-model audit information and aggregate summary."
       },
@@ -2999,6 +6068,32 @@
         ],
         "title": "CategoryAuditSummary",
         "description": "Summary statistics for a category audit.\n\nAggregates audit information across all models in a category."
+      },
+      "CategoryLastUpdatedResponse": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "last_updated": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "last_updated"
+        ],
+        "title": "CategoryLastUpdatedResponse",
+        "description": "Response for /{category}/last_updated endpoint."
       },
       "CategoryMetadata": {
         "properties": {
@@ -3231,7 +6326,11 @@
           }
         },
         "type": "object",
-        "required": ["category", "total_models", "computed_at"],
+        "required": [
+          "category",
+          "total_models",
+          "computed_at"
+        ],
         "title": "CategoryStatistics",
         "description": "Comprehensive statistics for a model reference category.\n\nContains aggregate metrics, distributions, and metadata about all models in a category."
       },
@@ -3243,7 +6342,9 @@
           }
         },
         "type": "object",
-        "required": ["message"],
+        "required": [
+          "message"
+        ],
         "title": "ContainsMessage",
         "description": "A model that contains a message field."
       },
@@ -3255,7 +6356,9 @@
           }
         },
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "title": "ContainsStatus",
         "description": "A model that contains a status field."
       },
@@ -3311,11 +6414,22 @@
             "$ref": "#/components/schemas/ModelClassification"
           },
           "controlnet_style": {
-            "$ref": "#/components/schemas/CONTROLNET_STYLE"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CONTROLNET_STYLE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Controlnet Style"
           }
         },
         "type": "object",
-        "required": ["name", "controlnet_style"],
+        "required": [
+          "name",
+          "controlnet_style"
+        ],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
       },
@@ -3371,11 +6485,22 @@
             "$ref": "#/components/schemas/ModelClassification"
           },
           "controlnet_style": {
-            "$ref": "#/components/schemas/CONTROLNET_STYLE"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CONTROLNET_STYLE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Controlnet Style"
           }
         },
         "type": "object",
-        "required": ["name", "controlnet_style"],
+        "required": [
+          "name",
+          "controlnet_style"
+        ],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
       },
@@ -3491,7 +6616,10 @@
           }
         },
         "type": "object",
-        "required": ["file_name", "file_url"],
+        "required": [
+          "file_name",
+          "file_url"
+        ],
         "title": "DownloadRecord",
         "description": "A record of a file to download for a model. Typically a ckpt file."
       },
@@ -3587,7 +6715,9 @@
           }
         },
         "type": "object",
-        "required": ["msg"],
+        "required": [
+          "msg"
+        ],
         "title": "ErrorDetail",
         "description": "Detail about a specific error."
       },
@@ -3609,9 +6739,57 @@
           }
         },
         "type": "object",
-        "required": ["detail"],
+        "required": [
+          "detail"
+        ],
         "title": "ErrorResponse",
         "description": "Standardized error response."
+      },
+      "FieldChangeType": {
+        "type": "string",
+        "enum": [
+          "added",
+          "removed",
+          "modified"
+        ],
+        "title": "FieldChangeType",
+        "description": "Type of field-level change."
+      },
+      "FieldDiff": {
+        "properties": {
+          "field_path": {
+            "type": "string",
+            "title": "Field Path"
+          },
+          "old_value": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Old Value"
+          },
+          "new_value": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Value"
+          },
+          "change_type": {
+            "$ref": "#/components/schemas/FieldChangeType"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field_path",
+          "change_type"
+        ],
+        "title": "FieldDiff",
+        "description": "Field-level difference between before and after states."
       },
       "FineTuneSeriesInfo": {
         "properties": {
@@ -3665,14 +6843,24 @@
           }
         },
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "FineTuneSeriesInfo",
         "description": "Information about a fine-tuning series."
       },
       "GenericModelRecord-Input": {
         "properties": {
           "record_type": {
-            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Record Type"
           },
           "name": {
             "type": "string",
@@ -3721,14 +6909,26 @@
           }
         },
         "type": "object",
-        "required": ["record_type", "name", "model_classification"],
+        "required": [
+          "record_type",
+          "name",
+          "model_classification"
+        ],
         "title": "GenericModelRecord",
         "description": "A generic model reference record."
       },
       "GenericModelRecord-Output": {
         "properties": {
           "record_type": {
-            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Record Type"
           },
           "name": {
             "type": "string",
@@ -3777,7 +6977,11 @@
           }
         },
         "type": "object",
-        "required": ["record_type", "name", "model_classification"],
+        "required": [
+          "record_type",
+          "name",
+          "model_classification"
+        ],
         "title": "GenericModelRecord",
         "description": "A generic model reference record."
       },
@@ -3928,7 +7132,15 @@
             "default": false
           },
           "baseline": {
-            "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Baseline"
           },
           "optimization": {
             "anyOf": [
@@ -4012,12 +7224,16 @@
           "style": {
             "anyOf": [
               {
+                "type": "string"
+              },
+              {
                 "$ref": "#/components/schemas/MODEL_STYLE"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Style"
           },
           "requirements": {
             "anyOf": [
@@ -4077,7 +7293,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "baseline", "nsfw"],
+        "required": [
+          "name",
+          "baseline",
+          "nsfw"
+        ],
         "title": "ImageGenerationModelRecord",
         "description": "A model entry in the model reference."
       },
@@ -4145,7 +7365,15 @@
             "default": false
           },
           "baseline": {
-            "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Baseline"
           },
           "optimization": {
             "anyOf": [
@@ -4229,12 +7457,16 @@
           "style": {
             "anyOf": [
               {
+                "type": "string"
+              },
+              {
                 "$ref": "#/components/schemas/MODEL_STYLE"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Style"
           },
           "requirements": {
             "anyOf": [
@@ -4294,7 +7526,11 @@
           }
         },
         "type": "object",
-        "required": ["name", "baseline", "nsfw"],
+        "required": [
+          "name",
+          "baseline",
+          "nsfw"
+        ],
         "title": "ImageGenerationModelRecord",
         "description": "A model entry in the model reference."
       },
@@ -4309,10 +7545,33 @@
           "stable_cascade",
           "flux_1",
           "flux_schnell",
-          "flux_dev"
+          "flux_dev",
+          "qwen_image",
+          "z_image_turbo"
         ],
         "title": "KNOWN_IMAGE_GENERATION_BASELINE",
         "description": "An enum of all the image generation baselines."
+      },
+      "LastUpdatedResponse": {
+        "properties": {
+          "last_updated": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "last_updated"
+        ],
+        "title": "LastUpdatedResponse",
+        "description": "Response for /last_updated endpoint."
       },
       "LegacyBlipRecord-Input": {
         "properties": {
@@ -4412,7 +7671,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyBlipRecord",
         "description": "BLIP legacy record with category-specific normalization."
       },
@@ -4514,7 +7775,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyBlipRecord",
         "description": "BLIP legacy record with category-specific normalization."
       },
@@ -4526,7 +7789,10 @@
           },
           "type": {
             "type": "string",
-            "enum": ["clip", "coca"],
+            "enum": [
+              "clip",
+              "coca"
+            ],
             "title": "Type",
             "default": "clip"
           },
@@ -4627,7 +7893,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyClipRecord",
         "description": "CLIP legacy record with category-specific normalization."
       },
@@ -4639,7 +7907,10 @@
           },
           "type": {
             "type": "string",
-            "enum": ["clip", "coca"],
+            "enum": [
+              "clip",
+              "coca"
+            ],
             "title": "Type",
             "default": "clip"
           },
@@ -4740,7 +8011,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyClipRecord",
         "description": "CLIP legacy record with category-specific normalization."
       },
@@ -4842,7 +8115,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyCodeformerRecord",
         "description": "Codeformers legacy record with category-specific normalization."
       },
@@ -4944,7 +8219,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyCodeformerRecord",
         "description": "Codeformers legacy record with category-specific normalization."
       },
@@ -5053,7 +8330,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["path"],
+        "required": [
+          "path"
+        ],
         "title": "LegacyConfigFile",
         "description": "A single legacy config file entry."
       },
@@ -5166,7 +8445,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyControlnetRecord",
         "description": "ControlNet legacy record with category-specific normalization."
       },
@@ -5279,7 +8561,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyControlnetRecord",
         "description": "ControlNet legacy record with category-specific normalization."
       },
@@ -5381,7 +8666,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyEsrganRecord",
         "description": "ESRGAN legacy record with category-specific normalization."
       },
@@ -5483,7 +8770,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyEsrganRecord",
         "description": "ESRGAN legacy record with category-specific normalization."
       },
@@ -5585,7 +8874,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyGfpganRecord",
         "description": "GFPGAN legacy record with category-specific normalization."
       },
@@ -5687,7 +8978,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyGfpganRecord",
         "description": "GFPGAN legacy record with category-specific normalization."
       },
@@ -5788,7 +9081,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyMiscellaneousRecord",
         "description": "Miscellaneous legacy record with category-specific normalization."
       },
@@ -5889,7 +9185,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "type"],
+        "required": [
+          "name",
+          "type"
+        ],
         "title": "LegacyMiscellaneousRecord",
         "description": "Miscellaneous legacy record with category-specific normalization."
       },
@@ -5991,7 +9290,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacySafetyCheckerRecord",
         "description": "Safety Checker legacy record with category-specific normalization."
       },
@@ -6093,7 +9394,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacySafetyCheckerRecord",
         "description": "Safety Checker legacy record with category-specific normalization."
       },
@@ -6335,7 +9638,10 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name", "baseline"],
+        "required": [
+          "name",
+          "baseline"
+        ],
         "title": "LegacyStableDiffusionRecord",
         "description": "Stable Diffusion legacy record with category-specific validation."
       },
@@ -6560,7 +9866,9 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyTextGenerationRecord",
         "description": "Text generation legacy record with category-specific validation."
       },
@@ -6781,13 +10089,21 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "title": "LegacyTextGenerationRecord",
         "description": "Text generation legacy record with category-specific validation."
       },
       "MODEL_DOMAIN": {
         "type": "string",
-        "enum": ["image", "text", "video", "audio", "rendered_3d"],
+        "enum": [
+          "image",
+          "text",
+          "video",
+          "audio",
+          "rendered_3d"
+        ],
         "title": "MODEL_DOMAIN",
         "description": "The domain of a model, i.e., what it pertains to (image, text, video, etc.)."
       },
@@ -6818,14 +10134,23 @@
           "text_generation",
           "video_generation",
           "audio_generation",
-          "miscellaneous"
+          "miscellaneous",
+          "lora",
+          "ti"
         ],
         "title": "MODEL_REFERENCE_CATEGORY",
         "description": "The categories of model reference entries."
       },
       "MODEL_STYLE": {
         "type": "string",
-        "enum": ["generalist", "anime", "furry", "artistic", "other", "realistic"],
+        "enum": [
+          "generalist",
+          "anime",
+          "furry",
+          "artistic",
+          "other",
+          "realistic"
+        ],
         "title": "MODEL_STYLE",
         "description": "An enum of all the model styles."
       },
@@ -6988,10 +10313,25 @@
             "title": "Download Hosts",
             "description": "List of download host domains."
           },
+          "backend_variations": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/BackendAuditVariation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backend Variations",
+            "description": "Per-backend statistics for text generation models (ungrouped view)."
+          },
           "is_critical": {
             "type": "boolean",
             "title": "Is Critical",
-            "description": "Determine if model is in critical state.\n\nCritical = zero month usage AND no active workers.\n\nReturns:\n    True if model meets critical criteria.",
+            "description": "Determine if model is in critical state.\n\nFor text_generation: usage_month < threshold AND worker_count < threshold\nFor other models: zero month usage AND no active workers (original logic)\n\nReturns:\n    True if model meets critical criteria.",
             "readOnly": true
           },
           "has_warning": {
@@ -7025,13 +10365,89 @@
           }
         },
         "type": "object",
-        "required": ["domain", "purpose"],
+        "required": [
+          "domain",
+          "purpose"
+        ],
         "title": "ModelClassification",
         "description": "Contains specific information about how to categorize a model.\n\nThis includes the model's `MODEL_DOMAIN` and `MODEL_PURPOSE`."
       },
+      "ModelNetChange": {
+        "properties": {
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+          },
+          "net_operation": {
+            "$ref": "#/components/schemas/NetChangeType"
+          },
+          "before_state": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before State"
+          },
+          "after_state": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After State"
+          },
+          "field_diffs": {
+            "items": {
+              "$ref": "#/components/schemas/FieldDiff"
+            },
+            "type": "array",
+            "title": "Field Diffs"
+          },
+          "is_critical": {
+            "type": "boolean",
+            "title": "Is Critical",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "model_name",
+          "category",
+          "net_operation"
+        ],
+        "title": "ModelNetChange",
+        "description": "Net change for a single model across a batch."
+      },
+      "NetChangeType": {
+        "type": "string",
+        "enum": [
+          "added",
+          "modified",
+          "deleted",
+          "unchanged"
+        ],
+        "title": "NetChangeType",
+        "description": "Type of net change for a model across a batch or pending change."
+      },
       "OperationType": {
         "type": "string",
-        "enum": ["create", "update", "delete"],
+        "enum": [
+          "create",
+          "update",
+          "delete"
+        ],
         "title": "OperationType",
         "description": "Type of CRUD operation performed on model references."
       },
@@ -7081,13 +10497,1096 @@
           }
         },
         "type": "object",
-        "required": ["bucket_label", "count", "percentage"],
+        "required": [
+          "bucket_label",
+          "count",
+          "percentage"
+        ],
         "title": "ParameterBucketStats",
         "description": "Statistics about parameter count buckets for text generation models.\n\nUsed to group models by parameter size ranges for analysis."
       },
+      "PendingBatchRequest": {
+        "properties": {
+          "batch_title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Batch Title"
+          },
+          "approved_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved Ids"
+          },
+          "rejected_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected Ids"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reject Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_title"
+        ],
+        "title": "PendingBatchRequest",
+        "description": "Request payload used to approve/reject queued changes."
+      },
+      "PendingBatchResult": {
+        "properties": {
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "batch_title": {
+            "type": "string",
+            "title": "Batch Title"
+          },
+          "approved": {
+            "items": {
+              "$ref": "#/components/schemas/PendingChangeRecord"
+            },
+            "type": "array",
+            "title": "Approved"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/components/schemas/PendingChangeRecord"
+            },
+            "type": "array",
+            "title": "Rejected"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "batch_title",
+          "approved",
+          "rejected"
+        ],
+        "title": "PendingBatchResult",
+        "description": "Result of processing a batch of pending changes."
+      },
+      "PendingChangeDiff": {
+        "properties": {
+          "change_id": {
+            "type": "integer",
+            "title": "Change Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/AuditOperation"
+          },
+          "current_state": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current State",
+            "description": "The current model state in the backend (None if model doesn't exist for CREATE)"
+          },
+          "proposed_state": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed State",
+            "description": "The proposed new state from the pending change payload (None for DELETE)"
+          },
+          "net_operation": {
+            "type": "string",
+            "title": "Net Operation",
+            "description": "Computed net change type: 'added', 'modified', 'deleted', or 'unchanged'"
+          },
+          "field_diffs": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Field Diffs",
+            "description": "List of field-level differences between current and proposed state"
+          },
+          "is_critical": {
+            "type": "boolean",
+            "title": "Is Critical",
+            "description": "True if any critical fields (baseline, nsfw, etc.) are affected",
+            "default": false
+          },
+          "fields_added": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fields Added",
+            "description": "List of field paths that will be added"
+          },
+          "fields_removed": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fields Removed",
+            "description": "List of field paths that will be removed"
+          },
+          "fields_modified": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fields Modified",
+            "description": "List of field paths that will be modified"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change_id",
+          "category",
+          "model_name",
+          "operation",
+          "net_operation"
+        ],
+        "title": "PendingChangeDiff",
+        "description": "Diff between current model state and proposed pending change.\n\nThis model provides a detailed view of what would change if the pending\nchange were applied, including field-level diffs for update operations."
+      },
+      "PendingChangeDiffPage": {
+        "properties": {
+          "diffs": {
+            "items": {
+              "$ref": "#/components/schemas/PendingChangeDiff"
+            },
+            "type": "array",
+            "title": "Diffs"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "errors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Errors",
+            "description": "Changes that could not be diffed, with error details"
+          }
+        },
+        "type": "object",
+        "title": "PendingChangeDiffPage",
+        "description": "Bulk diff response for multiple pending changes."
+      },
+      "PendingChangeRecord": {
+        "properties": {
+          "change_id": {
+            "type": "integer",
+            "title": "Change Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/AuditOperation"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload",
+            "description": "Serialized model payload for apply job"
+          },
+          "requested_by": {
+            "type": "string",
+            "title": "Requested By"
+          },
+          "requested_username": {
+            "type": "string",
+            "title": "Requested Username"
+          },
+          "requested_at": {
+            "type": "integer",
+            "title": "Requested At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PendingChangeStatus",
+            "default": "pending"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "batch_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Title"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "approved_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved Username"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "rejected_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected By"
+          },
+          "rejected_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected Username"
+          },
+          "rejected_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected At"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reject Reason"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "applied_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied By"
+          },
+          "applied_username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Username"
+          },
+          "applied_job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Job Id"
+          },
+          "updated_at": {
+            "type": "integer",
+            "title": "Updated At"
+          },
+          "request_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change_id",
+          "category",
+          "model_name",
+          "operation",
+          "requested_by",
+          "requested_username"
+        ],
+        "title": "PendingChangeRecord",
+        "description": "Single pending change tracked by the queue."
+      },
+      "PendingChangeStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "applied",
+          "rejected"
+        ],
+        "title": "PendingChangeStatus",
+        "description": "Lifecycle states for queued changes."
+      },
+      "PendingQueueAuditBatchDetail": {
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "title": "Batch Id"
+          },
+          "batch_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Title"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "approved_change_count": {
+            "type": "integer",
+            "title": "Approved Change Count",
+            "default": 0
+          },
+          "rejected_change_count": {
+            "type": "integer",
+            "title": "Rejected Change Count",
+            "default": 0
+          },
+          "applied_change_count": {
+            "type": "integer",
+            "title": "Applied Change Count",
+            "default": 0
+          },
+          "total_change_count": {
+            "type": "integer",
+            "title": "Total Change Count",
+            "default": 0
+          },
+          "last_event_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Event Id"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/PendingQueueAuditChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id"
+        ],
+        "title": "PendingQueueAuditBatchDetail",
+        "description": "Detailed view combining batch summary with per-change timelines."
+      },
+      "PendingQueueAuditBatchPage": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/AuditDomain"
+          },
+          "batches": {
+            "items": {
+              "$ref": "#/components/schemas/PendingQueueAuditBatchSummary"
+            },
+            "type": "array",
+            "title": "Batches"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "batches"
+        ],
+        "title": "PendingQueueAuditBatchPage",
+        "description": "Cursor-based page of batch summaries."
+      },
+      "PendingQueueAuditBatchSummary": {
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "title": "Batch Id"
+          },
+          "batch_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Title"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "approved_change_count": {
+            "type": "integer",
+            "title": "Approved Change Count",
+            "default": 0
+          },
+          "rejected_change_count": {
+            "type": "integer",
+            "title": "Rejected Change Count",
+            "default": 0
+          },
+          "applied_change_count": {
+            "type": "integer",
+            "title": "Applied Change Count",
+            "default": 0
+          },
+          "total_change_count": {
+            "type": "integer",
+            "title": "Total Change Count",
+            "default": 0
+          },
+          "last_event_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Event Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id"
+        ],
+        "title": "PendingQueueAuditBatchSummary",
+        "description": "High-level aggregate for a processed pending queue batch."
+      },
+      "PendingQueueAuditChange": {
+        "properties": {
+          "change_id": {
+            "type": "integer",
+            "title": "Change Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PendingChangeStatus"
+          },
+          "operation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuditOperation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "category": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "requested_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By"
+          },
+          "requested_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "rejected_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected By"
+          },
+          "rejected_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected At"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reject Reason"
+          },
+          "applied_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied By"
+          },
+          "applied_at": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "applied_job_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Job Id"
+          },
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "batch_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Title"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/PendingQueueAuditEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change_id",
+          "status"
+        ],
+        "title": "PendingQueueAuditChange",
+        "description": "Lifecycle view of a pending change reconstructed from audit events."
+      },
+      "PendingQueueAuditCurrentResponse": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/AuditDomain"
+          },
+          "pending_changes": {
+            "items": {
+              "$ref": "#/components/schemas/PendingQueueAuditChange"
+            },
+            "type": "array",
+            "title": "Pending Changes"
+          },
+          "total_pending": {
+            "type": "integer",
+            "title": "Total Pending"
+          },
+          "generated_at": {
+            "type": "integer",
+            "title": "Generated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "pending_changes",
+          "total_pending",
+          "generated_at"
+        ],
+        "title": "PendingQueueAuditCurrentResponse",
+        "description": "Snapshot of currently pending (unapproved) changes."
+      },
+      "PendingQueueAuditEvent": {
+        "properties": {
+          "event_id": {
+            "type": "integer",
+            "title": "Event Id"
+          },
+          "timestamp": {
+            "type": "integer",
+            "title": "Timestamp"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "logical_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logical User Id"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "timestamp",
+          "action"
+        ],
+        "title": "PendingQueueAuditEvent",
+        "description": "Single audit log entry tied to a pending change."
+      },
+      "PendingQueuePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PendingChangeRecord"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "offset",
+          "limit"
+        ],
+        "title": "PendingQueuePage",
+        "description": "Paginated list of pending change records."
+      },
+      "PurgePendingChangesRequest": {
+        "properties": {
+          "statuses": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PendingChangeStatus"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statuses"
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "requested_by": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By"
+          },
+          "purge_all": {
+            "type": "boolean",
+            "title": "Purge All",
+            "default": false
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "PurgePendingChangesRequest",
+        "description": "Request payload to purge pending changes matching a filter."
+      },
+      "PurgePendingChangesResponse": {
+        "properties": {
+          "removed_count": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Removed Count"
+          },
+          "removed_change_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Removed Change Ids"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "removed_count"
+        ],
+        "title": "PurgePendingChangesResponse",
+        "description": "Response payload for a purge operation."
+      },
       "ReplicateMode": {
         "type": "string",
-        "enum": ["PRIMARY", "REPLICA"],
+        "enum": [
+          "PRIMARY",
+          "REPLICA"
+        ],
         "title": "ReplicateMode",
         "description": "Indicates if copies of the model reference are canonical or replicated."
       },
@@ -7113,7 +11612,11 @@
           }
         },
         "type": "object",
-        "required": ["tag", "count", "percentage"],
+        "required": [
+          "tag",
+          "count",
+          "percentage"
+        ],
         "title": "TagStats",
         "description": "Statistics about model tags or styles."
       },
@@ -7293,7 +11796,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "parameters"],
+        "required": [
+          "name",
+          "parameters"
+        ],
         "title": "TextGenerationModelRecord",
         "description": "A text generation model entry in the model reference."
       },
@@ -7473,7 +11979,10 @@
           }
         },
         "type": "object",
-        "required": ["name", "parameters"],
+        "required": [
+          "name",
+          "parameters"
+        ],
         "title": "TextGenerationModelRecord",
         "description": "A text generation model entry in the model reference."
       },
@@ -7508,6 +12017,43 @@
         "title": "UsageTrend",
         "description": "Usage trend metrics comparing different time periods.\n\nRatios help identify model momentum and activity patterns."
       },
+      "UserRolesResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "is_approver": {
+            "type": "boolean",
+            "title": "Is Approver"
+          },
+          "is_requestor": {
+            "type": "boolean",
+            "title": "Is Requestor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "username",
+          "roles",
+          "is_approver",
+          "is_requestor"
+        ],
+        "title": "UserRolesResponse",
+        "description": "Response model for the user roles endpoint."
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -7531,53 +12077,22 @@
           "type": {
             "type": "string",
             "title": "Error Type"
-          }
-        },
-        "type": "object",
-        "required": ["loc", "msg", "type"],
-        "title": "ValidationError"
-      },
-      "horde_model_reference__service__v1__routers__metadata__CategoryLastUpdatedResponse": {
-        "properties": {
-          "category": {
-            "type": "string",
-            "title": "Category"
           },
-          "last_updated": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Updated"
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",
-        "required": ["category", "last_updated"],
-        "title": "CategoryLastUpdatedResponse",
-        "description": "Response for /{category}/last_updated endpoint."
-      },
-      "horde_model_reference__service__v1__routers__metadata__LastUpdatedResponse": {
-        "properties": {
-          "last_updated": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Updated"
-          }
-        },
-        "type": "object",
-        "required": ["last_updated"],
-        "title": "LastUpdatedResponse",
-        "description": "Response for /last_updated endpoint."
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
       }
     },
     "securitySchemes": {

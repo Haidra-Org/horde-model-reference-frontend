@@ -181,6 +181,8 @@ export interface FormFieldGroup {
   icon?: string;
   /** Priority level determining visual hierarchy and default behavior */
   priority?: FormFieldPriority;
+  /** Callback to control group visibility — group hidden when this returns false */
+  showWhen?: () => boolean;
 }
 
 /**

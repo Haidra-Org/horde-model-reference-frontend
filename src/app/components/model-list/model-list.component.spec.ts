@@ -12,6 +12,7 @@ import {
   HordeStatsState,
 } from '../../services/horde-api.service';
 import { AuthService } from '../../services/auth.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { LegacyRecordUnion } from '../../models';
 import { HordeModelType } from '../../models/horde-api.models';
 import { StatisticsService } from '../../api-client';
@@ -36,7 +37,7 @@ class MockModelReferenceApiService {
   });
   private readonly subjects = new Map<string, Subject<LegacyRecordUnion[]>>();
 
-  getLegacyModelsAsArray(category: string) {
+  getDisplayModelsAsArray(category: string) {
     let subject = this.subjects.get(category);
     if (!subject) {
       subject = new Subject<LegacyRecordUnion[]>();
@@ -85,6 +86,21 @@ class MockStatisticsService {
   }
 }
 
+class MockPendingQueueSummaryService {
+  readonly records = signal<unknown[]>([]);
+  readonly totalPendingCount = signal(0);
+  readonly pendingCountByCategory = signal(new Map<string, number>());
+  readonly loading = signal(false);
+  readonly lastRefreshed = signal<Date | null>(null);
+  startPolling(): void { /* empty */ }
+  stopPolling(): void { /* empty */ }
+  clear(): void { /* empty */ }
+  refresh(): void { /* empty */ }
+  pendingCountFor(): number {
+    return 0;
+  }
+}
+
 describe('ModelListComponent race conditions', () => {
   let fixture: ComponentFixture<ModelListComponent>;
   let component: ModelListComponent;
@@ -103,6 +119,7 @@ describe('ModelListComponent race conditions', () => {
         { provide: NotificationService, useClass: MockNotificationService },
         { provide: AuthService, useClass: MockAuthService },
         { provide: StatisticsService, useClass: MockStatisticsService },
+        { provide: PendingQueueSummaryService, useClass: MockPendingQueueSummaryService },
         { provide: ActivatedRoute, useValue: { params: paramsSubject.asObservable() } },
       ],
     }).compileComponents();

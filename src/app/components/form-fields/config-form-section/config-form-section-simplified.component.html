@@ -66,11 +66,19 @@
                       {{ isVerifying($index) ? 'Verifying...' : 'Verify URL' }}
                     </button>
                   </div>
-                  @if (getVerificationError($index)) {
+                  @if (isCorsBlocked($index)) {
+                    <p class="text-warning-600 dark:text-warning-400 text-xs">
+                      ⚠ {{ getVerificationError($index) }}
+                    </p>
+                  } @else if (getVerificationError($index)) {
                     <p class="form-error">{{ getVerificationError($index) }}</p>
                   }
                   @if (isVerified($index)) {
                     <p class="text-success-600 dark:text-success-400 text-xs">✓ Verified</p>
+                  } @else if (isCorsBlocked($index)) {
+                    <p class="text-warning-600 dark:text-warning-400 text-xs">
+                      ✓ Submission allowed — verify this URL manually
+                    </p>
                   } @else if (!getVerificationError($index) && download.file_url) {
                     <p class="text-warning-600 dark:text-warning-400 text-xs">⚠ Must verify</p>
                   }

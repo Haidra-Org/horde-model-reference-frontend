@@ -16,7 +16,7 @@ import { FormFieldConfig, FormFieldGroup } from '../../../models/form-field-conf
 import { FormFieldBuilder } from '../../../utils/form-field-builder';
 import { ModelConstantsService } from '../../../services/model-constants.service';
 import { ModelReferenceApiService } from '../../../services/model-reference-api.service';
-import { MODEL_REFERENCE_CATEGORY } from '../../../api-client';
+import { MODEL_REFERENCE_CATEGORY, KNOWN_IMAGE_GENERATION_BASELINE } from '../../../api-client';
 import { LegacyRecordUnion } from '../../../models/api.models';
 
 type RequirementsValue = number | string | boolean | number[] | string[];
@@ -53,6 +53,7 @@ export class StableDiffusionFieldsComponent {
   private readonly categoryChange$ = new Subject<MODEL_REFERENCE_CATEGORY>();
 
   readonly data = input.required<StableDiffusionFieldsData>();
+  readonly canonicalFormat = input<string>('legacy');
   readonly dataChange = output<StableDiffusionFieldsData>();
 
   // Signal to hold the models for the current category
@@ -64,13 +65,12 @@ export class StableDiffusionFieldsComponent {
     return this.modelConstants.getTagSuggestions(models);
   });
 
-  readonly baselineOptions = [
-    { value: 'stable_diffusion_1', label: 'Stable Diffusion 1' },
-    { value: 'stable_diffusion_2_768', label: 'Stable Diffusion 2 (768)' },
-    { value: 'stable_diffusion_2_512', label: 'Stable Diffusion 2 (512)' },
-    { value: 'stable_diffusion_xl', label: 'Stable Diffusion XL' },
-    { value: 'stable_cascade', label: 'Stable Cascade' },
-  ];
+  readonly baselineOptions = Object.entries(KNOWN_IMAGE_GENERATION_BASELINE).map(
+    ([key, value]) => ({
+      value,
+      label: key.replace(/([a-z])([A-Z0-9])/g, '$1 $2'),
+    }),
+  );
 
   constructor() {
     // Set up API call stream with switchMap for proper cancellation

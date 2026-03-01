@@ -34,6 +34,8 @@ export interface TextGenerationFieldsData {
    * Selected backends for this text model (aphrodite, koboldcpp, or none for base name only)
    */
   selectedBackends?: TextBackend[];
+  /** V2-only: base model group for grouping variants together */
+  text_model_group?: string | null;
 }
 
 @Component({
@@ -55,6 +57,7 @@ export class TextGenerationFieldsComponent {
   private readonly categoryChange$ = new Subject<MODEL_REFERENCE_CATEGORY>();
 
   readonly data = input.required<TextGenerationFieldsData>();
+  readonly canonicalFormat = input<string>('legacy');
   readonly dataChange = output<TextGenerationFieldsData>();
 
   // Signal to hold the models for the current category
@@ -91,6 +94,8 @@ export class TextGenerationFieldsComponent {
    */
   readonly fieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
     const currentData = this.data();
+    const format = this.canonicalFormat();
+    const isV2 = format === 'v2';
 
     return [
       // Core Fields (always visible)
@@ -117,6 +122,18 @@ export class TextGenerationFieldsComponent {
           )
             .placeholder('e.g., gpt2, llama-2-7b')
             .helpText('Technical name of the model architecture')
+            .hideWhen(() => isV2)
+            .build(),
+
+          FormFieldBuilder.text(
+            'text_model_group',
+            'Text Model Group',
+            currentData.text_model_group || null,
+            (value) => this.updateField('text_model_group', value),
+          )
+            .placeholder('e.g., llama-2-7b')
+            .helpText('Base model group name for grouping model variants together')
+            .showWhen(() => isV2)
             .build(),
 
           FormFieldBuilder.text('baseline', 'Baseline', currentData.baseline || null, (value) =>

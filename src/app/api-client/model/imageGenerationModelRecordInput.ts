@@ -7,10 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { KNOWN_IMAGE_GENERATION_BASELINE } from './kNOWNIMAGEGENERATIONBASELINE';
 import { ImageGenerationModelRecordInputRequirementsValue } from './imageGenerationModelRecordInputRequirementsValue';
 import { ModelClassification } from './modelClassification';
-import { MODEL_STYLE } from './mODELSTYLE';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
@@ -29,7 +27,7 @@ export interface ImageGenerationModelRecordInput {
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
   inpainting?: boolean | null;
-  baseline: KNOWN_IMAGE_GENERATION_BASELINE;
+  baseline: string;
   optimization?: string | null;
   tags?: Array<string> | null;
   showcases?: Array<string> | null;
@@ -37,7 +35,7 @@ export interface ImageGenerationModelRecordInput {
   trigger?: Array<string> | null;
   homepage?: string | null;
   nsfw: boolean;
-  style?: MODEL_STYLE | null;
+  style?: string | null;
   requirements?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
   size_on_disk_bytes?: number | null;
 }

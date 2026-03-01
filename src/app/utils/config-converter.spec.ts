@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { legacyConfigToSimplified, simplifiedToLegacyConfig } from './config-converter';
 import { LegacyConfig } from '../models/api.models';
 
@@ -159,6 +160,59 @@ describe('Config Converter', () => {
 
       expect(result.files).toEqual([]);
       expect(result.download).toEqual([]);
+    });
+
+    it('should move sha256sum from downloads into files and not duplicate on download', () => {
+      const simplified = {
+        download: [
+          {
+            file_name: 'model.ckpt',
+            file_url: 'https://example.com/model.ckpt',
+            sha256sum: 'abc123',
+          },
+        ],
+      };
+
+      const result = simplifiedToLegacyConfig(simplified);
+
+      expect(result.download?.[0].sha256sum).toBeUndefined();
+      expect(result.files).toEqual([
+        {
+          path: 'model.ckpt',
+          sha256sum: 'abc123',
+        },
+      ]);
+    });
+
+    it('should update existing file sha256sum when provided in download', () => {
+      const simplified = {
+        download: [
+          {
+            file_name: 'model.ckpt',
+            file_url: 'https://example.com/model.ckpt',
+            sha256sum: 'new-hash',
+          },
+        ],
+      };
+
+      const existingFiles = [
+        {
+          path: 'model.ckpt',
+          sha256sum: 'old-hash',
+          file_type: 'ckpt',
+        },
+      ];
+
+      const result = simplifiedToLegacyConfig(simplified, existingFiles);
+
+      expect(result.files).toEqual([
+        {
+          path: 'model.ckpt',
+          sha256sum: 'new-hash',
+          file_type: 'ckpt',
+        },
+      ]);
+      expect(result.download?.[0].sha256sum).toBeUndefined();
     });
   });
 

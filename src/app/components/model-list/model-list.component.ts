@@ -28,8 +28,10 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { HordeApiService } from '../../services/horde-api.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { StatisticsService, CategoryStatistics } from '../../api-client';
 import { MODEL_REFERENCE_CATEGORY } from '../../api-client/model/mODELREFERENCECATEGORY';
+import type { PendingChangeOverlay, PendingOverlayMap } from '../../models/pending-change-overlay';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -142,6 +144,8 @@ export class ModelListComponent implements OnInit {
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
   private initialSortSet = false;
 
+  private readonly pendingSummary = inject(PendingQueueSummaryService);
+
   readonly writable = computed(
     () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
   );
@@ -225,12 +229,70 @@ export class ModelListComponent implements OnInit {
     );
   });
 
+  /**
+   * Pending changes for the current category, filtered from the summary service cache.
+   */
+  readonly pendingChangesForCategory = computed(() => {
+    const cat = this.category();
+    if (!cat) return [];
+    return this.pendingSummary.records().filter(
+      (r) => r.category === cat && r.status === 'pending',
+    );
+  });
+
+  /**
+   * Map of model name → pending change overlay for existing models.
+   * Pending creates are handled separately as ghost entries.
+   */
+  readonly pendingOverlayMap = computed((): PendingOverlayMap => {
+    const map: PendingOverlayMap = new Map();
+    for (const record of this.pendingChangesForCategory()) {
+      if (record.operation === 'create') continue;
+      map.set(record.model_name, {
+        pendingOperation: record.operation,
+        pendingChangeId: record.change_id,
+        isGhost: false,
+        pendingRecord: record,
+      });
+    }
+    return map;
+  });
+
+  /**
+   * Ghost entries for pending creates — synthetic model rows that don't yet exist.
+   */
+  readonly ghostModels = computed((): (UnifiedModelData & { _pendingOverlay: PendingChangeOverlay })[] => {
+    const creates = this.pendingChangesForCategory().filter((r) => r.operation === 'create');
+    return creates.map((record) => {
+      const overlay: PendingChangeOverlay = {
+        pendingOperation: 'create',
+        pendingChangeId: record.change_id,
+        isGhost: true,
+        pendingRecord: record,
+      };
+      // Build a minimal synthetic model entry from the pending payload
+      const payload = record.payload ?? {};
+      return {
+        name: record.model_name,
+        description: (payload['description'] as string) ?? '',
+        _pendingOverlay: overlay,
+      } as UnifiedModelData & { _pendingOverlay: PendingChangeOverlay };
+    });
+  });
+
+  /**
+   * Models with ghost entries appended — input to the filter pipeline.
+   */
+  readonly modelsWithGhosts = computed(() => {
+    return [...this.models(), ...this.ghostModels()];
+  });
+
   readonly filteredModels = computed(() => {
     const searchFilters = this.parseSearchFilters(this.debouncedSearchTerm());
     const selectedTags = this.selectedTags();
     const selectedParameterTags = this.selectedParameterTags();
     const activeFilter = this.filterByActive();
-    let filtered = this.models();
+    let filtered = this.modelsWithGhosts();
 
     if (activeFilter) {
       filtered = filtered.filter((model) => hasActiveWorkers(model));
@@ -616,6 +678,26 @@ export class ModelListComponent implements OnInit {
 
   getDownloadCount(model: LegacyRecordUnion): number {
     return model.config?.download?.length ?? 0;
+  }
+
+  getPendingOverlay(model: UnifiedModelData | GroupedTextModel): PendingChangeOverlay | undefined {
+    // Ghost entries carry their overlay directly
+    const maybeGhost = model as Record<string, unknown>;
+    if (maybeGhost['_pendingOverlay']) {
+      return maybeGhost['_pendingOverlay'] as PendingChangeOverlay;
+    }
+    return this.pendingOverlayMap().get(model.name);
+  }
+
+  isGhostModel(model: UnifiedModelData | GroupedTextModel): boolean {
+    return !!(model as Record<string, unknown>)['_pendingOverlay'];
+  }
+
+  navigateToPendingChange(changeId: number): void {
+    const cat = this.category();
+    this.router.navigate(['/pending-queue'], {
+      queryParams: { category: cat, changeId },
+    });
   }
 
   getObjectKeysLength(obj: Record<string, unknown> | null | undefined): number {
@@ -1258,7 +1340,7 @@ export class ModelListComponent implements OnInit {
   ): Observable<(UnifiedModelData | GroupedTextModel)[]> {
     const options = isTextGen ? { parseTextModelNames: true } : undefined;
 
-    const reference$ = this.api.getLegacyModelsAsArray(category).pipe(
+    const reference$ = this.api.getDisplayModelsAsArray(category).pipe(
       map((referenceModels) =>
         referenceModels.map((model, index) => ({
           ...model,
@@ -1269,9 +1351,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-          startWith<BackendStatisticsResponse | null>(null),
-          catchError(() => of(null)),
-        )
+        startWith<BackendStatisticsResponse | null>(null),
+        catchError(() => of(null)),
+      )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(

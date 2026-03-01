@@ -234,6 +234,48 @@ export function hasErrorIssues(issues: ValidationIssue[]): boolean {
   return issues.some((issue) => issue.severity === 'error');
 }
 
+/**
+ * Additional validation rules that apply only when the backend uses v2 format.
+ * These supplement (not replace) the base validateLegacyRecord checks.
+ */
+export function validateV2Record(record: LegacyRecordUnion): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const rec = record as Record<string, unknown>;
+
+  // model_classification is required in v2
+  const classification = rec['modelClassification'] as
+    | { domain?: string; purpose?: string }
+    | null
+    | undefined;
+  if (!classification || !classification.domain) {
+    issues.push({
+      field: 'model_classification.domain',
+      message: 'Model domain is required in v2 format',
+      severity: 'error',
+    });
+  }
+  if (!classification || !classification.purpose) {
+    issues.push({
+      field: 'model_classification.purpose',
+      message: 'Model purpose is required in v2 format',
+      severity: 'error',
+    });
+  }
+
+  // parameters is required for text generation in v2
+  if (isLegacyTextGenerationRecord(record)) {
+    if (record.parameters == null) {
+      issues.push({
+        field: 'parameters',
+        message: 'Parameters count is required in v2 format',
+        severity: 'error',
+      });
+    }
+  }
+
+  return issues;
+}
+
 export function groupIssuesBySeverity(issues: ValidationIssue[]): {
   errors: ValidationIssue[];
   warnings: ValidationIssue[];
