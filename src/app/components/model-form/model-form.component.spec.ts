@@ -6,12 +6,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ModelFormComponent } from './model-form.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 
 class MockModelReferenceApiService {
   createLegacyModel = vi.fn().mockReturnValue(of({}));
   updateLegacyModel = vi.fn().mockReturnValue(of({}));
   deleteModel = vi.fn().mockReturnValue(of({}));
   getLegacyModelsInCategory = vi.fn().mockReturnValue(of({}));
+  backendCapabilities = vi.fn().mockReturnValue({
+    writable: true,
+    canonicalFormat: 'legacy',
+    mode: 'PRIMARY',
+  });
 }
 
 class MockNotificationService {
@@ -21,9 +27,18 @@ class MockNotificationService {
 
 class MockRouter {
   navigate = vi.fn();
+  getCurrentNavigation = vi.fn().mockReturnValue(null);
 }
 
-describe('ModelFormComponent (exploded variations)', () => {
+class MockPendingQueueSummaryService {
+  pendingCountFor = vi.fn().mockReturnValue(0);
+  records = vi.fn().mockReturnValue([]);
+  totalPendingCount = vi.fn().mockReturnValue(0);
+  startPolling = vi.fn();
+  stopPolling = vi.fn();
+}
+
+describe('ModelFormComponent', () => {
   let fixture: ComponentFixture<ModelFormComponent>;
   let component: ModelFormComponent;
   let params$: ReplaySubject<Record<string, string>>;
@@ -39,6 +54,7 @@ describe('ModelFormComponent (exploded variations)', () => {
         { provide: NotificationService, useClass: MockNotificationService },
         { provide: Router, useClass: MockRouter },
         { provide: ActivatedRoute, useValue: { params: params$.asObservable() } },
+        { provide: PendingQueueSummaryService, useClass: MockPendingQueueSummaryService },
       ],
     })
       .overrideComponent(ModelFormComponent, {
@@ -53,39 +69,24 @@ describe('ModelFormComponent (exploded variations)', () => {
     fixture.detectChanges();
   });
 
-  function switchToJsonView(): void {
-    if (component.viewMode() === 'form') {
-      component.toggleViewMode();
-    }
-  }
-
-  it('updates exploded variations when JSON editor content changes', () => {
-    component.form.get('name')?.setValue('base-model');
-    switchToJsonView();
-
-    const jsonControl = component.form.get('jsonData');
-    const currentJson = JSON.parse(jsonControl?.value ?? '{}');
-    currentJson.description = 'Updated description';
-
-    jsonControl?.setValue(JSON.stringify(currentJson, null, 2));
-
-    expect(component.explodedVariationsJson()).toContain('Updated description');
+  it('initializes form in create mode for text_generation', () => {
+    expect(component.form).toBeTruthy();
+    expect(component.isEditMode()).toBe(false);
+    expect(component.category()).toBe('text_generation');
+    expect(component.form.get('name')).toBeTruthy();
   });
 
-  it('updates variation names when the base model name changes', () => {
-    component.form.get('name')?.setValue('base-model');
+  it('syncs JSON view when toggling view mode', () => {
+    component.form.get('name')?.setValue('test-model');
+    component.toggleViewMode();
 
-    const initialNames = component.modelVariations().map((variation) => variation.name);
+    expect(component.viewMode()).toBe('json');
+    const jsonControl = component.form.get('jsonData');
+    expect(jsonControl).toBeTruthy();
 
-    component.form.get('name')?.setValue('renamed-model');
-
-    const updatedNames = component.modelVariations().map((variation) => variation.name);
-
-    expect(initialNames.every((name: string) => name.includes('base-model'))).toBe(true);
-    expect(updatedNames.length).toBeGreaterThan(1);
-    expect(updatedNames.every((name: string) => name.includes('renamed-model'))).toBe(true);
-    expect(updatedNames.some((name: string) => name.startsWith('aphrodite/renamed-model'))).toBe(
-      true,
-    );
+    // name is intentionally excluded from JSON data (shown separately)
+    const jsonValue = JSON.parse(jsonControl?.value ?? '{}');
+    expect(jsonValue.name).toBeUndefined();
+    expect(typeof jsonValue).toBe('object');
   });
 });

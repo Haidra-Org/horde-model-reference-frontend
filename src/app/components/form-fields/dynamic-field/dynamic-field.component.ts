@@ -18,6 +18,7 @@ import { TagInputComponent } from '../tag-input/tag-input.component';
 import { KeyValueEditorComponent } from '../key-value-editor/key-value-editor.component';
 import { ModelRequirementsEditorComponent } from '../model-requirements-editor/model-requirements-editor.component';
 import { GlossaryTooltipDirective } from '../../common/tooltip.directive';
+import { FieldTooltipComponent } from '../field-tooltip/field-tooltip.component';
 
 /**
  * Generic form field component that renders different field types
@@ -35,12 +36,20 @@ import { GlossaryTooltipDirective } from '../../common/tooltip.directive';
     KeyValueEditorComponent,
     ModelRequirementsEditorComponent,
     GlossaryTooltipDirective,
+    FieldTooltipComponent,
   ],
   templateUrl: './dynamic-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicFieldComponent {
   readonly config = input.required<FormFieldConfig>();
+
+  /** Whether this field has been modified from its initial value (edit mode) */
+  readonly dirty = input(false);
+  /** The original server value as a display string (edit mode) */
+  readonly serverValue = input<string | null>(null);
+  /** Whether this field was explicitly defined on the server */
+  readonly serverDefined = input(false);
 
   /**
    * Computed signals that return properly typed configs or null.

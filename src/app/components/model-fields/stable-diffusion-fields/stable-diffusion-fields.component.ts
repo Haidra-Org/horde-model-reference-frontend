@@ -39,6 +39,13 @@ export interface StableDiffusionFieldsData {
   imports: [FieldGroupComponent],
   template: `
     <div class="space-y-4">
+      <div class="min-required-callout">
+        <span>⭐</span>
+        <span>
+          <strong>Minimum required:</strong> Baseline and Inpainting.
+          Everything else is optional but improves discoverability and worker compatibility.
+        </span>
+      </div>
       @for (item of fieldGroups(); track $index) {
         <app-field-group [item]="item" />
       }

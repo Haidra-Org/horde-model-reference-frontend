@@ -38,8 +38,34 @@ export interface TextGenerationFieldsData {
   imports: [FieldGroupComponent],
   template: `
     <div class="space-y-4">
-      @for (item of fieldGroups(); track $index) {
+      <!-- Simplified callout -->
+      <div class="min-required-callout">
+        <span>✏️</span>
+        <span>
+          <strong>Minimum required:</strong> Parameters and Baseline.
+          The same fields you'd fill in a CSV row. Toggle "Show all fields" for tags, settings, etc.
+        </span>
+      </div>
+
+      <!-- Core fields (always visible) -->
+      @for (item of coreFieldGroups(); track $index) {
         <app-field-group [item]="item" />
+      }
+
+      <!-- Advanced toggle -->
+      <button type="button" class="advanced-toggle-btn" (click)="showAdvanced.set(!showAdvanced())">
+        <svg class="w-4 h-4 transition-transform" [class.rotate-90]="showAdvanced()"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        {{ showAdvanced() ? 'Hide' : 'Show' }} all fields
+      </button>
+
+      <!-- Advanced fields -->
+      @if (showAdvanced()) {
+        @for (item of advancedFieldGroups(); track $index) {
+          <app-field-group [item]="item" />
+        }
       }
     </div>
   `,
@@ -54,6 +80,8 @@ export class TextGenerationFieldsComponent {
   readonly data = input.required<TextGenerationFieldsData>();
   readonly canonicalFormat = input<string>('legacy');
   readonly dataChange = output<TextGenerationFieldsData>();
+
+  readonly showAdvanced = signal(false);
 
   // Signal to hold the models for the current category
   protected readonly categoryModels = signal<LegacyRecordUnion[]>([]);
@@ -84,16 +112,13 @@ export class TextGenerationFieldsComponent {
   }
 
   /**
-   * Computed signal that generates all field configurations for the text generation fields form.
-   * Organized into logical sections for better UX.
+   * Core fields: the CSV-equivalent fields that every text model needs.
+   * parameters, baseline, display_name, url (name and description are in parent/common).
    */
-  readonly fieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
+  readonly coreFieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
     const currentData = this.data();
-    const format = this.canonicalFormat();
-    const isV2 = format === 'v2';
 
     return [
-      // Core Fields (always visible)
       FormFieldBuilder.group(
         [
           FormFieldBuilder.number(
@@ -105,13 +130,62 @@ export class TextGenerationFieldsComponent {
             .required()
             .placeholder('e.g., 7000000000')
             .helpText(
-              'Total number of model parameters (required for proper categorization). Impact: Directly affects GPU memory requirements (~0.6GB per billion for 4-bit), generation speed, and kudos costs. Larger = better quality but slower.',
+              'Total number of model parameters. Affects GPU memory (~0.6GB per billion at 4-bit), speed, and kudos cost.',
             )
             .build(),
 
+          FormFieldBuilder.text('baseline', 'Baseline', currentData.baseline || null, (value) =>
+            this.updateField('baseline', value),
+          )
+            .required()
+            .placeholder('e.g., llama, gpt, falcon')
+            .helpText('Base model family or architecture lineage')
+            .build(),
+
+          FormFieldBuilder.text(
+            'display_name',
+            'Display Name',
+            currentData.display_name || null,
+            (value) => this.updateField('display_name', value),
+          )
+            .placeholder('Human-friendly name')
+            .helpText('User-facing name shown in the interface')
+            .build(),
+
+          FormFieldBuilder.url('url', 'URL', currentData.url || null, (value) =>
+            this.updateField('url', value),
+          )
+            .placeholder('https://...')
+            .helpText('Link to model card, documentation, or homepage')
+            .build(),
+        ],
+        'form-grid-2',
+        {
+          label: 'Core Fields',
+          collapsible: false,
+          helpText: 'The essential fields — same as a CSV row',
+          colorVariant: 'primary',
+          icon: '🔷',
+        },
+      ),
+    ];
+  });
+
+  /**
+   * Advanced fields: tags, model_name/text_model_group, settings.
+   * Hidden by default behind the toggle.
+   */
+  readonly advancedFieldGroups = computed<(FormFieldConfig | FormFieldGroup)[]>(() => {
+    const currentData = this.data();
+    const format = this.canonicalFormat();
+    const isV2 = format === 'v2';
+
+    return [
+      FormFieldBuilder.group(
+        [
           FormFieldBuilder.text(
             'model_name',
-            'Model Name',
+            'Model Name (Legacy)',
             currentData.model_name || null,
             (value) => this.updateField('model_name', value),
           )
@@ -131,44 +205,6 @@ export class TextGenerationFieldsComponent {
             .showWhen(() => isV2)
             .build(),
 
-          FormFieldBuilder.text('baseline', 'Baseline', currentData.baseline || null, (value) =>
-            this.updateField('baseline', value),
-          )
-            .placeholder('e.g., llama, gpt, falcon')
-            .helpText('Base model family or architecture lineage')
-            .build(),
-        ],
-        'form-grid-2',
-        {
-          label: 'Core Configuration',
-          collapsible: true,
-          defaultCollapsed: false,
-          helpText: 'Essential model identification and parameters',
-          colorVariant: 'primary',
-          icon: '🔷',
-        },
-      ),
-
-      // Display & Metadata
-      FormFieldBuilder.group(
-        [
-          FormFieldBuilder.text(
-            'display_name',
-            'Display Name',
-            currentData.display_name || null,
-            (value) => this.updateField('display_name', value),
-          )
-            .placeholder('Human-friendly name')
-            .helpText('User-facing name shown in the interface')
-            .build(),
-
-          FormFieldBuilder.url('url', 'URL', currentData.url || null, (value) =>
-            this.updateField('url', value),
-          )
-            .placeholder('https://...')
-            .helpText('Link to model card, documentation, or homepage')
-            .build(),
-
           FormFieldBuilder.tagInput('tags', 'Tags', currentData.tags || [], (value) =>
             this.updateField('tags', value.length > 0 ? value : null),
           )
@@ -177,17 +213,16 @@ export class TextGenerationFieldsComponent {
             .helpText('Descriptive tags for categorization (e.g., instruct, chat, code)')
             .build(),
         ],
-        undefined,
+        'form-grid-2',
         {
-          label: 'Display & Metadata',
+          label: 'Additional Metadata',
           collapsible: true,
           defaultCollapsed: false,
           colorVariant: 'success',
-          icon: '✅',
+          icon: '📋',
         },
       ),
 
-      // Advanced Settings (collapsible, default collapsed)
       FormFieldBuilder.group(
         [
           FormFieldBuilder.requirements(
@@ -208,12 +243,12 @@ export class TextGenerationFieldsComponent {
         ],
         undefined,
         {
-          label: 'Advanced Settings',
+          label: 'Settings',
           collapsible: true,
           defaultCollapsed: true,
           helpText: 'Optional configuration parameters for this model',
           colorVariant: 'warning',
-          icon: '⚠️',
+          icon: '⚙️',
         },
       ),
     ];

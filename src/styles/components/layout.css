@@ -188,6 +188,266 @@
     @apply dark:border-gray-700;
   }
 
+  /* ===== Form Section Card (new section wrapper) ===== */
+  .form-section-card {
+    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+    @apply bg-white dark:bg-gray-800;
+    @apply shadow-sm;
+  }
+
+  .form-section-card--collapsed {
+    @apply shadow-none;
+  }
+
+  .form-section-header {
+    @apply w-full flex items-center justify-between;
+    @apply px-5 py-3 min-h-[48px];
+    @apply bg-gray-50 dark:bg-gray-800/80;
+    @apply border-b border-gray-200 dark:border-gray-700;
+    @apply transition-colors duration-150;
+  }
+
+  button.form-section-header:hover {
+    @apply bg-gray-100 dark:bg-gray-700/60;
+  }
+
+  .form-section-header-left {
+    @apply flex items-center gap-2;
+  }
+
+  .form-section-chevron {
+    @apply text-gray-400 dark:text-gray-500 transition-transform duration-150;
+  }
+
+  .form-section-title {
+    @apply text-sm font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .form-section-subtitle {
+    @apply text-xs text-gray-500 dark:text-gray-400 mt-0.5;
+  }
+
+  .form-section-header-right {
+    @apply flex items-center gap-2;
+  }
+
+  .form-section-change-badge {
+    @apply text-xs font-medium px-2 py-0.5 rounded-full;
+    @apply bg-primary-100 text-primary-700;
+    @apply dark:bg-primary-900/40 dark:text-primary-300;
+  }
+
+  .form-section-body {
+    @apply p-5;
+  }
+
+  /* ===== Field Tooltip ===== */
+  .field-tooltip-wrapper {
+    @apply relative inline-flex items-center;
+  }
+
+  .field-tooltip-trigger {
+    @apply inline-flex items-center justify-center;
+    @apply w-4 h-4 ml-1 cursor-pointer;
+    @apply text-gray-400 hover:text-primary-500;
+    @apply dark:text-gray-500 dark:hover:text-primary-400;
+    @apply transition-colors duration-150;
+    @apply rounded-full;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1;
+  }
+
+  .field-tooltip-icon {
+    @apply w-3.5 h-3.5;
+  }
+
+  .field-tooltip-popover {
+    @apply absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2;
+    @apply w-72 max-w-sm;
+    @apply bg-white dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-600;
+    @apply rounded-lg shadow-lg;
+    @apply text-sm;
+    animation: tooltip-fade-in 0.15s ease-out;
+  }
+
+  .field-tooltip-popover-content {
+    @apply p-3 space-y-1.5;
+  }
+
+  .field-tooltip-summary {
+    @apply text-gray-900 dark:text-gray-100 text-xs leading-relaxed;
+  }
+
+  .field-tooltip-impact {
+    @apply text-gray-600 dark:text-gray-400 text-xs leading-relaxed;
+  }
+
+  .field-tooltip-examples {
+    @apply text-gray-500 dark:text-gray-500 text-xs italic leading-relaxed;
+  }
+
+  @keyframes tooltip-fade-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* ===== Dirty Field Indicator (edit mode) ===== */
+  .form-field--dirty {
+    @apply border-l-2 border-l-primary-500 pl-2;
+    @apply dark:border-l-primary-400;
+  }
+
+  .field-dirty-chip {
+    @apply inline-flex items-center gap-1;
+    @apply text-xs font-medium px-1.5 py-0.5 rounded;
+    @apply bg-primary-100 text-primary-700;
+    @apply dark:bg-primary-900/40 dark:text-primary-300;
+    @apply cursor-help;
+  }
+
+  /* ===== Server-defined Value Indicator ===== */
+  .field-server-dot {
+    @apply inline-block w-1.5 h-1.5 rounded-full bg-success-500 dark:bg-success-400;
+    @apply mr-1;
+  }
+
+  .field-not-set {
+    @apply text-xs text-gray-400 dark:text-gray-500 italic;
+  }
+
+  /* ===== Sticky Form Footer ===== */
+  .form-sticky-footer {
+    @apply sticky bottom-0 z-30;
+    @apply bg-white dark:bg-gray-900;
+    @apply border-t border-gray-200 dark:border-gray-700;
+    @apply px-6 py-3;
+    @apply flex items-center justify-between;
+    @apply shadow-[0_-2px_8px_rgba(0,0,0,0.06)];
+    @apply dark:shadow-[0_-2px_8px_rgba(0,0,0,0.3)];
+  }
+
+  .form-footer-status {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  .form-footer-actions {
+    @apply flex items-center gap-3;
+  }
+
+  /* ===== Submission Banner ===== */
+  .submission-context-banner {
+    @apply flex items-start gap-3 px-4 py-3 rounded-lg text-sm;
+    @apply bg-info-50 border border-info-200 text-info-800;
+    @apply dark:bg-info-900/20 dark:border-info-800 dark:text-info-200;
+  }
+
+  .submission-context-banner--warning {
+    @apply bg-warning-50 border-warning-200 text-warning-800;
+    @apply dark:bg-warning-900/20 dark:border-warning-800 dark:text-warning-200;
+  }
+
+  .submission-context-icon {
+    @apply w-5 h-5 flex-shrink-0 mt-0.5;
+  }
+
+  /* ===== Post-Submission Success Screen ===== */
+  .submission-success {
+    @apply text-center py-12 space-y-4;
+  }
+
+  .submission-success-icon {
+    @apply w-16 h-16 mx-auto text-success-500 dark:text-success-400;
+  }
+
+  .submission-success-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .submission-success-subtitle {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  .submission-success-actions {
+    @apply flex items-center justify-center gap-3 pt-4;
+  }
+
+  /* ===== Pending Change Warning Banner ===== */
+  .pending-warning-banner {
+    @apply flex items-start gap-3 px-4 py-3 rounded-lg text-sm;
+    @apply bg-warning-50 border border-warning-200 text-warning-800;
+    @apply dark:bg-warning-900/20 dark:border-warning-800 dark:text-warning-200;
+  }
+
+  /* ===== Text Gen Simplified Mode ===== */
+  .text-gen-info-callout {
+    @apply flex items-start gap-3 px-4 py-3 rounded-lg text-sm mb-4;
+    @apply bg-primary-50 border border-primary-200 text-primary-800;
+    @apply dark:bg-primary-900/20 dark:border-primary-800 dark:text-primary-200;
+  }
+
+  .advanced-toggle-btn {
+    @apply flex items-center gap-2 text-sm font-medium;
+    @apply text-gray-600 hover:text-gray-900;
+    @apply dark:text-gray-400 dark:hover:text-gray-200;
+    @apply transition-colors duration-150;
+    @apply py-2;
+  }
+
+  /* ===== Minimum Required Callout ===== */
+  .min-required-callout {
+    @apply flex items-start gap-2 px-3 py-2 rounded-md text-xs;
+    @apply bg-gray-50 border border-gray-200 text-gray-600;
+    @apply dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-400;
+    @apply mb-4;
+  }
+
+  /* ===== Edit Summary Drawer ===== */
+  .edit-summary-overlay {
+    @apply fixed inset-0 z-50 bg-black/50;
+    @apply flex items-center justify-center;
+  }
+
+  .edit-summary-dialog {
+    @apply bg-white dark:bg-gray-800;
+    @apply rounded-lg shadow-xl;
+    @apply w-full max-w-lg max-h-[80vh] overflow-y-auto;
+    @apply border border-gray-200 dark:border-gray-700;
+  }
+
+  .edit-summary-header {
+    @apply flex items-center justify-between px-5 py-3;
+    @apply border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .edit-summary-body {
+    @apply p-5 space-y-3;
+  }
+
+  .edit-summary-row {
+    @apply flex items-start gap-3 py-2;
+    @apply border-b border-gray-100 dark:border-gray-700/50 last:border-b-0;
+  }
+
+  .edit-summary-field-name {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-300 w-32 flex-shrink-0;
+  }
+
+  .edit-summary-values {
+    @apply flex-1 text-sm;
+  }
+
+  .edit-summary-old {
+    @apply text-gray-400 dark:text-gray-500 line-through;
+  }
+
+  .edit-summary-arrow {
+    @apply text-gray-400 mx-1;
+  }
+
+  .edit-summary-new {
+    @apply text-primary-700 dark:text-primary-300 font-medium;
+  }
+
   /* Nested item card (for file/download entries) */
   .nested-item-card {
     @apply p-4 bg-gray-50 rounded-lg space-y-3 relative;

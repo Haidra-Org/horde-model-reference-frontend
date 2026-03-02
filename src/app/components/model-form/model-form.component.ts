@@ -41,6 +41,13 @@ import { ConfigFormSectionSimplifiedComponent } from '../form-fields/config-form
 import { DownloadRecord, MODEL_REFERENCE_CATEGORY } from '../../api-client';
 import { FormModelData, formToLegacyApi, legacyApiToForm } from '../../adapters/model-format-adapter';
 import { JsonEditorComponent } from '../common/json-editor.component';
+import { FormSectionComponent } from '../form-fields/form-section/form-section.component';
+import {
+  EditSummaryComponent,
+  FieldDiff,
+} from '../form-fields/edit-summary/edit-summary.component';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
+import { formatValue } from '../../utils/value-compare';
 
 @Component({
   selector: 'app-model-form',
@@ -53,6 +60,8 @@ import { JsonEditorComponent } from '../common/json-editor.component';
     ControlNetFieldsComponent,
     ConfigFormSectionSimplifiedComponent,
     JsonEditorComponent,
+    FormSectionComponent,
+    EditSummaryComponent,
   ],
   templateUrl: './model-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,6 +74,7 @@ export class ModelFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly pendingQueue = inject(PendingQueueSummaryService);
 
   readonly category = signal<ModelReferenceCategory | ''>('');
   readonly modelName = signal<string | null>(null);
@@ -101,6 +111,77 @@ export class ModelFormComponent implements OnInit {
   readonly isClip = computed(() => this.category() === 'clip');
   readonly isControlnet = computed(() => this.category() === 'controlnet');
   readonly canonicalFormat = computed(() => this.api.backendCapabilities().canonicalFormat);
+
+  /** Whether the backend will queue this change for approval vs apply immediately */
+  readonly willBeQueued = computed(() => !this.api.backendCapabilities().writable);
+  /** Number of pending changes for the current category */
+  readonly pendingCountForCategory = computed(() =>
+    this.pendingQueue.pendingCountFor(this.category()),
+  );
+  /** Edit summary modal state */
+  readonly showEditSummary = signal(false);
+  /** Post-submission result for success screen */
+  readonly submissionResult = signal<{ action: string; queued: boolean } | null>(null);
+
+  /**
+   * Field-level dirty tracking: compares current form state against initial snapshot.
+   * Returns a Map of field name → { oldValue, newValue } for changed fields.
+   */
+  readonly dirtyFields = computed<Map<string, { oldValue: string; newValue: string }>>(() => {
+    const initial = this.initialFormData();
+    if (!initial || !this.isEditMode()) return new Map();
+
+    const currentCommon = this.commonData();
+    const currentDownloads = this.simplifiedDownloads();
+    const dirty = new Map<string, { oldValue: string; newValue: string }>();
+
+    // Compare common fields
+    for (const [key, currentVal] of Object.entries(currentCommon)) {
+      const initialVal = initial.commonData[key as keyof CommonFieldsData];
+      const oldStr = formatValue(initialVal);
+      const newStr = formatValue(currentVal);
+      if (oldStr !== newStr) {
+        dirty.set(key, { oldValue: oldStr, newValue: newStr });
+      }
+    }
+
+    // Compare category-specific fields
+    const currentCatData = this.getCurrentCategoryData();
+    const initialCatData = initial.categoryData?.data;
+    if (currentCatData && initialCatData) {
+      for (const [key, currentVal] of Object.entries(currentCatData)) {
+        const initialVal = (initialCatData as Record<string, unknown>)[key];
+        const oldStr = formatValue(initialVal);
+        const newStr = formatValue(currentVal);
+        if (oldStr !== newStr) {
+          dirty.set(key, { oldValue: oldStr, newValue: newStr });
+        }
+      }
+    }
+
+    // Compare downloads
+    const oldDl = formatValue(initial.downloads);
+    const newDl = formatValue(currentDownloads);
+    if (oldDl !== newDl) {
+      dirty.set('downloads', { oldValue: oldDl, newValue: newDl });
+    }
+
+    return dirty;
+  });
+
+  readonly hasAnyChanges = computed(() => this.dirtyFields().size > 0);
+  readonly dirtyFieldCount = computed(() => this.dirtyFields().size);
+
+  /** Builds FieldDiff[] for the EditSummaryComponent */
+  readonly fieldDiffs = computed<FieldDiff[]>(() => {
+    const dirty = this.dirtyFields();
+    return Array.from(dirty.entries()).map(([field, { oldValue, newValue }]) => ({
+      field,
+      label: humanizeFieldName(field),
+      oldValue,
+      newValue,
+    }));
+  });
 
   readonly groupedIssues = computed(() => {
     const backendIssues = this.validationIssues();
@@ -401,77 +482,49 @@ export class ModelFormComponent implements OnInit {
 
   onCommonDataChange(data: CommonFieldsData): void {
     this.commonData.set(data);
-    if (this.viewMode() === 'form') {
-      // Use setTimeout to ensure signal has propagated through all computed dependencies
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
+    this.scheduleValidationIfFormView();
   }
 
   onStableDiffusionDataChange(data: StableDiffusionFieldsData): void {
     this.stableDiffusionData.set(data);
-    if (this.viewMode() === 'form') {
-      // Use setTimeout to ensure signal has propagated through all computed dependencies
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
+    this.scheduleValidationIfFormView();
   }
 
   onTextGenerationDataChange(data: TextGenerationFieldsData): void {
     this.textGenerationData.set(data);
-    if (this.viewMode() === 'form') {
-      // Use setTimeout to ensure signal has propagated through all computed dependencies
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
+    this.scheduleValidationIfFormView();
   }
 
   onClipDataChange(data: ClipFieldsData): void {
     this.clipData.set(data);
-    if (this.viewMode() === 'form') {
-      // Use setTimeout to ensure signal has propagated through all computed dependencies
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
+    this.scheduleValidationIfFormView();
   }
 
   onControlnetDataChange(data: ControlNetFieldsData): void {
     this.controlnetData.set(data);
-    if (this.viewMode() === 'form') {
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
+    this.scheduleValidationIfFormView();
   }
 
   onSimplifiedDownloadsChange(data: DownloadRecord[]): void {
     this.simplifiedDownloads.set(data);
-    if (this.viewMode() === 'form') {
-      // Use setTimeout to ensure signal has propagated through all computed dependencies
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
+    this.scheduleValidationIfFormView();
   }
 
   onConfigValidationErrors(errors: string[]): void {
     this.configValidationErrors.set(errors);
+  }
+
+  /**
+   * Re-validates the current form view after change handlers finish, but only when in form mode.
+   * Uses a microtask to allow dependent signals/computeds to settle before validation runs.
+   */
+  private scheduleValidationIfFormView(): void {
+    if (this.viewMode() !== 'form') return;
+    setTimeout(() => {
+      const modelData = this.buildModelDataFromForm(this.formNameValue());
+      const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
+      this.validationIssues.set(issues);
+    }, 0);
   }
 
   onSubmit(): void {
@@ -533,10 +586,15 @@ export class ModelFormComponent implements OnInit {
       : this.api.createModel(this.category(), modelName, formData);
 
     operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
+      next: (response) => {
         const action = this.isEditMode() ? 'updated' : 'created';
+        // Check if the response was queued (HTTP 202) vs applied directly
+        const queued = typeof response === 'object' && response !== null && 'status' in response
+          ? (response as { status?: string }).status === 'pending'
+          : false;
+        this.submitting.set(false);
+        this.submissionResult.set({ action, queued });
         this.notification.success(`Model "${modelName}" ${action} successfully`);
-        this.router.navigate(['/categories', this.category()]);
       },
       error: (error: Error) => {
         this.notification.error(error.message);
@@ -654,4 +712,29 @@ export class ModelFormComponent implements OnInit {
       this.controlnetData.set(model.categoryData.data);
     }
   }
+
+  private getCurrentCategoryData(): Record<string, unknown> | null {
+    if (this.isImageGeneration()) return { ...this.stableDiffusionData() };
+    if (this.isTextGeneration()) return { ...this.textGenerationData() };
+    if (this.isClip()) return { ...this.clipData() };
+    if (this.isControlnet()) return { ...this.controlnetData() };
+    return null;
+  }
+
+  /** Opens the edit summary dialog (for edit mode "Review Changes" button) */
+  openEditSummary(): void {
+    this.showEditSummary.set(true);
+  }
+
+  /** Handles confirmation from the edit summary dialog */
+  onEditSummaryConfirm(): void {
+    this.showEditSummary.set(false);
+    this.onSubmit();
+  }
+}
+
+function humanizeFieldName(field: string): string {
+  return field
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
