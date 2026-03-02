@@ -11,8 +11,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { forkJoin, Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { ModelValidationService } from '../../services/model-validation.service';
@@ -40,13 +38,6 @@ import {
   ControlNetFieldsData,
 } from '../model-fields/controlnet-fields/controlnet-fields.component';
 import { ConfigFormSectionSimplifiedComponent } from '../form-fields/config-form-section/config-form-section-simplified.component';
-import {
-  parseTextModelName,
-  buildTextModelName,
-  getModelNameVariations,
-  extractBackends,
-  TextBackend,
-} from '../../models/text-model-name';
 import { DownloadRecord, MODEL_REFERENCE_CATEGORY } from '../../api-client';
 import { FormModelData, formToLegacyApi, legacyApiToForm } from '../../adapters/model-format-adapter';
 import { JsonEditorComponent } from '../common/json-editor.component';
@@ -144,79 +135,6 @@ export class ModelFormComponent implements OnInit {
     return analysis.hasErrors || configErrors.length > 0 || serverErrors.length > 0;
   });
 
-  /**
-   * For text generation models, compute the model variations based on selected backends.
-   * Returns FormModelData for each variation with the appropriate name.
-   */
-  readonly modelVariations = computed<{ name: string; data: FormModelData }[]>(() => {
-    if (!this.isTextGeneration()) {
-      return [];
-    }
-
-    const baseModelName = this.formNameValue();
-    if (!baseModelName) {
-      return [];
-    }
-
-    const selectedBackends = this.textGenerationData().selectedBackends || [];
-
-    let baseFormData: FormModelData | null;
-    if (this.viewMode() === 'json') {
-      const jsonModel = this.buildModelDataFromJson(baseModelName);
-      if (!jsonModel) return [];
-      baseFormData = legacyApiToForm(jsonModel, this.category() as MODEL_REFERENCE_CATEGORY);
-    } else {
-      baseFormData = this.buildFormModelData();
-    }
-
-    const variations: { name: string; data: FormModelData }[] = [];
-
-    // Always include base model (without backend prefix)
-    variations.push({
-      name: baseModelName,
-      data: baseFormData,
-    });
-
-    // Add variation for each selected backend
-    for (const backend of selectedBackends) {
-      const variantName = buildTextModelName({
-        backend,
-        ...parseTextModelName(baseModelName),
-      });
-      variations.push({
-        name: variantName,
-        data: baseFormData,
-      });
-    }
-
-    return variations;
-  });
-
-  /**
-   * For text generation in JSON view, get the exploded variations (backend-prefixed models only)
-   * to display in a read-only preview section
-   */
-  readonly explodedVariationsJson = computed<string | null>(() => {
-    if (!this.isTextGeneration()) {
-      return null;
-    }
-
-    const variations = this.modelVariations();
-    if (variations.length <= 1) {
-      return null;
-    }
-
-    const category = this.category() as MODEL_REFERENCE_CATEGORY;
-    const explodedVariations = variations.slice(1).map((v) => {
-      const legacyRecord = formToLegacyApi(v.data, v.name, category);
-      const { name: _name, ...jsonData } = legacyRecord;
-      void _name;
-      return { name: v.name, ...jsonData };
-    });
-
-    return JSON.stringify(explodedVariations, null, 2);
-  });
-
   form!: FormGroup;
 
   constructor() {
@@ -258,41 +176,6 @@ export class ModelFormComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/categories', this.category()]);
-  }
-
-  isBackendSelected(backend: string): boolean {
-    const selectedBackends = this.textGenerationData().selectedBackends || [];
-    return selectedBackends.includes(backend as TextBackend);
-  }
-
-  toggleBackend(backend: string): void {
-    const currentData = this.textGenerationData();
-    const selectedBackends = currentData.selectedBackends || [];
-    const backendValue = backend as TextBackend;
-
-    const newBackends = selectedBackends.includes(backendValue)
-      ? selectedBackends.filter((b) => b !== backendValue)
-      : [...selectedBackends, backendValue];
-
-    this.textGenerationData.set({
-      ...currentData,
-      selectedBackends: newBackends.length > 0 ? newBackends : undefined,
-    });
-
-    // Trigger validation after backend change
-    if (this.viewMode() === 'form') {
-      setTimeout(() => {
-        const modelData = this.buildModelDataFromForm(this.formNameValue());
-        const issues = this.validationService.validateRecord(modelData, this.canonicalFormat());
-        this.validationIssues.set(issues);
-      }, 0);
-    }
-  }
-
-  getVariationNames(): string {
-    return this.modelVariations()
-      .map((v) => v.name)
-      .join(', ');
   }
 
   validateJson(): void {
@@ -366,26 +249,12 @@ export class ModelFormComponent implements OnInit {
 
   syncJsonToForm(): void {
     try {
-      // Preserve UI-only state before syncing
-      const preservedBackends = this.isTextGeneration()
-        ? this.textGenerationData().selectedBackends
-        : undefined;
-
       const formValue = this.form.getRawValue();
       const jsonData = JSON.parse(formValue.jsonData);
       const modelName = formValue.name || 'new-model';
       const modelData: LegacyRecordUnion = { name: modelName, ...jsonData };
       const formModel = legacyApiToForm(modelData, this.category() as MODEL_REFERENCE_CATEGORY);
       this.populateFormFromFormModel(formModel);
-
-      // Restore preserved UI state
-      if (this.isTextGeneration() && preservedBackends) {
-        const currentData = this.textGenerationData();
-        this.textGenerationData.set({
-          ...currentData,
-          selectedBackends: preservedBackends,
-        });
-      }
 
       // Validate after a microtask to ensure all signals have propagated through child components
       setTimeout(() => {
@@ -611,12 +480,7 @@ export class ModelFormComponent implements OnInit {
       return;
     }
 
-    // For text generation with backends, handle multiple model creation
-    if (this.isTextGeneration() && this.viewMode() === 'form') {
-      this.submitTextGenerationWithBackends();
-    } else {
-      this.submitSingleModel();
-    }
+    this.submitSingleModel();
   }
 
   private submitSingleModel(): void {
@@ -681,121 +545,6 @@ export class ModelFormComponent implements OnInit {
     });
   }
 
-  private submitTextGenerationWithBackends(): void {
-    const variations = this.modelVariations();
-    const category = this.category() as ModelReferenceCategory;
-    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
-
-    this.validationService.clearServerErrors();
-
-    // Validate all variations via legacy representation
-    const allIssues: ValidationIssue[] = [];
-    for (const variation of variations) {
-      const legacyForValidation = formToLegacyApi(variation.data, variation.name, categoryEnum);
-      const issues = this.validationService.validateRecord(legacyForValidation, this.canonicalFormat());
-      allIssues.push(...issues);
-    }
-
-    this.validationIssues.set(allIssues);
-
-    const analysis = this.validationService.analyzeIssues(allIssues);
-    if (analysis.hasErrors) {
-      this.notification.error('Please fix validation errors before submitting');
-      return;
-    }
-
-    this.submitting.set(true);
-
-    if (this.isEditMode()) {
-      // In edit mode, we need to:
-      // 1. Determine which variations existed before
-      // 2. Delete variations that are no longer selected
-      // 3. Update existing variations
-      // 4. Create new variations
-      this.handleEditModeBackendChanges(variations);
-    } else {
-      // Create mode: just create all variations
-      this.createAllVariations(variations);
-    }
-  }
-
-  private createAllVariations(variations: { name: string; data: FormModelData }[]): void {
-    const category = this.category() as ModelReferenceCategory;
-    const operations: Observable<unknown>[] = variations.map((variation) =>
-      this.api.createModel(category, variation.name, variation.data),
-    );
-
-    forkJoin(operations)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          const count = variations.length;
-          this.notification.success(
-            `Successfully created ${count} model ${count === 1 ? 'entry' : 'entries'}`,
-          );
-          this.router.navigate(['/categories', this.category()]);
-        },
-        error: (error: Error) => {
-          this.notification.error(`Failed to create models: ${error.message}`);
-          this.submitting.set(false);
-        },
-      });
-  }
-
-  private handleEditModeBackendChanges(
-    newVariations: { name: string; data: FormModelData }[],
-  ): void {
-    const category = this.category() as ModelReferenceCategory;
-    const baseModelName = this.form.getRawValue().name;
-
-    this.api
-      .getLegacyModelsInCategory(category)
-      .pipe(
-        switchMap((response) => {
-          const allModels = Object.values(response);
-          const variations = getModelNameVariations(baseModelName);
-          const existingVariations = allModels.filter((m) => variations.includes(m.name));
-
-          const existingNames = new Set(existingVariations.map((v) => v.name));
-          const newNames = new Set(newVariations.map((v) => v.name));
-
-          const operations: Observable<unknown>[] = [];
-
-          // Delete variations that no longer exist in selection
-          for (const existing of existingVariations) {
-            if (!newNames.has(existing.name)) {
-              operations.push(this.api.deleteModel(category, existing.name));
-            }
-          }
-
-          // Update or create variations
-          for (const variation of newVariations) {
-            if (existingNames.has(variation.name)) {
-              operations.push(
-                this.api.updateModel(category, variation.name, variation.data),
-              );
-            } else {
-              operations.push(
-                this.api.createModel(category, variation.name, variation.data),
-              );
-            }
-          }
-
-          return operations.length > 0 ? forkJoin(operations) : of([]);
-        }),
-      )
-      .subscribe({
-        next: () => {
-          this.notification.success('Successfully updated model variations');
-          this.router.navigate(['/categories', this.category()]);
-        },
-        error: (error: Error) => {
-          this.notification.error(`Failed to update models: ${error.message}`);
-          this.submitting.set(false);
-        },
-      });
-  }
-
   private initFormForCreate(
     prefill?: Record<string, unknown>,
     prefillName?: string,
@@ -823,15 +572,6 @@ export class ModelFormComponent implements OnInit {
     const formModel = legacyApiToForm(record, category as MODEL_REFERENCE_CATEGORY);
     this.populateFormFromFormModel(formModel);
 
-    // For text generation, select all backends by default
-    if (this.isTextGeneration()) {
-      const tgData = this.textGenerationData();
-      this.textGenerationData.set({
-        ...tgData,
-        selectedBackends: [TextBackend.Aphrodite, TextBackend.KoboldCpp],
-      });
-    }
-
     // Delay validation to allow signals to propagate
     setTimeout(() => this.validateJson(), 0);
   }
@@ -844,12 +584,7 @@ export class ModelFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          // For text generation, check if this is a grouped model with backend variations
-          if (this.isTextGeneration()) {
-            this.initFormForEditTextGeneration(modelName, response);
-          } else {
-            this.initFormForEditSingle(modelName, response);
-          }
+          this.initFormForEditSingle(modelName, response);
         },
         error: (error: Error) => {
           this.notification.error(error.message);
@@ -897,74 +632,7 @@ export class ModelFormComponent implements OnInit {
     }, 0);
   }
 
-  private initFormForEditTextGeneration(
-    modelName: string,
-    response: Record<string, FormModelData>,
-  ): void {
-    // Find all variations of this model (with different backend prefixes)
-    const parsed = parseTextModelName(modelName);
-    const baseModelName = buildTextModelName({
-      author: parsed.author,
-      modelName: parsed.modelName,
-    });
 
-    // Find all variations (models with same base name but different backends)
-    const variations = getModelNameVariations(modelName);
-    const existingVariations = Object.keys(response).filter((name) => variations.includes(name));
-
-    if (existingVariations.length === 0) {
-      this.notification.error(`Model "${modelName}" not found`);
-      this.router.navigate(['/categories', this.category()]);
-      return;
-    }
-
-    // Use the first variation as the primary model data
-    const primaryModelName = existingVariations.includes(modelName) ? modelName : existingVariations[0];
-    const primaryModel = response[primaryModelName];
-    if (!primaryModel) {
-      this.notification.error(`Model "${modelName}" not found`);
-      this.router.navigate(['/categories', this.category()]);
-      return;
-    }
-
-    // Detect which backends currently exist
-    const existingBackends = extractBackends(existingVariations);
-
-    this.form = this.fb.group({
-      name: [{ value: baseModelName, disabled: true }, Validators.required],
-      jsonData: ['', Validators.required],
-    });
-
-    this.form.get('jsonData')?.valueChanges.subscribe(() => {
-      if (this.viewMode() === 'json') {
-        this.validateJson();
-      }
-    });
-
-    this.setupFormValueTracking();
-
-    this.populateFormFromFormModel(primaryModel);
-    this.loadedFormModel.set(primaryModel);
-    this.originalFormData.set(structuredClone(this.buildFormModelData()));
-
-    // Set the existing backends as selected
-    if (primaryModel.categoryData.kind === 'text_generation') {
-      const tgData = this.textGenerationData();
-      this.textGenerationData.set({
-        ...tgData,
-        selectedBackends: existingBackends,
-      });
-    }
-
-    this.initialFormData.set(structuredClone(this.buildFormModelData()));
-    this.syncFormToJsonSilent();
-
-    // Delay validation to allow signals to propagate
-    setTimeout(() => {
-      this.validateJson();
-      this.loading.set(false);
-    }, 0);
-  }
 
   private populateFormFromFormModel(model: FormModelData): void {
     const common = { ...model.commonData };

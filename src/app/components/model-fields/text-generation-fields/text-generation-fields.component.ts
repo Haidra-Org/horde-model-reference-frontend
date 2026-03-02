@@ -14,7 +14,6 @@ import { Subject, switchMap } from 'rxjs';
 import { FieldGroupComponent } from '../../form-fields/field-group/field-group.component';
 import { FormFieldConfig, FormFieldGroup } from '../../../models/form-field-config';
 import { FormFieldBuilder } from '../../../utils/form-field-builder';
-import { TextBackend } from '../../../models/text-model-name';
 import { ModelConstantsService } from '../../../services/model-constants.service';
 import { ModelReferenceApiService } from '../../../services/model-reference-api.service';
 import { MODEL_REFERENCE_CATEGORY } from '../../../api-client';
@@ -30,10 +29,6 @@ export interface TextGenerationFieldsData {
   url?: string | null;
   tags?: string[] | null;
   settings?: Record<string, SettingsValue> | null;
-  /**
-   * Selected backends for this text model (aphrodite, koboldcpp, or none for base name only)
-   */
-  selectedBackends?: TextBackend[];
   /** V2-only: base model group for grouping variants together */
   text_model_group?: string | null;
 }

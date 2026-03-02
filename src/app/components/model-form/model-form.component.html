@@ -53,25 +53,13 @@
         }
       </div>
 
-      <!-- Backend Selection for Text Generation -->
+      <!-- Backend Variants Info for Text Generation -->
       @if (isTextGeneration()) {
       <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-        <div class="form-label mb-3">Backend Variants</div>
-        <div class="flex gap-4">
-          <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" class="form-checkbox" [checked]="isBackendSelected('aphrodite')"
-              (change)="toggleBackend('aphrodite')" />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Aphrodite</span>
-          </label>
-          <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" class="form-checkbox" [checked]="isBackendSelected('koboldcpp')"
-              (change)="toggleBackend('koboldcpp')" />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">KoboldCpp</span>
-          </label>
+        <div class="alert alert-info">
+          <strong>Backend variants</strong> (aphrodite/, koboldcpp/) are generated automatically by the server.
+          Submit only the base model name.
         </div>
-        @if (modelVariations().length > 0) {
-        <p class="form-hint mt-2">Will create: {{ getVariationNames() }}</p>
-        }
       </div>
       }
 
@@ -131,19 +119,6 @@
           }
         </div>
 
-        <!-- Exploded variations preview for text generation -->
-        @if (isTextGeneration() && explodedVariationsJson()) {
-        <div class="form-section-divider">
-          <div class="form-label mb-2">
-            Backend Variations
-            <span class="label-hint">(read-only)</span>
-          </div>
-          <div class="relative">
-            <textarea class="json-readonly-textarea" [value]="explodedVariationsJson()" readonly rows="12"
-              aria-label="Backend variations JSON"></textarea>
-          </div>
-        </div>
-        }
       </div>
       }
     </div>

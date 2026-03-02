@@ -211,10 +211,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
   },
 
   formToLegacy(data, base) {
-    // Strip selectedBackends — it's a UI-only field, not part of the API payload
-    const { selectedBackends, ...apiFields } = data;
-    void selectedBackends;
-    return { ...base, ...apiFields };
+    return { ...base, ...data };
   },
 
   v2ToForm(model) {
