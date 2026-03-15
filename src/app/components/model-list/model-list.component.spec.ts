@@ -162,3 +162,125 @@ describe('ModelListComponent race conditions', () => {
     expect(component.models().some((model) => model.name === 'image-alpha')).toBe(false);
   });
 });
+
+describe('ModelListComponent grouped model routing', () => {
+  let fixture: ComponentFixture<ModelListComponent>;
+  let component: ModelListComponent;
+  let paramsSubject: BehaviorSubject<{ category: string }>;
+  let routerSpy: { navigate: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    paramsSubject = new BehaviorSubject<{ category: string }>({ category: 'text_generation' });
+
+    await TestBed.configureTestingModule({
+      imports: [ModelListComponent, RouterTestingModule],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: ModelReferenceApiService, useClass: MockModelReferenceApiService },
+        { provide: HordeApiService, useClass: MockHordeApiService },
+        { provide: NotificationService, useClass: MockNotificationService },
+        { provide: AuthService, useClass: MockAuthService },
+        { provide: StatisticsService, useClass: MockStatisticsService },
+        { provide: PendingQueueSummaryService, useClass: MockPendingQueueSummaryService },
+        { provide: ActivatedRoute, useValue: { params: paramsSubject.asObservable() } },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ModelListComponent);
+    component = fixture.componentInstance;
+
+    routerSpy = { navigate: vi.fn().mockResolvedValue(true) };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (component as any).router = routerSpy;
+  });
+
+  it('editModel navigates to group view for grouped text models', () => {
+    fixture.detectChanges();
+
+    // Inject a grouped model into the models signal
+    component['models'].set([
+      {
+        name: 'Llama-3',
+        isGrouped: true,
+        variations: [],
+        availableBackends: [],
+        availableAuthors: [],
+        description: '',
+        baseline: '',
+      } as unknown as import('../../models/unified-model').GroupedTextModel,
+    ]);
+
+    component.editModel('Llama-3');
+
+    expect(routerSpy.navigate).toHaveBeenCalledWith([
+      '/categories',
+      'text_generation',
+      'group',
+      'Llama-3',
+    ]);
+  });
+
+  it('editModel navigates to edit view for ungrouped models', () => {
+    fixture.detectChanges();
+
+    component['models'].set([
+      {
+        name: 'Regular-Model',
+        description: '',
+        baseline: '',
+      } as LegacyRecordUnion,
+    ]);
+
+    component.editModel('Regular-Model');
+
+    expect(routerSpy.navigate).toHaveBeenCalledWith([
+      '/categories',
+      'text_generation',
+      'edit',
+      'Regular-Model',
+    ]);
+  });
+
+  it('confirmDelete navigates to group view for grouped text models', () => {
+    fixture.detectChanges();
+
+    component['models'].set([
+      {
+        name: 'Llama-3',
+        isGrouped: true,
+        variations: [],
+        availableBackends: [],
+        availableAuthors: [],
+        description: '',
+        baseline: '',
+      } as unknown as import('../../models/unified-model').GroupedTextModel,
+    ]);
+
+    component.confirmDelete('Llama-3');
+
+    expect(routerSpy.navigate).toHaveBeenCalledWith([
+      '/categories',
+      'text_generation',
+      'group',
+      'Llama-3',
+    ]);
+    expect(component.modelToDelete()).toBeNull();
+  });
+
+  it('confirmDelete sets modelToDelete for ungrouped models', () => {
+    fixture.detectChanges();
+
+    component['models'].set([
+      {
+        name: 'Regular-Model',
+        description: '',
+        baseline: '',
+      } as LegacyRecordUnion,
+    ]);
+
+    component.confirmDelete('Regular-Model');
+
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+    expect(component.modelToDelete()).toBe('Regular-Model');
+  });
+});

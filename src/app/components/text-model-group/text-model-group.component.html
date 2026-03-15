@@ -1,0 +1,249 @@
+<!-- Breadcrumb / Navigation -->
+<div class="mb-6">
+  <nav class="flex items-center gap-2 text-sm text-muted">
+    <a routerLink="/" class="link">Home</a>
+    <span>/</span>
+    <a [routerLink]="['/categories', category()]" class="link">{{ category() }}</a>
+    <span>/</span>
+    <span class="text-gray-900 dark:text-gray-100 font-medium">Group: {{ groupName() }}</span>
+  </nav>
+</div>
+
+@if (loading()) {
+<div class="flex items-center justify-center py-16">
+  <div class="text-center">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+    <p class="mt-4 text-muted">Loading group members...</p>
+  </div>
+</div>
+} @else {
+<!-- Group Header -->
+<div class="card mb-6">
+  <div class="card-body">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div>
+        <h1 class="heading-page">{{ groupName() }}</h1>
+        <p class="text-muted mt-1">
+          Text model group with {{ canonicalMembers().length }} canonical
+          model{{ canonicalMembers().length === 1 ? '' : 's' }}
+          @if (backendDuplicates().length > 0) {
+          and {{ backendDuplicates().length }} backend duplicate{{ backendDuplicates().length === 1 ? '' : 's' }}
+          }
+        </p>
+        @if (parameterSummary()) {
+        <div class="flex flex-wrap gap-2 mt-2">
+          @for (size of parameterSummary()!; track size) {
+          <span class="tag tag-info">{{ size }}</span>
+          }
+        </div>
+        }
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button class="btn btn-secondary" (click)="goBackToList()">
+          ← Back to List
+        </button>
+        @if (writable() && canonicalMembers().length > 1 && !deletingAll()) {
+        <button class="btn btn-danger" (click)="confirmDeleteAll()">
+          Delete All
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Canonical Members Table -->
+@if (canonicalMembers().length > 0) {
+<div class="card mb-6">
+  <div class="card-header">
+    <h2 class="heading-section">Canonical Models</h2>
+    <p class="text-sm text-muted mt-1">
+      These are the actual model records. Backend duplicates (aphrodite/, koboldcpp/) are auto-generated from these.
+    </p>
+  </div>
+  <div class="card-body p-0">
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Parameters</th>
+            <th>Baseline</th>
+            <th>Style</th>
+            <th>NSFW</th>
+            <th>Description</th>
+            @if (writable()) {
+            <th class="text-center">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (member of canonicalMembers(); track member.recordKey) {
+          <tr>
+            <td class="font-medium text-gray-900 dark:text-gray-100">
+              <div class="flex flex-col">
+                <span>{{ member.recordKey }}</span>
+                @if (member.displayName && member.displayName !== member.recordKey) {
+                <span class="text-xs text-muted">{{ member.displayName }}</span>
+                }
+              </div>
+            </td>
+            <td>
+              @if (member.parameters) {
+              <span class="tag tag-info">{{ formatParams(member.parameters) }}</span>
+              } @else {
+              <span class="text-muted">-</span>
+              }
+            </td>
+            <td>{{ member.baseline ?? '-' }}</td>
+            <td>{{ member.style ?? '-' }}</td>
+            <td>
+              @if (member.nsfw === true) {
+              <span class="badge badge-warning">NSFW</span>
+              } @else if (member.nsfw === false) {
+              <span class="badge badge-success">SFW</span>
+              } @else {
+              <span class="badge badge-secondary">Unknown</span>
+              }
+            </td>
+            <td>
+              <div class="truncate max-w-xs" [title]="member.description ?? ''">
+                {{ member.description ?? '-' }}
+              </div>
+            </td>
+            @if (writable()) {
+            <td class="text-center">
+              <div class="flex gap-2 justify-center whitespace-nowrap">
+                <button class="btn btn-sm btn-primary" (click)="editMember(member)">
+                  Edit
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="confirmDeleteMember(member)">
+                  Delete
+                </button>
+              </div>
+            </td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Backend Duplicates Section -->
+@if (backendDuplicates().length > 0) {
+<div class="card mb-6">
+  <div class="card-header">
+    <h2 class="heading-section">Backend Duplicates</h2>
+    <p class="text-sm text-muted mt-1">
+      These entries are auto-generated by the backend for compatibility with different inference engines.
+      They inherit all properties from their canonical record and cannot be edited independently.
+    </p>
+  </div>
+  <div class="card-body p-0">
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Backend</th>
+            <th>Parameters</th>
+            <th>Baseline</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dup of backendDuplicates(); track dup.recordKey) {
+          <tr>
+            <td class="font-mono text-sm text-gray-900 dark:text-gray-100">
+              {{ dup.recordKey }}
+            </td>
+            <td>
+              <span class="badge badge-info">{{ dup.backendPrefix }}</span>
+            </td>
+            <td>
+              @if (dup.parameters) {
+              <span class="tag tag-info">{{ formatParams(dup.parameters) }}</span>
+              } @else {
+              <span class="text-muted">-</span>
+              }
+            </td>
+            <td>{{ dup.baseline ?? '-' }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Empty State -->
+@if (members().length === 0) {
+<div class="card">
+  <div class="card-body text-center py-12">
+    <p class="text-lg text-muted">No models found in this group.</p>
+    <button class="btn btn-primary mt-4" (click)="goBackToList()">
+      Back to Model List
+    </button>
+  </div>
+</div>
+}
+
+<!-- Delete Single Model Modal -->
+@if (modelToDelete()) {
+<div class="modal-overlay" tabindex="0" (click)="cancelDelete()" (keydown)="$event.key === 'Escape' && cancelDelete()"
+  aria-label="Close modal">
+  <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h3 class="modal-title">Delete Model</h3>
+    <div class="modal-content">
+      <p class="mb-4">
+        Are you sure you want to delete <strong>{{ modelToDelete() }}</strong>?
+      </p>
+      <p class="text-sm text-muted mb-3">
+        Type the model name to confirm:
+      </p>
+      <input type="text" class="form-input" [placeholder]="modelToDelete()!" [ngModel]="deleteConfirmationInput()"
+        (ngModelChange)="deleteConfirmationInput.set($event)" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+      <button class="btn btn-danger" [disabled]="!deleteAllowed()" (click)="deleteMember(modelToDelete()!)">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Delete All Models Modal -->
+@if (deletingAll()) {
+<div class="modal-overlay" tabindex="0" (click)="cancelDeleteAll()"
+  (keydown)="$event.key === 'Escape' && cancelDeleteAll()" aria-label="Close modal">
+  <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h3 class="modal-title">Delete All Models in Group</h3>
+    <div class="modal-content">
+      <div class="alert alert-danger mb-4">
+        <strong>Warning:</strong> This will delete all {{ canonicalMembers().length }} canonical
+        model{{ canonicalMembers().length === 1 ? '' : 's' }} in the "{{ groupName() }}" group.
+        Backend duplicates will be removed automatically.
+      </div>
+      <p class="text-sm text-muted mb-3">
+        Type the group name (<strong>{{ groupName() }}</strong>) to confirm:
+      </p>
+      <input type="text" class="form-input" [placeholder]="groupName()" [ngModel]="deleteAllVariantsConfirmation()"
+        (ngModelChange)="deleteAllVariantsConfirmation.set($event)" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDeleteAll()">Cancel</button>
+      <button class="btn btn-danger" [disabled]="!deleteAllAllowed()" (click)="deleteAllMembers()">
+        Delete All ({{ canonicalMembers().length }})
+      </button>
+    </div>
+  </div>
+</div>
+}
+}

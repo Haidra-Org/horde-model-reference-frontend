@@ -52,18 +52,21 @@
       @for (statType of categoryStatsConfig(); track statType) {
       @if (statType === 'baseline' && topBaselinesDisplay().totalCount > 0) {
       <div class="inline-stat-item">
-        <span class="inline-stat-label">Baselines:</span>
-        @for (stat of topBaselinesDisplay().topBaselines.slice(0, 3); track stat.baseline) {
-        <button type="button" class="inline-stat-badge-compact badge badge-info"
+        @for (stat of topBaselinesDisplay().topBaselines.slice(0, 3); track stat.baseline; let last = $last) {
+        <button type="button"
+          class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
           (click)="addBaselineToSearch(stat.baseline)" [title]="getBaselineDisplayName(stat.baseline)">
-          {{ getBaselineDisplayName(stat.baseline) }}: {{ stat.count }}
-        </button>
+          {{ stat.count }} {{ getBaselineDisplayName(stat.baseline) }}</button>@if (!last ||
+        topBaselinesDisplay().remainingCount > 0 || topBaselinesDisplay().topBaselines.length > 3) {<span
+          class="text-gray-300 dark:text-gray-600 mx-1">&middot;</span>}
         }
         @if (
         topBaselinesDisplay().remainingCount > 0 ||
         topBaselinesDisplay().topBaselines.length > 3
         ) {
-        <button type="button" class="inline-stat-badge-compact badge badge-secondary" (click)="showBaselineDetails()">
+        <button type="button"
+          class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
+          (click)="showBaselineDetails()">
           +{{
           topBaselinesDisplay().remainingCount +
           (topBaselinesDisplay().topBaselines.length - 3)
@@ -85,22 +88,17 @@
         @for (statType of categoryStatsConfig(); track statType) {
         @if (statType === 'nsfw' && nsfwStatsDisplay().length > 0) {
         <span class="flex items-center gap-1">
-          @for (stat of nsfwStatsDisplay(); track stat.label) {
-          <button type="button" class="inline-stat-badge-compact badge" [class]="
-                        stat.label === 'NSFW'
-                          ? 'badge-warning'
-                          : stat.label === 'SFW'
-                            ? 'badge-success'
-                            : 'badge-secondary'
-                      " (click)="addNsfwFilterToSearch(stat.value)">
-            {{ stat.label }}: {{ stat.count }}
-          </button>
+          @for (stat of nsfwStatsDisplay(); track stat.label; let last = $last) {
+          <button type="button" class="hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
+            (click)="addNsfwFilterToSearch(stat.value)">
+            {{ stat.count }} {{ stat.label }}
+          </button>@if (!last) {<span class="text-gray-300 dark:text-gray-600 mx-0.5">&middot;</span>}
           }
         </span>
         }
         @if (statType === 'size' && sizeStats() > 0) {
-        <button type="button" class="inline-stat-badge-compact badge badge-info" (click)="showSizeDetails()"
-          title="Total disk size">
+        <button type="button" class="hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
+          (click)="showSizeDetails()" title="Total disk size">
           {{ formatSizeInGB(sizeStats()) }} GB total
         </button>
         }

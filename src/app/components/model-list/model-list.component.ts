@@ -863,11 +863,24 @@ export class ModelListComponent implements OnInit {
   }
 
   editModel(modelName: string): void {
+    if (this.isGroupedModelByName(modelName)) {
+      this.router.navigate(['/categories', this.category(), 'group', modelName]);
+      return;
+    }
     this.router.navigate(['/categories', this.category(), 'edit', modelName]);
   }
 
   confirmDelete(modelName: string): void {
+    if (this.isGroupedModelByName(modelName)) {
+      this.router.navigate(['/categories', this.category(), 'group', modelName]);
+      return;
+    }
     this.modelToDelete.set(modelName);
+  }
+
+  private isGroupedModelByName(modelName: string): boolean {
+    const model = this.models().find((m) => m.name === modelName);
+    return model != null && isGroupedTextModel(model);
   }
 
   cancelDelete(): void {
