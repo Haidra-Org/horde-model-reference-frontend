@@ -2,7 +2,7 @@
   /* Data table */
   /* @deprecated Use .card wrapper instead of .data-table. Only .data-table-header is still used for virtual scroll alignment. */
   .data-table {
-    @apply w-full overflow-hidden rounded-xl border border-gray-200;
+    @apply w-full overflow-hidden border border-gray-200;
     @apply dark:border-gray-700;
   }
 
@@ -52,13 +52,13 @@
   /* Stat cards (category statistics) - Modern, accessible design */
   .stat-card {
     @apply inline-flex items-center gap-3 px-4 py-3;
-    @apply bg-gradient-to-br from-white to-gray-50;
-    @apply border border-gray-200 rounded-xl shadow-sm;
-    @apply cursor-pointer transition-all duration-200;
-    @apply hover:shadow-md hover:border-primary-300 hover:-translate-y-0.5;
+    @apply bg-white;
+    @apply border border-gray-200;
+    @apply cursor-pointer transition-colors duration-100;
+    @apply hover:border-primary-400;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
-    @apply dark:from-gray-800 dark:to-gray-900 dark:border-gray-700;
-    @apply dark:hover:border-primary-600 dark:hover:shadow-lg dark:hover:shadow-primary-900/20;
+    @apply dark:bg-gray-800 dark:border-gray-700;
+    @apply dark:hover:border-primary-500;
     @apply dark:focus:ring-primary-400 dark:focus:ring-offset-gray-900;
   }
 
@@ -67,16 +67,16 @@
   }
 
   .stat-card-icon {
-    @apply flex-shrink-0 w-8 h-8 rounded-lg;
-    @apply bg-primary-100 text-primary-600;
+    @apply flex-shrink-0 w-8 h-8 rounded;
+    @apply bg-gray-100 text-gray-600;
     @apply flex items-center justify-center;
-    @apply transition-colors duration-200;
-    @apply dark:bg-primary-900/30 dark:text-primary-400;
+    @apply transition-colors duration-100;
+    @apply dark:bg-gray-700 dark:text-gray-300;
   }
 
   .stat-card:hover .stat-card-icon {
-    @apply bg-primary-200 text-primary-700;
-    @apply dark:bg-primary-800/50 dark:text-primary-300;
+    @apply bg-primary-100 text-primary-700;
+    @apply dark:bg-primary-900/40 dark:text-primary-300;
   }
 
   .stat-card-label {
@@ -99,7 +99,7 @@
 
   /* Stat table (for inline parameter distributions, etc.) */
   .stat-table-container {
-    @apply overflow-auto max-h-64 border border-gray-200 rounded-lg;
+    @apply overflow-auto max-h-64 border border-gray-200;
     @apply dark:border-gray-700;
   }
 
@@ -145,12 +145,28 @@
 
   /* Expanded detail sections within tables */
   .detail-section {
-    @apply space-y-3;
+    @apply space-y-0 py-4 px-2;
+  }
+
+  /* Flat detail panel — replaces card wrapper in expanded row details */
+  .detail-panel {
+    @apply pt-4 mt-4 border-t border-gray-200;
+    @apply dark:border-gray-700;
+  }
+
+  .detail-panel:first-child {
+    @apply mt-0 border-t-0 pt-0;
+  }
+
+  /* Section heading for detail panels — replaces card-header */
+  .detail-section-heading {
+    @apply text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 pb-1;
+    @apply dark:text-gray-400;
   }
 
   /* Flex layout utilities for detail headers */
   .detail-header {
-    @apply flex items-start justify-between gap-3;
+    @apply flex items-start justify-between gap-4;
   }
 
   .detail-header-content {
@@ -164,6 +180,12 @@
   /* Tag container */
   .tag-container {
     @apply flex flex-wrap gap-0.5 justify-end max-w-xs;
+  }
+
+  /* Detail row background — the expanded <tr> */
+  .detail-row > td {
+    @apply bg-gray-50 border-t border-gray-200;
+    @apply dark:bg-gray-900 dark:border-gray-700;
   }
 
   /* Parameter-count heatmap badges (reusable). */
@@ -324,9 +346,8 @@
   }
 
   .view-mode-buttons {
-    @apply inline-flex rounded-xl border border-gray-200 overflow-hidden bg-white;
+    @apply inline-flex rounded border border-gray-200 overflow-hidden bg-white;
     @apply dark:border-gray-700 dark:bg-gray-900;
-    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.02);
   }
 
   .view-mode-button {
@@ -337,7 +358,7 @@
   }
 
   .view-mode-button--active {
-    @apply bg-primary-600 text-white shadow-sm;
+    @apply bg-primary-600 text-white;
     @apply dark:bg-primary-500;
   }
 
@@ -348,13 +369,13 @@
   }
 
   .model-card {
-    @apply flex flex-col gap-4 border border-gray-200 rounded-2xl p-4 bg-white shadow-sm;
-    @apply transition-shadow duration-200 ease-in-out;
+    @apply flex flex-col gap-4 border border-gray-200 rounded p-4 bg-white;
+    @apply transition-colors duration-100;
     @apply dark:bg-gray-900 dark:border-gray-700;
   }
 
   .model-card:hover {
-    @apply shadow-md;
+    @apply border-gray-400;
   }
 
   .model-card-top {

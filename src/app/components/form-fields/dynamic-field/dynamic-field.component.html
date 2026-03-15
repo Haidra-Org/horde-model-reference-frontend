@@ -23,11 +23,6 @@
       Modified
     </span>
     }
-    @if (config().priority) {
-    <span class="badge badge-priority" [class]="priorityBadgeClass()">
-      {{ priorityLabel() }}
-    </span>
-    }
     @if (config().labelSuffix) {
     <span class="label-warning">{{ config().labelSuffix }}</span>
     }
@@ -91,11 +86,6 @@
     @if (dirty()) {
     <span class="field-dirty-chip" [title]="serverValue() ? 'Was: ' + serverValue() : 'Modified'">
       Modified
-    </span>
-    }
-    @if (cfg.priority) {
-    <span class="badge badge-priority" [class]="priorityBadgeClass()">
-      {{ priorityLabel() }}
     </span>
     }
     @if (cfg.labelSuffix) {

@@ -86,6 +86,9 @@ export class ModelFormComponent implements OnInit {
   private readonly configValidationErrors = signal<string[]>([]);
   readonly viewMode = signal<'form' | 'json'>('form');
 
+  /** When true, JSON view shows all fields. When false, text_generation shows CSV fields only. */
+  readonly showAllJsonFields = signal(false);
+
   readonly commonData = signal<CommonFieldsData>({ nsfw: false });
   readonly stableDiffusionData = signal<StableDiffusionFieldsData>({
     inpainting: false,
@@ -326,6 +329,11 @@ export class ModelFormComponent implements OnInit {
     this.syncFormToJsonSilent();
     // Delay validation to ensure all signals have propagated
     setTimeout(() => this.validateJson(), 0);
+  }
+
+  toggleJsonFieldScope(): void {
+    this.showAllJsonFields.update((v) => !v);
+    this.syncFormToJson();
   }
 
   syncJsonToForm(): void {

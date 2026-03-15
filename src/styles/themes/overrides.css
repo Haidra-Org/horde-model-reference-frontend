@@ -108,14 +108,6 @@
       @apply px-2 py-1 text-xs;
     }
 
-    & .form-label {
-      @apply text-xs font-semibold mb-0.5;
-    }
-
-    & .form-label-sm {
-      @apply text-[10px] mb-0.5;
-    }
-
     /* Data table styling aligned with audit layout */
     & .data-table th {
       @apply px-4 py-2.5 text-xs font-semibold uppercase tracking-wider;
@@ -136,16 +128,16 @@
 
     /* Compact badges and tags */
     & .badge {
-      @apply px-1.5 py-0 text-[10px] tracking-normal;
+      @apply px-1.5 py-0 tracking-normal;
     }
 
     & .badge-xs,
     & .badge-sm {
-      @apply text-[9px] px-1 py-0;
+      @apply px-1 py-0;
     }
 
     & .tag {
-      @apply text-[10px] px-1.5 py-0;
+      @apply px-1.5 py-0;
     }
 
     /* Compact stat cards */
@@ -183,14 +175,6 @@
       @apply px-3 py-1.5 min-h-[36px];
     }
 
-    & .field-group-header-title {
-      @apply text-sm;
-    }
-
-    & .field-group-header-help {
-      @apply text-[10px];
-    }
-
     & .field-group-content {
       @apply px-3 py-2;
     }
@@ -201,7 +185,7 @@
     }
 
     & .nested-item-remove-btn {
-      @apply px-2 py-1 text-[10px];
+      @apply px-2 py-1 text-xs;
     }
 
     /* Dense navigation */
@@ -381,18 +365,6 @@
       @apply space-y-1;
     }
 
-    & .validation-heading,
-    & .validation-heading-error,
-    & .validation-heading-warning {
-      @apply text-xs;
-    }
-
-    & .validation-list-item,
-    & .validation-list-item-error,
-    & .validation-list-item-warning {
-      @apply text-[10px];
-    }
-
     /* Remove sticky header shadow */
     & .sticky-header {
       @apply shadow-none border-b-2 pb-2;
@@ -419,7 +391,7 @@
     & .form-hint,
     & .form-error,
     & .checkbox-hint {
-      @apply text-[9px];
+      @apply text-xs;
     }
 
     /* Compact headings for data density */
@@ -435,14 +407,9 @@
       @apply text-sm;
     }
 
-    /* All text slightly smaller for data density */
-    & body,
-    & .text-sm {
-      @apply text-xs;
-    }
-
-    & .text-xs {
-      @apply text-[10px];
+    /* Body text uses standard sizing — theme differentiates via spacing/borders */
+    & body {
+      @apply text-sm;
     }
 
     /* Ultra-compact showcase grids */
@@ -453,7 +420,7 @@
     /* Minimal field impact hints */
     & .field-impact,
     & .field-best-practice {
-      @apply text-[9px] px-1.5 py-0.5;
+      @apply px-1.5 py-0.5;
     }
 
     /* Compact inline items */
@@ -696,10 +663,6 @@
 
     & .form-label {
       @apply text-sm font-semibold mb-1;
-    }
-
-    & .form-label-sm {
-      @apply text-xs mb-0.5;
     }
 
     /* Efficient data table layout */

@@ -136,7 +136,7 @@ export class CommonFieldsComponent implements OnInit {
             .rows(3)
             .placeholder('Brief description of the model and its capabilities')
             .helpText('A concise summary that helps users understand what this model does')
-            .gridSpan(4)
+            .gridSpan(2)
             .priority('required')
             .build(),
 
@@ -159,12 +159,10 @@ export class CommonFieldsComponent implements OnInit {
             .priority('recommended')
             .build(),
         ],
-        'form-grid-4',
+        'form-grid-2',
         {
           label: 'Essential Information',
           collapsible: true,
-          helpText: 'Core information required for all models',
-          icon: '⭐',
           priority: 'required',
         },
       ),
@@ -237,8 +235,6 @@ export class CommonFieldsComponent implements OnInit {
         {
           label: 'Content Classification',
           collapsible: true,
-          helpText: 'Classify model content type and document any limitations',
-          icon: '🏷️',
           priority: 'recommended',
         },
       ),
@@ -296,8 +292,6 @@ export class CommonFieldsComponent implements OnInit {
         {
           label: 'Model Classification',
           collapsible: true,
-          helpText: 'Categorize the model by domain and purpose (V2 only)',
-          icon: '📊',
           priority: 'required',
           showWhen: () => isV2,
         },
@@ -354,7 +348,7 @@ export class CommonFieldsComponent implements OnInit {
             .rows(2)
             .placeholder('Brief description of the fine-tuning series')
             .showWhen(() => isV2)
-            .gridSpan(4)
+            .gridSpan(2)
             .priority('optional')
             .build(),
 
@@ -367,16 +361,14 @@ export class CommonFieldsComponent implements OnInit {
             .placeholder('https://civitai.com/models/...')
             .helpText('Homepage or project page for the fine-tuning series')
             .showWhen(() => isV2)
-            .gridSpan(4)
+            .gridSpan(2)
             .priority('optional')
             .build(),
         ],
-        'form-grid-4',
+        'form-grid-2',
         {
           label: 'Fine-Tune Series',
           collapsible: true,
-          helpText: 'Information about the fine-tuning lineage of this model (V2 only)',
-          icon: '🔗',
           priority: 'optional',
           showWhen: () => isV2,
         },

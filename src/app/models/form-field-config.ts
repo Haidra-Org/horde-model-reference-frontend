@@ -175,10 +175,6 @@ export interface FormFieldGroup {
   defaultCollapsed?: boolean;
   /** Help text for the entire group */
   helpText?: string;
-  /** Color variant for visual distinction (primary, success, info, warning) */
-  colorVariant?: 'primary' | 'success' | 'info' | 'warning';
-  /** Optional icon/emoji to display before the label */
-  icon?: string;
   /** Priority level determining visual hierarchy and default behavior */
   priority?: FormFieldPriority;
   /** Callback to control group visibility — group hidden when this returns false */

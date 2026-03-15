@@ -197,6 +197,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
       display_name?: string | null;
       url?: string | null;
       tags?: string[] | null;
+      instruct_format?: string | null;
       settings?: Record<string, RecordDictValue> | null;
     };
     return {
@@ -206,6 +207,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
       display_name: m.display_name,
       url: m.url,
       tags: m.tags,
+      instruct_format: m.instruct_format ?? null,
       settings: m.settings ?? null,
     };
   },
@@ -222,6 +224,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
       display_name: m.display_name ?? null,
       url: m.url ?? null,
       tags: m.tags ?? null,
+      instruct_format: m.instruct_format ?? null,
       settings: (m.settings as Record<string, RecordDictValue> | null) ?? null,
       text_model_group: m.text_model_group ?? null,
     };
@@ -237,6 +240,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
       display_name: data.display_name,
       url: data.url,
       tags: data.tags,
+      instruct_format: data.instruct_format,
       settings: data.settings,
       text_model_group: data.text_model_group,
     };

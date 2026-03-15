@@ -292,46 +292,17 @@ export class FormFieldBuilder {
       collapsible?: boolean;
       defaultCollapsed?: boolean;
       helpText?: string;
-      colorVariant?: 'primary' | 'success' | 'info' | 'warning';
-      icon?: string;
       priority?: FormFieldPriority;
       showWhen?: () => boolean;
     },
   ): FormFieldGroup {
-    // Map priority to colorVariant and defaultCollapsed if priority is specified
-    let colorVariant = options?.colorVariant;
-    let defaultCollapsed = options?.defaultCollapsed;
-
-    if (options?.priority) {
-      switch (options.priority) {
-        case 'required':
-          colorVariant = colorVariant ?? 'primary';
-          defaultCollapsed = defaultCollapsed ?? false;
-          break;
-        case 'recommended':
-          colorVariant = colorVariant ?? 'success';
-          defaultCollapsed = defaultCollapsed ?? false;
-          break;
-        case 'optional':
-          colorVariant = colorVariant ?? 'info';
-          defaultCollapsed = defaultCollapsed ?? false;
-          break;
-        case 'advanced':
-          colorVariant = colorVariant ?? 'warning';
-          defaultCollapsed = defaultCollapsed ?? true;
-          break;
-      }
-    }
-
     return {
       fields,
       gridClass,
       label: options?.label,
       collapsible: options?.collapsible,
-      defaultCollapsed,
+      defaultCollapsed: options?.defaultCollapsed,
       helpText: options?.helpText,
-      colorVariant,
-      icon: options?.icon,
       priority: options?.priority,
       showWhen: options?.showWhen,
     };

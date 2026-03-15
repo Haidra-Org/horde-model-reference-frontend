@@ -27,208 +27,155 @@ import { HordeApiService } from '../../services/horde-api.service';
   imports: [TooltipDirective],
   template: `
     @if (mode() === 'grid') {
-      <div class="grid xl:grid-cols-2 gap-2">
-        <!-- Technical Specifications Card -->
-        <div class="card">
-          <div class="card-header">
-            <h4 class="heading-card flex items-center gap-2">
-              <svg
-                class="w-5 h-5 text-primary-600 dark:text-primary-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-                ></path>
-              </svg>
-              Technical Specifications
-            </h4>
-          </div>
-          <div class="card-body">
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
-              @for (field of technicalFields(); track field.label) {
-                <div>
-                  <div class="field-label">{{ field.label }}</div>
-                  <div [class]="getValueClass(field)">
-                    {{ getDisplayValue(field) }}
-                    @if (field.label === 'Baseline' && optimization()) {
-                      <span class="text-muted text-xs ml-1">({{ optimization() }})</span>
-                    }
-                  </div>
+      <div>
+        <!-- Technical Specifications -->
+        <section class="detail-panel">
+          <h4 class="detail-section-heading">Technical Specifications</h4>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
+            @for (field of technicalFields(); track field.label) {
+              <div>
+                <div class="field-label">{{ field.label }}</div>
+                <div [class]="getValueClass(field)">
+                  {{ getDisplayValue(field) }}
+                  @if (field.label === 'Baseline' && optimization()) {
+                    <span class="text-muted text-xs ml-1">({{ optimization() }})</span>
+                  }
                 </div>
-              }
-            </div>
+              </div>
+            }
           </div>
-        </div>
+        </section>
 
-        <!-- Horde Status Card -->
+        <!-- Horde Status -->
         @if (showHordeStatus() || isHordeLoading()) {
-          <div class="card">
-            <div class="card-header">
-              <h4 class="heading-card flex items-center gap-2">
-                <svg
-                  class="w-5 h-5 text-info-600 dark:text-info-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          <section class="detail-panel">
+            <h4 class="detail-section-heading">
+              Horde Status
+              @if (isGroupedWithAggregatedStats()) {
+                <span
+                  class="badge badge-info text-xs ml-2 normal-case tracking-normal"
+                  title="Statistics aggregated from {{
+                    groupedModel()!.variations.length
+                  }} model variations"
                 >
+                  Aggregated ({{ groupedModel()!.variations.length }} variants)
+                </span>
+              }
+            </h4>
+            @if (isHordeLoading()) {
+              <div class="flex items-center py-4 text-gray-500 dark:text-gray-400">
+                <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Horde Status
-                @if (isGroupedWithAggregatedStats()) {
-                  <span
-                    class="badge badge-info text-xs ml-2"
-                    title="Statistics aggregated from {{
-                      groupedModel()!.variations.length
-                    }} model variations"
-                  >
-                    Aggregated ({{ groupedModel()!.variations.length }} variants)
-                  </span>
-                }
-              </h4>
-            </div>
-            <div class="card-body">
-              @if (isHordeLoading()) {
-                <div class="flex items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                  <svg class="animate-spin h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24">
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  <span>Loading Horde status...</span>
+                <span class="text-sm">Loading Horde status...</span>
+              </div>
+            } @else {
+              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
+                <div>
+                  <div class="field-label">Active Workers</div>
+                  <div class="field-value">
+                    <span class="badge" [class]="workerCountBadgeClass()">
+                      {{ model().workerCount ?? 0 }}
+                    </span>
+                  </div>
                 </div>
-              } @else {
-                <div class="grid sm:grid-cols-2 gap-x-8 gap-y-4">
+                @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
                   <div>
-                    <div class="field-label">Active Workers</div>
+                    <div class="field-label">Queued Jobs</div>
                     <div class="field-value">
-                      <span class="badge" [class]="workerCountBadgeClass()">
-                        {{ model().workerCount ?? 0 }}
-                      </span>
-                    </div>
-                  </div>
-                  @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
-                    <div>
-                      <div class="field-label">Queued Jobs</div>
-                      <div class="field-value">
-                        {{ model().queuedJobs }}
-                        <span class="text-muted text-sm">{{ queuedJobsUnit() }}</span>
-                      </div>
-                    </div>
-                  }
-                  @if (model().performance !== null && model().performance !== undefined) {
-                    <div>
-                      <div class="field-label">Performance</div>
-                      <div class="field-value">
-                        @if (isImageModel()) {
-                          <span [appTooltip]="performanceTooltip()">
-                            {{ performanceDisplay() }}
-                            <span class="text-muted text-sm">megapixelsteps</span>
-                          </span>
-                        } @else {
-                          {{ performanceFormatted() }}
-                          <span class="text-muted text-sm">tokens/s</span>
-                        }
-                      </div>
-                    </div>
-                  }
-                  @if (model().eta !== null && model().eta !== undefined) {
-                    <div>
-                      <div class="field-label">Estimated Wait Time</div>
-                      <div class="field-value">{{ etaDisplay() }}</div>
-                    </div>
-                  }
-                  @if (model().queued !== null && model().queued !== undefined) {
-                    <div>
-                      <div class="field-label">Queued {{ queuedUnit() }}</div>
-                      <div class="field-value">
-                        @if (isImageModel()) {
-                          <span [appTooltip]="queuedTooltip()">
-                            {{ queuedDisplay() }}
-                            <span class="text-muted text-sm">megapixelsteps</span>
-                          </span>
-                        } @else {
-                          {{ model().queued?.toLocaleString() }}
-                          <span class="text-muted text-sm">tokens</span>
-                        }
-                      </div>
-                    </div>
-                  }
-                </div>
-                @if (model().usageStats) {
-                  <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <div class="field-label mb-2">Usage Statistics</div>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <div class="text-xs text-muted">Last 24h</div>
-                        <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {{ usageStatsDay().toLocaleString() }}
-                          <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-xs text-muted">Last 30d</div>
-                        <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {{ usageStatsMonth().toLocaleString() }}
-                          <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-xs text-muted">All Time</div>
-                        <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {{ usageStatsTotal().toLocaleString() }}
-                          <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
-                        </div>
-                      </div>
+                      {{ model().queuedJobs }}
+                      <span class="text-muted text-sm">{{ queuedJobsUnit() }}</span>
                     </div>
                   </div>
                 }
+                @if (model().performance !== null && model().performance !== undefined) {
+                  <div>
+                    <div class="field-label">Performance</div>
+                    <div class="field-value">
+                      @if (isImageModel()) {
+                        <span [appTooltip]="performanceTooltip()">
+                          {{ performanceDisplay() }}
+                          <span class="text-muted text-sm">megapixelsteps</span>
+                        </span>
+                      } @else {
+                        {{ performanceFormatted() }}
+                        <span class="text-muted text-sm">tokens/s</span>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (model().eta !== null && model().eta !== undefined) {
+                  <div>
+                    <div class="field-label">Estimated Wait Time</div>
+                    <div class="field-value">{{ etaDisplay() }}</div>
+                  </div>
+                }
+                @if (model().queued !== null && model().queued !== undefined) {
+                  <div>
+                    <div class="field-label">Queued {{ queuedUnit() }}</div>
+                    <div class="field-value">
+                      @if (isImageModel()) {
+                        <span [appTooltip]="queuedTooltip()">
+                          {{ queuedDisplay() }}
+                          <span class="text-muted text-sm">megapixelsteps</span>
+                        </span>
+                      } @else {
+                        {{ model().queued?.toLocaleString() }}
+                        <span class="text-muted text-sm">tokens</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+              @if (model().usageStats) {
+                <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                  <div class="field-label mb-2">Usage Statistics</div>
+                  <div class="grid grid-cols-3 gap-4">
+                    <div>
+                      <div class="text-xs text-muted">Last 24h</div>
+                      <div class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ usageStatsDay().toLocaleString() }}
+                        <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-muted">Last 30d</div>
+                      <div class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ usageStatsMonth().toLocaleString() }}
+                        <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-muted">All Time</div>
+                      <div class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {{ usageStatsTotal().toLocaleString() }}
+                        <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               }
-            </div>
-          </div>
+            }
+          </section>
         }
 
-        <!-- Links & Resources Card -->
+        <!-- Links & Resources -->
         @if (linkFieldsWithValues().length > 0 || arrayFieldsWithValues().length > 0) {
-          <div class="card" [class.xl:col-span-2]="!showRequirements() && !showHordeStatus()">
-            <div class="card-header">
-              <h4 class="heading-card flex items-center gap-2">
-                <svg
-                  class="w-5 h-5 text-success-600 dark:text-success-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                  ></path>
-                </svg>
-                Links & Resources
-              </h4>
-            </div>
-            <div class="card-body space-y-4">
+          <section class="detail-panel">
+            <h4 class="detail-section-heading">Links & Resources</h4>
+            <div class="space-y-3">
               @for (field of linkFieldsWithValues(); track field.label) {
                 <div>
                   <div class="field-label">{{ field.label }}</div>
@@ -241,7 +188,7 @@ import { HordeApiService } from '../../services/horde-api.service';
                     >
                       {{ getValue(field) }}
                       <svg
-                        class="w-4 h-4 flex-shrink-0"
+                        class="w-3.5 h-3.5 flex-shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -270,36 +217,17 @@ import { HordeApiService } from '../../services/horde-api.service';
                 </div>
               }
             </div>
-          </div>
+          </section>
         }
 
-        <!-- Requirements Card -->
+        <!-- Requirements -->
         @if (showRequirements()) {
-          <div class="card xl:col-span-2">
-            <div class="card-header">
-              <h4 class="heading-card flex items-center gap-2">
-                <svg
-                  class="w-5 h-5 text-warning-600 dark:text-warning-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  ></path>
-                </svg>
-                Model Parameter Requirements
-              </h4>
+          <section class="detail-panel">
+            <h4 class="detail-section-heading">Model Parameter Requirements</h4>
+            <div class="code-block">
+              <pre>{{ getRequirementsText() }}</pre>
             </div>
-            <div class="card-body">
-              <div class="code-block">
-                <pre>{{ getRequirementsText() }}</pre>
-              </div>
-            </div>
-          </div>
+          </section>
         }
       </div>
     } @else {

@@ -3,16 +3,21 @@
 
   /* Standard form field wrapper */
   .form-field {
-    @apply space-y-2;
+    @apply space-y-1.5;
+  }
+
+  /* Shared base for form grids */
+  .form-grid {
+    @apply grid grid-cols-1 gap-4;
   }
 
   /* Common grid layouts for forms */
   .form-grid-2 {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-3;
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
   }
 
   .form-grid-3 {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-3;
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
   }
 
   .form-grid-4 {
@@ -85,7 +90,7 @@
   .card-header-collapsible {
     @apply px-4 py-2 border-b border-gray-200;
     @apply flex justify-between items-center w-full text-left cursor-pointer;
-    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors;
+    @apply transition-colors duration-100;
     @apply dark:border-gray-700;
   }
 
@@ -96,50 +101,24 @@
 
   /* Enhanced field group styles with better touch targets */
   .field-group-collapsible {
-    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
-    @apply transition-shadow duration-150;
+    @apply border-t border-gray-200 dark:border-gray-700;
   }
 
-  /* Color-coded field group variants */
-  .field-group-collapsible-primary {
-    @apply border-l-4 border-l-primary-500 bg-primary-50/30;
-    @apply dark:border-l-primary-400 dark:bg-primary-900/10;
+  /* ===== Field Region (lightweight labeled divider for groups) ===== */
+  .field-region {
+    @apply mt-5;
   }
 
-  .field-group-collapsible-success {
-    @apply border-l-4 border-l-success-500 bg-success-50/30;
-    @apply dark:border-l-success-400 dark:bg-success-900/10;
+  .field-region-toggle {
+    @apply text-sm font-medium text-gray-600 dark:text-gray-400;
+    @apply flex items-center gap-2 py-2;
+    @apply hover:text-gray-900 dark:hover:text-gray-200;
+    @apply transition-colors duration-150;
+    @apply cursor-pointer bg-transparent border-0;
   }
 
-  .field-group-collapsible-info {
-    @apply border-l-4 border-l-info-500 bg-info-50/30;
-    @apply dark:border-l-info-400 dark:bg-info-900/10;
-  }
-
-  .field-group-collapsible-warning {
-    @apply border-l-4 border-l-warning-500 bg-warning-50/30;
-    @apply dark:border-l-warning-400 dark:bg-warning-900/10;
-  }
-
-  /* Priority-based field group variants with progressive border weights */
-  .field-group-required {
-    @apply border-l-4 border-l-primary-600 bg-primary-50/40;
-    @apply dark:border-l-primary-500 dark:bg-primary-900/15;
-  }
-
-  .field-group-recommended {
-    @apply border-l-[3px] border-l-success-500 bg-success-50/30;
-    @apply dark:border-l-success-400 dark:bg-success-900/10;
-  }
-
-  .field-group-optional {
-    @apply border-l-2 border-l-info-400 bg-info-50/20;
-    @apply dark:border-l-info-400 dark:bg-info-900/5;
-  }
-
-  .field-group-advanced {
-    @apply border-l-2 border-l-gray-400 bg-gray-50/20;
-    @apply dark:border-l-gray-500 dark:bg-gray-800/10;
+  .field-region-content {
+    @apply mt-3;
   }
 
   /* Spacing between field groups */
@@ -149,10 +128,9 @@
 
   .field-group-header {
     @apply w-full text-left px-4 py-3 min-h-[44px];
-    @apply border-b border-gray-200 dark:border-gray-700;
-    @apply hover:bg-gray-50 dark:hover:bg-gray-700/50;
+    @apply border-b border-gray-100 dark:border-gray-700;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
-    @apply transition-colors duration-150;
+    @apply transition-colors duration-100;
     @apply cursor-pointer;
   }
 
@@ -167,7 +145,7 @@
   }
 
   .field-group-header-title {
-    @apply text-base font-semibold text-gray-900 dark:text-gray-100;
+    @apply text-sm font-bold text-gray-900 dark:text-gray-100;
   }
 
   .field-group-header-help {
@@ -190,25 +168,24 @@
 
   /* ===== Form Section Card (new section wrapper) ===== */
   .form-section-card {
-    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+    @apply border-b border-gray-200 dark:border-gray-700;
     @apply bg-white dark:bg-gray-800;
-    @apply shadow-sm;
   }
 
   .form-section-card--collapsed {
-    @apply shadow-none;
+    /* No additional styling when collapsed */
   }
 
   .form-section-header {
     @apply w-full flex items-center justify-between;
     @apply px-5 py-3 min-h-[48px];
-    @apply bg-gray-50 dark:bg-gray-800/80;
-    @apply border-b border-gray-200 dark:border-gray-700;
-    @apply transition-colors duration-150;
+    @apply bg-white dark:bg-gray-800;
+    @apply border-b border-gray-100 dark:border-gray-700;
+    @apply transition-colors duration-100;
   }
 
   button.form-section-header:hover {
-    @apply bg-gray-100 dark:bg-gray-700/60;
+    @apply text-primary-700 dark:text-primary-300;
   }
 
   .form-section-header-left {
@@ -220,7 +197,8 @@
   }
 
   .form-section-title {
-    @apply text-sm font-semibold text-gray-900 dark:text-gray-100;
+    @apply text-lg font-bold text-gray-900 dark:text-gray-100;
+    @apply flex items-center gap-2;
   }
 
   .form-section-subtitle {
@@ -233,12 +211,17 @@
 
   .form-section-change-badge {
     @apply text-xs font-medium px-2 py-0.5 rounded-full;
-    @apply bg-primary-100 text-primary-700;
-    @apply dark:bg-primary-900/40 dark:text-primary-300;
+    @apply bg-gray-100 text-gray-600;
+    @apply dark:bg-gray-700 dark:text-gray-300;
   }
 
   .form-section-body {
     @apply p-5;
+  }
+
+  /* Consistent inter-group spacing within section body */
+  .form-section-body > .form-grid + .form-grid {
+    @apply mt-5;
   }
 
   /* ===== Field Tooltip ===== */
@@ -265,7 +248,7 @@
     @apply w-72 max-w-sm;
     @apply bg-white dark:bg-gray-800;
     @apply border border-gray-200 dark:border-gray-600;
-    @apply rounded-lg shadow-lg;
+    @apply shadow-lg;
     @apply text-sm;
     animation: tooltip-fade-in 0.15s ease-out;
   }
@@ -319,11 +302,9 @@
   .form-sticky-footer {
     @apply sticky bottom-0 z-30;
     @apply bg-white dark:bg-gray-900;
-    @apply border-t border-gray-200 dark:border-gray-700;
+    @apply border-t-2 border-gray-300 dark:border-gray-600;
     @apply px-6 py-3;
     @apply flex items-center justify-between;
-    @apply shadow-[0_-2px_8px_rgba(0,0,0,0.06)];
-    @apply dark:shadow-[0_-2px_8px_rgba(0,0,0,0.3)];
   }
 
   .form-footer-status {
@@ -336,14 +317,14 @@
 
   /* ===== Submission Banner ===== */
   .submission-context-banner {
-    @apply flex items-start gap-3 px-4 py-3 rounded-lg text-sm;
-    @apply bg-info-50 border border-info-200 text-info-800;
-    @apply dark:bg-info-900/20 dark:border-info-800 dark:text-info-200;
+    @apply flex items-start gap-3 px-4 py-3 text-sm;
+    @apply bg-info-50 border-l-4 border-info-500 text-info-800;
+    @apply dark:bg-info-900/20 dark:border-info-400 dark:text-info-200;
   }
 
   .submission-context-banner--warning {
-    @apply bg-warning-50 border-warning-200 text-warning-800;
-    @apply dark:bg-warning-900/20 dark:border-warning-800 dark:text-warning-200;
+    @apply bg-warning-50 border-warning-500 text-warning-800;
+    @apply dark:bg-warning-900/20 dark:border-warning-400 dark:text-warning-200;
   }
 
   .submission-context-icon {
@@ -373,16 +354,16 @@
 
   /* ===== Pending Change Warning Banner ===== */
   .pending-warning-banner {
-    @apply flex items-start gap-3 px-4 py-3 rounded-lg text-sm;
-    @apply bg-warning-50 border border-warning-200 text-warning-800;
-    @apply dark:bg-warning-900/20 dark:border-warning-800 dark:text-warning-200;
+    @apply flex items-start gap-3 px-4 py-3 text-sm;
+    @apply bg-warning-50 border-l-4 border-warning-500 text-warning-800;
+    @apply dark:bg-warning-900/20 dark:border-warning-400 dark:text-warning-200;
   }
 
   /* ===== Text Gen Simplified Mode ===== */
   .text-gen-info-callout {
-    @apply flex items-start gap-3 px-4 py-3 rounded-lg text-sm mb-4;
-    @apply bg-primary-50 border border-primary-200 text-primary-800;
-    @apply dark:bg-primary-900/20 dark:border-primary-800 dark:text-primary-200;
+    @apply flex items-start gap-3 px-4 py-3 text-sm mb-4;
+    @apply bg-primary-50 border-l-4 border-primary-500 text-primary-800;
+    @apply dark:bg-primary-900/20 dark:border-primary-400 dark:text-primary-200;
   }
 
   .advanced-toggle-btn {
@@ -409,7 +390,7 @@
 
   .edit-summary-dialog {
     @apply bg-white dark:bg-gray-800;
-    @apply rounded-lg shadow-xl;
+    @apply shadow-lg;
     @apply w-full max-w-lg max-h-[80vh] overflow-y-auto;
     @apply border border-gray-200 dark:border-gray-700;
   }
@@ -450,20 +431,19 @@
 
   /* Nested item card (for file/download entries) */
   .nested-item-card {
-    @apply p-4 bg-gray-50 rounded-lg space-y-3 relative;
-    @apply dark:bg-gray-800;
+    @apply p-4 bg-gray-50 space-y-3 relative border-l-2 border-gray-300;
+    @apply dark:bg-gray-800 dark:border-gray-600;
   }
 
   .nested-item-remove-btn {
     @apply absolute top-2 right-2;
-    @apply px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-150 shadow-sm;
+    @apply px-3 py-1.5 text-xs rounded font-medium transition-colors duration-100;
     @apply bg-danger-600 text-white;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
     @apply dark:bg-danger-500;
   }
 
   .nested-item-remove-btn:hover:not(:disabled) {
-    @apply shadow-md -translate-y-px;
     @apply bg-danger-700;
     @apply dark:bg-danger-600;
   }
@@ -474,7 +454,7 @@
 
   /* Key-value editor item card */
   .key-value-item-card {
-    @apply bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700;
+    @apply bg-gray-50 dark:bg-gray-800 p-3 border-l-2 border-gray-300 dark:border-gray-600;
   }
 
   /* Requirements section header */
@@ -574,7 +554,7 @@
 
   /* Form legend for color coding explanation */
   .form-legend {
-    @apply flex flex-wrap gap-4 text-xs text-gray-600 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200;
+    @apply flex flex-wrap gap-4 text-xs text-gray-600 px-4 py-2 border border-gray-200;
     @apply dark:text-gray-400 dark:bg-gray-800/50 dark:border-gray-700;
   }
 
@@ -682,8 +662,8 @@
 
   /* JSON display/readonly textarea */
   .json-readonly-textarea {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50;
-    @apply transition-all duration-150;
+    @apply w-full px-3 py-2 border border-gray-300 rounded text-sm bg-gray-50;
+    @apply transition-colors duration-100;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
     @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
     @apply placeholder:italic placeholder:text-gray-400;
@@ -701,7 +681,7 @@
 
   /* JSON display container */
   .json-display-container {
-    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 rounded-lg overflow-x-auto text-sm whitespace-pre-wrap break-words;
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 overflow-x-auto text-sm whitespace-pre-wrap break-words;
   }
 
   /* Sidebar borders and backgrounds */
@@ -719,7 +699,7 @@
   }
 
   .sidebar-header {
-    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2;
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2;
   }
 
   /* Compact header when sidebar is collapsed */
@@ -740,7 +720,7 @@
 
   /* Sidebar navigation item */
   .sidebar-nav-item {
-    @apply w-full flex justify-between items-center px-4 py-2.5 text-sm font-semibold transition-colors border-l-3;
+    @apply w-full flex justify-between items-center px-4 py-2.5 text-sm font-medium transition-colors border-l-3;
   }
 
   .sidebar-nav-item-active {
@@ -758,7 +738,7 @@
 
   /* Navigation bar styling */
   .nav-bar {
-    @apply sticky top-0 z-50 bg-primary-600 dark:bg-primary-700 text-white shadow-md;
+    @apply sticky top-0 z-50 bg-primary-700 dark:bg-gray-900 text-white border-b border-primary-800 dark:border-gray-700;
   }
 
   .nav-content {
@@ -779,7 +759,7 @@
   }
 
   .notification-alert {
-    @apply px-4 py-3 rounded-lg text-sm font-medium border;
+    @apply px-4 py-3 text-sm font-medium border-l-4;
     @apply pointer-events-auto shadow-lg min-w-[280px] max-w-[400px];
   }
 
@@ -809,8 +789,8 @@
 
   /* Model list filter button */
   .filter-button {
-    @apply w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white;
-    @apply transition-all duration-150;
+    @apply w-64 px-3 py-2 border border-gray-300 rounded text-sm bg-white;
+    @apply transition-colors duration-100;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
     @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
     @apply placeholder:italic placeholder:text-gray-400;
@@ -837,11 +817,11 @@
 
   /* Inline stats row for compact header */
   .inline-stats-row {
-    @apply flex flex-wrap items-center gap-3 text-sm px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700;
+    @apply flex flex-wrap items-center gap-3 text-sm px-4 py-2 border-t border-gray-200 dark:border-gray-700;
   }
 
   .inline-stat-item {
-    @apply flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/60 dark:bg-gray-900/40 border border-gray-200/50 dark:border-gray-600/50;
+    @apply flex items-center gap-1.5;
   }
 
   /* Visual separator between stat groups */

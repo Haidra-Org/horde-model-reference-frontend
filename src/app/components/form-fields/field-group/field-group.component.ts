@@ -74,67 +74,6 @@ export class FieldGroupComponent implements OnInit {
     return item;
   });
 
-  /**
-   * Computed signal that returns the color variant class for the group.
-   * Priority-based classes take precedence over colorVariant classes.
-   */
-  readonly colorVariantClass = computed<string>(() => {
-    const group = this.asGroup();
-    if (!group) {
-      return '';
-    }
-
-    // Priority-based classes take precedence
-    if (group.priority) {
-      return `field-group-${group.priority}`;
-    }
-
-    // Fall back to colorVariant classes
-    if (group.colorVariant) {
-      return `field-group-collapsible-${group.colorVariant}`;
-    }
-
-    return '';
-  });
-
-  /**
-   * Computed signal that returns the priority badge class
-   */
-  readonly priorityBadgeClass = computed<string>(() => {
-    const group = this.asGroup();
-    if (!group?.priority) {
-      return '';
-    }
-
-    switch (group.priority) {
-      case 'required':
-        return 'badge-danger';
-      case 'recommended':
-        return 'badge-success';
-      case 'optional':
-        return 'badge-info';
-      case 'advanced':
-        return 'badge-secondary';
-      default:
-        return '';
-    }
-  });
-
-  /**
-   * Computed signal that returns the priority label text
-   */
-  readonly priorityLabel = computed<string>(() => {
-    const group = this.asGroup();
-    if (!group?.priority) {
-      return '';
-    }
-
-    return group.priority.charAt(0).toUpperCase() + group.priority.slice(1);
-  });
-
-  /**
-   * Toggle the collapsed state of a collapsible group
-   */
   toggleCollapsed(): void {
     this.isCollapsed.update((current) => !current);
   }

@@ -136,12 +136,10 @@ export class StableDiffusionFieldsComponent {
             .gridSpan(2)
             .build(),
         ],
-        'form-grid-4',
+        'form-grid-2',
         {
           label: 'Essential Information',
           collapsible: true,
-          helpText: 'Core model architecture and capabilities',
-          icon: '⭐',
           priority: 'required',
         },
       ),
@@ -154,7 +152,7 @@ export class StableDiffusionFieldsComponent {
           )
             .placeholder('https://civitai.com/models/...')
             .helpText("URL to the model's homepage, CivitAI page, or HuggingFace repository")
-            .gridSpan(4)
+            .gridSpan(2)
             .build(),
 
           FormFieldBuilder.tagInput('tags', 'Tags', currentData.tags || [], (value) =>
@@ -191,15 +189,13 @@ export class StableDiffusionFieldsComponent {
             .helpText(
               'URLs to example images generated with this model. Impact: Good showcases dramatically increase model discovery and usage. Best Practice: Include 3-5 diverse, high-quality examples.',
             )
-            .gridSpan(4)
+            .gridSpan(2)
             .build(),
         ],
-        'form-grid-4',
+        'form-grid-2',
         {
           label: 'Metadata & Discovery',
           collapsible: true,
-          helpText: 'Additional information for users to find and evaluate this model',
-          icon: '📋',
           priority: 'optional',
         },
       ),
@@ -241,12 +237,10 @@ export class StableDiffusionFieldsComponent {
             .gridSpan(1)
             .build(),
         ],
-        'form-grid-4',
+        'form-grid-2',
         {
           label: 'Technical Specifications',
           collapsible: true,
-          helpText: 'Advanced technical details and system requirements',
-          icon: '⚙️',
           priority: 'advanced',
         },
       ),
@@ -271,8 +265,6 @@ export class StableDiffusionFieldsComponent {
         {
           label: 'Requirements',
           collapsible: true,
-          helpText: 'Generation parameters and system requirements',
-          icon: '📋',
           priority: 'advanced',
         },
       ),

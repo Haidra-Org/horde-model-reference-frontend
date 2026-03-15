@@ -131,38 +131,6 @@ export class DynamicFieldComponent {
   });
 
   /**
-   * Computed signal for priority badge CSS class.
-   * Maps priority level to the appropriate badge color variant.
-   */
-  readonly priorityBadgeClass = computed<string>(() => {
-    const priority = this.config().priority;
-    if (!priority) return '';
-
-    switch (priority) {
-      case 'required':
-        return 'badge-danger';
-      case 'recommended':
-        return 'badge-success';
-      case 'optional':
-        return 'badge-info';
-      case 'advanced':
-        return 'badge-secondary';
-      default:
-        return '';
-    }
-  });
-
-  /**
-   * Computed signal for priority badge label text.
-   * Capitalizes the first letter of the priority level.
-   */
-  readonly priorityLabel = computed<string>(() => {
-    const priority = this.config().priority;
-    if (!priority) return '';
-    return priority.charAt(0).toUpperCase() + priority.slice(1);
-  });
-
-  /**
    * Determine the glossary term key from field ID
    * Maps common field IDs to their glossary terms
    */

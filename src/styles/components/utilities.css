@@ -20,12 +20,12 @@
 
   /* Audit report link for model list header */
   .audit-report-link {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg;
-    @apply bg-primary-50 border border-primary-200 text-primary-700;
-    @apply hover:bg-primary-100 hover:border-primary-300 hover:shadow-sm;
-    @apply transition-all duration-150;
-    @apply dark:bg-primary-900/20 dark:border-primary-800 dark:text-primary-300;
-    @apply dark:hover:bg-primary-900/30 dark:hover:border-primary-700;
+    @apply flex items-center gap-3 px-4 py-2.5;
+    @apply bg-white border border-primary-300 text-primary-700;
+    @apply hover:bg-primary-50 hover:border-primary-400;
+    @apply transition-colors duration-100;
+    @apply dark:bg-gray-800 dark:border-primary-700 dark:text-primary-300;
+    @apply dark:hover:bg-primary-900/20 dark:hover:border-primary-600;
   }
 
   /* Audit action container for model list header */
@@ -35,10 +35,9 @@
 
   /* Ecosystem explanation cards */
   .ecosystem-card {
-    @apply bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-6;
-    @apply border border-primary-200 shadow-sm;
-    @apply hover:shadow-md transition-shadow duration-200;
-    @apply dark:from-primary-900/20 dark:to-primary-800/20 dark:border-primary-700;
+    @apply bg-white rounded p-6;
+    @apply border-l-4 border-primary-500;
+    @apply dark:bg-gray-800 dark:border-primary-400;
   }
 
   .ecosystem-card-title {
@@ -58,9 +57,9 @@
 
   /* User role/persona cards */
   .role-card {
-    @apply bg-white rounded-lg p-5 border-2 border-gray-200;
-    @apply hover:border-primary-400 hover:shadow-lg transition-all duration-200;
-    @apply dark:bg-gray-800 dark:border-gray-700 dark:hover:border-primary-600;
+    @apply bg-white p-5 border border-gray-200;
+    @apply hover:border-primary-500 transition-colors duration-100;
+    @apply dark:bg-gray-800 dark:border-gray-700 dark:hover:border-primary-500;
   }
 
   .role-card-header {
@@ -68,8 +67,8 @@
   }
 
   .role-card-icon {
-    @apply w-10 h-10 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center;
-    @apply dark:bg-primary-900/30 dark:text-primary-400;
+    @apply w-10 h-10 rounded bg-gray-100 text-gray-700 flex items-center justify-center;
+    @apply dark:bg-gray-700 dark:text-gray-300;
   }
 
   .role-card-title {
@@ -88,9 +87,9 @@
   }
 
   .quick-link {
-    @apply flex items-center gap-2 px-4 py-3 bg-white rounded-lg border border-gray-200;
-    @apply hover:bg-primary-50 hover:border-primary-300 transition-colors duration-150;
-    @apply dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-primary-900/20 dark:hover:border-primary-700;
+    @apply flex items-center gap-2 px-4 py-3 bg-white border border-gray-200;
+    @apply hover:bg-gray-50 hover:border-gray-400 transition-colors duration-100;
+    @apply dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-600;
   }
 
   .quick-link-icon {
@@ -196,13 +195,13 @@
   }
 
   .badge-popular {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white;
-    @apply dark:from-primary-600 dark:to-primary-700;
+    @apply bg-primary-100 text-primary-800 border border-primary-300;
+    @apply dark:bg-primary-900/30 dark:text-primary-300 dark:border-primary-700;
   }
 
   .badge-trending {
-    @apply bg-gradient-to-r from-success-500 to-success-600 text-white;
-    @apply dark:from-success-600 dark:to-success-700;
+    @apply bg-success-100 text-success-800 border border-success-300;
+    @apply dark:bg-success-900/30 dark:text-success-300 dark:border-success-700;
   }
 
   .badge-needs-workers {
@@ -242,10 +241,10 @@
   }
 
   .showcase-thumbnail {
-    @apply relative aspect-square overflow-hidden rounded-lg border-2 border-gray-200;
-    @apply bg-gray-100 shadow-sm cursor-pointer;
-    @apply hover:shadow-lg hover:border-primary-400 transition-all duration-200;
-    @apply dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-600;
+    @apply relative aspect-square overflow-hidden border border-gray-200;
+    @apply bg-gray-100 cursor-pointer;
+    @apply hover:border-primary-500 transition-colors duration-100;
+    @apply dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-500;
   }
 
   .showcase-thumbnail img {
@@ -698,17 +697,13 @@
 
   /* Compact button variants */
   .btn-compact {
-    @apply px-2 py-1 rounded-lg font-medium text-xs transition-all duration-150 shadow-sm;
+    @apply px-2 py-1 rounded font-medium text-xs transition-colors duration-100;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
-  .btn-compact:hover:not(:disabled) {
-    @apply shadow-md -translate-y-px;
-  }
-
   .btn-compact-primary {
-    @apply px-2 py-1 rounded-lg font-medium text-xs transition-all duration-150 shadow-sm;
+    @apply px-2 py-1 rounded font-medium text-xs transition-colors duration-100;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
     @apply bg-primary-600 text-white;
@@ -717,13 +712,12 @@
   }
 
   .btn-compact-primary:hover:not(:disabled) {
-    @apply shadow-md -translate-y-px;
     @apply bg-primary-700;
     @apply dark:bg-primary-600;
   }
 
   .btn-compact-secondary {
-    @apply px-2 py-1 rounded-lg font-medium text-xs transition-all duration-150 shadow-sm;
+    @apply px-2 py-1 rounded font-medium text-xs transition-colors duration-100;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
     @apply bg-gray-200 text-gray-900 border border-gray-300;
@@ -732,7 +726,6 @@
   }
 
   .btn-compact-secondary:hover:not(:disabled) {
-    @apply shadow-md -translate-y-px;
     @apply bg-gray-300 border-gray-400;
     @apply dark:bg-gray-600 dark:border-gray-500;
   }
@@ -746,14 +739,14 @@
   }
 
   .view-mode-button-compact.view-mode-button--active {
-    @apply bg-primary-600 text-white shadow-sm;
+    @apply bg-primary-600 text-white;
     @apply dark:bg-primary-500;
   }
 
   /* Compact form input */
   .form-input-compact {
-    @apply w-full px-3 py-1 border border-gray-300 rounded-lg text-xs bg-white;
-    @apply transition-all duration-150;
+    @apply w-full px-3 py-1 border border-gray-300 rounded text-xs bg-white;
+    @apply transition-colors duration-100;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
     @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
     @apply placeholder:italic placeholder:text-gray-400;
@@ -764,7 +757,7 @@
 
   /* Compact badge for inline stats */
   .inline-stat-badge-compact {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold tracking-wide cursor-pointer;
+    @apply inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium cursor-pointer;
   }
 
   /* Compact toggle label */
@@ -883,7 +876,7 @@
   }
 
   .workflow-step-circle--active {
-    @apply border-primary-500 bg-primary-500 text-white shadow-md;
+    @apply border-primary-500 bg-primary-500 text-white;
     @apply dark:border-primary-400 dark:bg-primary-400 dark:text-gray-900;
   }
 

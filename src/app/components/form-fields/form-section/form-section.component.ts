@@ -28,9 +28,6 @@ import { Component, input, signal, computed, ChangeDetectionStrategy, OnInit } f
           }
           <div>
             <h3 class="form-section-title">
-              @if (icon()) {
-                <span class="mr-1.5">{{ icon() }}</span>
-              }
               {{ title() }}
             </h3>
             @if (subtitle() && !isCollapsed()) {

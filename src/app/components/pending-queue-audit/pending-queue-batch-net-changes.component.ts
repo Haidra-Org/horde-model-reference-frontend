@@ -9,7 +9,6 @@ import type {
 
 @Component({
   selector: 'app-pending-queue-batch-net-changes',
-  imports: [NgClass],
   templateUrl: './pending-queue-batch-net-changes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

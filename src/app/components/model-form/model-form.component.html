@@ -73,7 +73,8 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <!-- Validation Summary (shown at top if errors exist) -->
     @if (hasErrors()) {
-    <div class="alert alert-danger mb-4">
+    <div
+      class="border-l-4 border-danger-500 bg-white dark:bg-gray-800 p-3 text-sm text-danger-700 dark:text-danger-300 mb-4">
       <strong>{{ groupedIssues().errors.length }} error(s) must be fixed before saving</strong>
     </div>
     }
@@ -82,7 +83,7 @@
     @if (viewMode() === 'form') {
     <div class="space-y-5">
       <!-- Model Name Section -->
-      <app-form-section title="Model Identity" icon="🏷️">
+      <app-form-section title="Model Identity">
         <div class="mb-4">
           <label for="name" class="form-label">
             Model Name *
@@ -124,7 +125,7 @@
       </app-form-section>
 
       <!-- Common Fields -->
-      <app-form-section title="Common Fields" icon="📝" [collapsible]="true"
+      <app-form-section title="Common Fields" [collapsible]="true"
         subtitle="Description, content classification, and metadata shared by all model types">
         <app-common-fields [data]="commonData()" [category]="$any(category())" [canonicalFormat]="canonicalFormat()"
           (dataChange)="onCommonDataChange($event)" />
@@ -132,7 +133,7 @@
 
       <!-- Category-Specific Fields -->
       @if (isImageGeneration()) {
-      <app-form-section title="Image Generation" icon="🎨" [collapsible]="true"
+      <app-form-section title="Image Generation" [collapsible]="true"
         subtitle="Baseline, inpainting, triggers, showcases, and requirements">
         <app-stable-diffusion-fields [data]="stableDiffusionData()" [canonicalFormat]="canonicalFormat()"
           (dataChange)="onStableDiffusionDataChange($event)" />
@@ -140,7 +141,7 @@
       }
 
       @if (isTextGeneration()) {
-      <app-form-section title="Text Generation" icon="💬" [collapsible]="true"
+      <app-form-section title="Text Generation" [collapsible]="true"
         subtitle="Parameters, baseline, display name, and settings">
         <app-text-generation-fields [data]="textGenerationData()" [canonicalFormat]="canonicalFormat()"
           (dataChange)="onTextGenerationDataChange($event)" />
@@ -148,22 +149,21 @@
       }
 
       @if (isClip()) {
-      <app-form-section title="CLIP" icon="🔗" [collapsible]="true" subtitle="CLIP model configuration">
+      <app-form-section title="CLIP" [collapsible]="true" subtitle="CLIP model configuration">
         <app-clip-fields [data]="clipData()" [canonicalFormat]="canonicalFormat()"
           (dataChange)="onClipDataChange($event)" />
       </app-form-section>
       }
 
       @if (isControlnet()) {
-      <app-form-section title="ControlNet" icon="🎛️" [collapsible]="true"
-        subtitle="ControlNet style and configuration">
+      <app-form-section title="ControlNet" [collapsible]="true" subtitle="ControlNet style and configuration">
         <app-controlnet-fields [data]="controlnetData()" [canonicalFormat]="canonicalFormat()"
           (dataChange)="onControlnetDataChange($event)" />
       </app-form-section>
       }
 
       <!-- Downloads -->
-      <app-form-section title="Downloads & Config" icon="📦" [collapsible]="true"
+      <app-form-section title="Downloads & Config" [collapsible]="true"
         subtitle="Model file URLs, checksums, and download configuration">
         <app-config-form-section-simplified [downloads]="simplifiedDownloads()"
           (downloadsChange)="onSimplifiedDownloadsChange($event)"
@@ -191,6 +191,11 @@
           <span class="label-hint">Base model - variations auto-generated</span>
           }
         </label>
+        @if (isTextGeneration()) {
+        <button type="button" class="btn btn-sm btn-secondary mb-2" (click)="toggleJsonFieldScope()">
+          {{ showAllJsonFields() ? 'Show CSV fields only' : 'Show all fields' }}
+        </button>
+        }
         <app-json-editor formControlName="jsonData" [rows]="20" placeholder='{"description": "...", "config": {...}}'
           [class.json-editor-error]="
                   form.get('jsonData')?.invalid &&
@@ -208,9 +213,9 @@
 
     <!-- Validation Details -->
     @if (validationIssues().length > 0 || groupedIssues().warnings.length > 0) {
-    <div class="mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-300 dark:border-gray-700 p-4">
+    <div class="mt-4 space-y-3">
       @if (groupedIssues().errors.length > 0) {
-      <div class="mb-3">
+      <div class="border-l-4 border-danger-500 bg-white dark:bg-gray-800 p-3">
         <h4 class="text-sm font-semibold text-danger-700 dark:text-danger-300 mb-2">
           Errors ({{ groupedIssues().errors.length }})
         </h4>
@@ -228,7 +233,7 @@
       }
 
       @if (groupedIssues().warnings.length > 0) {
-      <div>
+      <div class="border-l-4 border-warning-500 bg-white dark:bg-gray-800 p-3">
         <h4 class="text-sm font-semibold text-warning-700 dark:text-warning-300 mb-2">
           Warnings ({{ groupedIssues().warnings.length }})
         </h4>
@@ -252,7 +257,7 @@
       <div class="form-footer-status">
         @if (isEditMode()) {
         @if (hasAnyChanges()) {
-        <span class="text-primary-600 dark:text-primary-400 font-medium">
+        <span class="text-gray-600 dark:text-gray-400 font-medium">
           {{ dirtyFieldCount() }} field(s) modified
         </span>
         } @else {
