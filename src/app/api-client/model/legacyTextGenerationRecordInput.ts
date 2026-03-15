@@ -32,5 +32,6 @@ export interface LegacyTextGenerationRecordInput {
   display_name?: string | null;
   url?: string | null;
   tags?: Array<string> | null;
+  instruct_format?: string | null;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
 }

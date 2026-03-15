@@ -68,6 +68,7 @@ export interface LegacyTextGenerationRecord extends LegacyGenericRecord {
   display_name?: string | null;
   url?: string | null;
   tags?: string[] | null;
+  instruct_format?: string | null;
   settings?: Record<string, LegacyRequirementValue> | null;
   text_model_group?: string | null;
 }

@@ -28,6 +28,7 @@ export interface TextGenerationFieldsData {
   display_name?: string | null;
   url?: string | null;
   tags?: string[] | null;
+  instruct_format?: string | null;
   settings?: Record<string, SettingsValue> | null;
   /** V2-only: base model group for grouping variants together */
   text_model_group?: string | null;
@@ -158,14 +159,21 @@ export class TextGenerationFieldsComponent {
             .placeholder('https://...')
             .helpText('Link to model card, documentation, or homepage')
             .build(),
+
+          FormFieldBuilder.text(
+            'instruct_format',
+            'Instruct Format',
+            currentData.instruct_format || null,
+            (value) => this.updateField('instruct_format', value),
+          )
+            .placeholder('e.g., ChatML, Alpaca, Mistral')
+            .helpText('Instruction/chat template format the model expects')
+            .build(),
         ],
         'form-grid-2',
         {
           label: 'Core Fields',
           collapsible: false,
-          helpText: 'The essential fields — same as a CSV row',
-          colorVariant: 'primary',
-          icon: '🔷',
         },
       ),
     ];
@@ -218,8 +226,6 @@ export class TextGenerationFieldsComponent {
           label: 'Additional Metadata',
           collapsible: true,
           defaultCollapsed: false,
-          colorVariant: 'success',
-          icon: '📋',
         },
       ),
 
@@ -246,9 +252,6 @@ export class TextGenerationFieldsComponent {
           label: 'Settings',
           collapsible: true,
           defaultCollapsed: true,
-          helpText: 'Optional configuration parameters for this model',
-          colorVariant: 'warning',
-          icon: '⚙️',
         },
       ),
     ];

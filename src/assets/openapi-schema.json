@@ -9818,6 +9818,17 @@
             ],
             "title": "Tags"
           },
+          "instruct_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruct Format"
+          },
           "settings": {
             "anyOf": [
               {
@@ -10040,6 +10051,17 @@
               }
             ],
             "title": "Tags"
+          },
+          "instruct_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruct Format"
           },
           "settings": {
             "anyOf": [
@@ -11738,6 +11760,17 @@
             ],
             "title": "Tags"
           },
+          "instruct_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruct Format"
+          },
           "settings": {
             "anyOf": [
               {
@@ -11920,6 +11953,17 @@
               }
             ],
             "title": "Tags"
+          },
+          "instruct_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruct Format"
           },
           "settings": {
             "anyOf": [

@@ -33,6 +33,7 @@ export interface TextGenerationModelRecordOutput {
   display_name?: string | null;
   url?: string | null;
   tags?: Array<string> | null;
+  instruct_format?: string | null;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
   text_model_group?: string | null;
 }
