@@ -43,8 +43,8 @@ export interface TextGenerationFieldsData {
       <div class="min-required-callout">
         <span>✏️</span>
         <span>
-          <strong>Minimum required:</strong> Parameters and Baseline.
-          The same fields you'd fill in a CSV row. Toggle "Show all fields" for tags, settings, etc.
+          <strong>Minimum required:</strong> Parameters and Baseline. The same fields you'd fill in
+          a CSV row. Toggle "Show all fields" for tags, settings, etc.
         </span>
       </div>
 
@@ -55,8 +55,13 @@ export interface TextGenerationFieldsData {
 
       <!-- Advanced toggle -->
       <button type="button" class="advanced-toggle-btn" (click)="showAdvanced.set(!showAdvanced())">
-        <svg class="w-4 h-4 transition-transform" [class.rotate-90]="showAdvanced()"
-          fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          class="w-4 h-4 transition-transform"
+          [class.rotate-90]="showAdvanced()"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
         {{ showAdvanced() ? 'Hide' : 'Show' }} all fields

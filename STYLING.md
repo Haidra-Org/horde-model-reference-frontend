@@ -61,8 +61,8 @@ src/shared/design-system/     # Git submodule — shared with AiHordeFrontpage
 
 All colors must reference the semantic token scales defined in `src/shared/design-system/tokens/colors.css`:
 
-| Token    | Hue   | Use Case                              |
-| -------- | ----- | ------------------------------------- |
+| Token       | Hue   | Use Case                              |
+| ----------- | ----- | ------------------------------------- |
 | `primary-*` | Blue  | Primary actions, active states, links |
 | `success-*` | Green | Success states, additions, approved   |
 | `danger-*`  | Red   | Errors, deletions, rejected           |
@@ -78,18 +78,18 @@ Never use these raw Tailwind color names in templates or component code:
 
 Instead, map to the closest semantic token:
 
-| Raw Tailwind    | Correct Theme Token |
-| --------------- | ------------------- |
-| `red-*`         | `danger-*`          |
-| `blue-*`        | `primary-*`         |
-| `green-*`       | `success-*`         |
-| `emerald-*`     | `success-*`         |
-| `yellow-*`      | `warning-*`         |
-| `amber-*`       | `warning-*`         |
-| `rose-*`        | `danger-*`          |
-| `sky-*`         | `info-*`            |
-| `purple-*`      | `info-*`            |
-| `cyan-*`        | `info-*`            |
+| Raw Tailwind | Correct Theme Token |
+| ------------ | ------------------- |
+| `red-*`      | `danger-*`          |
+| `blue-*`     | `primary-*`         |
+| `green-*`    | `success-*`         |
+| `emerald-*`  | `success-*`         |
+| `yellow-*`   | `warning-*`         |
+| `amber-*`    | `warning-*`         |
+| `rose-*`     | `danger-*`          |
+| `sky-*`      | `info-*`            |
+| `purple-*`   | `info-*`            |
+| `cyan-*`     | `info-*`            |
 
 ---
 
@@ -121,20 +121,24 @@ Instead, map to the closest semantic token:
 
 ```html
 <!-- BAD: inline width -->
-<col style="width: 33.5%">
+<col style="width: 33.5%" />
 
 <!-- GOOD: CSS class -->
-<col class="col-w-33-5">
+<col class="col-w-33-5" />
 ```
 
 ### 4. Hardcoded color values
 
 ```css
 /* BAD: hardcoded RGB */
-.my-element { color: rgb(59, 130, 246); }
+.my-element {
+  color: rgb(59, 130, 246);
+}
 
 /* GOOD: theme token via @apply */
-.my-element { @apply text-primary-500; }
+.my-element {
+  @apply text-primary-500;
+}
 ```
 
 ### 5. Duplicating existing classes
@@ -147,11 +151,11 @@ Check `src/styles/` and `src/shared/design-system/primitives/` before creating n
 
 Three components are permitted to use component-scoped CSS:
 
-| Component | Mechanism | Justification |
-| --------- | --------- | ------------- |
-| `json-editor.component.ts` | `styleUrls` | Syntax highlighting requires scoped CSS |
-| `json-display.component.ts` | `styleUrls` | Syntax highlighting requires scoped CSS |
-| `delta-diff.component.ts` | `styles` | Diff rendering (monospace, color-coded lines) tightly coupled to component |
+| Component                   | Mechanism   | Justification                                                              |
+| --------------------------- | ----------- | -------------------------------------------------------------------------- |
+| `json-editor.component.ts`  | `styleUrls` | Syntax highlighting requires scoped CSS                                    |
+| `json-display.component.ts` | `styleUrls` | Syntax highlighting requires scoped CSS                                    |
+| `delta-diff.component.ts`   | `styles`    | Diff rendering (monospace, color-coded lines) tightly coupled to component |
 
 All other components must have no `styles:` or `styleUrl:` properties.
 
@@ -159,39 +163,39 @@ All other components must have no `styles:` or `styleUrl:` properties.
 
 ## Quick Reference
 
-| Need                     | Use                                                        |
-| ------------------------ | ---------------------------------------------------------- |
-| Primary button           | `.btn-primary`                                             |
-| Secondary button         | `.btn-secondary`                                           |
-| Danger button            | `.btn-danger`                                              |
-| Small button             | `.btn-sm`                                                  |
-| Card                     | `.card`, `.card-header`, `.card-body`                      |
-| Form input               | `.form-input`                                              |
-| Form label               | `.form-label`                                              |
-| Select                   | `.form-select`                                             |
-| Textarea                 | `.form-textarea`                                           |
-| Checkbox                 | `.form-checkbox`                                           |
-| Error text               | `.form-error`                                              |
-| Hint text                | `.form-hint`                                               |
-| Required marker          | `text-danger-500`                                          |
-| Badge (generic)          | `.badge` + `.badge-success` / `.badge-danger` / etc.       |
-| Tag (outline)            | `.tag` + `.tag-primary` / `.tag-success` / `.tag-info`     |
-| Info box                 | `.info-box` + `.info-box-warning` / etc.                   |
-| Alert (border-left)      | `.alert` + `.alert-danger` / `.alert-warning` / etc.       |
-| Alert (rounded banner)   | `.alert-banner` + `.alert-banner-danger` / `-warning`      |
-| Status badge (pill)      | `.status-badge` + `-success` / `-danger` / `-warning` / `-info` |
-| Change badge (bordered)  | `.change-badge` + `-added` / `-modified` / `-deleted`      |
-| Filter pill              | `.filter-pill` + `-active-primary` / `-success` / etc.     |
-| Stat count number        | `.stat-count-success` / `.stat-count-danger` / `.stat-count-info` |
-| Critical indicator       | `.critical-badge`, `.critical-ring`                        |
-| Diff field text          | `.change-text-added` / `.change-text-modified` / etc.      |
-| Diff values              | `.diff-value-old`, `.diff-value-new`                       |
-| Modal                    | `.modal-overlay`, `.modal-dialog`                          |
-| Data table               | `.data-table` (wrapper with pre-styled table elements)     |
-| Heading (page)           | `.heading-page`                                            |
-| Heading (section)        | `.heading-section`                                         |
-| Muted text               | `.text-muted`                                              |
-| Link                     | `.link`                                                    |
+| Need                    | Use                                                               |
+| ----------------------- | ----------------------------------------------------------------- |
+| Primary button          | `.btn-primary`                                                    |
+| Secondary button        | `.btn-secondary`                                                  |
+| Danger button           | `.btn-danger`                                                     |
+| Small button            | `.btn-sm`                                                         |
+| Card                    | `.card`, `.card-header`, `.card-body`                             |
+| Form input              | `.form-input`                                                     |
+| Form label              | `.form-label`                                                     |
+| Select                  | `.form-select`                                                    |
+| Textarea                | `.form-textarea`                                                  |
+| Checkbox                | `.form-checkbox`                                                  |
+| Error text              | `.form-error`                                                     |
+| Hint text               | `.form-hint`                                                      |
+| Required marker         | `text-danger-500`                                                 |
+| Badge (generic)         | `.badge` + `.badge-success` / `.badge-danger` / etc.              |
+| Tag (outline)           | `.tag` + `.tag-primary` / `.tag-success` / `.tag-info`            |
+| Info box                | `.info-box` + `.info-box-warning` / etc.                          |
+| Alert (border-left)     | `.alert` + `.alert-danger` / `.alert-warning` / etc.              |
+| Alert (rounded banner)  | `.alert-banner` + `.alert-banner-danger` / `-warning`             |
+| Status badge (pill)     | `.status-badge` + `-success` / `-danger` / `-warning` / `-info`   |
+| Change badge (bordered) | `.change-badge` + `-added` / `-modified` / `-deleted`             |
+| Filter pill             | `.filter-pill` + `-active-primary` / `-success` / etc.            |
+| Stat count number       | `.stat-count-success` / `.stat-count-danger` / `.stat-count-info` |
+| Critical indicator      | `.critical-badge`, `.critical-ring`                               |
+| Diff field text         | `.change-text-added` / `.change-text-modified` / etc.             |
+| Diff values             | `.diff-value-old`, `.diff-value-new`                              |
+| Modal                   | `.modal-overlay`, `.modal-dialog`                                 |
+| Data table              | `.data-table` (wrapper with pre-styled table elements)            |
+| Heading (page)          | `.heading-page`                                                   |
+| Heading (section)       | `.heading-section`                                                |
+| Muted text              | `.text-muted`                                                     |
+| Link                    | `.link`                                                           |
 
 ---
 

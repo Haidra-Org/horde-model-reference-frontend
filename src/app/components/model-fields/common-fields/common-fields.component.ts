@@ -22,7 +22,12 @@ import { ModelConstantsService } from '../../../services/model-constants.service
 import { ModelReferenceApiService } from '../../../services/model-reference-api.service';
 import { Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { ModelClassification, FineTuneSeriesInfo, MODEL_DOMAIN, MODEL_PURPOSE } from '../../../api-client';
+import {
+  ModelClassification,
+  FineTuneSeriesInfo,
+  MODEL_DOMAIN,
+  MODEL_PURPOSE,
+} from '../../../api-client';
 
 export interface CommonFieldsData {
   description?: string | null;
@@ -251,7 +256,10 @@ export class CommonFieldsComponent implements OnInit {
               ...Object.values(MODEL_DOMAIN).map((v) => ({ value: v, label: v })),
             ],
             (value) => {
-              const current = currentData.modelClassification ?? { domain: '' as MODEL_DOMAIN, purpose: '' as MODEL_PURPOSE };
+              const current = currentData.modelClassification ?? {
+                domain: '' as MODEL_DOMAIN,
+                purpose: '' as MODEL_PURPOSE,
+              };
               this.updateField('modelClassification', {
                 domain: value as MODEL_DOMAIN,
                 purpose: current.purpose,
@@ -274,7 +282,10 @@ export class CommonFieldsComponent implements OnInit {
               ...Object.values(MODEL_PURPOSE).map((v) => ({ value: v, label: v })),
             ],
             (value) => {
-              const current = currentData.modelClassification ?? { domain: '' as MODEL_DOMAIN, purpose: '' as MODEL_PURPOSE };
+              const current = currentData.modelClassification ?? {
+                domain: '' as MODEL_DOMAIN,
+                purpose: '' as MODEL_PURPOSE,
+              };
               this.updateField('modelClassification', {
                 domain: current.domain,
                 purpose: value as MODEL_PURPOSE,
@@ -383,7 +394,10 @@ export class CommonFieldsComponent implements OnInit {
     });
   }
 
-  private updateFinetuneSeries(field: keyof FineTuneSeriesInfo, value: string | null | undefined): void {
+  private updateFinetuneSeries(
+    field: keyof FineTuneSeriesInfo,
+    value: string | null | undefined,
+  ): void {
     const current = this.data().finetuneSeries ?? { name: '' };
     const updated = { ...current, [field]: value };
     // Only emit non-null finetuneSeries if at least the name is set

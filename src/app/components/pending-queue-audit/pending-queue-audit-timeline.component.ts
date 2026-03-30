@@ -30,9 +30,7 @@ import type { PendingQueueAuditEvent } from '../../models/pending-queue-audit';
                 @if (hasPayload(event.payload)) {
                   <details class="timeline-payload">
                     <summary class="timeline-payload-summary">Payload</summary>
-                    <pre class="timeline-payload-pre">{{
-                      event.payload | json
-                    }}</pre>
+                    <pre class="timeline-payload-pre">{{ event.payload | json }}</pre>
                   </details>
                 }
               </div>

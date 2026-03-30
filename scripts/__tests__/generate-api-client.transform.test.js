@@ -36,8 +36,9 @@ describe('preprocessSchema', () => {
       };
 
       const count = fixInlineAnyOfUnions(schema);
-      const result = schema.paths['/v2/{category}/{model_name}'].put.requestBody
-        .content['application/json'].schema;
+      const result =
+        schema.paths['/v2/{category}/{model_name}'].put.requestBody.content['application/json']
+          .schema;
 
       expect(count).toBe(1);
       expect(result.anyOf).toBeUndefined();
@@ -76,8 +77,9 @@ describe('preprocessSchema', () => {
       };
 
       const count = fixInlineAnyOfUnions(schema);
-      const result = schema.paths['/v2/{category}'].get.responses[200]
-        .content['application/json'].schema.additionalProperties;
+      const result =
+        schema.paths['/v2/{category}'].get.responses[200].content['application/json'].schema
+          .additionalProperties;
 
       expect(count).toBe(1);
       expect(result.anyOf).toBeUndefined();
@@ -93,10 +95,7 @@ describe('preprocessSchema', () => {
               parameters: [
                 {
                   schema: {
-                    anyOf: [
-                      { $ref: '#/components/schemas/PendingChangeStatus' },
-                      { type: 'null' },
-                    ],
+                    anyOf: [{ $ref: '#/components/schemas/PendingChangeStatus' }, { type: 'null' }],
                   },
                 },
               ],
@@ -156,8 +155,8 @@ describe('preprocessSchema', () => {
       };
 
       const count = collapseEnumStringAnyOf(schema);
-      const result = schema.components.schemas['ImageGenerationModelRecord-Input']
-        .properties.baseline;
+      const result =
+        schema.components.schemas['ImageGenerationModelRecord-Input'].properties.baseline;
 
       expect(count).toBe(1);
       expect(result.anyOf).toBeUndefined();
@@ -184,8 +183,7 @@ describe('preprocessSchema', () => {
       };
 
       const count = collapseEnumStringAnyOf(schema);
-      const result = schema.components.schemas['ImageGenerationModelRecord-Input']
-        .properties.style;
+      const result = schema.components.schemas['ImageGenerationModelRecord-Input'].properties.style;
 
       expect(count).toBe(1);
       expect(result.anyOf).toEqual([{ type: 'string' }, { type: 'null' }]);
@@ -196,7 +194,7 @@ describe('preprocessSchema', () => {
       const schema = {
         components: {
           schemas: {
-            'SomeSchema': {
+            SomeSchema: {
               properties: {
                 description: {
                   anyOf: [{ type: 'string' }, { type: 'null' }],
@@ -218,10 +216,7 @@ describe('preprocessSchema', () => {
             'ControlNetModelRecord-Input': {
               properties: {
                 controlnet_style: {
-                  anyOf: [
-                    { $ref: '#/components/schemas/CONTROLNET_STYLE' },
-                    { type: 'string' },
-                  ],
+                  anyOf: [{ $ref: '#/components/schemas/CONTROLNET_STYLE' }, { type: 'string' }],
                 },
               },
             },
@@ -231,8 +226,9 @@ describe('preprocessSchema', () => {
 
       const count = collapseEnumStringAnyOf(schema);
       expect(count).toBe(1);
-      expect(schema.components.schemas['ControlNetModelRecord-Input']
-        .properties.controlnet_style.type).toBe('string');
+      expect(
+        schema.components.schemas['ControlNetModelRecord-Input'].properties.controlnet_style.type,
+      ).toBe('string');
     });
 
     it('correctly processes the real schema pattern for record_type', () => {
@@ -255,8 +251,9 @@ describe('preprocessSchema', () => {
 
       const count = collapseEnumStringAnyOf(schema);
       expect(count).toBe(1);
-      expect(schema.components.schemas['GenericModelRecord-Input']
-        .properties.record_type.type).toBe('string');
+      expect(
+        schema.components.schemas['GenericModelRecord-Input'].properties.record_type.type,
+      ).toBe('string');
     });
   });
 
@@ -306,20 +303,20 @@ describe('preprocessSchema', () => {
       preprocessSchema(schema);
 
       // Union was converted
-      const reqSchema = schema.paths['/v2/{category}/add'].post.requestBody
-        .content['application/json'].schema;
+      const reqSchema =
+        schema.paths['/v2/{category}/add'].post.requestBody.content['application/json'].schema;
       expect(reqSchema.oneOf).toBeDefined();
       expect(reqSchema.anyOf).toBeUndefined();
 
       // Enum+string was collapsed
-      const baseline = schema.components.schemas['ImageGenerationModelRecord-Input']
-        .properties.baseline;
+      const baseline =
+        schema.components.schemas['ImageGenerationModelRecord-Input'].properties.baseline;
       expect(baseline.type).toBe('string');
       expect(baseline.anyOf).toBeUndefined();
 
       // Nullable string was NOT collapsed
-      const desc = schema.components.schemas['ImageGenerationModelRecord-Input']
-        .properties.description;
+      const desc =
+        schema.components.schemas['ImageGenerationModelRecord-Input'].properties.description;
       expect(desc.anyOf).toBeDefined();
     });
   });

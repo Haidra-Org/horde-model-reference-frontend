@@ -42,7 +42,9 @@ export interface FieldDiff {
         >
           <div class="edit-summary-header">
             <h3 id="edit-summary-title" class="heading-card">Review Changes</h3>
-            <button type="button" class="btn btn-secondary btn-sm" (click)="dismissed.emit()">✕</button>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="dismissed.emit()">
+              ✕
+            </button>
           </div>
           <div class="edit-summary-body">
             @if (diffs().length === 0) {
@@ -68,8 +70,12 @@ export interface FieldDiff {
               }
             }
           </div>
-          <div class="flex justify-end gap-3 px-5 py-3 border-t border-gray-200 dark:border-gray-700">
-            <button type="button" class="btn btn-secondary" (click)="dismissed.emit()">Cancel</button>
+          <div
+            class="flex justify-end gap-3 px-5 py-3 border-t border-gray-200 dark:border-gray-700"
+          >
+            <button type="button" class="btn btn-secondary" (click)="dismissed.emit()">
+              Cancel
+            </button>
             @if (diffs().length > 0) {
               <button type="button" class="btn btn-primary" (click)="confirmed.emit()">
                 Confirm & Save

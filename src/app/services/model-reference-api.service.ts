@@ -179,9 +179,7 @@ export class ModelReferenceApiService {
       return this.getLegacyModelsAsArray(category);
     }
 
-    return this.getModelsInCategory(category).pipe(
-      map((response) => Object.values(response)),
-    );
+    return this.getModelsInCategory(category).pipe(map((response) => Object.values(response)));
   }
 
   /**
@@ -189,9 +187,7 @@ export class ModelReferenceApiService {
    * Returns null if the model is not found.
    */
   getFormModel(category: string, modelName: string): Observable<FormModelData | null> {
-    return this.getFormModelsInCategory(category).pipe(
-      map((models) => models[modelName] ?? null),
-    );
+    return this.getFormModelsInCategory(category).pipe(map((models) => models[modelName] ?? null));
   }
 
   getFormModelsInCategory(category: string): Observable<Record<string, FormModelData>> {
@@ -322,13 +318,9 @@ export class ModelReferenceApiService {
   ): Observable<PendingChangeRecord> {
     const categoryMethodMap: Record<string, () => Observable<PendingChangeRecord>> = {
       image_generation: () =>
-        this.v2Service.createV2ImageGenerationModel(
-          payload as ImageGenerationModelRecordInput,
-        ),
+        this.v2Service.createV2ImageGenerationModel(payload as ImageGenerationModelRecordInput),
       text_generation: () =>
-        this.v2Service.createV2TextGenerationModel(
-          payload as TextGenerationModelRecordInput,
-        ),
+        this.v2Service.createV2TextGenerationModel(payload as TextGenerationModelRecordInput),
       controlnet: () =>
         this.v2Service.createV2ControlnetModel(payload as ControlNetModelRecordInput),
     };
@@ -510,9 +502,9 @@ export class ModelReferenceApiService {
 
   getDistinctBaselines(): Observable<string[]> {
     return this.http
-      .get<{ baselines: string[] }>(
-        `${this.basePath}/model_references/v2/text_generation/distinct_baselines`,
-      )
+      .get<{
+        baselines: string[];
+      }>(`${this.basePath}/model_references/v2/text_generation/distinct_baselines`)
       .pipe(
         map((response) => response.baselines ?? []),
         catchError(this.handleError),

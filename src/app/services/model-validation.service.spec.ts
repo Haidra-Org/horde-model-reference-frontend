@@ -20,9 +20,7 @@ describe('ModelValidationService', () => {
   describe('mapServerErrors', () => {
     it('should map simple validation errors', () => {
       const httpError: HTTPValidationError = {
-        detail: [
-          { loc: ['body', 'baseline'], msg: 'Field required', type: 'missing' },
-        ],
+        detail: [{ loc: ['body', 'baseline'], msg: 'Field required', type: 'missing' }],
       };
 
       const errors = service.mapServerErrors(httpError);
@@ -36,7 +34,11 @@ describe('ModelValidationService', () => {
     it('should map nested field paths', () => {
       const httpError: HTTPValidationError = {
         detail: [
-          { loc: ['body', 'config', 'download', 0, 'file_url'], msg: 'Invalid URL', type: 'value_error' },
+          {
+            loc: ['body', 'config', 'download', 0, 'file_url'],
+            msg: 'Invalid URL',
+            type: 'value_error',
+          },
         ],
       };
 
@@ -51,7 +53,11 @@ describe('ModelValidationService', () => {
       const httpError: HTTPValidationError = {
         detail: [
           {
-            loc: ['body', 'function-after[validator_is_baseline_and_style_known(), function-after[validator_set_arrays_to_empty_if_none(), ImageGenerationModelRecord]]', 'baseline'],
+            loc: [
+              'body',
+              'function-after[validator_is_baseline_and_style_known(), function-after[validator_set_arrays_to_empty_if_none(), ImageGenerationModelRecord]]',
+              'baseline',
+            ],
             msg: 'Field required',
             type: 'missing',
           },
@@ -67,9 +73,7 @@ describe('ModelValidationService', () => {
 
     it('should update serverErrors signal', () => {
       const httpError: HTTPValidationError = {
-        detail: [
-          { loc: ['body', 'name'], msg: 'Name is required', type: 'missing' },
-        ],
+        detail: [{ loc: ['body', 'name'], msg: 'Name is required', type: 'missing' }],
       };
 
       service.mapServerErrors(httpError);
@@ -98,9 +102,7 @@ describe('ModelValidationService', () => {
   describe('formatServerErrors', () => {
     it('should format single error', () => {
       const httpError: HTTPValidationError = {
-        detail: [
-          { loc: ['body', 'baseline'], msg: 'Field required', type: 'missing' },
-        ],
+        detail: [{ loc: ['body', 'baseline'], msg: 'Field required', type: 'missing' }],
       };
 
       const formatted = service.formatServerErrors(httpError);
@@ -148,9 +150,7 @@ describe('ModelValidationService', () => {
   describe('clearServerErrors', () => {
     it('should clear the serverErrors signal', () => {
       const httpError: HTTPValidationError = {
-        detail: [
-          { loc: ['body', 'name'], msg: 'Required', type: 'missing' },
-        ],
+        detail: [{ loc: ['body', 'name'], msg: 'Required', type: 'missing' }],
       };
 
       service.mapServerErrors(httpError);
@@ -167,7 +167,11 @@ describe('ModelValidationService', () => {
       const httpError: HTTPValidationError = {
         detail: [
           { loc: ['body', 'baseline'], msg: 'Required', type: 'missing' },
-          { loc: ['body', 'config', 'download', 0, 'file_url'], msg: 'Invalid', type: 'value_error' },
+          {
+            loc: ['body', 'config', 'download', 0, 'file_url'],
+            msg: 'Invalid',
+            type: 'value_error',
+          },
         ],
       };
       service.mapServerErrors(httpError);
@@ -189,9 +193,7 @@ describe('ModelValidationService', () => {
   describe('getFieldError', () => {
     beforeEach(() => {
       const httpError: HTTPValidationError = {
-        detail: [
-          { loc: ['body', 'baseline'], msg: 'Field is required', type: 'missing' },
-        ],
+        detail: [{ loc: ['body', 'baseline'], msg: 'Field is required', type: 'missing' }],
       };
       service.mapServerErrors(httpError);
     });
@@ -236,9 +238,7 @@ describe('ModelValidationService', () => {
     });
 
     it('should return hasErrors false when no errors', () => {
-      const issues = [
-        { field: 'description', message: 'Missing', severity: 'warning' as const },
-      ];
+      const issues = [{ field: 'description', message: 'Missing', severity: 'warning' as const }];
 
       const analysis = service.analyzeIssues(issues);
 

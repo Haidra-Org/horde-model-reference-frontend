@@ -750,9 +750,7 @@ describe('ModelReferenceApiService', () => {
           settings: null,
         },
       },
-      downloads: [
-        { file_name: 'model.gguf', file_url: 'https://example.com/model.gguf' },
-      ],
+      downloads: [{ file_name: 'model.gguf', file_url: 'https://example.com/model.gguf' }],
       legacyFiles: [],
       v2Fields: null,
     };
@@ -802,9 +800,7 @@ describe('ModelReferenceApiService', () => {
             done();
           });
 
-        const req = httpMock.expectOne(
-          `${baseUrl}/model_references/v1/image_generation`,
-        );
+        const req = httpMock.expectOne(`${baseUrl}/model_references/v1/image_generation`);
         expect(req.request.method).toBe('POST');
 
         // Verify the payload is legacy-shaped (has name, baseline at top level)
@@ -864,9 +860,7 @@ describe('ModelReferenceApiService', () => {
             done();
           });
 
-        const req = httpMock.expectOne(
-          `${baseUrl}/model_references/v1/text_generation`,
-        );
+        const req = httpMock.expectOne(`${baseUrl}/model_references/v1/text_generation`);
         expect(req.request.method).toBe('POST');
         expect(req.request.body.parameters).toBe(7000000000);
 
@@ -937,9 +931,7 @@ describe('ModelReferenceApiService', () => {
             done();
           });
 
-        const req = httpMock.expectOne(
-          `${baseUrl}/model_references/v1/image_generation`,
-        );
+        const req = httpMock.expectOne(`${baseUrl}/model_references/v1/image_generation`);
         expect(req.request.method).toBe('PUT');
         expect(req.request.body.name).toBe('test-sd-model');
 

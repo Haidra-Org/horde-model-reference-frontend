@@ -130,16 +130,18 @@ export interface AutocompleteFieldConfig extends BaseFieldConfig<string | null> 
 /**
  * Configuration for key-value editor fields
  */
-export interface KeyValueFieldConfig
-  extends BaseFieldConfig<Record<string, KeyValueEditorValueType>> {
+export interface KeyValueFieldConfig extends BaseFieldConfig<
+  Record<string, KeyValueEditorValueType>
+> {
   type: 'key-value';
 }
 
 /**
  * Configuration for model requirements/settings editor fields
  */
-export interface RequirementsFieldConfig
-  extends BaseFieldConfig<Record<string, KeyValueEditorValueType>> {
+export interface RequirementsFieldConfig extends BaseFieldConfig<
+  Record<string, KeyValueEditorValueType>
+> {
   type: 'requirements';
   /** Configuration for which structured fields to show */
   config?: ModelRequirementsConfig;

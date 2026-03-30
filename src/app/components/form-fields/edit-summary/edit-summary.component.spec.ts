@@ -22,7 +22,9 @@ describe('EditSummaryComponent', () => {
     fixture.componentRef.setInput('open', true);
     fixture.detectChanges();
 
-    const dialog = fixture.nativeElement.querySelector('.edit-summary-dialog') as HTMLElement | null;
+    const dialog = fixture.nativeElement.querySelector(
+      '.edit-summary-dialog',
+    ) as HTMLElement | null;
     expect(dialog?.getAttribute('role')).toBe('dialog');
     expect(dialog?.getAttribute('aria-modal')).toBe('true');
     expect(dialog?.getAttribute('tabindex')).toBe('-1');
@@ -33,7 +35,9 @@ describe('EditSummaryComponent', () => {
     fixture.detectChanges();
 
     await Promise.resolve(); // flush queueMicrotask
-    const dialog = fixture.nativeElement.querySelector('.edit-summary-dialog') as HTMLElement | null;
+    const dialog = fixture.nativeElement.querySelector(
+      '.edit-summary-dialog',
+    ) as HTMLElement | null;
     expect(document.activeElement).toBe(dialog);
   });
 
@@ -44,7 +48,9 @@ describe('EditSummaryComponent', () => {
     fixture.componentRef.setInput('open', true);
     fixture.detectChanges();
 
-    const dialog = fixture.nativeElement.querySelector('.edit-summary-dialog') as HTMLElement | null;
+    const dialog = fixture.nativeElement.querySelector(
+      '.edit-summary-dialog',
+    ) as HTMLElement | null;
     dialog?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
     expect(dismissSpy).toHaveBeenCalled();

@@ -40,11 +40,7 @@ export class NotificationService {
     this.notifications.update((notifications) => notifications.filter((n) => n.id !== id));
   }
 
-  private addNotification(
-    message: string,
-    type: Notification['type'],
-    persistent: boolean,
-  ): void {
+  private addNotification(message: string, type: Notification['type'], persistent: boolean): void {
     const id = this.nextId++;
     const notification: Notification = { id, message, type, persistent };
 

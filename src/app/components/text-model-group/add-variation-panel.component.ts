@@ -240,7 +240,9 @@ export class AddVariationPanelComponent implements OnInit {
     if (format.common_author) {
       this.author.set(format.common_author);
     } else {
-      const canonicalMembers = this.groupData().members.filter((member) => !member.is_backend_duplicate);
+      const canonicalMembers = this.groupData().members.filter(
+        (member) => !member.is_backend_duplicate,
+      );
       const authors = new Set(
         canonicalMembers
           .map((member) => {

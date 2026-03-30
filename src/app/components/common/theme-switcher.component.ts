@@ -57,7 +57,6 @@ import { ThemeCategoryId } from '../../models/theme.model';
       </div>
     </div>
   `,
-
 })
 export class ThemeSwitcherComponent {
   private static nextId = 0;

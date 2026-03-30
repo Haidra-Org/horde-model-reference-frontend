@@ -987,8 +987,8 @@ export class ModelAuditComponent implements OnInit {
       map(([referenceModels, statsResponse]) => {
         const canonical: UnifiedModelData[] = isTextGen
           ? mergeMultipleBackendStatistics(referenceModels, statsResponse ?? undefined, {
-            parseTextModelNames: true,
-          })
+              parseTextModelNames: true,
+            })
           : (referenceModels.map((model) => ({ ...model })) as UnifiedModelData[]);
 
         const displayModels: (UnifiedModelData | GroupedTextModel)[] = isTextGen

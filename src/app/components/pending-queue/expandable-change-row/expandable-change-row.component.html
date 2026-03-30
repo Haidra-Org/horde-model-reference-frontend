@@ -1,18 +1,39 @@
 <!-- Collapsed Row -->
-<div class="change-row cursor-pointer" [class.change-row--pending]="isPending()"
-  [class.change-row--approved]="isApproved()" [class.change-row--rejected]="isRejected()"
-  [class.change-row--applied]="isApplied()" [class.border-l-4]="isPending()" [class.border-l-warning-400]="isPending()"
-  (click)="toggle()" (keydown.enter)="toggle()" (keydown.space)="toggle(); $event.preventDefault()" tabindex="0"
-  role="button" [attr.aria-expanded]="expanded()">
+<div
+  class="change-row cursor-pointer"
+  [class.change-row--pending]="isPending()"
+  [class.change-row--approved]="isApproved()"
+  [class.change-row--rejected]="isRejected()"
+  [class.change-row--applied]="isApplied()"
+  [class.border-l-4]="isPending()"
+  [class.border-l-warning-400]="isPending()"
+  (click)="toggle()"
+  (keydown.enter)="toggle()"
+  (keydown.space)="toggle(); $event.preventDefault()"
+  tabindex="0"
+  role="button"
+  [attr.aria-expanded]="expanded()"
+>
   <div class="flex items-center gap-2 min-w-0 flex-1">
-    <svg class="w-4 h-4 text-gray-400 transition-transform flex-shrink-0" [class.rotate-90]="expanded()" fill="none"
-      stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      class="w-4 h-4 text-gray-400 transition-transform flex-shrink-0"
+      [class.rotate-90]="expanded()"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
     </svg>
-    <span class="text-xs font-medium min-w-16 flex-shrink-0" [class]="operationBadgeClass(change().operation)">
+    <span
+      class="text-xs font-medium min-w-16 flex-shrink-0"
+      [class]="operationBadgeClass(change().operation)"
+    >
       {{ operationLabel(change().operation) }}
     </span>
-    <span class="text-xs font-medium min-w-16 flex-shrink-0" [class]="statusBadgeClass(change().status)">
+    <span
+      class="text-xs font-medium min-w-16 flex-shrink-0"
+      [class]="statusBadgeClass(change().status)"
+    >
       {{ statusLabel(change().status) }}
     </span>
     <span class="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
@@ -22,10 +43,14 @@
 
   <div class="flex items-center gap-3 flex-shrink-0">
     @if (showCategory()) {
-    <span class="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">{{ change().category }}</span>
+      <span class="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">{{
+        change().category
+      }}</span>
     }
     @if (showRequestor()) {
-    <span class="text-xs text-gray-500 dark:text-gray-400 hidden md:inline">{{ change().requested_username }}</span>
+      <span class="text-xs text-gray-500 dark:text-gray-400 hidden md:inline">{{
+        change().requested_username
+      }}</span>
     }
     <span class="text-xs text-gray-400 dark:text-gray-500 hidden lg:inline">
       {{ change().requested_at ? (toDate(change().requested_at) | date: 'short') : '' }}
@@ -33,144 +58,196 @@
 
     <!-- Inline action buttons for approvers (stop propagation so clicks don't toggle expansion) -->
     @if (auth.isApprover()) {
-    <div class="change-row-actions" (click)="$event.stopPropagation()">
-      @if (isPending()) {
-      <button type="button" class="queue-action-btn queue-action-btn--approve" (click)="approveRequested.emit(change())"
-        title="Approve">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-      </button>
-      <button type="button" class="queue-action-btn queue-action-btn--reject" (click)="rejectRequested.emit(change())"
-        title="Reject">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      }
-      @if (isApproved()) {
-      <button type="button" class="queue-action-btn queue-action-btn--apply" (click)="applyRequested.emit(change())"
-        title="Apply">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-      </button>
-      }
-    </div>
+      <div class="change-row-actions" (click)="$event.stopPropagation()">
+        @if (isPending()) {
+          <button
+            type="button"
+            class="queue-action-btn queue-action-btn--approve"
+            (click)="approveRequested.emit(change())"
+            title="Approve"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="queue-action-btn queue-action-btn--reject"
+            (click)="rejectRequested.emit(change())"
+            title="Reject"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        }
+        @if (isApproved()) {
+          <button
+            type="button"
+            class="queue-action-btn queue-action-btn--apply"
+            (click)="applyRequested.emit(change())"
+            title="Apply"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+          </button>
+        }
+      </div>
     }
   </div>
 </div>
 
 <!-- Expanded Detail Panel -->
 @if (expanded()) {
-<div class="expanded-panel">
-  <!-- Metadata Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
-    <div>
-      <div class="field-label">Requested By</div>
-      <div class="field-value">{{ change().requested_username }}</div>
-    </div>
-    <div>
-      <div class="field-label">Requested At</div>
-      <div class="field-value">
-        {{ change().requested_at ? (toDate(change().requested_at) | date: 'medium') : 'N/A' }}
+  <div class="expanded-panel">
+    <!-- Metadata Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
+      <div>
+        <div class="field-label">Requested By</div>
+        <div class="field-value">{{ change().requested_username }}</div>
       </div>
-    </div>
-    <div>
-      <div class="field-label">Category</div>
-      <div class="field-value">{{ change().category }}</div>
-    </div>
-    @if (change().approved_username) {
-    <div>
-      <div class="field-label">Approved By</div>
-      <div class="field-value">{{ change().approved_username }}</div>
-    </div>
-    }
-    @if (change().approved_at) {
-    <div>
-      <div class="field-label">Approved At</div>
-      <div class="field-value">{{ toDate(change().approved_at) | date: 'medium' }}</div>
-    </div>
-    }
-    @if (change().batch_id) {
-    <div>
-      <div class="field-label">Batch</div>
-      <div class="field-value">#{{ change().batch_id }} {{ change().batch_title ?? '' }}</div>
-    </div>
-    }
-    @if (change().reject_reason) {
-    <div class="md:col-span-3">
-      <div class="field-label text-danger-600 dark:text-danger-400">Rejection Reason</div>
-      <div class="field-value text-danger-700 dark:text-danger-300">{{ change().reject_reason }}</div>
-    </div>
-    }
-  </div>
-
-  <!-- Diff Section -->
-  <div class="mb-4">
-    <h4 class="heading-card mb-2">Changes</h4>
-    @if (loadingDiff()) {
-    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 py-4">
-      <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-      Loading diff…
-    </div>
-    } @else if (diffError()) {
-    <div class="alert alert-danger text-sm">
-      {{ diffError() }}
-      <button type="button" class="link ml-2" (click)="retryDiff()">Retry</button>
-    </div>
-    } @else if (diff()) {
-    <app-delta-diff [diff]="diff()" [showRawJson]="true" />
-    } @else {
-    <div class="text-sm text-gray-500 dark:text-gray-400 py-2">
-      @if (change().operation === 'create') {
-      <span>New model will be created with the submitted payload.</span>
-      } @else if (change().operation === 'delete') {
-      <span>This model will be deleted.</span>
-      } @else {
-      <span>No diff data available.</span>
+      <div>
+        <div class="field-label">Requested At</div>
+        <div class="field-value">
+          {{ change().requested_at ? (toDate(change().requested_at) | date: 'medium') : 'N/A' }}
+        </div>
+      </div>
+      <div>
+        <div class="field-label">Category</div>
+        <div class="field-value">{{ change().category }}</div>
+      </div>
+      @if (change().approved_username) {
+        <div>
+          <div class="field-label">Approved By</div>
+          <div class="field-value">{{ change().approved_username }}</div>
+        </div>
+      }
+      @if (change().approved_at) {
+        <div>
+          <div class="field-label">Approved At</div>
+          <div class="field-value">{{ toDate(change().approved_at) | date: 'medium' }}</div>
+        </div>
+      }
+      @if (change().batch_id) {
+        <div>
+          <div class="field-label">Batch</div>
+          <div class="field-value">#{{ change().batch_id }} {{ change().batch_title ?? '' }}</div>
+        </div>
+      }
+      @if (change().reject_reason) {
+        <div class="md:col-span-3">
+          <div class="field-label text-danger-600 dark:text-danger-400">Rejection Reason</div>
+          <div class="field-value text-danger-700 dark:text-danger-300">
+            {{ change().reject_reason }}
+          </div>
+        </div>
       }
     </div>
-    }
-  </div>
 
-  <!-- Action Row -->
-  <div class="flex items-center gap-2 flex-wrap">
-    <button type="button" class="btn btn-sm btn-secondary" (click)="viewInEditor(); $event.stopPropagation()">
-      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-      View in Editor
-    </button>
-    @if (auth.isApprover()) {
-    @if (isPending()) {
-    <button type="button" class="btn btn-sm btn-primary"
-      (click)="approveRequested.emit(change()); $event.stopPropagation()">
-      Approve
-    </button>
-    <button type="button" class="btn btn-sm btn-danger"
-      (click)="rejectRequested.emit(change()); $event.stopPropagation()">
-      Reject
-    </button>
-    }
-    @if (isApproved()) {
-    <button type="button" class="btn btn-sm btn-success"
-      (click)="applyRequested.emit(change()); $event.stopPropagation()">
-      Apply Change
-    </button>
-    @if (hasBatch()) {
-    <button type="button" class="btn btn-sm btn-info"
-      (click)="applyBatchRequested.emit(change()); $event.stopPropagation()">
-      Apply Batch
-    </button>
-    }
-    }
-    }
+    <!-- Diff Section -->
+    <div class="mb-4">
+      <h4 class="heading-card mb-2">Changes</h4>
+      @if (loadingDiff()) {
+        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 py-4">
+          <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          Loading diff…
+        </div>
+      } @else if (diffError()) {
+        <div class="alert alert-danger text-sm">
+          {{ diffError() }}
+          <button type="button" class="link ml-2" (click)="retryDiff()">Retry</button>
+        </div>
+      } @else if (diff()) {
+        <app-delta-diff [diff]="diff()" [showRawJson]="true" />
+      } @else {
+        <div class="text-sm text-gray-500 dark:text-gray-400 py-2">
+          @if (change().operation === 'create') {
+            <span>New model will be created with the submitted payload.</span>
+          } @else if (change().operation === 'delete') {
+            <span>This model will be deleted.</span>
+          } @else {
+            <span>No diff data available.</span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Action Row -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        (click)="viewInEditor(); $event.stopPropagation()"
+      >
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
+        </svg>
+        View in Editor
+      </button>
+      @if (auth.isApprover()) {
+        @if (isPending()) {
+          <button
+            type="button"
+            class="btn btn-sm btn-primary"
+            (click)="approveRequested.emit(change()); $event.stopPropagation()"
+          >
+            Approve
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-danger"
+            (click)="rejectRequested.emit(change()); $event.stopPropagation()"
+          >
+            Reject
+          </button>
+        }
+        @if (isApproved()) {
+          <button
+            type="button"
+            class="btn btn-sm btn-success"
+            (click)="applyRequested.emit(change()); $event.stopPropagation()"
+          >
+            Apply Change
+          </button>
+          @if (hasBatch()) {
+            <button
+              type="button"
+              class="btn btn-sm btn-info"
+              (click)="applyBatchRequested.emit(change()); $event.stopPropagation()"
+            >
+              Apply Batch
+            </button>
+          }
+        }
+      }
+    </div>
   </div>
-</div>
 }

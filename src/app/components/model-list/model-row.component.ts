@@ -38,7 +38,9 @@ import { hasShowcases } from './model-row.utils';
         (isEven() ? 'table-row-even' : 'table-row-odd') +
         (pendingRowClass() ? ' ' + pendingRowClass() : '')
       "
-      (click)="isGhost() ? viewPendingChange.emit(pendingOverlay()!.pendingChangeId) : toggleExpansion()"
+      (click)="
+        isGhost() ? viewPendingChange.emit(pendingOverlay()!.pendingChangeId) : toggleExpansion()
+      "
     >
       <td class="text-center">
         <svg
@@ -69,9 +71,13 @@ import { hasShowcases } from './model-row.utils';
             <button
               type="button"
               [class]="pendingBadgeClass()"
-              (click)="$event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)"
+              (click)="
+                $event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)
+              "
               [title]="'View pending change #' + pendingOverlay()!.pendingChangeId"
-            >{{ pendingBadgeText() }}</button>
+            >
+              {{ pendingBadgeText() }}
+            </button>
           }
         </div>
       </td>
@@ -131,8 +137,12 @@ import { hasShowcases } from './model-row.utils';
           <button
             type="button"
             class="btn btn-xs btn-secondary"
-            (click)="$event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)"
-          >View Pending</button>
+            (click)="
+              $event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)
+            "
+          >
+            View Pending
+          </button>
         } @else {
           <app-model-row-actions
             [model]="legacyModel()"
@@ -221,24 +231,12 @@ import { hasShowcases } from './model-row.utils';
                     <table class="w-full text-sm">
                       <thead class="table-head-subtle">
                         <tr class="border-b border-gray-200 dark:border-gray-700">
-                          <th class="table-header-cell-xs-caps">
-                            Full Name
-                          </th>
-                          <th class="table-header-cell-xs-caps">
-                            Backend
-                          </th>
-                          <th class="table-header-cell-xs-caps">
-                            Author
-                          </th>
-                          <th class="table-header-cell-xs-center-caps">
-                            Workers
-                          </th>
-                          <th class="table-header-cell-xs-center-caps">
-                            Queued
-                          </th>
-                          <th class="table-header-cell-xs-right-caps">
-                            Usage (Total)
-                          </th>
+                          <th class="table-header-cell-xs-caps">Full Name</th>
+                          <th class="table-header-cell-xs-caps">Backend</th>
+                          <th class="table-header-cell-xs-caps">Author</th>
+                          <th class="table-header-cell-xs-center-caps">Workers</th>
+                          <th class="table-header-cell-xs-center-caps">Queued</th>
+                          <th class="table-header-cell-xs-right-caps">Usage (Total)</th>
                         </tr>
                       </thead>
                       <tbody class="table-body-default">
@@ -249,7 +247,9 @@ import { hasShowcases } from './model-row.utils';
                             </td>
                             <td class="table-cell-xs">
                               @if (variation.parsedName?.backend) {
-                                <horde-badge variant="info" class="text-xs">{{ variation.parsedName?.backend }}</horde-badge>
+                                <horde-badge variant="info" class="text-xs">{{
+                                  variation.parsedName?.backend
+                                }}</horde-badge>
                               } @else {
                                 <span class="table-cell-muted-xs-inline">-</span>
                               }

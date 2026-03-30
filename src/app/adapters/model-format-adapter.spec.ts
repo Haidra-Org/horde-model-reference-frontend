@@ -79,9 +79,7 @@ function makeLegacyTextGenModel(overrides: Partial<LegacyRecordUnion> = {}): Leg
   } as LegacyRecordUnion;
 }
 
-function makeLegacyControlnetModel(
-  overrides: Partial<LegacyRecordUnion> = {},
-): LegacyRecordUnion {
+function makeLegacyControlnetModel(overrides: Partial<LegacyRecordUnion> = {}): LegacyRecordUnion {
   return {
     name: 'test-controlnet',
     description: 'A test ControlNet',
@@ -341,14 +339,20 @@ describe('model-format-adapter', () => {
     it('should default controlnet_style to empty string when null or undefined', () => {
       const category = MODEL_REFERENCE_CATEGORY.Controlnet;
 
-      const withNull = { ...makeV2ControlnetModel(), controlnet_style: null } as ControlNetModelRecordOutput;
+      const withNull = {
+        ...makeV2ControlnetModel(),
+        controlnet_style: null,
+      } as ControlNetModelRecordOutput;
       const nullForm = v2ApiToForm(withNull, category);
       expect(nullForm.categoryData.kind).toBe('controlnet');
       if (nullForm.categoryData.kind === 'controlnet') {
         expect(nullForm.categoryData.data.controlnet_style).toBe('');
       }
 
-      const withUndefined = { ...makeV2ControlnetModel(), controlnet_style: undefined } as ControlNetModelRecordOutput;
+      const withUndefined = {
+        ...makeV2ControlnetModel(),
+        controlnet_style: undefined,
+      } as ControlNetModelRecordOutput;
       const undefForm = v2ApiToForm(withUndefined, category);
       if (undefForm.categoryData.kind === 'controlnet') {
         expect(undefForm.categoryData.data.controlnet_style).toBe('');

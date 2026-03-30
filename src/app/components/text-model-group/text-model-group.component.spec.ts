@@ -163,9 +163,7 @@ describe('TextModelGroupComponent', () => {
       initWithResponse(response);
 
       expect(component.members().length).toBe(0);
-      expect(notification.error).toHaveBeenCalledWith(
-        expect.stringContaining('No models found'),
-      );
+      expect(notification.error).toHaveBeenCalledWith(expect.stringContaining('No models found'));
     });
   });
 

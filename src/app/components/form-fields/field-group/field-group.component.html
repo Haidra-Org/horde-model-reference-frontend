@@ -1,41 +1,47 @@
 <!-- Single field -->
 @if (asField(); as field) {
-<app-dynamic-field [config]="field" />
+  <app-dynamic-field [config]="field" />
 }
 
 <!-- Field group with optional grid layout and collapsible support -->
 @if (asGroup(); as group) {
-<!-- Non-collapsible group: invisible wrapper, just a layout grid -->
-@if (!group.collapsible) {
-<div [class]="group.gridClass || ''">
-  @for (field of group.fields; track field.id) {
-  <app-dynamic-field [config]="field" />
-  }
-</div>
-}
-
-<!-- Collapsible group: lightweight labeled region, not a bordered card -->
-@if (group.collapsible) {
-<div class="field-region">
-  <button type="button" class="field-region-toggle" (click)="toggleCollapsed()" [attr.aria-expanded]="!isCollapsed()"
-    [attr.aria-controls]="getContentId(group.label)" [attr.aria-label]="
-          (isCollapsed() ? 'Expand' : 'Collapse') + ' ' + (group.label || 'section')
-        ">
-    <span aria-hidden="true">{{ isCollapsed() ? '▶' : '▼' }}</span>
-    @if (group.label) {
-    {{ group.label }}
-    }
-  </button>
-
-  @if (!isCollapsed()) {
-  <div [id]="getContentId(group.label)" class="field-region-content">
-    <div [class]="group.gridClass || 'space-y-4'">
+  <!-- Non-collapsible group: invisible wrapper, just a layout grid -->
+  @if (!group.collapsible) {
+    <div [class]="group.gridClass || ''">
       @for (field of group.fields; track field.id) {
-      <app-dynamic-field [config]="field" />
+        <app-dynamic-field [config]="field" />
       }
     </div>
-  </div>
   }
-</div>
-}
+
+  <!-- Collapsible group: lightweight labeled region, not a bordered card -->
+  @if (group.collapsible) {
+    <div class="field-region">
+      <button
+        type="button"
+        class="field-region-toggle"
+        (click)="toggleCollapsed()"
+        [attr.aria-expanded]="!isCollapsed()"
+        [attr.aria-controls]="getContentId(group.label)"
+        [attr.aria-label]="
+          (isCollapsed() ? 'Expand' : 'Collapse') + ' ' + (group.label || 'section')
+        "
+      >
+        <span aria-hidden="true">{{ isCollapsed() ? '▶' : '▼' }}</span>
+        @if (group.label) {
+          {{ group.label }}
+        }
+      </button>
+
+      @if (!isCollapsed()) {
+        <div [id]="getContentId(group.label)" class="field-region-content">
+          <div [class]="group.gridClass || 'space-y-4'">
+            @for (field of group.fields; track field.id) {
+              <app-dynamic-field [config]="field" />
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
 }

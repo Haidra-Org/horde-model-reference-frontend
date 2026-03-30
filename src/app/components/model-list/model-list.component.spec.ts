@@ -92,10 +92,18 @@ class MockPendingQueueSummaryService {
   readonly pendingCountByCategory = signal(new Map<string, number>());
   readonly loading = signal(false);
   readonly lastRefreshed = signal<Date | null>(null);
-  startPolling(): void { /* empty */ }
-  stopPolling(): void { /* empty */ }
-  clear(): void { /* empty */ }
-  refresh(): void { /* empty */ }
+  startPolling(): void {
+    /* empty */
+  }
+  stopPolling(): void {
+    /* empty */
+  }
+  clear(): void {
+    /* empty */
+  }
+  refresh(): void {
+    /* empty */
+  }
   pendingCountFor(): number {
     return 0;
   }

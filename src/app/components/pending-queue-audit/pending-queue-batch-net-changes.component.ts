@@ -123,7 +123,11 @@ export class PendingQueueBatchNetChangesComponent {
   }
 
   isUnknownFieldChangeType(diff: FieldDiff): boolean {
-    return diff.change_type !== 'added' && diff.change_type !== 'removed' && diff.change_type !== 'modified';
+    return (
+      diff.change_type !== 'added' &&
+      diff.change_type !== 'removed' &&
+      diff.change_type !== 'modified'
+    );
   }
 
   formatFieldValue(value: unknown): string {

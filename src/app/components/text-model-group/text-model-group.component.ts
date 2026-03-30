@@ -27,7 +27,13 @@ export interface SizeSubGroup {
 
 @Component({
   selector: 'app-text-model-group',
-  imports: [RouterLink, FormsModule, HordeBadgeComponent, AddVariationPanelComponent, MultiVariationPanelComponent],
+  imports: [
+    RouterLink,
+    FormsModule,
+    HordeBadgeComponent,
+    AddVariationPanelComponent,
+    MultiVariationPanelComponent,
+  ],
   templateUrl: './text-model-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -288,9 +294,7 @@ export class TextModelGroupComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.notification.success(
-            `Queued ${response.updated_count} updates for approval`,
-          );
+          this.notification.success(`Queued ${response.updated_count} updates for approval`);
           this.editingCommonFields.set(false);
           this.savingCommonFields.set(false);
         },

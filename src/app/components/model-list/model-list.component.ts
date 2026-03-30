@@ -235,9 +235,9 @@ export class ModelListComponent implements OnInit {
   readonly pendingChangesForCategory = computed(() => {
     const cat = this.category();
     if (!cat) return [];
-    return this.pendingSummary.records().filter(
-      (r) => r.category === cat && r.status === 'pending',
-    );
+    return this.pendingSummary
+      .records()
+      .filter((r) => r.category === cat && r.status === 'pending');
   });
 
   /**
@@ -261,24 +261,26 @@ export class ModelListComponent implements OnInit {
   /**
    * Ghost entries for pending creates — synthetic model rows that don't yet exist.
    */
-  readonly ghostModels = computed((): (UnifiedModelData & { _pendingOverlay: PendingChangeOverlay })[] => {
-    const creates = this.pendingChangesForCategory().filter((r) => r.operation === 'create');
-    return creates.map((record) => {
-      const overlay: PendingChangeOverlay = {
-        pendingOperation: 'create',
-        pendingChangeId: record.change_id,
-        isGhost: true,
-        pendingRecord: record,
-      };
-      // Build a minimal synthetic model entry from the pending payload
-      const payload = record.payload ?? {};
-      return {
-        name: record.model_name,
-        description: (payload['description'] as string) ?? '',
-        _pendingOverlay: overlay,
-      } as UnifiedModelData & { _pendingOverlay: PendingChangeOverlay };
-    });
-  });
+  readonly ghostModels = computed(
+    (): (UnifiedModelData & { _pendingOverlay: PendingChangeOverlay })[] => {
+      const creates = this.pendingChangesForCategory().filter((r) => r.operation === 'create');
+      return creates.map((record) => {
+        const overlay: PendingChangeOverlay = {
+          pendingOperation: 'create',
+          pendingChangeId: record.change_id,
+          isGhost: true,
+          pendingRecord: record,
+        };
+        // Build a minimal synthetic model entry from the pending payload
+        const payload = record.payload ?? {};
+        return {
+          name: record.model_name,
+          description: (payload['description'] as string) ?? '',
+          _pendingOverlay: overlay,
+        } as UnifiedModelData & { _pendingOverlay: PendingChangeOverlay };
+      });
+    },
+  );
 
   /**
    * Models with ghost entries appended — input to the filter pipeline.
@@ -1364,9 +1366,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-        startWith<BackendStatisticsResponse | null>(null),
-        catchError(() => of(null)),
-      )
+          startWith<BackendStatisticsResponse | null>(null),
+          catchError(() => of(null)),
+        )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(

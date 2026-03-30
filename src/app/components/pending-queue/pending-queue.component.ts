@@ -160,7 +160,8 @@ export class PendingQueueComponent {
 
     for (const change of changes) {
       operationCounts[change.operation] = (operationCounts[change.operation] ?? 0) + 1;
-      statusCounts[change.status ?? 'pending'] = (statusCounts[change.status ?? 'pending'] ?? 0) + 1;
+      statusCounts[change.status ?? 'pending'] =
+        (statusCounts[change.status ?? 'pending'] ?? 0) + 1;
     }
 
     return {
@@ -252,7 +253,13 @@ export class PendingQueueComponent {
     batchId: null,
   });
 
-  readonly statusOptions: PendingChangeStatus[] = ['pending', 'approved', 'applying', 'rejected', 'applied'];
+  readonly statusOptions: PendingChangeStatus[] = [
+    'pending',
+    'approved',
+    'applying',
+    'rejected',
+    'applied',
+  ];
   readonly operationOptions: AuditOperation[] = ['create', 'update', 'delete'];
   readonly hasFilters = computed(() => {
     const value = this.filters();
@@ -339,9 +346,7 @@ export class PendingQueueComponent {
       if (groupKey === 'pending-approval') {
         displayKey = 'Inbox \u2014 Awaiting Review';
       } else {
-        displayKey = batchTitle
-          ? `Batch #${batchId} · ${batchTitle}`
-          : `Batch #${batchId}`;
+        displayKey = batchTitle ? `Batch #${batchId} · ${batchTitle}` : `Batch #${batchId}`;
       }
 
       results.push({
@@ -387,7 +392,11 @@ export class PendingQueueComponent {
       replaceUrl: true,
     });
 
-    if (tab === 'my-submissions' && this.mySubmissions().length === 0 && !this.loadingMySubmissions()) {
+    if (
+      tab === 'my-submissions' &&
+      this.mySubmissions().length === 0 &&
+      !this.loadingMySubmissions()
+    ) {
       this.loadMySubmissions();
     }
   }
@@ -745,7 +754,9 @@ export class PendingQueueComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.notifications.success(`Approved ${pendingIds.length} change${pendingIds.length === 1 ? '' : 's'}.`);
+          this.notifications.success(
+            `Approved ${pendingIds.length} change${pendingIds.length === 1 ? '' : 's'}.`,
+          );
           this.closeConfirmation();
           this.load();
         },

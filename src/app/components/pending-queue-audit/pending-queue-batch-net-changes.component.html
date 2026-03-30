@@ -1,138 +1,176 @@
 @if (!hasData()) {
-<p class="audit-empty-text">No net change data available.</p>
+  <p class="audit-empty-text">No net change data available.</p>
 } @else {
-<div class="flex flex-col gap-6">
-  <!-- Filters -->
-  <section class="audit-filter-panel">
-    <div class="flex flex-col gap-2">
-      <label class="audit-field-label" for="net-change-search">Search</label>
-      <div class="flex items-center gap-2">
-        <input id="net-change-search" type="search" class="audit-input" [value]="searchTerm()"
-          (input)="onSearchTermChange($any($event.target).value)" placeholder="Search by model name" />
-        @if (searchTerm()) {
-        <button class="audit-link-muted" type="button" (click)="clearSearch()">Clear</button>
+  <div class="flex flex-col gap-6">
+    <!-- Filters -->
+    <section class="audit-filter-panel">
+      <div class="flex flex-col gap-2">
+        <label class="audit-field-label" for="net-change-search">Search</label>
+        <div class="flex items-center gap-2">
+          <input
+            id="net-change-search"
+            type="search"
+            class="audit-input"
+            [value]="searchTerm()"
+            (input)="onSearchTermChange($any($event.target).value)"
+            placeholder="Search by model name"
+          />
+          @if (searchTerm()) {
+            <button class="audit-link-muted" type="button" (click)="clearSearch()">Clear</button>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap gap-2 text-xs">
+          <button
+            type="button"
+            class="filter-pill"
+            [class.filter-pill-active-primary]="changeTypeFilter() === 'all'"
+            (click)="setChangeTypeFilter('all')"
+          >
+            All ({{ changeTypeCounts().all }})
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.filter-pill-active-success]="changeTypeFilter() === 'added'"
+            (click)="setChangeTypeFilter('added')"
+          >
+            Added ({{ changeTypeCounts().added }})
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.filter-pill-active-warning]="changeTypeFilter() === 'modified'"
+            (click)="setChangeTypeFilter('modified')"
+          >
+            Modified ({{ changeTypeCounts().modified }})
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.filter-pill-active-danger]="changeTypeFilter() === 'deleted'"
+            (click)="setChangeTypeFilter('deleted')"
+          >
+            Deleted ({{ changeTypeCounts().deleted }})
+          </button>
+          <button
+            type="button"
+            class="filter-pill"
+            [class.filter-pill-active-neutral]="changeTypeFilter() === 'unchanged'"
+            (click)="setChangeTypeFilter('unchanged')"
+          >
+            No Change ({{ changeTypeCounts().unchanged }})
+          </button>
+        </div>
+
+        <div class="ml-auto">
+          <label class="audit-checkbox-row">
+            <input
+              type="checkbox"
+              class="audit-checkbox"
+              [checked]="criticalOnlyFilter()"
+              (change)="toggleCriticalOnlyFilter()"
+            />
+            Show only critical changes
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Model changes -->
+    @if (!filteredModels().length) {
+      <p class="audit-empty-text">No models match the current filters.</p>
+    } @else {
+      <div class="flex flex-col gap-4">
+        @for (model of filteredModels(); track model.model_name) {
+          <article class="audit-change-card" [class.critical-ring]="model.is_critical">
+            <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-semibold text-gray-100">
+                    {{ model.model_name || 'Unnamed model' }}
+                  </h3>
+                  @if (model.is_critical) {
+                    <span class="critical-badge"> Critical changes </span>
+                  }
+                </div>
+                @if (model.category) {
+                  <p class="audit-muted-xs">Category: {{ model.category }}</p>
+                }
+              </div>
+              <span
+                class="change-badge"
+                [class.change-badge-added]="isChangeType(model, 'added')"
+                [class.change-badge-modified]="isChangeType(model, 'modified')"
+                [class.change-badge-deleted]="isChangeType(model, 'deleted')"
+                [class.change-badge-unchanged]="isChangeType(model, 'unchanged')"
+                [class.change-badge-unknown]="isUnknownChangeType(model)"
+              >
+                {{ getChangeTypeLabel(model.net_operation) }}
+              </span>
+            </div>
+
+            @if (model.field_diffs && model.field_diffs.length > 0) {
+              <div class="mt-4">
+                <h4 class="audit-field-label mb-3">Field changes</h4>
+                <div class="space-y-2">
+                  @for (diff of model.field_diffs; track diff.field_path) {
+                    @if (shouldShowFieldDiff(diff)) {
+                      <div class="audit-diff-card">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-center gap-2">
+                            <code
+                              class="text-sm font-medium"
+                              [class.change-text-added]="isFieldChangeType(diff, 'added')"
+                              [class.change-text-removed]="isFieldChangeType(diff, 'removed')"
+                              [class.change-text-modified]="isFieldChangeType(diff, 'modified')"
+                              [class.change-text-neutral]="isUnknownFieldChangeType(diff)"
+                            >
+                              {{ diff.field_path }}
+                            </code>
+                          </div>
+                          @if (diff.change_type) {
+                            <span
+                              class="text-xs"
+                              [class.change-text-added]="isFieldChangeType(diff, 'added')"
+                              [class.change-text-removed]="isFieldChangeType(diff, 'removed')"
+                              [class.change-text-modified]="isFieldChangeType(diff, 'modified')"
+                              [class.change-text-neutral]="isUnknownFieldChangeType(diff)"
+                            >
+                              {{ getFieldChangeTypeLabel(diff.change_type) }}
+                            </span>
+                          }
+                        </div>
+
+                        <div class="mt-2 grid gap-2 text-sm sm:grid-cols-2">
+                          <div>
+                            <p class="audit-value-label">Before</p>
+                            <code class="diff-value-old">
+                              {{ formatFieldValue(diff.old_value) }}
+                            </code>
+                          </div>
+                          <div>
+                            <p class="audit-value-label">After</p>
+                            <code class="diff-value-new">
+                              {{ formatFieldValue(diff.new_value) }}
+                            </code>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            } @else if (model.net_operation === 'unchanged') {
+              <p class="mt-3 audit-empty-text">
+                This model was deleted and readded with identical content.
+              </p>
+            }
+          </article>
         }
       </div>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-2">
-      <div class="flex flex-wrap gap-2 text-xs">
-        <button type="button" class="filter-pill" [class.filter-pill-active-primary]="changeTypeFilter() === 'all'"
-          (click)="setChangeTypeFilter('all')">
-          All ({{ changeTypeCounts().all }})
-        </button>
-        <button type="button" class="filter-pill" [class.filter-pill-active-success]="changeTypeFilter() === 'added'"
-          (click)="setChangeTypeFilter('added')">
-          Added ({{ changeTypeCounts().added }})
-        </button>
-        <button type="button" class="filter-pill" [class.filter-pill-active-warning]="changeTypeFilter() === 'modified'"
-          (click)="setChangeTypeFilter('modified')">
-          Modified ({{ changeTypeCounts().modified }})
-        </button>
-        <button type="button" class="filter-pill" [class.filter-pill-active-danger]="changeTypeFilter() === 'deleted'"
-          (click)="setChangeTypeFilter('deleted')">
-          Deleted ({{ changeTypeCounts().deleted }})
-        </button>
-        <button type="button" class="filter-pill"
-          [class.filter-pill-active-neutral]="changeTypeFilter() === 'unchanged'"
-          (click)="setChangeTypeFilter('unchanged')">
-          No Change ({{ changeTypeCounts().unchanged }})
-        </button>
-      </div>
-
-      <div class="ml-auto">
-        <label class="audit-checkbox-row">
-          <input type="checkbox" class="audit-checkbox" [checked]="criticalOnlyFilter()"
-            (change)="toggleCriticalOnlyFilter()" />
-          Show only critical changes
-        </label>
-      </div>
-    </div>
-  </section>
-
-  <!-- Model changes -->
-  @if (!filteredModels().length) {
-  <p class="audit-empty-text">No models match the current filters.</p>
-  } @else {
-  <div class="flex flex-col gap-4">
-    @for (model of filteredModels(); track model.model_name) {
-    <article class="audit-change-card" [class.critical-ring]="model.is_critical">
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div class="flex-1">
-          <div class="flex items-center gap-2">
-            <h3 class="text-lg font-semibold text-gray-100">
-              {{ model.model_name || 'Unnamed model' }}
-            </h3>
-            @if (model.is_critical) {
-            <span class="critical-badge">
-              Critical changes
-            </span>
-            }
-          </div>
-          @if (model.category) {
-          <p class="audit-muted-xs">Category: {{ model.category }}</p>
-          }
-        </div>
-        <span class="change-badge" [class.change-badge-added]="isChangeType(model, 'added')"
-          [class.change-badge-modified]="isChangeType(model, 'modified')"
-          [class.change-badge-deleted]="isChangeType(model, 'deleted')"
-          [class.change-badge-unchanged]="isChangeType(model, 'unchanged')"
-          [class.change-badge-unknown]="isUnknownChangeType(model)">
-          {{ getChangeTypeLabel(model.net_operation) }}
-        </span>
-      </div>
-
-      @if (model.field_diffs && model.field_diffs.length > 0) {
-      <div class="mt-4">
-        <h4 class="audit-field-label mb-3">Field changes</h4>
-        <div class="space-y-2">
-          @for (diff of model.field_diffs; track diff.field_path) {
-          @if (shouldShowFieldDiff(diff)) {
-          <div class="audit-diff-card">
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <code class="text-sm font-medium" [class.change-text-added]="isFieldChangeType(diff, 'added')"
-                  [class.change-text-removed]="isFieldChangeType(diff, 'removed')"
-                  [class.change-text-modified]="isFieldChangeType(diff, 'modified')"
-                  [class.change-text-neutral]="isUnknownFieldChangeType(diff)">
-                  {{ diff.field_path }}
-                </code>
-              </div>
-              @if (diff.change_type) {
-              <span class="text-xs" [class.change-text-added]="isFieldChangeType(diff, 'added')"
-                [class.change-text-removed]="isFieldChangeType(diff, 'removed')"
-                [class.change-text-modified]="isFieldChangeType(diff, 'modified')"
-                [class.change-text-neutral]="isUnknownFieldChangeType(diff)">
-                {{ getFieldChangeTypeLabel(diff.change_type) }}
-              </span>
-              }
-            </div>
-
-            <div class="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-              <div>
-                <p class="audit-value-label">Before</p>
-                <code class="diff-value-old">
-                  {{ formatFieldValue(diff.old_value) }}
-                </code>
-              </div>
-              <div>
-                <p class="audit-value-label">After</p>
-                <code class="diff-value-new">
-                  {{ formatFieldValue(diff.new_value) }}
-                </code>
-              </div>
-            </div>
-          </div>
-          }
-          }
-        </div>
-      </div>
-      } @else if (model.net_operation === 'unchanged') {
-      <p class="mt-3 audit-empty-text">This model was deleted and readded with identical content.</p>
-      }
-    </article>
     }
   </div>
-  }
-</div>
 }

@@ -6,9 +6,7 @@ export interface UnsavedChangesAwareComponent {
   hasUnsavedChanges: () => boolean;
 }
 
-export const unsavedChangesGuard: CanDeactivateFn<UnsavedChangesAwareComponent> = (
-  component,
-) => {
+export const unsavedChangesGuard: CanDeactivateFn<UnsavedChangesAwareComponent> = (component) => {
   const platformId = inject(PLATFORM_ID);
 
   if (!isPlatformBrowser(platformId)) {

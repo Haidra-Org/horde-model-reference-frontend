@@ -39,7 +39,11 @@ import {
 } from '../model-fields/controlnet-fields/controlnet-fields.component';
 import { ConfigFormSectionSimplifiedComponent } from '../form-fields/config-form-section/config-form-section-simplified.component';
 import { DownloadRecord, MODEL_REFERENCE_CATEGORY } from '../../api-client';
-import { FormModelData, formToLegacyApi, legacyApiToForm } from '../../adapters/model-format-adapter';
+import {
+  FormModelData,
+  formToLegacyApi,
+  legacyApiToForm,
+} from '../../adapters/model-format-adapter';
 import { JsonEditorComponent } from '../common/json-editor.component';
 import { FormSectionComponent } from '../form-fields/form-section/form-section.component';
 import {
@@ -285,8 +289,7 @@ export class ModelFormComponent implements OnInit {
     }
 
     const hasNameChanges = this.formNameValue().trim() !== this.initialNameValue().trim();
-    const hasDataChanges =
-      JSON.stringify(this.buildFormModelData()) !== JSON.stringify(initial);
+    const hasDataChanges = JSON.stringify(this.buildFormModelData()) !== JSON.stringify(initial);
 
     return hasNameChanges || hasDataChanges;
   }
@@ -430,10 +433,10 @@ export class ModelFormComponent implements OnInit {
     // Sync model_classification and finetune_series back from common fields if they were edited
     const resolvedV2Fields = v2Fields
       ? {
-        ...v2Fields,
-        modelClassification: commonData.modelClassification ?? v2Fields.modelClassification,
-        finetuneSeries: commonData.finetuneSeries ?? v2Fields.finetuneSeries,
-      }
+          ...v2Fields,
+          modelClassification: commonData.modelClassification ?? v2Fields.modelClassification,
+          finetuneSeries: commonData.finetuneSeries ?? v2Fields.finetuneSeries,
+        }
       : null;
 
     // Ensure record_type is set for V2 round-trip
@@ -604,10 +607,17 @@ export class ModelFormComponent implements OnInit {
     }
 
     // Validate via legacy representation (validator expects LegacyRecordUnion)
-    const legacyForValidation = formToLegacyApi(formData, modelName, category as MODEL_REFERENCE_CATEGORY);
+    const legacyForValidation = formToLegacyApi(
+      formData,
+      modelName,
+      category as MODEL_REFERENCE_CATEGORY,
+    );
 
     this.validationService.clearServerErrors();
-    const issues = this.validationService.validateRecord(legacyForValidation, this.canonicalFormat());
+    const issues = this.validationService.validateRecord(
+      legacyForValidation,
+      this.canonicalFormat(),
+    );
     this.validationIssues.set(issues);
 
     const analysis = this.validationService.analyzeIssues(issues);
@@ -626,9 +636,10 @@ export class ModelFormComponent implements OnInit {
       next: (response) => {
         const action = this.isEditMode() ? 'updated' : 'created';
         // Check if the response was queued (HTTP 202) vs applied directly
-        const queued = typeof response === 'object' && response !== null && 'status' in response
-          ? (response as { status?: string }).status === 'pending'
-          : false;
+        const queued =
+          typeof response === 'object' && response !== null && 'status' in response
+            ? (response as { status?: string }).status === 'pending'
+            : false;
         this.submitting.set(false);
         this.submissionResult.set({ action, queued });
         this.notification.success(`Model "${modelName}" ${action} successfully`);
@@ -640,10 +651,7 @@ export class ModelFormComponent implements OnInit {
     });
   }
 
-  private initFormForCreate(
-    prefill?: Record<string, unknown>,
-    prefillName?: string,
-  ): void {
+  private initFormForCreate(prefill?: Record<string, unknown>, prefillName?: string): void {
     const category = this.category() as ModelReferenceCategory;
     const record = prefill
       ? ({ name: prefillName ?? 'new-model', ...prefill } as LegacyRecordUnion)
@@ -691,10 +699,7 @@ export class ModelFormComponent implements OnInit {
       });
   }
 
-  private initFormForEditSingle(
-    modelName: string,
-    response: Record<string, FormModelData>,
-  ): void {
+  private initFormForEditSingle(modelName: string, response: Record<string, FormModelData>): void {
     const formModel = response[modelName];
     if (!formModel) {
       this.notification.error(`Model "${modelName}" not found`);
@@ -730,8 +735,6 @@ export class ModelFormComponent implements OnInit {
       this.loading.set(false);
     }, 0);
   }
-
-
 
   private populateFormFromFormModel(model: FormModelData): void {
     const common = { ...model.commonData };
@@ -775,7 +778,5 @@ export class ModelFormComponent implements OnInit {
 }
 
 function humanizeFieldName(field: string): string {
-  return field
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return field.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }

@@ -35,7 +35,9 @@ import {
         <div class="flex items-center gap-2 mb-2">
           <h3 class="model-card-title flex-1">{{ model().name }}</h3>
           @if (model().version) {
-            <horde-badge variant="secondary" class="flex-shrink-0">v{{ model().version }}</horde-badge>
+            <horde-badge variant="secondary" class="flex-shrink-0"
+              >v{{ model().version }}</horde-badge
+            >
           }
         </div>
         <div class="flex items-start justify-between gap-3 mb-3">

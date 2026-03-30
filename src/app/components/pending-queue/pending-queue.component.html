@@ -1,63 +1,124 @@
 <div class="page-container">
   <!-- Batch Split Notices -->
   @for (notice of batchSplitNotices(); track notice.timestamp; let i = $index) {
-  <div class="batch-split-alert mb-4">
-    <svg class="w-5 h-5 flex-shrink-0 text-info-600 dark:text-info-400" fill="none" stroke="currentColor"
-      viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-    <div class="flex-1">
-      <span class="font-medium">Batch split:</span>
-      {{ notice.reassignedCount }} remaining change{{ notice.reassignedCount === 1 ? '' : 's' }}
-      from batch #{{ notice.originalBatchId }} reassigned to
-      <button type="button" class="link font-semibold" (click)="navigateToBatch(notice.newBatchId)">
-        batch #{{ notice.newBatchId }}
-      </button>.
-    </div>
-    <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-      (click)="dismissSplitNotice(i)" aria-label="Dismiss">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    <div class="batch-split-alert mb-4">
+      <svg
+        class="w-5 h-5 flex-shrink-0 text-info-600 dark:text-info-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
-    </button>
-  </div>
+      <div class="flex-1">
+        <span class="font-medium">Batch split:</span>
+        {{ notice.reassignedCount }} remaining change{{
+          notice.reassignedCount === 1 ? '' : 's'
+        }}
+        from batch #{{ notice.originalBatchId }} reassigned to
+        <button
+          type="button"
+          class="link font-semibold"
+          (click)="navigateToBatch(notice.newBatchId)"
+        >
+          batch #{{ notice.newBatchId }}</button
+        >.
+      </div>
+      <button
+        type="button"
+        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        (click)="dismissSplitNotice(i)"
+        aria-label="Dismiss"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
   }
 
   <!-- Page Header -->
   <header class="mb-6">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Pending Queue</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+          Pending Queue
+        </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
           {{ netSummary().total }} change{{ netSummary().total === 1 ? '' : 's' }}
           @if (netSummary().statusCounts.pending > 0) {
-          &middot; <span class="text-warning-600 dark:text-warning-400 font-medium">{{ netSummary().statusCounts.pending }} awaiting review</span>
+            &middot;
+            <span class="text-warning-600 dark:text-warning-400 font-medium"
+              >{{ netSummary().statusCounts.pending }} awaiting review</span
+            >
           }
         </p>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         @if (auth.isApprover() && allPendingIds().length > 0) {
-        <button class="btn btn-primary" type="button" (click)="approveAllPending()" [disabled]="loading()">
-          Approve All ({{ allPendingIds().length }})
-        </button>
+          <button
+            class="btn btn-primary"
+            type="button"
+            (click)="approveAllPending()"
+            [disabled]="loading()"
+          >
+            Approve All ({{ allPendingIds().length }})
+          </button>
         }
-        <button class="btn btn-sm btn-secondary" type="button" (click)="toggleSortOrder()"
-          [title]="sortOrder() === 'newest' ? 'Newest First' : 'Oldest First'">
+        <button
+          class="btn btn-sm btn-secondary"
+          type="button"
+          (click)="toggleSortOrder()"
+          [title]="sortOrder() === 'newest' ? 'Newest First' : 'Oldest First'"
+        >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             @if (sortOrder() === 'newest') {
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+              />
             } @else {
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"
+              />
             }
           </svg>
         </button>
-        <button class="btn btn-sm btn-secondary" type="button" (click)="load()" [disabled]="loading()" title="Refresh">
-          <svg class="w-4 h-4" [class.animate-spin]="loading()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        <button
+          class="btn btn-sm btn-secondary"
+          type="button"
+          (click)="load()"
+          [disabled]="loading()"
+          title="Refresh"
+        >
+          <svg
+            class="w-4 h-4"
+            [class.animate-spin]="loading()"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         </button>
       </div>
@@ -65,329 +126,303 @@
 
     <!-- Workflow Stepper (approvers only) -->
     @if (auth.isApprover()) {
-    <div class="mt-5 px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-      <div class="workflow-stepper">
-        @for (step of workflowSteps(); track step.label; let i = $index; let last = $last) {
-        <div class="workflow-step">
-          <div [class]="
-              'workflow-step-circle ' +
-              (step.completed ? 'workflow-step-circle--completed' : step.active ? 'workflow-step-circle--active' : 'workflow-step-circle--idle')
-            ">
-            @if (step.completed) {
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            } @else {
-            {{ i + 1 }}
+      <div class="mt-5 px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+        <div class="workflow-stepper">
+          @for (step of workflowSteps(); track step.label; let i = $index; let last = $last) {
+            <div class="workflow-step">
+              <div
+                [class]="
+                  'workflow-step-circle ' +
+                  (step.completed
+                    ? 'workflow-step-circle--completed'
+                    : step.active
+                      ? 'workflow-step-circle--active'
+                      : 'workflow-step-circle--idle')
+                "
+              >
+                @if (step.completed) {
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                } @else {
+                  {{ i + 1 }}
+                }
+              </div>
+              <div class="workflow-step-label">{{ step.label }}</div>
+              @if (step.count > 0) {
+                <div
+                  class="workflow-step-count"
+                  [class]="
+                    step.active
+                      ? 'text-primary-600 dark:text-primary-400'
+                      : step.completed
+                        ? 'text-success-600 dark:text-success-400'
+                        : 'text-gray-400 dark:text-gray-500'
+                  "
+                >
+                  {{ step.count }}
+                </div>
+              }
+              @if (step.rejectedCount && step.rejectedCount > 0) {
+                <div class="workflow-step-count text-danger-500 dark:text-danger-400">
+                  {{ step.rejectedCount }} rejected
+                </div>
+              }
+            </div>
+            @if (!last) {
+              <div
+                [class]="
+                  'workflow-connector' + (step.completed ? ' workflow-connector--completed' : '')
+                "
+              ></div>
             }
-          </div>
-          <div class="workflow-step-label">{{ step.label }}</div>
-          @if (step.count > 0) {
-          <div class="workflow-step-count"
-            [class]="step.active ? 'text-primary-600 dark:text-primary-400' : step.completed ? 'text-success-600 dark:text-success-400' : 'text-gray-400 dark:text-gray-500'">
-            {{ step.count }}
-          </div>
-          }
-          @if (step.rejectedCount && step.rejectedCount > 0) {
-          <div class="workflow-step-count text-danger-500 dark:text-danger-400">
-            {{ step.rejectedCount }} rejected
-          </div>
           }
         </div>
-        @if (!last) {
-        <div [class]="'workflow-connector' + (step.completed ? ' workflow-connector--completed' : '')"></div>
-        }
-        }
+        <div class="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 italic">
+          {{ workflowGuidance() }}
+        </div>
       </div>
-      <div class="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 italic">{{ workflowGuidance() }}</div>
-    </div>
     }
   </header>
 
   <!-- Tab Bar -->
-  <div class="flex items-center justify-between mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
+  <div
+    class="flex items-center justify-between mb-4 border-b border-gray-200 dark:border-gray-700 pb-3"
+  >
     <nav class="flex gap-1">
-      <button type="button" class="tab-link-compact" [class.tab-active]="activeTab() === 'queue'"
-        (click)="setTab('queue')">
+      <button
+        type="button"
+        class="tab-link-compact"
+        [class.tab-active]="activeTab() === 'queue'"
+        (click)="setTab('queue')"
+      >
         Queue
         @if (netSummary().statusCounts.pending > 0) {
-        <span class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300">
-          {{ netSummary().statusCounts.pending }}
-        </span>
+          <span
+            class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300"
+          >
+            {{ netSummary().statusCounts.pending }}
+          </span>
         }
       </button>
-      <button type="button" class="tab-link-compact" [class.tab-active]="activeTab() === 'my-submissions'"
-        (click)="setTab('my-submissions')">
+      <button
+        type="button"
+        class="tab-link-compact"
+        [class.tab-active]="activeTab() === 'my-submissions'"
+        (click)="setTab('my-submissions')"
+      >
         My Submissions
         @if (mySubmissions().length > 0) {
-        <span class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
-          {{ mySubmissions().length }}
-        </span>
+          <span
+            class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+          >
+            {{ mySubmissions().length }}
+          </span>
         }
       </button>
-      <button type="button" class="tab-link-compact" [class.tab-active]="activeTab() === 'batches'"
-        (click)="setTab('batches')">Batches</button>
-      <button type="button" class="tab-link-compact" [class.tab-active]="activeTab() === 'history'"
-        (click)="setTab('history')">History</button>
+      <button
+        type="button"
+        class="tab-link-compact"
+        [class.tab-active]="activeTab() === 'batches'"
+        (click)="setTab('batches')"
+      >
+        Batches
+      </button>
+      <button
+        type="button"
+        class="tab-link-compact"
+        [class.tab-active]="activeTab() === 'history'"
+        (click)="setTab('history')"
+      >
+        History
+      </button>
     </nav>
     @if (activeTab() !== 'history') {
-    <button class="btn btn-sm btn-secondary relative" type="button" (click)="toggleFilters()">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-      </svg>
-      @if (hasFilters()) {
-      <span class="w-1.5 h-1.5 rounded-full bg-primary-500 absolute -top-0.5 -right-0.5"></span>
-      }
-    </button>
+      <button class="btn btn-sm btn-secondary relative" type="button" (click)="toggleFilters()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+          />
+        </svg>
+        @if (hasFilters()) {
+          <span class="w-1.5 h-1.5 rounded-full bg-primary-500 absolute -top-0.5 -right-0.5"></span>
+        }
+      </button>
     }
   </div>
 
   <!-- Collapsible Filters -->
   @if (filtersExpanded() && activeTab() !== 'history') {
-  <div class="queue-filter-bar mb-4">
-    <div class="flex flex-wrap gap-2 mb-3">
-      @for (status of statusOptions; track status) {
-      <button type="button" [class]="
-            filters().statuses.includes(status)
-              ? 'badge badge-' + status + ' cursor-pointer hover:opacity-80 transition-opacity'
-              : 'badge badge-secondary cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
-          " (click)="toggleStatus(status)">
-        {{ statusLabel(status) }}
-      </button>
-      }
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <input #categoryInput class="form-input" [value]="filters().category"
-        (input)="onCategoryChange(categoryInput.value)" placeholder="Category..." />
-      <input #modelNameInput class="form-input" [value]="filters().modelName"
-        (input)="onModelChange(modelNameInput.value)" placeholder="Model name..." />
-      <div class="flex gap-2">
-        <input #batchIdInput class="form-input flex-1" type="number" min="1" [value]="filters().batchId ?? ''"
-          (input)="onBatchIdChange(batchIdInput.value)" placeholder="Batch ID..." />
-        <button class="btn btn-sm btn-secondary shrink-0" type="button" (click)="resetFilters()"
-          [disabled]="!hasFilters()">Reset</button>
+    <div class="queue-filter-bar mb-4">
+      <div class="flex flex-wrap gap-2 mb-3">
+        @for (status of statusOptions; track status) {
+          <button
+            type="button"
+            [class]="
+              filters().statuses.includes(status)
+                ? 'badge badge-' + status + ' cursor-pointer hover:opacity-80 transition-opacity'
+                : 'badge badge-secondary cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
+            "
+            (click)="toggleStatus(status)"
+          >
+            {{ statusLabel(status) }}
+          </button>
+        }
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <input
+          #categoryInput
+          class="form-input"
+          [value]="filters().category"
+          (input)="onCategoryChange(categoryInput.value)"
+          placeholder="Category..."
+        />
+        <input
+          #modelNameInput
+          class="form-input"
+          [value]="filters().modelName"
+          (input)="onModelChange(modelNameInput.value)"
+          placeholder="Model name..."
+        />
+        <div class="flex gap-2">
+          <input
+            #batchIdInput
+            class="form-input flex-1"
+            type="number"
+            min="1"
+            [value]="filters().batchId ?? ''"
+            (input)="onBatchIdChange(batchIdInput.value)"
+            placeholder="Batch ID..."
+          />
+          <button
+            class="btn btn-sm btn-secondary shrink-0"
+            type="button"
+            (click)="resetFilters()"
+            [disabled]="!hasFilters()"
+          >
+            Reset
+          </button>
+        </div>
       </div>
     </div>
-  </div>
   }
 
   <!-- Content Area -->
   <div class="space-y-4">
     @if (error()) {
-    <div class="alert alert-danger">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      {{ error() }}
-    </div>
+      <div class="alert alert-danger">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        {{ error() }}
+      </div>
     }
 
     @if (serverErrors().length > 0) {
-    <div class="alert alert-danger">
-      <div class="flex items-start gap-3">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <div>
-          <strong class="block mb-2">Validation Errors</strong>
-          <ul class="list-disc list-inside space-y-1 text-sm">
-            @for (err of serverErrors(); track err.path) {
-            <li><strong>{{ err.field }}:</strong> {{ err.message }}</li>
-            }
-          </ul>
+      <div class="alert alert-danger">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <div>
+            <strong class="block mb-2">Validation Errors</strong>
+            <ul class="list-disc list-inside space-y-1 text-sm">
+              @for (err of serverErrors(); track err.path) {
+                <li>
+                  <strong>{{ err.field }}:</strong> {{ err.message }}
+                </li>
+              }
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
     }
 
     @if (!error() && loading()) {
-    <div class="alert alert-info">
-      <svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-      Loading pending changes&hellip;
-    </div>
+      <div class="alert alert-info">
+        <svg
+          class="w-5 h-5 mr-2 animate-spin"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+        Loading pending changes&hellip;
+      </div>
     }
 
     <!-- ══════════════════ QUEUE TAB ══════════════════ -->
     @if (activeTab() === 'queue') {
       @if (!error() && !loading() && !records().length) {
-      <div class="alert alert-info">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        No pending changes match your filters.
-      </div>
+        <div class="alert alert-info">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          No pending changes match your filters.
+        </div>
       }
 
       @if (!error() && records().length) {
-      <!-- Summary Bar -->
-      <div class="queue-stat-grid grid-cols-5 mb-4">
-        <div class="queue-stat-cell">
-          <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ netSummary().total }}</div>
-          <div class="queue-section-label mt-1">Total</div>
-        </div>
-        @for (status of statusOptions; track status) {
-        <div class="queue-stat-cell">
-          <div class="text-2xl font-bold" [class.text-warning-600]="status === 'pending'"
-            [class.dark:text-warning-400]="status === 'pending'" [class.text-success-600]="status === 'approved'"
-            [class.dark:text-success-400]="status === 'approved'" [class.text-danger-600]="status === 'rejected'"
-            [class.dark:text-danger-400]="status === 'rejected'" [class.text-info-600]="status === 'applied'"
-            [class.dark:text-info-400]="status === 'applied'">{{ netSummary().statusCounts[status] }}</div>
-          <div class="queue-section-label mt-1">{{ statusLabel(status) }}</div>
-        </div>
-        }
-      </div>
-
-      <!-- Expandable Change Rows -->
-      <div class="change-list">
-        @for (change of sortedRecords(); track change.change_id) {
-        <app-expandable-change-row
-          [change]="change"
-          [showCategory]="true"
-          [showRequestor]="true"
-          (approveRequested)="approve($event)"
-          (rejectRequested)="openRejectModal($event)"
-          (applyRequested)="apply($event)"
-          (applyBatchRequested)="applyBatchForChange($event)"
-        />
-        }
-      </div>
-      }
-    }
-
-    <!-- ══════════════════ MY SUBMISSIONS TAB ══════════════════ -->
-    @if (activeTab() === 'my-submissions') {
-      @if (loadingMySubmissions()) {
-      <div class="alert alert-info">
-        <svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        Loading your submissions&hellip;
-      </div>
-      } @else if (!mySubmissions().length) {
-      <div class="alert alert-info">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        You haven't submitted any changes yet.
-      </div>
-      } @else {
-      <div class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-        {{ mySubmissions().length }} submission{{ mySubmissions().length === 1 ? '' : 's' }}
-      </div>
-      <div class="change-list">
-        @for (change of mySubmissions(); track change.change_id) {
-        <app-expandable-change-row
-          [change]="change"
-          [showCategory]="true"
-          [showRequestor]="false"
-          (approveRequested)="approve($event)"
-          (rejectRequested)="openRejectModal($event)"
-          (applyRequested)="apply($event)"
-          (applyBatchRequested)="applyBatchForChange($event)"
-        />
-        }
-      </div>
-      }
-    }
-
-    <!-- ══════════════════ BATCHES TAB ══════════════════ -->
-    @if (activeTab() === 'batches') {
-      @if (!error() && !loading() && !records().length) {
-      <div class="alert alert-info">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        No batches found.
-      </div>
-      }
-
-      @if (!error() && records().length) {
-      <div class="space-y-4">
-        @for (group of byBatch(); track group.key) {
-        <div>
-          <div class="rounded-lg" [class.border-l-4]="group.batchId === null"
-            [class.border-l-warning-400]="group.batchId === null">
-            <button type="button" class="queue-group-header" (click)="toggleGroup(group.key)"
-              [attr.aria-expanded]="!isGroupCollapsed(group.key)">
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-gray-400 transition-transform" [class.rotate-90]="!isGroupCollapsed(group.key)"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-                <span class="font-semibold text-gray-900 dark:text-gray-100">{{ group.key }}</span>
-                @if (group.batchId === null) {
-                <span class="text-xs font-medium px-1.5 py-0.5 rounded text-warning-700 bg-warning-100 dark:text-warning-300 dark:bg-warning-900/30">Awaiting Review</span>
-                }
-                <span class="text-sm text-gray-500 dark:text-gray-400">{{ group.items.length }}</span>
-                @if (group.approvedBy && group.approvedAt) {
-                <span class="text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
-                  &middot; {{ group.approvedBy }} &middot; {{ group.approvedAt * 1000 | date: 'short' }}
-                </span>
-                }
-              </div>
-              <div class="flex items-center gap-2">
-                @if (auth.isApprover() && group.batchId !== null && hasApprovedChanges(group)) {
-                <button type="button" class="btn btn-sm btn-info"
-                  (click)="applyBatchFromGroup(group); $event.stopPropagation()" [disabled]="loading()">
-                  Apply Batch
-                </button>
-                }
-                <div class="flex gap-1.5">
-                  @for (status of statusOptions; track status) {
-                  @if (group.statusCounts[status] > 0) {
-                  <span class="text-xs font-medium px-1.5 py-0.5 rounded" [class]="statusBadgeClass(status)">
-                    {{ group.statusCounts[status] }} {{ statusLabel(status) }}
-                  </span>
-                  }
-                  }
-                </div>
-              </div>
-            </button>
-
-            <!-- Batch Lifecycle & Progress -->
-            @if (group.batchId !== null) {
-            <div class="px-4 pb-3 pt-1">
-              <div class="batch-card-lifecycle">
-                @for (stage of ['created', 'approved', 'applying', 'applied']; track stage) {
-                <span
-                  [class]="'batch-lifecycle-stage batch-lifecycle-stage--' + stage + (getBatchLifecycleStage(group) === stage ? ' font-bold ring-1 ring-offset-1 ring-gray-400 dark:ring-gray-500' : ' opacity-50')">
-                  {{ stage | titlecase }}
-                </span>
-                @if (stage !== 'applied') {
-                <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-                }
-                }
-              </div>
-              @if (getBatchProgress(group).applied > 0 && getBatchProgress(group).applied < getBatchProgress(group).total) {
-              <div class="mt-2">
-                <div class="batch-progress-bar">
-                  <div class="batch-progress-fill" [style.width.%]="getBatchProgress(group).percent"></div>
-                </div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {{ getBatchProgress(group).applied }} / {{ getBatchProgress(group).total }} applied ({{ getBatchProgress(group).percent }}%)
-                </div>
-              </div>
-              }
+        <!-- Summary Bar -->
+        <div class="queue-stat-grid grid-cols-5 mb-4">
+          <div class="queue-stat-cell">
+            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {{ netSummary().total }}
             </div>
-            }
+            <div class="queue-section-label mt-1">Total</div>
           </div>
+          @for (status of statusOptions; track status) {
+            <div class="queue-stat-cell">
+              <div
+                class="text-2xl font-bold"
+                [class.text-warning-600]="status === 'pending'"
+                [class.dark:text-warning-400]="status === 'pending'"
+                [class.text-success-600]="status === 'approved'"
+                [class.dark:text-success-400]="status === 'approved'"
+                [class.text-danger-600]="status === 'rejected'"
+                [class.dark:text-danger-400]="status === 'rejected'"
+                [class.text-info-600]="status === 'applied'"
+                [class.dark:text-info-400]="status === 'applied'"
+              >
+                {{ netSummary().statusCounts[status] }}
+              </div>
+              <div class="queue-section-label mt-1">{{ statusLabel(status) }}</div>
+            </div>
+          }
+        </div>
 
-          @if (!isGroupCollapsed(group.key)) {
-          <div class="change-list mt-1">
-            @for (change of group.items; track change.change_id) {
+        <!-- Expandable Change Rows -->
+        <div class="change-list">
+          @for (change of sortedRecords(); track change.change_id) {
             <app-expandable-change-row
               [change]="change"
               [showCategory]="true"
@@ -397,154 +432,441 @@
               (applyRequested)="apply($event)"
               (applyBatchRequested)="applyBatchForChange($event)"
             />
-            }
-          </div>
           }
         </div>
-        }
-      </div>
+      }
+    }
+
+    <!-- ══════════════════ MY SUBMISSIONS TAB ══════════════════ -->
+    @if (activeTab() === 'my-submissions') {
+      @if (loadingMySubmissions()) {
+        <div class="alert alert-info">
+          <svg
+            class="w-5 h-5 mr-2 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          Loading your submissions&hellip;
+        </div>
+      } @else if (!mySubmissions().length) {
+        <div class="alert alert-info">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          You haven't submitted any changes yet.
+        </div>
+      } @else {
+        <div class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+          {{ mySubmissions().length }} submission{{ mySubmissions().length === 1 ? '' : 's' }}
+        </div>
+        <div class="change-list">
+          @for (change of mySubmissions(); track change.change_id) {
+            <app-expandable-change-row
+              [change]="change"
+              [showCategory]="true"
+              [showRequestor]="false"
+              (approveRequested)="approve($event)"
+              (rejectRequested)="openRejectModal($event)"
+              (applyRequested)="apply($event)"
+              (applyBatchRequested)="applyBatchForChange($event)"
+            />
+          }
+        </div>
+      }
+    }
+
+    <!-- ══════════════════ BATCHES TAB ══════════════════ -->
+    @if (activeTab() === 'batches') {
+      @if (!error() && !loading() && !records().length) {
+        <div class="alert alert-info">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          No batches found.
+        </div>
+      }
+
+      @if (!error() && records().length) {
+        <div class="space-y-4">
+          @for (group of byBatch(); track group.key) {
+            <div>
+              <div
+                class="rounded-lg"
+                [class.border-l-4]="group.batchId === null"
+                [class.border-l-warning-400]="group.batchId === null"
+              >
+                <button
+                  type="button"
+                  class="queue-group-header"
+                  (click)="toggleGroup(group.key)"
+                  [attr.aria-expanded]="!isGroupCollapsed(group.key)"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg
+                      class="w-4 h-4 text-gray-400 transition-transform"
+                      [class.rotate-90]="!isGroupCollapsed(group.key)"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                    <span class="font-semibold text-gray-900 dark:text-gray-100">{{
+                      group.key
+                    }}</span>
+                    @if (group.batchId === null) {
+                      <span
+                        class="text-xs font-medium px-1.5 py-0.5 rounded text-warning-700 bg-warning-100 dark:text-warning-300 dark:bg-warning-900/30"
+                        >Awaiting Review</span
+                      >
+                    }
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{
+                      group.items.length
+                    }}</span>
+                    @if (group.approvedBy && group.approvedAt) {
+                      <span class="text-xs text-gray-400 dark:text-gray-500 hidden sm:inline">
+                        &middot; {{ group.approvedBy }} &middot;
+                        {{ group.approvedAt * 1000 | date: 'short' }}
+                      </span>
+                    }
+                  </div>
+                  <div class="flex items-center gap-2">
+                    @if (auth.isApprover() && group.batchId !== null && hasApprovedChanges(group)) {
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-info"
+                        (click)="applyBatchFromGroup(group); $event.stopPropagation()"
+                        [disabled]="loading()"
+                      >
+                        Apply Batch
+                      </button>
+                    }
+                    <div class="flex gap-1.5">
+                      @for (status of statusOptions; track status) {
+                        @if (group.statusCounts[status] > 0) {
+                          <span
+                            class="text-xs font-medium px-1.5 py-0.5 rounded"
+                            [class]="statusBadgeClass(status)"
+                          >
+                            {{ group.statusCounts[status] }} {{ statusLabel(status) }}
+                          </span>
+                        }
+                      }
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Batch Lifecycle & Progress -->
+                @if (group.batchId !== null) {
+                  <div class="px-4 pb-3 pt-1">
+                    <div class="batch-card-lifecycle">
+                      @for (stage of ['created', 'approved', 'applying', 'applied']; track stage) {
+                        <span
+                          [class]="
+                            'batch-lifecycle-stage batch-lifecycle-stage--' +
+                            stage +
+                            (getBatchLifecycleStage(group) === stage
+                              ? ' font-bold ring-1 ring-offset-1 ring-gray-400 dark:ring-gray-500'
+                              : ' opacity-50')
+                          "
+                        >
+                          {{ stage | titlecase }}
+                        </span>
+                        @if (stage !== 'applied') {
+                          <svg
+                            class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        }
+                      }
+                    </div>
+                    @if (
+                      getBatchProgress(group).applied > 0 &&
+                      getBatchProgress(group).applied < getBatchProgress(group).total
+                    ) {
+                      <div class="mt-2">
+                        <div class="batch-progress-bar">
+                          <div
+                            class="batch-progress-fill"
+                            [style.width.%]="getBatchProgress(group).percent"
+                          ></div>
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {{ getBatchProgress(group).applied }} /
+                          {{ getBatchProgress(group).total }} applied ({{
+                            getBatchProgress(group).percent
+                          }}%)
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              @if (!isGroupCollapsed(group.key)) {
+                <div class="change-list mt-1">
+                  @for (change of group.items; track change.change_id) {
+                    <app-expandable-change-row
+                      [change]="change"
+                      [showCategory]="true"
+                      [showRequestor]="true"
+                      (approveRequested)="approve($event)"
+                      (rejectRequested)="openRejectModal($event)"
+                      (applyRequested)="apply($event)"
+                      (applyBatchRequested)="applyBatchForChange($event)"
+                    />
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
       }
     }
 
     <!-- ══════════════════ HISTORY TAB ══════════════════ -->
     @if (activeTab() === 'history') {
-    <app-pending-queue-audit-page />
+      <app-pending-queue-audit-page />
     }
   </div>
 </div>
 
 <!-- Reject Modal -->
 @if (rejectingChange(); as rejecting) {
-<div class="modal-overlay" (click)="closeRejectModal()" (keydown.escape)="closeRejectModal()" tabindex="-1">
-  <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" role="dialog"
-    aria-modal="true">
-    <h2 class="modal-title">Reject Change #{{ rejecting.change_id }}</h2>
-    <div class="modal-content space-y-4">
-      <p class="text-sm text-gray-600 dark:text-gray-400">
-        Rejecting <strong>{{ rejecting.model_name }}</strong> ({{ operationLabel(rejecting.operation) }})
-      </p>
-      <div class="form-field">
-        <label class="form-label" for="rejectReason">Rejection Reason <span class="text-danger">*</span></label>
-        <textarea #rejectReasonInput id="rejectReason" class="form-input" rows="3"
-          placeholder="Please provide a reason for rejecting this change..." [value]="rejectReason()"
-          (input)="onRejectReasonChange(rejectReasonInput.value)"></textarea>
+  <div
+    class="modal-overlay"
+    (click)="closeRejectModal()"
+    (keydown.escape)="closeRejectModal()"
+    tabindex="-1"
+  >
+    <div
+      class="modal-dialog"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+    >
+      <h2 class="modal-title">Reject Change #{{ rejecting.change_id }}</h2>
+      <div class="modal-content space-y-4">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          Rejecting <strong>{{ rejecting.model_name }}</strong> ({{
+            operationLabel(rejecting.operation)
+          }})
+        </p>
+        <div class="form-field">
+          <label class="form-label" for="rejectReason"
+            >Rejection Reason <span class="text-danger">*</span></label
+          >
+          <textarea
+            #rejectReasonInput
+            id="rejectReason"
+            class="form-input"
+            rows="3"
+            placeholder="Please provide a reason for rejecting this change..."
+            [value]="rejectReason()"
+            (input)="onRejectReasonChange(rejectReasonInput.value)"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button
+          class="btn btn-danger"
+          type="button"
+          (click)="confirmReject()"
+          [disabled]="loading() || !rejectReason().trim()"
+        >
+          Confirm Rejection
+        </button>
+        <button
+          class="btn btn-secondary"
+          type="button"
+          (click)="closeRejectModal()"
+          [disabled]="loading()"
+        >
+          Cancel
+        </button>
       </div>
     </div>
-    <div class="modal-actions">
-      <button class="btn btn-danger" type="button" (click)="confirmReject()"
-        [disabled]="loading() || !rejectReason().trim()">
-        Confirm Rejection
-      </button>
-      <button class="btn btn-secondary" type="button" (click)="closeRejectModal()" [disabled]="loading()">
-        Cancel
-      </button>
-    </div>
   </div>
-</div>
 }
 
 <!-- Confirmation Modal -->
 @if (confirmationState(); as state) {
-<app-confirmation-modal [open]="true" [severity]="getConfirmationSeverity()" [title]="getConfirmationTitle()"
-  [message]="getConfirmationMessage()" [confirmText]="getConfirmButtonText()" [loading]="confirmationLoading()"
-  [confirmDisabled]="state.action !== 'approveAll' && loadingDiff()" (confirmed)="executeConfirmedAction()"
-  (cancelled)="closeConfirmation()">
-
-  @if (state.action === 'approveAll' && state.changes) {
-  <div class="space-y-3 max-h-[60vh] overflow-y-auto">
-    @for (change of state.changes; track change.change_id) {
-    <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-      <div class="flex items-center gap-2 mb-2">
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Change #{{ change.change_id }}</span>
-        <span class="badge" [class]="operationBadgeClass(change.operation)">{{ operationLabel(change.operation) }}</span>
-      </div>
-      <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-        <div><strong>Model:</strong> {{ change.model_name }}</div>
-        <div><strong>Category:</strong> {{ change.category }}</div>
-        @if (change.requested_username) {
-        <div><strong>Requested by:</strong> {{ change.requested_username }}</div>
+  <app-confirmation-modal
+    [open]="true"
+    [severity]="getConfirmationSeverity()"
+    [title]="getConfirmationTitle()"
+    [message]="getConfirmationMessage()"
+    [confirmText]="getConfirmButtonText()"
+    [loading]="confirmationLoading()"
+    [confirmDisabled]="state.action !== 'approveAll' && loadingDiff()"
+    (confirmed)="executeConfirmedAction()"
+    (cancelled)="closeConfirmation()"
+  >
+    @if (state.action === 'approveAll' && state.changes) {
+      <div class="space-y-3 max-h-[60vh] overflow-y-auto">
+        @for (change of state.changes; track change.change_id) {
+          <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >Change #{{ change.change_id }}</span
+              >
+              <span class="badge" [class]="operationBadgeClass(change.operation)">{{
+                operationLabel(change.operation)
+              }}</span>
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <div><strong>Model:</strong> {{ change.model_name }}</div>
+              <div><strong>Category:</strong> {{ change.category }}</div>
+              @if (change.requested_username) {
+                <div><strong>Requested by:</strong> {{ change.requested_username }}</div>
+              }
+            </div>
+            @if (change.operation === 'update') {
+              @if (loadingDiffs().has(change.change_id)) {
+                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-3">
+                  <svg
+                    class="w-4 h-4 animate-spin"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  Loading field changes...
+                </div>
+              } @else if (changeDiffs().get(change.change_id); as diff) {
+                <div class="mt-3">
+                  <app-delta-diff [diff]="diff" />
+                </div>
+              }
+            }
+            @if (change.operation !== 'update') {
+              <details class="mt-3">
+                <summary
+                  class="text-xs font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  @if (change.operation === 'create') {
+                    Show model data to be created
+                  }
+                  @if (change.operation === 'delete') {
+                    Show model data to be deleted
+                  }
+                </summary>
+                <pre class="code-block mt-2 text-xs max-h-40 overflow-auto">{{
+                  change.payload | json
+                }}</pre>
+              </details>
+            }
+          </div>
         }
       </div>
-      @if (change.operation === 'update') {
-        @if (loadingDiffs().has(change.change_id)) {
+    }
+
+    <!-- Single change diff -->
+    @if (state.action !== 'approveAll' && state.action !== 'applyBatch') {
+      @if (loadingDiff()) {
         <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-3">
           <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
           Loading field changes...
         </div>
-        } @else if (changeDiffs().get(change.change_id); as diff) {
+      } @else if (changeDiff(); as diff) {
         <div class="mt-3">
           <app-delta-diff [diff]="diff" />
         </div>
-        }
       }
-      @if (change.operation !== 'update') {
-      <details class="mt-3">
-        <summary class="text-xs font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-          @if (change.operation === 'create') { Show model data to be created }
-          @if (change.operation === 'delete') { Show model data to be deleted }
-        </summary>
-        <pre class="code-block mt-2 text-xs max-h-40 overflow-auto">{{ change.payload | json }}</pre>
-      </details>
-      }
-    </div>
     }
-  </div>
-  }
 
-  <!-- Single change diff -->
-  @if (state.action !== 'approveAll' && state.action !== 'applyBatch') {
-    @if (loadingDiff()) {
-    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-3">
-      <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-      Loading field changes...
-    </div>
-    } @else if (changeDiff(); as diff) {
-    <div class="mt-3">
-      <app-delta-diff [diff]="diff" />
-    </div>
+    <!-- Batch apply summary -->
+    @if (state.action === 'applyBatch') {
+      <div class="space-y-3 mt-2">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          {{ batchSummary().total }} change{{ batchSummary().total === 1 ? '' : 's' }} in this batch
+        </div>
+        <div class="queue-stat-grid grid-cols-3">
+          @if (batchSummary().operationCounts['create'] > 0) {
+            <div class="queue-stat-cell">
+              <div class="text-lg font-semibold text-success-600 dark:text-success-400">
+                {{ batchSummary().operationCounts['create'] }}
+              </div>
+              <div class="text-xs text-success-600 dark:text-success-400">Create</div>
+            </div>
+          }
+          @if (batchSummary().operationCounts['update'] > 0) {
+            <div class="queue-stat-cell">
+              <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">
+                {{ batchSummary().operationCounts['update'] }}
+              </div>
+              <div class="text-xs text-primary-600 dark:text-primary-400">Update</div>
+            </div>
+          }
+          @if (batchSummary().operationCounts['delete'] > 0) {
+            <div class="queue-stat-cell">
+              <div class="text-lg font-semibold text-danger-600 dark:text-danger-400">
+                {{ batchSummary().operationCounts['delete'] }}
+              </div>
+              <div class="text-xs text-danger-600 dark:text-danger-400">Delete</div>
+            </div>
+          }
+        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+          <span class="font-medium text-success-600 dark:text-success-400">{{
+            batchSummary().approvedCount
+          }}</span>
+          approved
+          @if (batchSummary().pendingCount > 0) {
+            &middot;
+            <span class="font-medium text-warning-600 dark:text-warning-400">{{
+              batchSummary().pendingCount
+            }}</span>
+            still pending
+          }
+        </div>
+      </div>
     }
-  }
-
-  <!-- Batch apply summary -->
-  @if (state.action === 'applyBatch') {
-  <div class="space-y-3 mt-2">
-    <div class="text-sm text-gray-600 dark:text-gray-400">
-      {{ batchSummary().total }} change{{ batchSummary().total === 1 ? '' : 's' }} in this batch
-    </div>
-    <div class="queue-stat-grid grid-cols-3">
-      @if (batchSummary().operationCounts['create'] > 0) {
-      <div class="queue-stat-cell">
-        <div class="text-lg font-semibold text-success-600 dark:text-success-400">{{ batchSummary().operationCounts['create'] }}</div>
-        <div class="text-xs text-success-600 dark:text-success-400">Create</div>
-      </div>
-      }
-      @if (batchSummary().operationCounts['update'] > 0) {
-      <div class="queue-stat-cell">
-        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ batchSummary().operationCounts['update'] }}</div>
-        <div class="text-xs text-primary-600 dark:text-primary-400">Update</div>
-      </div>
-      }
-      @if (batchSummary().operationCounts['delete'] > 0) {
-      <div class="queue-stat-cell">
-        <div class="text-lg font-semibold text-danger-600 dark:text-danger-400">{{ batchSummary().operationCounts['delete'] }}</div>
-        <div class="text-xs text-danger-600 dark:text-danger-400">Delete</div>
-      </div>
-      }
-    </div>
-    <div class="text-sm text-gray-600 dark:text-gray-400">
-      <span class="font-medium text-success-600 dark:text-success-400">{{ batchSummary().approvedCount }}</span> approved
-      @if (batchSummary().pendingCount > 0) {
-      &middot; <span class="font-medium text-warning-600 dark:text-warning-400">{{ batchSummary().pendingCount }}</span> still pending
-      }
-    </div>
-  </div>
-  }
-
-</app-confirmation-modal>
+  </app-confirmation-modal>
 }

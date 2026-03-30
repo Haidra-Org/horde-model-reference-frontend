@@ -5,7 +5,8 @@
         <p class="group-panel-eyebrow">Single Variation Workflow</p>
         <h2 class="heading-section">Add Variation to {{ groupName() }}</h2>
         <p class="text-sm text-muted">
-          Build one variation with live composition feedback, explicit parameter control, and inherited defaults.
+          Build one variation with live composition feedback, explicit parameter control, and
+          inherited defaults.
         </p>
       </div>
 
@@ -34,7 +35,9 @@
             <span class="group-panel-step-badge">1</span>
             <div>
               <h3 class="heading-card">Model Identity</h3>
-              <p class="text-xs text-muted mt-0.5">Choose naming components used to compose the new variant.</p>
+              <p class="text-xs text-muted mt-0.5">
+                Choose naming components used to compose the new variant.
+              </p>
             </div>
           </div>
 
@@ -128,7 +131,9 @@
             <span class="group-panel-step-badge">2</span>
             <div>
               <h3 class="heading-card">Parameters</h3>
-              <p class="text-xs text-muted mt-0.5">Keep linked for automatic values, or switch to manual override mode.</p>
+              <p class="text-xs text-muted mt-0.5">
+                Keep linked for automatic values, or switch to manual override mode.
+              </p>
             </div>
           </div>
 
@@ -137,14 +142,14 @@
               type="button"
               class="btn btn-sm btn-secondary"
               (click)="toggleParameterSync()"
-              [attr.aria-label]="parametersLinked() ? 'Unlink size and parameters' : 'Link size and parameters'"
+              [attr.aria-label]="
+                parametersLinked() ? 'Unlink size and parameters' : 'Link size and parameters'
+              "
             >
               {{ parametersLinked() ? 'Linked to size' : 'Manual override' }}
             </button>
 
-            <span class="badge badge-info">
-              Unit: {{ parametersUnit() }}
-            </span>
+            <span class="badge badge-info"> Unit: {{ parametersUnit() }} </span>
           </div>
 
           <div class="flex flex-wrap items-end gap-2 max-w-md">
@@ -174,7 +179,9 @@
           @if (parametersLinked()) {
             <p class="form-hint">Values are auto-filled from the size field and kept in sync.</p>
           } @else {
-            <p class="form-hint">Manual mode applies this parameter value to the created variation.</p>
+            <p class="form-hint">
+              Manual mode applies this parameter value to the created variation.
+            </p>
           }
         </section>
 
@@ -183,7 +190,9 @@
             <span class="group-panel-step-badge">3</span>
             <div>
               <h3 class="heading-card">Inherited Fields</h3>
-              <p class="text-xs text-muted mt-0.5">Prefilled from the group to reduce repetitive edits.</p>
+              <p class="text-xs text-muted mt-0.5">
+                Prefilled from the group to reduce repetitive edits.
+              </p>
             </div>
           </div>
 
@@ -274,7 +283,11 @@
             @for (item of readinessItems(); track item.key) {
               <div class="group-panel-readiness-row">
                 <span>{{ item.label }}</span>
-                <span [class]="item.ready ? 'badge badge-success badge-sm' : 'badge badge-warning badge-sm'">
+                <span
+                  [class]="
+                    item.ready ? 'badge badge-success badge-sm' : 'badge badge-warning badge-sm'
+                  "
+                >
                   {{ item.ready ? 'Ready' : 'Pending' }}
                 </span>
               </div>
@@ -283,17 +296,18 @@
 
           @if (alreadyExists()) {
             <p class="text-xs text-warning-700 dark:text-warning-300 mt-3">
-              This composed name already exists. Adjust size, variant, version, or quant before submitting.
+              This composed name already exists. Adjust size, variant, version, or quant before
+              submitting.
             </p>
           }
         </section>
       </aside>
     </div>
 
-    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-sm text-muted">
-        Create submits one pending queue entry for this variation.
-      </p>
+    <div
+      class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="text-sm text-muted">Create submits one pending queue entry for this variation.</p>
 
       <div class="flex flex-wrap gap-2">
         <button class="btn btn-primary" [disabled]="!canSubmit()" (click)="submit()">

@@ -47,7 +47,9 @@ export function createMockUsageTrend(overrides?: Partial<UsageTrend>): UsageTren
 /**
  * Creates a mock ModelDeletionRiskInfo object with minimal required fields
  */
-export function createMockModelAuditInfo(overrides?: Partial<ModelDeletionRiskInfo>): ModelDeletionRiskInfo {
+export function createMockModelAuditInfo(
+  overrides?: Partial<ModelDeletionRiskInfo>,
+): ModelDeletionRiskInfo {
   const flags = overrides?.deletion_risk_flags ?? createMockDeletionRiskFlags();
   const workerCount = overrides?.worker_count ?? 0;
   const usageMonth = overrides?.usage_month ?? 0;

@@ -71,9 +71,9 @@ export class PendingQueueService {
   }
 
   getChangeDiff(changeId: number): Observable<PendingChangeDiff> {
-    return this.http.get<PendingChangeDiff>(`${this.queueBaseUrl}/changes/${changeId}/diff`).pipe(
-      catchError((error) => this.handleError(error, 'Unable to load change diff.')),
-    );
+    return this.http
+      .get<PendingChangeDiff>(`${this.queueBaseUrl}/changes/${changeId}/diff`)
+      .pipe(catchError((error) => this.handleError(error, 'Unable to load change diff.')));
   }
 
   getChangeDiffs(changeIds: number[]): Observable<PendingChangeDiff[]> {
@@ -82,10 +82,10 @@ export class PendingQueueService {
       params = params.append('change_ids', id);
     }
     return this.http
-      .get<{ diffs?: PendingChangeDiff[]; errors?: unknown[] }>(
-        `${this.queueBaseUrl}/changes/diff`,
-        { params },
-      )
+      .get<{
+        diffs?: PendingChangeDiff[];
+        errors?: unknown[];
+      }>(`${this.queueBaseUrl}/changes/diff`, { params })
       .pipe(
         map((response) => response.diffs ?? []),
         catchError((error) => this.handleError(error, 'Unable to load change diffs.')),
@@ -189,7 +189,13 @@ export class PendingQueueService {
 
   private normalizeStatus(status: PendingChangeStatus | null | undefined): PendingChangeStatus {
     const normalized = (status ?? 'pending').toString().trim().toLowerCase();
-    const allowed: PendingChangeStatus[] = ['pending', 'approved', 'applying', 'rejected', 'applied'];
+    const allowed: PendingChangeStatus[] = [
+      'pending',
+      'approved',
+      'applying',
+      'rejected',
+      'applied',
+    ];
     return allowed.includes(normalized as PendingChangeStatus)
       ? (normalized as PendingChangeStatus)
       : 'pending';

@@ -26,6 +26,7 @@ npm start
 All styles are centralized in `src/styles/` and `src/shared/design-system/`. Component CSS files must be empty (with three documented exceptions).
 
 Key rules:
+
 - **Use semantic CSS classes** (`.alert-danger`, `.status-badge-success`) over inline Tailwind utility chains.
 - **Use theme color tokens** (`primary-*`, `success-*`, `danger-*`, `warning-*`, `info-*`, `gray-*`). Never use raw Tailwind color names (`red-*`, `blue-*`, `emerald-*`, `amber-*`, etc.) in templates.
 - **No inline `style=` attributes** in templates.

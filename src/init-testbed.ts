@@ -5,20 +5,13 @@
  * Angular TestBed environment.
  */
 import { getTestBed, ɵgetCleanupHook as getCleanupHook } from '@angular/core/testing';
-import {
-  BrowserTestingModule,
-  platformBrowserTesting,
-} from '@angular/platform-browser/testing';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { beforeEach, afterEach } from 'vitest';
 
 beforeEach(getCleanupHook(false));
 afterEach(getCleanupHook(true));
 
-getTestBed().initTestEnvironment(
-  [BrowserTestingModule],
-  platformBrowserTesting(),
-  {
-    errorOnUnknownElements: true,
-    errorOnUnknownProperties: true,
-  },
-);
+getTestBed().initTestEnvironment([BrowserTestingModule], platformBrowserTesting(), {
+  errorOnUnknownElements: true,
+  errorOnUnknownProperties: true,
+});

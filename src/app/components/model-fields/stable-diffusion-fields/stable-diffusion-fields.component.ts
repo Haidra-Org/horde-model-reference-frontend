@@ -42,8 +42,8 @@ export interface StableDiffusionFieldsData {
       <div class="min-required-callout">
         <span>⭐</span>
         <span>
-          <strong>Minimum required:</strong> Baseline and Inpainting.
-          Everything else is optional but improves discoverability and worker compatibility.
+          <strong>Minimum required:</strong> Baseline and Inpainting. Everything else is optional
+          but improves discoverability and worker compatibility.
         </span>
       </div>
       @for (item of fieldGroups(); track $index) {

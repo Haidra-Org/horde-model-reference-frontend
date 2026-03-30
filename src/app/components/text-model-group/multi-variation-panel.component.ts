@@ -23,7 +23,17 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
 import { FieldTooltipComponent } from '../form-fields/field-tooltip/field-tooltip.component';
-import { Subject, catchError, concatMap, debounceTime, forkJoin, from, map, of, switchMap } from 'rxjs';
+import {
+  Subject,
+  catchError,
+  concatMap,
+  debounceTime,
+  forkJoin,
+  from,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 
 interface GroupMembersResponseUsageFields {
   size_usage?: Record<string, number>;
@@ -146,15 +156,21 @@ export class MultiVariationPanelComponent implements OnInit {
     return this.buildUsageAnnotations(this.availableVersions(), usage);
   });
 
-  readonly selectableCount = computed(() => this.combos().filter((combo) => !combo.alreadyExists).length);
+  readonly selectableCount = computed(
+    () => this.combos().filter((combo) => !combo.alreadyExists).length,
+  );
 
   readonly selectedCount = computed(
     () => this.combos().filter((combo) => combo.selected && combo.status === 'pending').length,
   );
 
-  readonly createdCount = computed(() => this.combos().filter((combo) => combo.status === 'created').length);
+  readonly createdCount = computed(
+    () => this.combos().filter((combo) => combo.status === 'created').length,
+  );
 
-  readonly failedCount = computed(() => this.combos().filter((combo) => combo.status === 'failed').length);
+  readonly failedCount = computed(
+    () => this.combos().filter((combo) => combo.status === 'failed').length,
+  );
 
   readonly hasFailedCombos = computed(() => this.failedCount() > 0);
 
@@ -166,7 +182,9 @@ export class MultiVariationPanelComponent implements OnInit {
 
   readonly previewTotalCount = computed(() => this.combos().length);
 
-  readonly existingComboCount = computed(() => this.combos().filter((combo) => combo.alreadyExists).length);
+  readonly existingComboCount = computed(
+    () => this.combos().filter((combo) => combo.alreadyExists).length,
+  );
 
   readonly canSubmit = computed(() => {
     const hasSelectablePending = this.combos().some(
@@ -365,7 +383,9 @@ export class MultiVariationPanelComponent implements OnInit {
       return next;
     });
 
-    this.combos.set(this.combos().filter((current) => this.comboKey(current.size, current.quant) !== key));
+    this.combos.set(
+      this.combos().filter((current) => this.comboKey(current.size, current.quant) !== key),
+    );
   }
 
   toggleCombo(index: number): void {
@@ -389,7 +409,9 @@ export class MultiVariationPanelComponent implements OnInit {
 
   deselectAll(): void {
     this.combos.set(
-      this.combos().map((combo) => (combo.status !== 'pending' ? combo : { ...combo, selected: false })),
+      this.combos().map((combo) =>
+        combo.status !== 'pending' ? combo : { ...combo, selected: false },
+      ),
     );
   }
 
@@ -456,14 +478,24 @@ export class MultiVariationPanelComponent implements OnInit {
 
           const resolvedParams = this.resolveParametersForCombo(combo);
           if (resolvedParams == null) {
-            return of({ combo, index, success: false, error: 'Size must end with B or M to derive parameters.' });
+            return of({
+              combo,
+              index,
+              success: false,
+              error: 'Size must end with B or M to derive parameters.',
+            });
           }
 
           const formData = this.buildFormData(resolvedParams);
           return this.api.createModel('text_generation', combo.composedName, formData).pipe(
             map(() => ({ combo, index, success: true as const, error: null })),
             catchError((error: Error) =>
-              of({ combo, index, success: false as const, error: error.message || 'Failed to create variation.' }),
+              of({
+                combo,
+                index,
+                success: false as const,
+                error: error.message || 'Failed to create variation.',
+              }),
             ),
           );
         }),
@@ -580,7 +612,8 @@ export class MultiVariationPanelComponent implements OnInit {
       return [];
     }
 
-    const selectedQuants = this.selectedQuants().size > 0 ? Array.from(this.selectedQuants()) : [null];
+    const selectedQuants =
+      this.selectedQuants().size > 0 ? Array.from(this.selectedQuants()) : [null];
     const format = this.nameFormat();
     const removed = this.removedCombos();
     const author = this.author().trim() || null;

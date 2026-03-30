@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 
 /**
  * Operation severity levels for visual styling.
@@ -236,12 +230,9 @@ export class ConfirmationModalComponent {
   readonly iconContainerClass = computed(() => {
     const base = 'p-2 rounded-full';
     const severityClasses: Record<OperationSeverity, string> = {
-      create:
-        'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400',
-      update:
-        'bg-warning-100 text-warning-600 dark:bg-warning-900/30 dark:text-warning-400',
-      delete:
-        'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400',
+      create: 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400',
+      update: 'bg-warning-100 text-warning-600 dark:bg-warning-900/30 dark:text-warning-400',
+      delete: 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400',
       info: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
     };
     return `${base} ${severityClasses[this.severity()]}`;

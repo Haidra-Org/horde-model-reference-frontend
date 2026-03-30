@@ -1,9 +1,6 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import type {
-  MODEL_REFERENCE_CATEGORY,
-  PendingChangeRecord,
-} from '../api-client/model/models';
+import type { MODEL_REFERENCE_CATEGORY, PendingChangeRecord } from '../api-client/model/models';
 import { AuthService } from './auth.service';
 import { PendingQueueService } from './pending-queue.service';
 

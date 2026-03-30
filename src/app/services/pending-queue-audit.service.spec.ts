@@ -91,7 +91,8 @@ describe('PendingQueueAuditService', () => {
     });
 
     const first = httpMock.expectOne(
-      (req) => req.url === `${auditBase}/batches/10` && req.params.get('domain_override') === 'LEGACY',
+      (req) =>
+        req.url === `${auditBase}/batches/10` && req.params.get('domain_override') === 'LEGACY',
     );
     first.flush(detail);
 
@@ -117,7 +118,8 @@ describe('PendingQueueAuditService', () => {
 
     service.getBatchDetail(11, { domain: 'legacy' }).subscribe();
     const first = httpMock.expectOne(
-      (req) => req.url === `${auditBase}/batches/11` && req.params.get('domain_override') === 'LEGACY',
+      (req) =>
+        req.url === `${auditBase}/batches/11` && req.params.get('domain_override') === 'LEGACY',
     );
     first.flush(detailLegacy);
 

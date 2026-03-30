@@ -72,7 +72,7 @@ export const FIELD_HELP_TEXT: Record<string, FieldHelpEntry> = {
     examples: 'e.g., anime, realistic, portrait, landscape, photorealistic',
   },
   trigger: {
-    summary: 'Specific words or phrases that activate this model\'s trained style.',
+    summary: "Specific words or phrases that activate this model's trained style.",
     impact:
       'Requesters must include these in their prompts for the model to produce its intended output.',
     examples: 'e.g., "analog style", "sai-photographic", model-specific activation tokens',
@@ -84,7 +84,7 @@ export const FIELD_HELP_TEXT: Record<string, FieldHelpEntry> = {
     examples: 'Direct links to .png/.jpg images showing diverse outputs',
   },
   homepage: {
-    summary: 'URL to the model\'s main page (CivitAI, HuggingFace, etc.).',
+    summary: "URL to the model's main page (CivitAI, HuggingFace, etc.).",
     examples: 'e.g., https://civitai.com/models/4384/dreamshaper',
   },
   style: {

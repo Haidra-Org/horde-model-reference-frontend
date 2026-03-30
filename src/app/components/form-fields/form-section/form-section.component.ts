@@ -20,9 +20,18 @@ import { Component, input, signal, computed, ChangeDetectionStrategy, OnInit } f
       >
         <div class="form-section-header-left">
           @if (collapsible()) {
-            <span class="form-section-chevron" [class.rotate-90]="!isCollapsed()" aria-hidden="true">
+            <span
+              class="form-section-chevron"
+              [class.rotate-90]="!isCollapsed()"
+              aria-hidden="true"
+            >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </span>
           }
@@ -37,9 +46,7 @@ import { Component, input, signal, computed, ChangeDetectionStrategy, OnInit } f
         </div>
         <div class="form-section-header-right">
           @if (changedFieldCount() > 0) {
-            <span class="form-section-change-badge">
-              {{ changedFieldCount() }} changed
-            </span>
+            <span class="form-section-change-badge"> {{ changedFieldCount() }} changed </span>
           }
           @if (badge()) {
             <span class="badge" [class]="badgeClass()">{{ badge() }}</span>

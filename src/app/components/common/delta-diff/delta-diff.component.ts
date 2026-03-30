@@ -132,7 +132,8 @@ const COLLAPSE_THRESHOLD = 200;
               </h4>
               <pre
                 class="text-xs bg-gray-50 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto max-h-64 overflow-y-auto"
-              >{{ diff()?.current_state | json }}</pre>
+                >{{ diff()?.current_state | json }}</pre
+              >
             </div>
             <div>
               <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
@@ -140,7 +141,8 @@ const COLLAPSE_THRESHOLD = 200;
               </h4>
               <pre
                 class="text-xs bg-gray-50 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto max-h-64 overflow-y-auto"
-              >{{ diff()?.proposed_state | json }}</pre>
+                >{{ diff()?.proposed_state | json }}</pre
+              >
             </div>
           </div>
         </details>

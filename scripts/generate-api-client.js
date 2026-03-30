@@ -234,8 +234,7 @@ function fixInlineAnyOfUnions(schema) {
         if (typeof operation !== 'object' || operation === null) continue;
 
         // Request body
-        const reqSchema =
-          operation.requestBody?.content?.['application/json']?.schema;
+        const reqSchema = operation.requestBody?.content?.['application/json']?.schema;
         if (reqSchema?.anyOf && isModelRecordUnion(reqSchema.anyOf)) {
           console.log(`   Fixed request body union: ${reqSchema.title || '(inline)'}`);
           convertAnyOfToOneOf(reqSchema);
@@ -436,7 +435,10 @@ function fixCaseCollisionImports() {
       const suffixMatch = stem.match(/^(.+?)(\d+)$/);
       if (!suffixMatch) continue;
       const baseStem = suffixMatch[1];
-      if (baseStem.toLowerCase() === lower.replace(/\d+$/, '') || stems.some((s) => s !== stem && s.toLowerCase() === baseStem.toLowerCase())) {
+      if (
+        baseStem.toLowerCase() === lower.replace(/\d+$/, '') ||
+        stems.some((s) => s !== stem && s.toLowerCase() === baseStem.toLowerCase())
+      ) {
         renames.set(baseStem, stem);
       }
     }
@@ -456,7 +458,10 @@ function fixCaseCollisionImports() {
       const filePath = path.join(modelDir, file);
       let content = fs.readFileSync(filePath, 'utf8');
       // Match import/export from './oldStem' (exact stem, not prefix)
-      const pattern = new RegExp(`(from\\s+['\"]\\.\\/)(${oldStem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(['"])`, 'g');
+      const pattern = new RegExp(
+        `(from\\s+['\"]\\.\\/)(${oldStem.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(['"])`,
+        'g',
+      );
       const replaced = content.replace(pattern, `$1${newStem}$3`);
       if (replaced !== content) {
         fs.writeFileSync(filePath, replaced, 'utf8');
@@ -490,12 +495,17 @@ function postProcessGeneratedTypes() {
     { type: 'GenericModelRecordInput', from: './genericModelRecordInput' },
   ]);
 
-  fixCount += rewriteUnionType(modelDir, 'responseReadV2ReferenceValue.ts', 'ResponseReadV2ReferenceValue', [
-    { type: 'ImageGenerationModelRecordOutput', from: './imageGenerationModelRecordOutput' },
-    { type: 'TextGenerationModelRecordOutput', from: './textGenerationModelRecordOutput' },
-    { type: 'ControlNetModelRecordOutput', from: './controlNetModelRecordOutput' },
-    { type: 'GenericModelRecordOutput', from: './genericModelRecordOutput' },
-  ]);
+  fixCount += rewriteUnionType(
+    modelDir,
+    'responseReadV2ReferenceValue.ts',
+    'ResponseReadV2ReferenceValue',
+    [
+      { type: 'ImageGenerationModelRecordOutput', from: './imageGenerationModelRecordOutput' },
+      { type: 'TextGenerationModelRecordOutput', from: './textGenerationModelRecordOutput' },
+      { type: 'ControlNetModelRecordOutput', from: './controlNetModelRecordOutput' },
+      { type: 'GenericModelRecordOutput', from: './genericModelRecordOutput' },
+    ],
+  );
 
   fixCount += rewriteEmptyInterfaceToString(modelDir, 'baseline.ts', 'Baseline');
   fixCount += rewriteEmptyInterfaceToString(modelDir, 'style.ts', 'Style');
@@ -521,9 +531,7 @@ function rewriteUnionType(modelDir, filename, typeName, members) {
     return 0;
   }
 
-  const imports = members
-    .map((m) => `import { ${m.type} } from '${m.from}';`)
-    .join('\n');
+  const imports = members.map((m) => `import { ${m.type} } from '${m.from}';`).join('\n');
   const union = members.map((m) => m.type).join('\n  | ');
 
   const content = [
@@ -656,17 +664,23 @@ async function main() {
   console.log('╚═══════════════════════════════════════════════════════════════╝\n');
 
   try {
-    // Verify openapi-generator-cli is installed. Note that this "error" ('You're trying to run a package that should be provided by a local binary, but isn't') is simply returned 
-    
-    generation_cli_return_string = execSync('npx openapi-generator-cli version', { shell: true }).toString().trim();
+    // Verify openapi-generator-cli is installed. Note that this "error" ('You're trying to run a package that should be provided by a local binary, but isn't') is simply returned
 
-    if (generation_cli_return_string.includes('You\'re trying to run a package that should be provided by a local binary, but isn\'t')) {
+    generation_cli_return_string = execSync('npx openapi-generator-cli version', { shell: true })
+      .toString()
+      .trim();
+
+    if (
+      generation_cli_return_string.includes(
+        "You're trying to run a package that should be provided by a local binary, but isn't",
+      )
+    ) {
       console.error('\n❌ openapi-generator-cli is not installed!');
-      console.error('Please install it globally with: npm install -g @openapitools/openapi-generator-cli');
+      console.error(
+        'Please install it globally with: npm install -g @openapitools/openapi-generator-cli',
+      );
       process.exit(1);
     }
-
-    
 
     // Step 0: Validate output directory
     validateOutputDirectory();
