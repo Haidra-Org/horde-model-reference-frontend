@@ -27,7 +27,7 @@ export interface PendingChangeDiff {
   /**
    * List of field-level differences between current and proposed state
    */
-  field_diffs?: Array<{ [key: string]: any }>;
+  field_diffs?: Array<{ [key: string]: any } | null>;
   /**
    * True if any critical fields (baseline, nsfw, etc.) are affected
    */

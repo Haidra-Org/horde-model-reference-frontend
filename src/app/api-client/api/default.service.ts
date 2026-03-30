@@ -27,7 +27,7 @@ import { BackendInfo } from '../model/backendInfo';
 // @ts-ignore
 import { ContainsMessage } from '../model/containsMessage';
 // @ts-ignore
-import { ContainsStatus } from '../model/containsStatus';
+import { HeartbeatResponse } from '../model/heartbeatResponse';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -48,7 +48,7 @@ export class DefaultService extends BaseService {
 
   /**
    * Heartbeat
-   * Heartbeat endpoint to check the service status.
+   * Heartbeat endpoint to check the service status.  Returns overall service status and the state of the external AI Horde API connection. When the AI Horde API is unreachable, &#x60;&#x60;ai_horde.degraded&#x60;&#x60; is &#x60;&#x60;True&#x60;&#x60; and &#x60;&#x60;ai_horde.seconds_until_retry&#x60;&#x60; indicates when the next probe request will be attempted.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -60,7 +60,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<ContainsStatus>;
+  ): Observable<HeartbeatResponse>;
   public heartbeatHeartbeatGet(
     observe?: 'response',
     reportProgress?: boolean,
@@ -69,7 +69,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<ContainsStatus>>;
+  ): Observable<HttpResponse<HeartbeatResponse>>;
   public heartbeatHeartbeatGet(
     observe?: 'events',
     reportProgress?: boolean,
@@ -78,7 +78,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<ContainsStatus>>;
+  ): Observable<HttpEvent<HeartbeatResponse>>;
   public heartbeatHeartbeatGet(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -113,7 +113,7 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/heartbeat`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<ContainsStatus>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<HeartbeatResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),

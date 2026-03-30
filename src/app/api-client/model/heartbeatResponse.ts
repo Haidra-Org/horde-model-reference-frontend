@@ -7,14 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AIHordeStatus } from './aIHordeStatus';
 
 /**
- * Paginated search response.
+ * Enhanced heartbeat response with external service status.
  */
-export interface SearchResponse {
-  results: Array<{ [key: string]: any } | null>;
-  total: number;
-  offset: number;
-  limit: number;
-  has_more: boolean;
+export interface HeartbeatResponse {
+  status: string;
+  ai_horde: AIHordeStatus;
 }

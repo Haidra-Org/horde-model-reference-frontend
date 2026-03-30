@@ -1,9 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import {
   FormModelData,
-  formToLegacyApi,
   formToV2Api,
   legacyApiToForm,
   v2ApiToForm,
@@ -11,11 +10,12 @@ import {
 import {
   DefaultService,
   V1Service,
-  V1CreateUpdateService,
   V2Service,
   StatisticsService,
   DeletionRiskService,
+  TextUtilsService,
   MODEL_REFERENCE_CATEGORY,
+  BASE_PATH,
   BackendInfo,
   CanonicalFormat,
   ReplicateMode,
@@ -28,16 +28,12 @@ import {
   ImageGenerationModelRecordInput,
   TextGenerationModelRecordInput,
   ControlNetModelRecordInput,
-  LegacyBlipRecordInput,
-  LegacyClipRecordInput,
-  LegacyCodeformerRecordInput,
-  LegacyControlnetRecordInput,
-  LegacyEsrganRecordInput,
-  LegacyGfpganRecordInput,
-  LegacyMiscellaneousRecordInput,
-  LegacySafetyCheckerRecordInput,
-  LegacyStableDiffusionRecordInput,
-  LegacyTextGenerationRecordInput,
+  BatchUpdateResponse,
+  CommonFieldsUpdateRequest,
+  ComposeNameRequest,
+  ComposeNameResponse,
+  GroupMembersResponse,
+  ParsedNameResponse,
 } from '../api-client';
 import {
   BackendCapabilities,
@@ -52,12 +48,14 @@ import { NotificationService } from './notification.service';
   providedIn: 'root',
 })
 export class ModelReferenceApiService {
+  private readonly http = inject(HttpClient);
+  private readonly basePath = inject(BASE_PATH);
   private readonly defaultService = inject(DefaultService);
   private readonly legacyService = inject(V1Service);
-  private readonly v1CreateUpdateService = inject(V1CreateUpdateService);
   private readonly v2Service = inject(V2Service);
   private readonly statisticsService = inject(StatisticsService);
   private readonly deletionRiskService = inject(DeletionRiskService);
+  private readonly textUtilsService = inject(TextUtilsService);
   private readonly validationService = inject(ModelValidationService);
   private readonly notifications = inject(NotificationService);
 
@@ -240,15 +238,8 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
-    const canonicalFormat = this.backendCapabilities().canonicalFormat;
-
-    if (canonicalFormat === 'legacy') {
-      const payload = formToLegacyApi(formData, modelName, categoryEnum);
-      return this.createViaV1Api(category, modelName, payload);
-    } else {
-      const payload = formToV2Api(formData, modelName, categoryEnum);
-      return this.createViaV2Api(category, payload);
-    }
+    const payload = formToV2Api(formData, modelName, categoryEnum);
+    return this.createViaV2Api(category, payload);
   }
 
   /**
@@ -267,15 +258,8 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
-    const canonicalFormat = this.backendCapabilities().canonicalFormat;
-
-    if (canonicalFormat === 'legacy') {
-      const payload = formToLegacyApi(formData, modelName, categoryEnum);
-      return this.updateViaV1Api(category, modelName, payload);
-    } else {
-      const payload = formToV2Api(formData, modelName, categoryEnum);
-      return this.updateViaV2Api(category, modelName, payload);
-    }
+    const payload = formToV2Api(formData, modelName, categoryEnum);
+    return this.updateViaV2Api(category, modelName, payload);
   }
 
   /** @deprecated Use createModel() with FormModelData instead. */
@@ -291,15 +275,9 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
-    const canonicalFormat = this.backendCapabilities().canonicalFormat;
-
-    if (canonicalFormat === 'legacy') {
-      return this.createViaV1Api(category, modelName, modelData);
-    } else {
-      const formData = legacyApiToForm(modelData, categoryEnum);
-      const payload = formToV2Api(formData, modelName, categoryEnum);
-      return this.createViaV2Api(category, payload);
-    }
+    const formData = legacyApiToForm(modelData, categoryEnum);
+    const payload = formToV2Api(formData, modelName, categoryEnum);
+    return this.createViaV2Api(category, payload);
   }
 
   /** @deprecated Use updateModel() with FormModelData instead. */
@@ -315,16 +293,10 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
-    const canonicalFormat = this.backendCapabilities().canonicalFormat;
-
-    if (canonicalFormat === 'legacy') {
-      return this.updateViaV1Api(category, modelName, modelData);
-    } else {
-      const normalized: LegacyRecordUnion = { ...(modelData as LegacyRecordUnion), name: modelName };
-      const formData = legacyApiToForm(normalized, categoryEnum);
-      const payload = formToV2Api(formData, modelName, categoryEnum);
-      return this.updateViaV2Api(category, modelName, payload);
-    }
+    const normalized: LegacyRecordUnion = { ...(modelData as LegacyRecordUnion), name: modelName };
+    const formData = legacyApiToForm(normalized, categoryEnum);
+    const payload = formToV2Api(formData, modelName, categoryEnum);
+    return this.updateViaV2Api(category, modelName, payload);
   }
 
   deleteModel(category: string, modelName: string): Observable<void> {
@@ -334,67 +306,8 @@ export class ModelReferenceApiService {
       );
     }
 
-    const canonicalFormat = this.backendCapabilities().canonicalFormat;
-
-    // Route to the appropriate API based on canonical format
-    if (canonicalFormat === 'legacy') {
-      return this.v1CreateUpdateService
-        .deleteLegacyModel(category as MODEL_REFERENCE_CATEGORY, modelName)
-        .pipe(
-          map(() => undefined),
-          catchError(this.handleError),
-        );
-    } else {
-      return this.v2Service.deleteV2Model(category as MODEL_REFERENCE_CATEGORY, modelName).pipe(
-        map(() => undefined),
-        catchError(this.handleError),
-      );
-    }
-  }
-
-  /**
-   * Create a model using the V1 (legacy) API.
-   * Routes to the category-specific endpoint based on the category.
-   *
-   * All generated Legacy*RecordInput types share `[key: string]: any` index signatures.
-   * Typing the payload with the same index signature makes it directly assignable to
-   * every generated input type without per-branch type assertions.
-   */
-  private createViaV1Api(
-    category: string,
-    modelName: string,
-    modelData: LegacyRecordUnion,
-  ): Observable<PendingChangeRecord> {
-    const payload: Record<string, unknown> & { name: string } = {
-      ...modelData,
-      name: modelData.name ?? modelName,
-    };
-
-    const svc = this.v1CreateUpdateService;
-    const categoryMethodMap: Record<string, () => Observable<unknown>> = {
-      blip: () => svc.createLegacyBlipModel(payload as LegacyBlipRecordInput),
-      clip: () => svc.createLegacyClipModel(payload as LegacyClipRecordInput),
-      codeformer: () => svc.createLegacyCodeformerModel(payload as LegacyCodeformerRecordInput),
-      controlnet: () => svc.createLegacyControlnetModel(payload as LegacyControlnetRecordInput),
-      esrgan: () => svc.createLegacyEsrganModel(payload as LegacyEsrganRecordInput),
-      gfpgan: () => svc.createLegacyGfpganModel(payload as LegacyGfpganRecordInput),
-      image_generation: () =>
-        svc.createLegacyImageGenerationModel(payload as LegacyStableDiffusionRecordInput),
-      miscellaneous: () =>
-        svc.createLegacyMiscellaneousModel(payload as LegacyMiscellaneousRecordInput),
-      safety_checker: () =>
-        svc.createLegacySafetyCheckerModel(payload as LegacySafetyCheckerRecordInput),
-      text_generation: () =>
-        svc.createLegacyTextGenerationModel(payload as LegacyTextGenerationRecordInput),
-    };
-
-    const createFn = categoryMethodMap[category];
-    if (!createFn) {
-      return throwError(() => new Error(`Unknown category: ${category}`));
-    }
-
-    return createFn().pipe(
-      map((response) => response as PendingChangeRecord),
+    return this.v2Service.deleteV2Model(category as MODEL_REFERENCE_CATEGORY, modelName).pipe(
+      map(() => undefined),
       catchError(this.handleError),
     );
   }
@@ -431,47 +344,7 @@ export class ModelReferenceApiService {
   }
 
   /**
-   * Update a model using the V1 (legacy) API.
-   * Routes to the category-specific endpoint based on the category.
-   */
-  private updateViaV1Api(
-    category: string,
-    modelName: string,
-    modelData: Partial<LegacyRecordUnion>,
-  ): Observable<PendingChangeRecord> {
-    const payload: Record<string, unknown> & { name: string } = { ...modelData, name: modelName };
-
-    const svc = this.v1CreateUpdateService;
-    const categoryMethodMap: Record<string, () => Observable<unknown>> = {
-      blip: () => svc.updateLegacyBlipModel(payload as LegacyBlipRecordInput),
-      clip: () => svc.updateLegacyClipModel(payload as LegacyClipRecordInput),
-      codeformer: () => svc.updateLegacyCodeformerModel(payload as LegacyCodeformerRecordInput),
-      controlnet: () => svc.updateLegacyControlnetModel(payload as LegacyControlnetRecordInput),
-      esrgan: () => svc.updateLegacyEsrganModel(payload as LegacyEsrganRecordInput),
-      gfpgan: () => svc.updateLegacyGfpganModel(payload as LegacyGfpganRecordInput),
-      image_generation: () => svc.updateLegacyModel(payload as LegacyStableDiffusionRecordInput),
-      miscellaneous: () =>
-        svc.updateLegacyMiscellaneousModel(payload as LegacyMiscellaneousRecordInput),
-      safety_checker: () =>
-        svc.updateLegacySafetyCheckerModel(payload as LegacySafetyCheckerRecordInput),
-      text_generation: () =>
-        svc.updateLegacyTextGenerationModel(payload as LegacyTextGenerationRecordInput),
-    };
-
-    const updateFn = categoryMethodMap[category];
-    if (!updateFn) {
-      return throwError(() => new Error(`Unknown category: ${category}`));
-    }
-
-    return updateFn().pipe(
-      map((response) => response as PendingChangeRecord),
-      catchError(this.handleError),
-    );
-  }
-
-  /**
    * Update a model using the V2 API.
-   * Accepts a pre-built NewModelRecord payload (no legacy-to-V2 conversion here).
    */
   private updateViaV2Api(
     category: string,
@@ -603,4 +476,46 @@ export class ModelReferenceApiService {
     return throwError(() => new Error(errorMessage));
   };
 
+  // --- Text Model Group Utility Methods ---
+
+  parseModelName(name: string): Observable<ParsedNameResponse> {
+    return this.textUtilsService
+      .parseNameModelReferencesV2TextGenerationParseNameGet(name)
+      .pipe(catchError(this.handleError));
+  }
+
+  getGroupMembers(groupName: string): Observable<GroupMembersResponse> {
+    return this.textUtilsService
+      .getGroupModelReferencesV2TextGenerationGroupGroupNameGet(groupName)
+      .pipe(catchError(this.handleError));
+  }
+
+  composeModelName(request: ComposeNameRequest): Observable<ComposeNameResponse> {
+    return this.textUtilsService
+      .composeNameModelReferencesV2TextGenerationComposeNamePost(request)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateGroupCommonFields(
+    groupName: string,
+    fields: CommonFieldsUpdateRequest,
+  ): Observable<BatchUpdateResponse> {
+    return this.textUtilsService
+      .updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
+        groupName,
+        fields,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getDistinctBaselines(): Observable<string[]> {
+    return this.http
+      .get<{ baselines: string[] }>(
+        `${this.basePath}/model_references/v2/text_generation/distinct_baselines`,
+      )
+      .pipe(
+        map((response) => response.baselines ?? []),
+        catchError(this.handleError),
+      );
+  }
 }

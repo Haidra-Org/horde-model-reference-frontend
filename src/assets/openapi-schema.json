@@ -5,6 +5,202 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/model_references/v2/text_generation/parse_name": {
+      "get": {
+        "tags": [
+          "v2",
+          "text_utils",
+          "text_utils"
+        ],
+        "summary": "Parse a text model name into structured components",
+        "description": "Parse a text model name into base name, size, variant, and quantization components.",
+        "operationId": "parse_name_model_references_v2_text_generation_parse_name_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The model name to parse",
+              "title": "Name"
+            },
+            "description": "The model name to parse"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsedNameResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/group/{group_name}": {
+      "get": {
+        "tags": [
+          "v2",
+          "text_utils",
+          "text_utils"
+        ],
+        "summary": "Get all members of a text model group",
+        "description": "Get all models in a text model group with parsed name info and common fields.",
+        "operationId": "get_group_model_references_v2_text_generation_group__group_name__get",
+        "parameters": [
+          {
+            "name": "group_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Group Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupMembersResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/compose_name": {
+      "post": {
+        "tags": [
+          "v2",
+          "text_utils",
+          "text_utils"
+        ],
+        "summary": "Compose a model name from structured parts and check for collisions",
+        "description": "Compose a model name from base name, size, variant, and quant parts.\n\nChecks whether the composed name already exists in the text_generation category.",
+        "operationId": "compose_name_model_references_v2_text_generation_compose_name_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComposeNameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComposeNameResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/group/{group_name}/common_fields": {
+      "put": {
+        "tags": [
+          "v2",
+          "text_utils",
+          "text_utils"
+        ],
+        "summary": "Batch-update common fields across all canonical members of a group",
+        "description": "Update shared fields across all canonical members of a text model group.\n\nCreates one PendingChangeRecord per canonical member with a shared batch_id.",
+        "operationId": "update_group_common_fields_model_references_v2_text_generation_group__group_name__common_fields_put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "group_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Group Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommonFieldsUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/model_references/v2/{model_category_name}/search": {
       "get": {
         "tags": [
@@ -4854,120 +5050,6 @@
             }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new text generation model in legacy format",
-        "description": "Create a new text generation model in legacy format.\n\nThe model name in the request body must not already exist in the text generation category.",
-        "operationId": "create_legacy_text_generation_model",
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyTextGenerationRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists"
-          },
-          "422": {
-            "description": "Validation error"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_text_generation_model",
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyTextGenerationRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        }
       }
     },
     "/model_references/v1/{model_category_name}": {
@@ -5016,1115 +5098,6 @@
             "description": "Invalid model category"
           }
         }
-      }
-    },
-    "/model_references/v1/{model_category_name}/{model_name}": {
-      "delete": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Delete a legacy model entry.",
-        "description": "Delete a model from a legacy model reference category.\n\nWhen pending queue is enabled, this enqueues the deletion and returns HTTP 202.\nWhen pending queue is disabled, this deletes the model immediately and returns HTTP 204.",
-        "operationId": "delete_legacy_model",
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "model_category_name",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
-            }
-          },
-          {
-            "name": "model_name",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Model Name"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Model deletion queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "Model deleted successfully"
-          },
-          "404": {
-            "description": "Model not found"
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        }
-      }
-    },
-    "/model_references/v1/image_generation": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyStableDiffusionRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyStableDiffusionRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new image generation model in legacy format",
-        "description": "Create a new image generation model in legacy format.\n\nThe model name in the request body must not already exist in the image generation category.",
-        "operationId": "create_legacy_image_generation_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyStableDiffusionRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyStableDiffusionRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists"
-          },
-          "422": {
-            "description": "Validation error"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/clip": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing CLIP model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_clip_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyClipRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyClipRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new clip model in legacy format",
-        "description": "Create a new CLIP model in legacy format.\n\nThe model name in the request body must not already exist in the clip category.",
-        "operationId": "create_legacy_clip_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyClipRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyClipRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/blip": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing BLIP model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_blip_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyBlipRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyBlipRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new BLIP model in legacy format",
-        "description": "Create a new BLIP model in legacy format.\n\nThe model name in the request body must not already exist in the blip category.",
-        "operationId": "create_legacy_blip_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyBlipRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyBlipRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/codeformer": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing Codeformer model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_codeformer_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyCodeformerRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyCodeformerRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new Codeformer model in legacy format",
-        "description": "Create a new Codeformer model in legacy format.\n\nThe model name in the request body must not already exist in the codeformer category.",
-        "operationId": "create_legacy_codeformer_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyCodeformerRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyCodeformerRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/controlnet": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing ControlNet model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_controlnet_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyControlnetRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyControlnetRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new ControlNet model in legacy format",
-        "description": "Create a new ControlNet model in legacy format.\n\nThe model name in the request body must not already exist in the controlnet category.",
-        "operationId": "create_legacy_controlnet_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyControlnetRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyControlnetRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/esrgan": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing ESRGAN model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_esrgan_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyEsrganRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyEsrganRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new ESRGAN model in legacy format",
-        "description": "Create a new ESRGAN model in legacy format.\n\nThe model name in the request body must not already exist in the esrgan category.",
-        "operationId": "create_legacy_esrgan_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyEsrganRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyEsrganRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/gfpgan": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing GFPGAN model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_gfpgan_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyGfpganRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyGfpganRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new GFPGAN model in legacy format",
-        "description": "Create a new GFPGAN model in legacy format.\n\nThe model name in the request body must not already exist in the gfpgan category.",
-        "operationId": "create_legacy_gfpgan_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyGfpganRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyGfpganRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/safety_checker": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing safety checker model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_safety_checker_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacySafetyCheckerRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacySafetyCheckerRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new safety checker model in legacy format",
-        "description": "Create a new safety checker model in legacy format.\n\nThe model name in the request body must not already exist in the safety_checker category.",
-        "operationId": "create_legacy_safety_checker_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacySafetyCheckerRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacySafetyCheckerRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      }
-    },
-    "/model_references/v1/miscellaneous": {
-      "put": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Update an existing miscellaneous model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
-        "operationId": "update_legacy_miscellaneous_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyMiscellaneousRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Model updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyMiscellaneousRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model update queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "422": {
-            "description": "Validation error"
-          },
-          "503": {
-            "description": "Service unavailable (not in legacy canonical mode)"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "v1_create_update"
-        ],
-        "summary": "Create a new miscellaneous model in legacy format",
-        "description": "Create a new miscellaneous model in legacy format.\n\nThe model name in the request body must not already exist in the miscellaneous category.",
-        "operationId": "create_legacy_miscellaneous_model",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LegacyMiscellaneousRecord-Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Model created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyMiscellaneousRecord-Output"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Model creation queued for approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PendingChangeRecord"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "409": {
-            "description": "Model already exists (use PUT to update)"
-          },
-          "422": {
-            "description": "Validation error in request body"
-          }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
       }
     },
     "/model_references/v1/metadata/last_updated": {
@@ -6358,7 +5331,7 @@
     "/heartbeat": {
       "get": {
         "summary": "Heartbeat",
-        "description": "Heartbeat endpoint to check the service status.",
+        "description": "Heartbeat endpoint to check the service status.\n\nReturns overall service status and the state of the external AI Horde API\nconnection. When the AI Horde API is unreachable, ``ai_horde.degraded`` is\n``True`` and ``ai_horde.seconds_until_retry`` indicates when the next probe\nrequest will be attempted.",
         "operationId": "heartbeat_heartbeat_get",
         "responses": {
           "200": {
@@ -6366,7 +5339,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ContainsStatus"
+                  "$ref": "#/components/schemas/HeartbeatResponse"
                 }
               }
             }
@@ -6396,6 +5369,42 @@
   },
   "components": {
     "schemas": {
+      "AIHordeStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "degraded": {
+            "type": "boolean",
+            "title": "Degraded"
+          },
+          "consecutive_failures": {
+            "type": "integer",
+            "title": "Consecutive Failures"
+          },
+          "seconds_until_retry": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seconds Until Retry"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "degraded",
+          "consecutive_failures",
+          "seconds_until_retry"
+        ],
+        "title": "AIHordeStatus",
+        "description": "Status of the external AI Horde API connection."
+      },
       "ApplyPendingChangeRequest": {
         "properties": {
           "job_id": {
@@ -6967,6 +5976,33 @@
         ],
         "title": "BatchNetChangeResponse",
         "description": "Response containing net changes for all models in a batch."
+      },
+      "BatchUpdateResponse": {
+        "properties": {
+          "updated_count": {
+            "type": "integer",
+            "title": "Updated Count"
+          },
+          "batch_id": {
+            "type": "string",
+            "title": "Batch Id"
+          },
+          "pending_change_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Change Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updated_count",
+          "batch_id",
+          "pending_change_ids"
+        ],
+        "title": "BatchUpdateResponse",
+        "description": "Response from batch group common field update."
       },
       "BlipModelRecord-Input": {
         "properties": {
@@ -7812,6 +6848,205 @@
         "title": "CodeformerModelRecord",
         "description": "A Codeformer model entry in the model reference."
       },
+      "CommonFieldsUpdateRequest": {
+        "properties": {
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "nsfw": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nsfw"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "instruct_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruct Format"
+          }
+        },
+        "type": "object",
+        "title": "CommonFieldsUpdateRequest",
+        "description": "Request body for batch-updating common fields across a group."
+      },
+      "ComposeNameRequest": {
+        "properties": {
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "base_name": {
+            "type": "string",
+            "title": "Base Name"
+          },
+          "size": {
+            "type": "string",
+            "title": "Size"
+          },
+          "variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "quant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quant"
+          },
+          "separator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Separator"
+          },
+          "part_order": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part Order"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_name",
+          "size"
+        ],
+        "title": "ComposeNameRequest",
+        "description": "Request body for composing a model name from parts."
+      },
+      "ComposeNameResponse": {
+        "properties": {
+          "composed_name": {
+            "type": "string",
+            "title": "Composed Name"
+          },
+          "already_exists": {
+            "type": "boolean",
+            "title": "Already Exists"
+          },
+          "suggested_group": {
+            "type": "string",
+            "title": "Suggested Group"
+          }
+        },
+        "type": "object",
+        "required": [
+          "composed_name",
+          "already_exists",
+          "suggested_group"
+        ],
+        "title": "ComposeNameResponse",
+        "description": "Response from the name composition endpoint."
+      },
       "ContainsMessage": {
         "properties": {
           "message": {
@@ -7825,20 +7060,6 @@
         ],
         "title": "ContainsMessage",
         "description": "A model that contains a message field."
-      },
-      "ContainsStatus": {
-        "properties": {
-          "status": {
-            "type": "string",
-            "title": "Status"
-          }
-        },
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "title": "ContainsStatus",
-        "description": "A model that contains a status field."
       },
       "ControlNetModelRecord-Input": {
         "properties": {
@@ -8753,6 +7974,237 @@
         "title": "GfpganModelRecord",
         "description": "A GFPGAN model entry in the model reference."
       },
+      "GroupMemberInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "parsed": {
+            "$ref": "#/components/schemas/ParsedNameInfo"
+          },
+          "parameters": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameters"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "nsfw": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nsfw"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "instruct_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instruct Format"
+          },
+          "is_backend_duplicate": {
+            "type": "boolean",
+            "title": "Is Backend Duplicate",
+            "default": false
+          },
+          "backend_prefix": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backend Prefix"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "parsed"
+        ],
+        "title": "GroupMemberInfo",
+        "description": "A single member of a text model group with parsed name info."
+      },
+      "GroupMembersResponse": {
+        "properties": {
+          "group_name": {
+            "type": "string",
+            "title": "Group Name"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/GroupMemberInfo"
+            },
+            "type": "array",
+            "title": "Members"
+          },
+          "common_fields": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Common Fields"
+          },
+          "available_sizes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Sizes"
+          },
+          "available_variants": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Available Variants"
+          },
+          "available_quants": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Available Quants"
+          },
+          "available_versions": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Available Versions"
+          },
+          "name_format": {
+            "$ref": "#/components/schemas/NameFormatInfo"
+          },
+          "canonical_count": {
+            "type": "integer",
+            "title": "Canonical Count"
+          },
+          "backend_duplicate_count": {
+            "type": "integer",
+            "title": "Backend Duplicate Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "group_name",
+          "members",
+          "common_fields",
+          "available_sizes",
+          "available_variants",
+          "available_quants",
+          "available_versions",
+          "name_format",
+          "canonical_count",
+          "backend_duplicate_count"
+        ],
+        "title": "GroupMembersResponse",
+        "description": "Full response for a text model group."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -8765,6 +8217,24 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HeartbeatResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "ai_horde": {
+            "$ref": "#/components/schemas/AIHordeStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "ai_horde"
+        ],
+        "title": "HeartbeatResponse",
+        "description": "Enhanced heartbeat response with external service status."
       },
       "ImageGenerationModelRecord-Input": {
         "properties": {
@@ -9251,2550 +8721,6 @@
         "title": "LastUpdatedResponse",
         "description": "Response for /last_updated endpoint."
       },
-      "LegacyBlipRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "blip",
-            "title": "Type",
-            "default": "blip"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyBlipRecord",
-        "description": "BLIP legacy record with category-specific normalization."
-      },
-      "LegacyBlipRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "blip",
-            "title": "Type",
-            "default": "blip"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyBlipRecord",
-        "description": "BLIP legacy record with category-specific normalization."
-      },
-      "LegacyClipRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "clip",
-              "coca"
-            ],
-            "title": "Type",
-            "default": "clip"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          },
-          "pretrained_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pretrained Name"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyClipRecord",
-        "description": "CLIP legacy record with category-specific normalization."
-      },
-      "LegacyClipRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "clip",
-              "coca"
-            ],
-            "title": "Type",
-            "default": "clip"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          },
-          "pretrained_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pretrained Name"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyClipRecord",
-        "description": "CLIP legacy record with category-specific normalization."
-      },
-      "LegacyCodeformerRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "CodeFormers",
-            "title": "Type",
-            "default": "CodeFormers"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyCodeformerRecord",
-        "description": "Codeformers legacy record with category-specific normalization."
-      },
-      "LegacyCodeformerRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "CodeFormers",
-            "title": "Type",
-            "default": "CodeFormers"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyCodeformerRecord",
-        "description": "Codeformers legacy record with category-specific normalization."
-      },
-      "LegacyConfig": {
-        "properties": {
-          "files": {
-            "items": {
-              "$ref": "#/components/schemas/LegacyConfigFile"
-            },
-            "type": "array",
-            "title": "Files"
-          },
-          "download": {
-            "items": {
-              "$ref": "#/components/schemas/LegacyConfigDownload"
-            },
-            "type": "array",
-            "title": "Download"
-          }
-        },
-        "type": "object",
-        "title": "LegacyConfig",
-        "description": "Typed representation of the legacy `config` payload."
-      },
-      "LegacyConfigDownload": {
-        "properties": {
-          "file_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "File Name"
-          },
-          "file_path": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "File Path",
-            "default": ""
-          },
-          "file_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "File Url"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "title": "LegacyConfigDownload",
-        "description": "A single legacy config download entry."
-      },
-      "LegacyConfigFile": {
-        "properties": {
-          "path": {
-            "type": "string",
-            "title": "Path"
-          },
-          "md5sum": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Md5Sum"
-          },
-          "sha256sum": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sha256Sum"
-          },
-          "file_type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "File Type"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "path"
-        ],
-        "title": "LegacyConfigFile",
-        "description": "A single legacy config file entry."
-      },
-      "LegacyControlnetRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "control_canny",
-              "control_depth",
-              "control_hed",
-              "control_mlsd",
-              "control_normal",
-              "control_openpose",
-              "control_fakescribbles",
-              "control_scribble",
-              "control_seg",
-              "control_qr",
-              "control_qr_xl"
-            ],
-            "title": "Type"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
-        "title": "LegacyControlnetRecord",
-        "description": "ControlNet legacy record with category-specific normalization."
-      },
-      "LegacyControlnetRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "control_canny",
-              "control_depth",
-              "control_hed",
-              "control_mlsd",
-              "control_normal",
-              "control_openpose",
-              "control_fakescribbles",
-              "control_scribble",
-              "control_seg",
-              "control_qr",
-              "control_qr_xl"
-            ],
-            "title": "Type"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
-        "title": "LegacyControlnetRecord",
-        "description": "ControlNet legacy record with category-specific normalization."
-      },
-      "LegacyEsrganRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "realesrgan",
-            "title": "Type",
-            "default": "realesrgan"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyEsrganRecord",
-        "description": "ESRGAN legacy record with category-specific normalization."
-      },
-      "LegacyEsrganRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "realesrgan",
-            "title": "Type",
-            "default": "realesrgan"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyEsrganRecord",
-        "description": "ESRGAN legacy record with category-specific normalization."
-      },
-      "LegacyGfpganRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "gfpgan",
-            "title": "Type",
-            "default": "gfpgan"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyGfpganRecord",
-        "description": "GFPGAN legacy record with category-specific normalization."
-      },
-      "LegacyGfpganRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "gfpgan",
-            "title": "Type",
-            "default": "gfpgan"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyGfpganRecord",
-        "description": "GFPGAN legacy record with category-specific normalization."
-      },
-      "LegacyMiscellaneousRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "layer_diffuse",
-            "title": "Type"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
-        "title": "LegacyMiscellaneousRecord",
-        "description": "Miscellaneous legacy record with category-specific normalization."
-      },
-      "LegacyMiscellaneousRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "layer_diffuse",
-            "title": "Type"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
-        "title": "LegacyMiscellaneousRecord",
-        "description": "Miscellaneous legacy record with category-specific normalization."
-      },
-      "LegacySafetyCheckerRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "safety_checker",
-            "title": "Type",
-            "default": "safety_checker"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacySafetyCheckerRecord",
-        "description": "Safety Checker legacy record with category-specific normalization."
-      },
-      "LegacySafetyCheckerRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "safety_checker",
-            "title": "Type",
-            "default": "safety_checker"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacySafetyCheckerRecord",
-        "description": "Safety Checker legacy record with category-specific normalization."
-      },
-      "LegacyStableDiffusionRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "type": "string",
-            "const": "ckpt",
-            "title": "Type",
-            "default": "ckpt"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          },
-          "inpainting": {
-            "type": "boolean",
-            "title": "Inpainting",
-            "default": false
-          },
-          "baseline": {
-            "type": "string",
-            "title": "Baseline"
-          },
-          "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tags"
-          },
-          "showcases": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Showcases"
-          },
-          "min_bridge_version": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Min Bridge Version"
-          },
-          "trigger": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trigger"
-          },
-          "homepage": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Homepage"
-          },
-          "size_on_disk_bytes": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Size On Disk Bytes"
-          },
-          "optimization": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Optimization"
-          },
-          "requirements": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "anyOf": [
-                    {
-                      "type": "integer"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "items": {
-                        "type": "integer"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "items": {
-                        "type": "number"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "items": {
-                        "type": "string"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "type": "boolean"
-                    }
-                  ]
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Requirements"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name",
-          "baseline"
-        ],
-        "title": "LegacyStableDiffusionRecord",
-        "description": "Stable Diffusion legacy record with category-specific validation."
-      },
-      "LegacyStableDiffusionRecord-Output": {
-        "additionalProperties": true,
-        "type": "object"
-      },
-      "LegacyTextGenerationRecord-Input": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          },
-          "model_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model Name"
-          },
-          "baseline": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Baseline"
-          },
-          "parameters": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Parameters"
-          },
-          "display_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Display Name"
-          },
-          "url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Url"
-          },
-          "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tags"
-          },
-          "instruct_format": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Instruct Format"
-          },
-          "settings": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "anyOf": [
-                    {
-                      "type": "integer"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "items": {
-                        "type": "integer"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "items": {
-                        "type": "number"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "items": {
-                        "type": "string"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "type": "boolean"
-                    }
-                  ]
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Settings"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyTextGenerationRecord",
-        "description": "Text generation legacy record with category-specific validation."
-      },
-      "LegacyTextGenerationRecord-Output": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Version"
-          },
-          "style": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Style"
-          },
-          "nsfw": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nsfw"
-          },
-          "download_all": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Download All"
-          },
-          "config": {
-            "$ref": "#/components/schemas/LegacyConfig"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "features_not_supported": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Features Not Supported"
-          },
-          "model_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Model Name"
-          },
-          "baseline": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Baseline"
-          },
-          "parameters": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Parameters"
-          },
-          "display_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Display Name"
-          },
-          "url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Url"
-          },
-          "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tags"
-          },
-          "instruct_format": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Instruct Format"
-          },
-          "settings": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "anyOf": [
-                    {
-                      "type": "integer"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "items": {
-                        "type": "integer"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "items": {
-                        "type": "number"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "items": {
-                        "type": "string"
-                      },
-                      "type": "array"
-                    },
-                    {
-                      "type": "boolean"
-                    }
-                  ]
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Settings"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "LegacyTextGenerationRecord",
-        "description": "Text generation legacy record with category-specific validation."
-      },
       "MODEL_DOMAIN": {
         "type": "string",
         "enum": [
@@ -12248,6 +9174,49 @@
         "title": "ModelNetChange",
         "description": "Net change for a single model across a batch."
       },
+      "NameFormatInfo": {
+        "properties": {
+          "separator": {
+            "type": "string",
+            "title": "Separator"
+          },
+          "part_order": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Part Order"
+          },
+          "author_included": {
+            "type": "boolean",
+            "title": "Author Included"
+          },
+          "common_author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Common Author"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "separator",
+          "part_order",
+          "author_included",
+          "template"
+        ],
+        "title": "NameFormatInfo",
+        "description": "Serializable representation of an inferred name format schema."
+      },
       "NetChangeType": {
         "type": "string",
         "enum": [
@@ -12322,6 +9291,132 @@
         ],
         "title": "ParameterBucketStats",
         "description": "Statistics about parameter count buckets for text generation models.\n\nUsed to group models by parameter size ranges for analysis."
+      },
+      "ParsedNameInfo": {
+        "properties": {
+          "base_name": {
+            "type": "string",
+            "title": "Base Name"
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          },
+          "variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant"
+          },
+          "quant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quant"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_name"
+        ],
+        "title": "ParsedNameInfo",
+        "description": "Parsed name components for a single group member."
+      },
+      "ParsedNameResponse": {
+        "properties": {
+          "original_name": {
+            "type": "string",
+            "title": "Original Name"
+          },
+          "base_name": {
+            "type": "string",
+            "title": "Base Name"
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          },
+          "variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant"
+          },
+          "quant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quant"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "suggested_group": {
+            "type": "string",
+            "title": "Suggested Group"
+          }
+        },
+        "type": "object",
+        "required": [
+          "original_name",
+          "base_name",
+          "suggested_group"
+        ],
+        "title": "ParsedNameResponse",
+        "description": "Structured result of parsing a text model name."
       },
       "PendingBatchRequest": {
         "properties": {

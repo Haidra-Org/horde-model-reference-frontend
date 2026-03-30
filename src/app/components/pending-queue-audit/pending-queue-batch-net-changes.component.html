@@ -1,17 +1,16 @@
 @if (!hasData()) {
-<p class="text-sm text-slate-400">No net change data available.</p>
+<p class="audit-empty-text">No net change data available.</p>
 } @else {
 <div class="flex flex-col gap-6">
   <!-- Filters -->
-  <section class="flex flex-col gap-4 rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+  <section class="audit-filter-panel">
     <div class="flex flex-col gap-2">
-      <label class="text-xs uppercase tracking-wide text-slate-400" for="net-change-search">Search</label>
+      <label class="audit-field-label" for="net-change-search">Search</label>
       <div class="flex items-center gap-2">
-        <input id="net-change-search" type="search"
-          class="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm" [value]="searchTerm()"
+        <input id="net-change-search" type="search" class="audit-input" [value]="searchTerm()"
           (input)="onSearchTermChange($any($event.target).value)" placeholder="Search by model name" />
         @if (searchTerm()) {
-        <button class="text-xs text-slate-300" type="button" (click)="clearSearch()">Clear</button>
+        <button class="audit-link-muted" type="button" (click)="clearSearch()">Clear</button>
         }
       </div>
     </div>
@@ -42,9 +41,9 @@
       </div>
 
       <div class="ml-auto">
-        <label class="flex items-center gap-2 text-xs text-slate-200">
-          <input type="checkbox" class="rounded border-slate-700 bg-slate-950 text-primary-500"
-            [checked]="criticalOnlyFilter()" (change)="toggleCriticalOnlyFilter()" />
+        <label class="audit-checkbox-row">
+          <input type="checkbox" class="audit-checkbox" [checked]="criticalOnlyFilter()"
+            (change)="toggleCriticalOnlyFilter()" />
           Show only critical changes
         </label>
       </div>
@@ -53,26 +52,25 @@
 
   <!-- Model changes -->
   @if (!filteredModels().length) {
-  <p class="text-sm text-slate-400">No models match the current filters.</p>
+  <p class="audit-empty-text">No models match the current filters.</p>
   } @else {
   <div class="flex flex-col gap-4">
     @for (model of filteredModels(); track model.model_name) {
-    <article class="rounded-xl border border-slate-800 bg-slate-900/40 p-5" [class.ring-2]="model.is_critical"
-      [class.ring-amber-500/40]="model.is_critical">
+    <article class="audit-change-card" [class.critical-ring]="model.is_critical">
       <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div class="flex-1">
           <div class="flex items-center gap-2">
-            <h3 class="text-lg font-semibold">
+            <h3 class="text-lg font-semibold text-gray-100">
               {{ model.model_name || 'Unnamed model' }}
             </h3>
             @if (model.is_critical) {
-            <span class="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-200">
+            <span class="critical-badge">
               Critical changes
             </span>
             }
           </div>
           @if (model.category) {
-          <p class="text-xs text-slate-400">Category: {{ model.category }}</p>
+          <p class="audit-muted-xs">Category: {{ model.category }}</p>
           }
         </div>
         <span class="change-badge" [class.change-badge-added]="isChangeType(model, 'added')"
@@ -86,11 +84,11 @@
 
       @if (model.field_diffs && model.field_diffs.length > 0) {
       <div class="mt-4">
-        <h4 class="mb-3 text-xs uppercase tracking-wide text-slate-400">Field changes</h4>
+        <h4 class="audit-field-label mb-3">Field changes</h4>
         <div class="space-y-2">
           @for (diff of model.field_diffs; track diff.field_path) {
           @if (shouldShowFieldDiff(diff)) {
-          <div class="rounded border border-slate-700 bg-slate-950/40 p-3">
+          <div class="audit-diff-card">
             <div class="flex items-start justify-between gap-2">
               <div class="flex items-center gap-2">
                 <code class="text-sm font-medium" [class.change-text-added]="isFieldChangeType(diff, 'added')"
@@ -112,13 +110,13 @@
 
             <div class="mt-2 grid gap-2 text-sm sm:grid-cols-2">
               <div>
-                <p class="text-xs uppercase tracking-wide text-slate-500">Before</p>
+                <p class="audit-value-label">Before</p>
                 <code class="diff-value-old">
                   {{ formatFieldValue(diff.old_value) }}
                 </code>
               </div>
               <div>
-                <p class="text-xs uppercase tracking-wide text-slate-500">After</p>
+                <p class="audit-value-label">After</p>
                 <code class="diff-value-new">
                   {{ formatFieldValue(diff.new_value) }}
                 </code>
@@ -130,7 +128,7 @@
         </div>
       </div>
       } @else if (model.net_operation === 'unchanged') {
-      <p class="mt-3 text-sm text-slate-400">This model was deleted and readded with identical content.</p>
+      <p class="mt-3 audit-empty-text">This model was deleted and readded with identical content.</p>
       }
     </article>
     }

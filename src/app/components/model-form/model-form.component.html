@@ -28,6 +28,14 @@
     <div>
       <h1 class="heading-page">{{ isEditMode() ? 'Edit' : 'Create' }} Model</h1>
       <p class="text-muted-sm mt-1">{{ category() }}</p>
+      @if (groupName(); as gn) {
+      <p class="mt-1">
+        <a [routerLink]="['/categories', category(), 'group', gn]"
+           class="tag tag-info">
+          ← Group: {{ gn }}
+        </a>
+      </p>
+      }
     </div>
     <div class="flex gap-2">
       <button type="button" class="btn btn-secondary btn-sm" (click)="toggleViewMode()">

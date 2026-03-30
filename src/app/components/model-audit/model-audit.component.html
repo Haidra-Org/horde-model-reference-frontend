@@ -637,49 +637,49 @@
                   Backend & Author Variations ({{ item.variationCount }})
                 </div>
                 <table class="w-full text-sm">
-                  <thead class="bg-gray-100 dark:bg-gray-700">
+                  <thead class="table-head-subtle">
                     <tr>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs">
                         Full Name
                       </th>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs">
                         Backend
                       </th>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs">
                         Author
                       </th>
-                      <th class="px-3 py-2 text-center text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-center">
                         Workers
                       </th>
-                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-right">
                         Usage (Total)
                       </th>
                       @if (auth.isAuthenticated()) {
-                      <th class="px-3 py-2 text-center text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-center">
                         Actions
                       </th>
                       }
                     </tr>
                   </thead>
-                  <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody class="table-body-default">
                     @for (variation of item.variations; track variation.name) {
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                      <td class="px-3 py-2 font-mono text-xs text-gray-900 dark:text-gray-100">
+                    <tr class="table-row-hover-subtle">
+                      <td class="table-cell-mono-xs">
                         {{ variation.name }}
                       </td>
-                      <td class="px-3 py-2">
+                      <td class="table-cell-xs">
                         @if (variation.parsedName?.backend) {
                         <span class="badge badge-info text-xs">
                           {{ variation.parsedName?.backend }}
                         </span>
                         } @else {
-                        <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
+                        <span class="table-cell-muted-xs-inline">-</span>
                         }
                       </td>
-                      <td class="px-3 py-2 text-gray-700 dark:text-gray-300 text-xs">
+                      <td class="table-cell-xs">
                         {{ variation.parsedName?.author ?? '-' }}
                       </td>
-                      <td class="px-3 py-2 text-center">
+                      <td class="table-cell-xs-center">
                         <span class="badge text-xs" [class]="
                                     (variation.workerCount ?? 0) > 0
                                       ? 'badge-success'
@@ -688,11 +688,11 @@
                           {{ variation.workerCount ?? 0 }}
                         </span>
                       </td>
-                      <td class="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                      <td class="table-cell-xs-right">
                         {{ variation.usageStats?.total ?? 0 }}
                       </td>
                       @if (auth.isAuthenticated()) {
-                      <td class="px-3 py-2 text-center">
+                      <td class="table-cell-xs-center">
                         <button type="button" class="btn btn-xs btn-secondary" (click)="editModel(variation.name)">
                           Edit
                         </button>
@@ -721,46 +721,46 @@
                   Backend Breakdown ({{ item.variationCount }})
                 </div>
                 <table class="w-full text-sm">
-                  <thead class="bg-gray-100 dark:bg-gray-700">
+                  <thead class="table-head-subtle">
                     <tr>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs">
                         Backend
                       </th>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs">
                         Full Variant Name
                       </th>
-                      <th class="px-3 py-2 text-center text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-center">
                         Workers
                       </th>
-                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-right">
                         Usage (Day)
                       </th>
-                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-right">
                         Usage (Month)
                       </th>
-                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-right">
                         Usage (Total)
                       </th>
-                      <th class="px-3 py-2 text-right text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <th class="table-header-cell-xs-right">
                         Performance
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody class="table-body-default">
                     @for (
                     backendVar of item.auditInfo!.backend_variations;
                     track backendVar.variant_name
                     ) {
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                      <td class="px-3 py-2">
+                    <tr class="table-row-hover-subtle">
+                      <td class="table-cell-xs">
                         <span class="badge badge-info text-xs">
                           {{ backendVar.backend }}
                         </span>
                       </td>
-                      <td class="px-3 py-2 font-mono text-xs text-gray-900 dark:text-gray-100">
+                      <td class="table-cell-mono-xs">
                         {{ backendVar.variant_name }}
                       </td>
-                      <td class="px-3 py-2 text-center">
+                      <td class="table-cell-xs-center">
                         <span class="badge text-xs" [class]="
                                     (backendVar.worker_count ?? 0) > 0
                                       ? 'badge-success'
@@ -769,16 +769,16 @@
                           {{ backendVar.worker_count ?? 0 }}
                         </span>
                       </td>
-                      <td class="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                      <td class="table-cell-xs-right">
                         {{ backendVar.usage_day ?? 0 }}
                       </td>
-                      <td class="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                      <td class="table-cell-xs-right">
                         {{ backendVar.usage_month ?? 0 }}
                       </td>
-                      <td class="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                      <td class="table-cell-xs-right">
                         {{ backendVar.usage_total ?? 0 }}
                       </td>
-                      <td class="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                      <td class="table-cell-xs-right">
                         {{
                         backendVar.performance !== null &&
                         backendVar.performance !== undefined

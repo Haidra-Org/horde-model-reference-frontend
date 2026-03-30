@@ -9,8 +9,10 @@
  */
 
 /**
- * A model that contains a status field.
+ * Response from the name composition endpoint.
  */
-export interface ContainsStatus {
-  status: string;
+export interface ComposeNameResponse {
+  composed_name: string;
+  already_exists: boolean;
+  suggested_group: string;
 }

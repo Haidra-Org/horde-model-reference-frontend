@@ -6,14 +6,27 @@ import { ModelAuditComponent } from './components/model-audit/model-audit.compon
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
 import { PendingQueueComponent } from './components/pending-queue/pending-queue.component';
 import { authenticatedGuard } from './guards/role.guard';
+import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'categories/:category', component: ModelListComponent },
   { path: 'categories/:category/audit', component: ModelAuditComponent },
-  { path: 'categories/:category/group/:groupName', component: TextModelGroupComponent },
-  { path: 'categories/:category/create', component: ModelFormComponent },
-  { path: 'categories/:category/edit/:modelName', component: ModelFormComponent },
+  {
+    path: 'categories/:category/group/:groupName',
+    component: TextModelGroupComponent,
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'categories/:category/create',
+    component: ModelFormComponent,
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'categories/:category/edit/:modelName',
+    component: ModelFormComponent,
+    canDeactivate: [unsavedChangesGuard],
+  },
   {
     path: 'pending-queue',
     component: PendingQueueComponent,

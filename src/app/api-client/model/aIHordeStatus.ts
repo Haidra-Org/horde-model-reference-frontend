@@ -9,12 +9,11 @@
  */
 
 /**
- * Paginated search response.
+ * Status of the external AI Horde API connection.
  */
-export interface SearchResponse {
-  results: Array<{ [key: string]: any } | null>;
-  total: number;
-  offset: number;
-  limit: number;
-  has_more: boolean;
+export interface AIHordeStatus {
+  status: string;
+  degraded: boolean;
+  consecutive_failures: number;
+  seconds_until_retry: number | null;
 }

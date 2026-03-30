@@ -1,0 +1,306 @@
+<div class="card mb-6 border-primary-300 dark:border-primary-700 overflow-hidden">
+  <div class="card-header group-panel-header">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="space-y-1">
+        <p class="group-panel-eyebrow">Single Variation Workflow</p>
+        <h2 class="heading-section">Add Variation to {{ groupName() }}</h2>
+        <p class="text-sm text-muted">
+          Build one variation with live composition feedback, explicit parameter control, and inherited defaults.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <span class="group-panel-stage-chip">
+          <span class="group-panel-stage-index">1</span>
+          Compose
+        </span>
+        <span class="group-panel-stage-chip">
+          <span class="group-panel-stage-index">2</span>
+          Parameters
+        </span>
+        <span class="group-panel-stage-chip">
+          <span class="group-panel-stage-index">3</span>
+          Inherit
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+      <div class="xl:col-span-8 space-y-5">
+        <section class="group-panel-section">
+          <div class="group-panel-section-header">
+            <span class="group-panel-step-badge">1</span>
+            <div>
+              <h3 class="heading-card">Model Identity</h3>
+              <p class="text-xs text-muted mt-0.5">Choose naming components used to compose the new variant.</p>
+            </div>
+          </div>
+
+          <div class="form-grid-3">
+            <div>
+              <label class="form-label" for="add-var-author">Author</label>
+              <input
+                id="add-var-author"
+                type="text"
+                class="form-input"
+                placeholder="Optional"
+                [ngModel]="author()"
+                (ngModelChange)="setAuthor($event)"
+              />
+              <p class="form-hint">HuggingFace org or user, for example Qwen or meta-llama.</p>
+            </div>
+
+            <div>
+              <label class="form-label" for="add-var-basename">Base Name</label>
+              <input
+                id="add-var-basename"
+                type="text"
+                class="form-input bg-gray-50 dark:bg-gray-800 font-mono"
+                readonly
+                [value]="groupName()"
+              />
+            </div>
+
+            <div>
+              <span class="form-label">Size <span class="text-danger-500">*</span></span>
+              <app-autocomplete-input
+                [value]="size()"
+                [suggestions]="availableSizes()"
+                [optionAnnotations]="sizeAnnotations()"
+                ariaLabel="Variation size"
+                placeholder="e.g. 8B"
+                (valueChange)="setSize($event)"
+              />
+              <p class="form-hint">Examples: 0.6B, 8B, 14B, 70B.</p>
+            </div>
+
+            <div>
+              <div class="flex items-center">
+                <span class="form-label">Variant</span>
+                <app-field-tooltip fieldId="variant" />
+              </div>
+              <app-autocomplete-input
+                [value]="variant()"
+                [suggestions]="availableVariants()"
+                [optionAnnotations]="variantAnnotations()"
+                ariaLabel="Variation variant"
+                placeholder="e.g. Instruct"
+                (valueChange)="setVariant($event)"
+              />
+            </div>
+
+            <div>
+              <div class="flex items-center">
+                <span class="form-label">Version</span>
+                <app-field-tooltip fieldId="version" />
+              </div>
+              <app-autocomplete-input
+                [value]="version()"
+                [suggestions]="availableVersions()"
+                [optionAnnotations]="versionAnnotations()"
+                ariaLabel="Variation version"
+                placeholder="e.g. v2.1"
+                (valueChange)="setVersion($event)"
+              />
+            </div>
+
+            <div>
+              <div class="flex items-center">
+                <span class="form-label">Quant</span>
+                <app-field-tooltip fieldId="quant" />
+              </div>
+              <app-autocomplete-input
+                [value]="quant()"
+                [suggestions]="availableQuants()"
+                [optionAnnotations]="quantAnnotations()"
+                ariaLabel="Variation quantization"
+                placeholder="e.g. Q4_K_M"
+                (valueChange)="setQuant($event)"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="group-panel-section">
+          <div class="group-panel-section-header">
+            <span class="group-panel-step-badge">2</span>
+            <div>
+              <h3 class="heading-card">Parameters</h3>
+              <p class="text-xs text-muted mt-0.5">Keep linked for automatic values, or switch to manual override mode.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 mb-3">
+            <button
+              type="button"
+              class="btn btn-sm btn-secondary"
+              (click)="toggleParameterSync()"
+              [attr.aria-label]="parametersLinked() ? 'Unlink size and parameters' : 'Link size and parameters'"
+            >
+              {{ parametersLinked() ? 'Linked to size' : 'Manual override' }}
+            </button>
+
+            <span class="badge badge-info">
+              Unit: {{ parametersUnit() }}
+            </span>
+          </div>
+
+          <div class="flex flex-wrap items-end gap-2 max-w-md">
+            <input
+              id="add-var-params"
+              type="number"
+              class="form-input"
+              placeholder="e.g. 8"
+              min="0"
+              step="0.1"
+              [disabled]="parametersLinked()"
+              [ngModel]="parameters()"
+              (ngModelChange)="parameters.set($event)"
+            />
+            <select
+              id="add-var-params-unit"
+              class="form-select w-20"
+              [disabled]="parametersLinked()"
+              [ngModel]="parametersUnit()"
+              (ngModelChange)="parametersUnit.set($event)"
+            >
+              <option value="B">B</option>
+              <option value="M">M</option>
+            </select>
+          </div>
+
+          @if (parametersLinked()) {
+            <p class="form-hint">Values are auto-filled from the size field and kept in sync.</p>
+          } @else {
+            <p class="form-hint">Manual mode applies this parameter value to the created variation.</p>
+          }
+        </section>
+
+        <section class="group-panel-section">
+          <div class="group-panel-section-header">
+            <span class="group-panel-step-badge">3</span>
+            <div>
+              <h3 class="heading-card">Inherited Fields</h3>
+              <p class="text-xs text-muted mt-0.5">Prefilled from the group to reduce repetitive edits.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span class="form-label">Baseline</span>
+              <app-autocomplete-input
+                [value]="baseline()"
+                [suggestions]="baselineSuggestions()"
+                ariaLabel="Variation baseline"
+                placeholder="Type or select baseline"
+                (valueChange)="setBaseline($event)"
+              />
+              <p class="form-hint">The base model family this variation is aligned to.</p>
+            </div>
+
+            <div>
+              <label class="form-label" for="add-var-url">URL</label>
+              <input
+                id="add-var-url"
+                type="url"
+                class="form-input"
+                [ngModel]="url()"
+                (ngModelChange)="url.set($event)"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="form-label" for="add-var-description">Description</label>
+              <textarea
+                id="add-var-description"
+                class="form-textarea"
+                rows="2"
+                [ngModel]="description()"
+                (ngModelChange)="description.set($event)"
+              ></textarea>
+            </div>
+
+            <div>
+              <div class="flex items-center">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    class="form-checkbox"
+                    [ngModel]="nsfw()"
+                    (ngModelChange)="nsfw.set($event)"
+                  />
+                  NSFW
+                </label>
+                <app-field-tooltip fieldId="nsfw" />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="xl:col-span-4 space-y-4 xl:sticky xl:top-4 h-fit">
+        <section class="group-panel-preview-card">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <h3 class="heading-card">Live Name Preview</h3>
+            @if (composing()) {
+              <span class="badge badge-info">Refreshing</span>
+            }
+          </div>
+
+          <app-name-composition-preview
+            [author]="author() || null"
+            [baseName]="groupName()"
+            [size]="size() || null"
+            [variant]="variant() || null"
+            [version]="version() || null"
+            [quant]="quant() || null"
+            [separator]="nameFormat().separator"
+            [composedName]="composedName()"
+            [alreadyExists]="alreadyExists()"
+          />
+        </section>
+
+        <section class="group-panel-preview-card">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <h3 class="heading-card">Submission Readiness</h3>
+            <span class="badge badge-secondary">
+              {{ readinessCompleteCount() }}/{{ readinessItems().length }}
+            </span>
+          </div>
+
+          <div class="space-y-2">
+            @for (item of readinessItems(); track item.key) {
+              <div class="group-panel-readiness-row">
+                <span>{{ item.label }}</span>
+                <span [class]="item.ready ? 'badge badge-success badge-sm' : 'badge badge-warning badge-sm'">
+                  {{ item.ready ? 'Ready' : 'Pending' }}
+                </span>
+              </div>
+            }
+          </div>
+
+          @if (alreadyExists()) {
+            <p class="text-xs text-warning-700 dark:text-warning-300 mt-3">
+              This composed name already exists. Adjust size, variant, version, or quant before submitting.
+            </p>
+          }
+        </section>
+      </aside>
+    </div>
+
+    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-muted">
+        Create submits one pending queue entry for this variation.
+      </p>
+
+      <div class="flex flex-wrap gap-2">
+        <button class="btn btn-primary" [disabled]="!canSubmit()" (click)="submit()">
+          {{ submitting() ? 'Creating...' : 'Create Variation' }}
+        </button>
+        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

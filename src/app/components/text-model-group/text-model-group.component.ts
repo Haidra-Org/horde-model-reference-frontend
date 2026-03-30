@@ -15,48 +15,19 @@ import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
+import { GroupMemberInfo, GroupMembersResponse } from '../../api-client';
+import { AddVariationPanelComponent } from './add-variation-panel.component';
+import { MultiVariationPanelComponent } from './multi-variation-panel.component';
 
-/**
- * A single member of a text model group, with its actual record key
- * and the properties extracted from the API response.
- */
-export interface GroupMember {
-  /** The actual key in the API response (used for edit/delete API calls) */
-  recordKey: string;
-  /** Display name (may differ from recordKey for backend-prefixed entries) */
-  name: string;
-  /** Parameter count */
-  parameters?: number;
-  /** Model baseline */
-  baseline?: string;
-  /** Whether the model is NSFW */
-  nsfw?: boolean;
-  /** Description */
-  description?: string;
-  /** Tags */
-  tags?: string[];
-  /** Style */
-  style?: string;
-  /** Display name field from the record */
-  displayName?: string;
-  /** URL */
-  url?: string;
-  /** Whether this is a backend-prefixed duplicate (auto-generated, not independently editable) */
-  isBackendDuplicate: boolean;
-  /** Backend prefix if present */
-  backendPrefix?: string;
-}
-
-/** Known text generation backend prefixes */
-const BACKEND_PREFIXES = ['aphrodite/', 'koboldcpp/'] as const;
-
-function hasBackendPrefix(name: string): string | undefined {
-  return BACKEND_PREFIXES.find((prefix) => name.startsWith(prefix));
+export interface SizeSubGroup {
+  size: string;
+  members: GroupMemberInfo[];
+  expanded: boolean;
 }
 
 @Component({
   selector: 'app-text-model-group',
-  imports: [RouterLink, FormsModule, HordeBadgeComponent],
+  imports: [RouterLink, FormsModule, HordeBadgeComponent, AddVariationPanelComponent, MultiVariationPanelComponent],
   templateUrl: './text-model-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -71,12 +42,26 @@ export class TextModelGroupComponent implements OnInit {
   readonly category = signal('text_generation');
   readonly groupName = signal('');
   readonly loading = signal(true);
-  readonly members = signal<GroupMember[]>([]);
+  readonly groupData = signal<GroupMembersResponse | null>(null);
 
+  // Editing common fields
+  readonly editingCommonFields = signal(false);
+  readonly commonFieldEdits = signal<Record<string, unknown>>({});
+  readonly savingCommonFields = signal(false);
+
+  // Delete state
   readonly modelToDelete = signal<string | null>(null);
   readonly deleteConfirmationInput = signal('');
   readonly deleteAllVariantsConfirmation = signal('');
   readonly deletingAll = signal(false);
+
+  // Add variation panel
+  readonly showAddVariation = signal(false);
+  readonly showMultiVariation = signal(false);
+  readonly addVariationDirty = signal(false);
+  readonly multiVariationDirty = signal(false);
+
+  readonly Object = Object;
 
   readonly writable = computed(
     () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
@@ -90,20 +75,84 @@ export class TextModelGroupComponent implements OnInit {
     () => this.deleteAllVariantsConfirmation().trim() === this.groupName(),
   );
 
-  /** Canonical members are real records (no backend prefix) */
-  readonly canonicalMembers = computed(() => this.members().filter((m) => !m.isBackendDuplicate));
+  readonly canonicalMembers = computed(() => {
+    const data = this.groupData();
+    if (!data) return [];
+    return data.members.filter((m) => !m.is_backend_duplicate);
+  });
 
-  /** Backend duplicates are auto-generated entries with backend prefixes */
-  readonly backendDuplicates = computed(() => this.members().filter((m) => m.isBackendDuplicate));
+  readonly backendDuplicates = computed(() => {
+    const data = this.groupData();
+    if (!data) return [];
+    return data.members.filter((m) => m.is_backend_duplicate);
+  });
 
-  /** Summary of parameter sizes in the group */
+  readonly commonFields = computed(() => {
+    return this.groupData()?.common_fields ?? {};
+  });
+
+  readonly commonFieldsDirty = computed(() => {
+    if (!this.editingCommonFields()) {
+      return false;
+    }
+
+    const baseline = this.commonFields();
+    const edits = this.commonFieldEdits();
+    return Object.entries(edits).some(
+      ([key, value]) => JSON.stringify(value) !== JSON.stringify(baseline[key]),
+    );
+  });
+
   readonly parameterSummary = computed(() => {
-    const params = this.canonicalMembers()
-      .map((m) => m.parameters)
-      .filter((p): p is number => p != null && p > 0);
-    if (params.length === 0) return null;
-    const unique = [...new Set(params)].sort((a, b) => a - b);
-    return unique.map((p) => formatParameterCount(p));
+    const data = this.groupData();
+    if (!data) return null;
+    return data.available_sizes.length > 0 ? data.available_sizes : null;
+  });
+
+  /** Whether to show size sub-groups (for large groups with >10 canonical members) */
+  readonly useSizeSubGroups = computed(() => this.canonicalMembers().length > 10);
+
+  readonly sizeSubGroups = computed<SizeSubGroup[]>(() => {
+    const members = this.canonicalMembers();
+    if (members.length <= 10) return [];
+
+    const groups = new Map<string, GroupMemberInfo[]>();
+    for (const member of members) {
+      const size = member.parsed.size ?? 'Unknown';
+      const existing = groups.get(size) ?? [];
+      existing.push(member);
+      groups.set(size, existing);
+    }
+
+    return Array.from(groups.entries()).map(([size, members]) => ({
+      size,
+      members,
+      expanded: true,
+    }));
+  });
+
+  /** Health check: find inconsistencies across canonical members */
+  readonly healthWarnings = computed<string[]>(() => {
+    const members = this.canonicalMembers();
+    if (members.length <= 1) return [];
+    const warnings: string[] = [];
+
+    const baselines = new Set(members.map((m) => m.baseline).filter(Boolean));
+    if (baselines.size > 1) {
+      warnings.push(`Inconsistent baselines: ${[...baselines].join(', ')}`);
+    }
+
+    const nsfwValues = new Set(members.map((m) => m.nsfw));
+    if (nsfwValues.size > 1) {
+      warnings.push('Members have different NSFW flags');
+    }
+
+    const missingDesc = members.filter((m) => !m.description);
+    if (missingDesc.length > 0) {
+      warnings.push(`${missingDesc.length} member(s) missing descriptions`);
+    }
+
+    return warnings;
   });
 
   ngOnInit(): void {
@@ -119,16 +168,15 @@ export class TextModelGroupComponent implements OnInit {
           this.groupName.set(groupName);
           this.loading.set(true);
         }),
-        switchMap(() => this.api.getLegacyModelsInCategory(this.category())),
+        switchMap(({ groupName }) => this.api.getGroupMembers(groupName)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: (response) => {
-          const members = this.extractGroupMembers(response);
-          this.members.set(members);
+          this.groupData.set(response);
           this.loading.set(false);
 
-          if (members.length === 0) {
+          if (response.members.length === 0) {
             this.notification.error(`No models found in group "${this.groupName()}"`);
           }
         },
@@ -139,12 +187,14 @@ export class TextModelGroupComponent implements OnInit {
       });
   }
 
-  editMember(member: GroupMember): void {
-    this.router.navigate(['/categories', this.category(), 'edit', member.recordKey]);
+  editMember(member: GroupMemberInfo): void {
+    this.router.navigate(['/categories', this.category(), 'edit', member.name], {
+      queryParams: { groupName: this.groupName() },
+    });
   }
 
-  confirmDeleteMember(member: GroupMember): void {
-    this.modelToDelete.set(member.recordKey);
+  confirmDeleteMember(member: GroupMemberInfo): void {
+    this.modelToDelete.set(member.name);
   }
 
   cancelDelete(): void {
@@ -163,7 +213,6 @@ export class TextModelGroupComponent implements OnInit {
           this.notification.success(`Model "${recordKey}" deleted successfully`);
           this.modelToDelete.set(null);
           this.deleteConfirmationInput.set('');
-          // Reload the group data
           this.reloadGroup();
         },
         error: (error: Error) => {
@@ -194,7 +243,7 @@ export class TextModelGroupComponent implements OnInit {
 
     for (const member of canonical) {
       this.api
-        .deleteModel(this.category(), member.recordKey)
+        .deleteModel(this.category(), member.name)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
@@ -211,6 +260,109 @@ export class TextModelGroupComponent implements OnInit {
           },
         });
     }
+  }
+
+  // --- Common Fields Editing ---
+
+  startEditingCommonFields(): void {
+    this.commonFieldEdits.set({ ...this.commonFields() });
+    this.editingCommonFields.set(true);
+  }
+
+  cancelEditingCommonFields(): void {
+    this.editingCommonFields.set(false);
+    this.commonFieldEdits.set({});
+  }
+
+  updateCommonFieldEdit(field: string, value: unknown): void {
+    this.commonFieldEdits.update((edits) => ({ ...edits, [field]: value }));
+  }
+
+  saveCommonFields(): void {
+    const edits = this.commonFieldEdits();
+    if (Object.keys(edits).length === 0) return;
+
+    this.savingCommonFields.set(true);
+    this.api
+      .updateGroupCommonFields(this.groupName(), edits)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.notification.success(
+            `Queued ${response.updated_count} updates for approval`,
+          );
+          this.editingCommonFields.set(false);
+          this.savingCommonFields.set(false);
+        },
+        error: (error: Error) => {
+          this.notification.error(error.message);
+          this.savingCommonFields.set(false);
+        },
+      });
+  }
+
+  // --- Size Sub-Group Toggle ---
+
+  toggleSizeGroup(subGroup: SizeSubGroup): void {
+    subGroup.expanded = !subGroup.expanded;
+  }
+
+  // --- Add Variation ---
+
+  openAddVariation(): void {
+    this.showMultiVariation.set(false);
+    this.showAddVariation.set(true);
+  }
+
+  closeAddVariation(): void {
+    this.showAddVariation.set(false);
+    this.addVariationDirty.set(false);
+  }
+
+  onVariationCreated(): void {
+    this.showAddVariation.set(false);
+    this.addVariationDirty.set(false);
+    this.reloadGroup();
+  }
+
+  openMultiVariation(): void {
+    this.showAddVariation.set(false);
+    this.showMultiVariation.set(true);
+  }
+
+  closeMultiVariation(): void {
+    this.showMultiVariation.set(false);
+    this.multiVariationDirty.set(false);
+  }
+
+  onMultiVariationCreated(): void {
+    this.multiVariationDirty.set(false);
+    this.reloadGroup();
+  }
+
+  onAddVariationDirtyChange(isDirty: boolean): void {
+    this.addVariationDirty.set(isDirty);
+  }
+
+  onMultiVariationDirtyChange(isDirty: boolean): void {
+    this.multiVariationDirty.set(isDirty);
+  }
+
+  hasUnsavedChanges(): boolean {
+    return (
+      (this.showAddVariation() && this.addVariationDirty()) ||
+      (this.showMultiVariation() && this.multiVariationDirty()) ||
+      this.commonFieldsDirty()
+    );
+  }
+
+  isArray(value: unknown): value is unknown[] {
+    return Array.isArray(value);
+  }
+
+  asStringArray(value: unknown): string[] {
+    if (Array.isArray(value)) return value.map(String);
+    return [];
   }
 
   formatParams(params: number): string {
@@ -241,15 +393,14 @@ export class TextModelGroupComponent implements OnInit {
   private reloadGroup(): void {
     this.loading.set(true);
     this.api
-      .getLegacyModelsInCategory(this.category())
+      .getGroupMembers(this.groupName())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          const members = this.extractGroupMembers(response);
-          this.members.set(members);
+          this.groupData.set(response);
           this.loading.set(false);
 
-          if (members.length === 0) {
+          if (response.members.length === 0) {
             this.notification.success('All models in this group have been deleted');
             this.goBackToList();
           }
@@ -259,45 +410,6 @@ export class TextModelGroupComponent implements OnInit {
           this.loading.set(false);
         },
       });
-  }
-
-  private extractGroupMembers(
-    response: Record<string, Record<string, unknown>>,
-  ): GroupMember[] {
-    const targetGroup = this.groupName();
-    const members: GroupMember[] = [];
-
-    for (const [key, data] of Object.entries(response)) {
-      const modelGroup = data['text_model_group'] as string | undefined;
-      if (modelGroup !== targetGroup) continue;
-
-      const backendPrefix = hasBackendPrefix(key);
-
-      members.push({
-        recordKey: key,
-        name: (data['name'] as string) ?? key,
-        parameters: data['parameters'] as number | undefined,
-        baseline: data['baseline'] as string | undefined,
-        nsfw: data['nsfw'] as boolean | undefined,
-        description: data['description'] as string | undefined,
-        tags: data['tags'] as string[] | undefined,
-        style: data['style'] as string | undefined,
-        displayName: data['display_name'] as string | undefined,
-        url: data['url'] as string | undefined,
-        isBackendDuplicate: backendPrefix != null,
-        backendPrefix: backendPrefix?.replace('/', ''),
-      });
-    }
-
-    // Sort: canonical first, then backend duplicates, alphabetical within each group
-    members.sort((a, b) => {
-      if (a.isBackendDuplicate !== b.isBackendDuplicate) {
-        return a.isBackendDuplicate ? 1 : -1;
-      }
-      return a.recordKey.localeCompare(b.recordKey);
-    });
-
-    return members;
   }
 }
 

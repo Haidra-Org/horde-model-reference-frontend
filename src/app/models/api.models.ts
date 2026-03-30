@@ -61,6 +61,25 @@ export interface LegacyStableDiffusionRecord extends LegacyGenericRecord {
   requirements?: Record<string, LegacyRequirementValue> | null;
 }
 
+export interface TextModelGroupNameFormat {
+  separator: string;
+  part_order: string[];
+  author_included: boolean;
+  common_author: string | null;
+  template: string;
+}
+
+export interface TextModelGroupSummary {
+  member_count: number;
+  available_sizes: string[];
+  available_quants: string[];
+  common_baseline: string | null;
+  any_nsfw: boolean;
+  any_has_description: boolean;
+  merged_tags: string[];
+  name_format: TextModelGroupNameFormat;
+}
+
 export interface LegacyTextGenerationRecord extends LegacyGenericRecord {
   model_name?: string | null;
   baseline?: string | null;
@@ -71,6 +90,7 @@ export interface LegacyTextGenerationRecord extends LegacyGenericRecord {
   instruct_format?: string | null;
   settings?: Record<string, LegacyRequirementValue> | null;
   text_model_group?: string | null;
+  text_model_group_summary?: TextModelGroupSummary | null;
 }
 
 export interface LegacyClipRecord extends LegacyGenericRecord {

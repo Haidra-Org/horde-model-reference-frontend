@@ -628,6 +628,38 @@
     @apply px-3 py-2 text-gray-700 dark:text-gray-300 text-xs;
   }
 
+  .table-cell-xs-center {
+    @apply px-3 py-2 text-center text-gray-700 dark:text-gray-300 text-xs;
+  }
+
+  .table-cell-xs-right {
+    @apply px-3 py-2 text-right text-gray-700 dark:text-gray-300 text-xs;
+  }
+
+  .table-header-cell-xs-caps {
+    @apply px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
+  }
+
+  .table-header-cell-xs-center-caps {
+    @apply px-3 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
+  }
+
+  .table-header-cell-xs-right-caps {
+    @apply px-3 py-2 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
+  }
+
+  .table-head-subtle {
+    @apply bg-gray-100 dark:bg-gray-700;
+  }
+
+  .table-body-default {
+    @apply bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700;
+  }
+
+  .table-row-hover-subtle {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-800/50;
+  }
+
   .table-cell-muted-xs-inline {
     @apply text-gray-400 dark:text-gray-500 text-xs;
   }
@@ -1127,6 +1159,200 @@
     @apply text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider;
   }
 
+  /* Pending queue audit shell and surface classes */
+  .audit-page {
+    @apply flex flex-col gap-6 p-6;
+  }
+
+  .audit-hero-card {
+    @apply rounded-xl border border-gray-800 bg-gray-900/60 p-5 shadow;
+  }
+
+  .audit-eyebrow {
+    @apply text-sm uppercase tracking-wide text-primary-300;
+  }
+
+  .audit-title {
+    @apply text-2xl font-semibold text-gray-100;
+  }
+
+  .audit-description {
+    @apply text-sm text-gray-300;
+  }
+
+  .audit-controls {
+    @apply flex flex-col gap-2 text-sm;
+  }
+
+  .audit-select {
+    @apply rounded border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400;
+  }
+
+  .audit-generated-at {
+    @apply text-xs uppercase tracking-wide text-gray-400;
+  }
+
+  .alert-banner-inline {
+    @apply px-3 py-2 text-xs;
+  }
+
+  .audit-panel {
+    @apply rounded-xl border border-gray-800 bg-gray-950/60 p-4;
+  }
+
+  .audit-panel-header {
+    @apply mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between;
+  }
+
+  .audit-panel-title {
+    @apply text-lg font-semibold text-gray-100;
+  }
+
+  .audit-panel-subtitle {
+    @apply text-sm text-gray-300;
+  }
+
+  .audit-loading-text {
+    @apply text-sm text-gray-400;
+  }
+
+  .audit-empty-text {
+    @apply text-sm text-gray-400;
+  }
+
+  .audit-table-wrapper {
+    @apply overflow-auto rounded-lg border border-gray-800;
+  }
+
+  .audit-table {
+    @apply min-w-full divide-y divide-gray-800 text-sm;
+  }
+
+  .audit-table-head {
+    @apply bg-gray-900/60 text-left text-xs uppercase tracking-wide text-gray-400;
+  }
+
+  .audit-table-row {
+    @apply transition-colors hover:bg-gray-900/50;
+  }
+
+  .audit-action-links {
+    @apply flex flex-wrap gap-2 text-xs;
+  }
+
+  .audit-link {
+    @apply text-primary-300 underline-offset-2 hover:underline;
+  }
+
+  .audit-link-muted {
+    @apply text-gray-400 underline-offset-2 hover:underline;
+  }
+
+  .audit-overlay {
+    @apply fixed inset-0 z-40 flex justify-center bg-gray-950/70 backdrop-blur-sm;
+  }
+
+  .audit-overlay-end {
+    @apply z-50 justify-end;
+  }
+
+  .audit-modal {
+    @apply m-4 flex h-full w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-2xl border border-gray-800 bg-gray-950 p-6 shadow-2xl;
+  }
+
+  .audit-drawer {
+    @apply flex h-full w-full max-w-5xl flex-col gap-6 overflow-y-auto border-l border-gray-800 bg-gray-950 px-6 py-8 shadow-2xl;
+  }
+
+  .audit-modal-header {
+    @apply flex flex-col gap-3 border-b border-gray-800 pb-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .audit-drawer-header {
+    @apply flex flex-col gap-4 border-b border-gray-800 pb-4 md:flex-row md:items-center md:justify-between;
+  }
+
+  .audit-definition-grid {
+    @apply grid gap-4 text-sm text-gray-300 sm:grid-cols-2;
+  }
+
+  .audit-definition-term {
+    @apply text-xs uppercase tracking-wide text-gray-500;
+  }
+
+  .audit-tab-nav {
+    @apply flex gap-2 border-b border-gray-800;
+  }
+
+  .audit-tab-button {
+    @apply px-4 py-2 text-sm font-medium transition;
+  }
+
+  .audit-tab-button-active {
+    @apply border-b-2 border-primary-400 text-primary-300;
+  }
+
+  .audit-tab-button-inactive {
+    @apply text-gray-400;
+  }
+
+  .audit-summary-grid {
+    @apply grid gap-4 rounded-xl border border-gray-800 bg-gray-900/30 p-4 text-center sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .audit-summary-label {
+    @apply text-xs uppercase tracking-wide text-gray-400;
+  }
+
+  .audit-filter-panel {
+    @apply flex flex-col gap-4 rounded-xl border border-gray-800 bg-gray-900/30 p-4;
+  }
+
+  .audit-field-label {
+    @apply text-xs uppercase tracking-wide text-gray-400;
+  }
+
+  .audit-input {
+    @apply w-full rounded border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
+    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400;
+  }
+
+  .audit-checkbox-row {
+    @apply flex items-center gap-2 text-xs text-gray-200;
+  }
+
+  .audit-checkbox {
+    @apply rounded border-gray-700 bg-gray-950 text-primary-500;
+  }
+
+  .audit-change-card {
+    @apply rounded-xl border border-gray-800 bg-gray-900/40 p-5;
+  }
+
+  .audit-batch-card {
+    @apply rounded-lg border border-gray-800 bg-gray-900/40 p-4 text-left transition;
+    @apply hover:border-primary-500 hover:bg-gray-900/60;
+  }
+
+  .audit-batch-card-active {
+    @apply border-primary-500;
+  }
+
+  .audit-diff-card {
+    @apply rounded border border-gray-700 bg-gray-950/40 p-3;
+  }
+
+  .audit-value-label {
+    @apply text-xs uppercase tracking-wide text-gray-500;
+  }
+
+  .audit-muted-xs {
+    @apply text-xs text-gray-400;
+  }
+
   /* === Theme Switcher === */
 
   .theme-switcher {
@@ -1224,5 +1450,25 @@
   .timeline-timestamp {
     @apply text-gray-400;
     font-size: 0.85rem;
+  }
+
+  .timeline-empty-text {
+    @apply text-sm text-gray-400;
+  }
+
+  .timeline-event-id {
+    @apply text-xs text-gray-400;
+  }
+
+  .timeline-payload {
+    @apply mt-2 text-xs text-gray-200;
+  }
+
+  .timeline-payload-summary {
+    @apply cursor-pointer text-gray-300;
+  }
+
+  .timeline-payload-pre {
+    @apply mt-1 max-h-48 overflow-auto rounded bg-gray-900/70 p-2;
   }
 }

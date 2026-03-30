@@ -9,7 +9,7 @@ import {
   effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
@@ -53,6 +53,7 @@ import { formatValue } from '../../utils/value-compare';
   selector: 'app-model-form',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     CommonFieldsComponent,
     StableDiffusionFieldsComponent,
     TextGenerationFieldsComponent,
@@ -79,6 +80,8 @@ export class ModelFormComponent implements OnInit {
   readonly category = signal<ModelReferenceCategory | ''>('');
   readonly modelName = signal<string | null>(null);
   readonly isEditMode = signal(false);
+  /** Group context passed via query param when navigating from text model group view */
+  readonly groupName = signal<string | null>(null);
   readonly loading = signal(false);
   readonly submitting = signal(false);
   readonly validationIssues = signal<ValidationIssue[]>([]);
@@ -103,6 +106,7 @@ export class ModelFormComponent implements OnInit {
   private readonly legacyFiles = signal<LegacyConfig['files']>([]);
   private readonly formNameValue = signal<string>('');
   private readonly jsonDataText = signal<string>('');
+  private readonly initialNameValue = signal<string>('');
   // Track original form model state for edit-mode delta computation
   private readonly originalFormData = signal<FormModelData | null>(null);
   private readonly initialFormData = signal<FormModelData | null>(null);
@@ -240,6 +244,10 @@ export class ModelFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((qp) => this.groupName.set(qp.get('groupName')));
+
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.category.set(params['category']);
       const modelName = params['modelName'];
@@ -260,6 +268,27 @@ export class ModelFormComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/categories', this.category()]);
+  }
+
+  hasUnsavedChanges(): boolean {
+    if (this.submitting() || this.submissionResult() != null) {
+      return false;
+    }
+
+    if (this.isEditMode()) {
+      return this.hasAnyChanges();
+    }
+
+    const initial = this.initialFormData();
+    if (!initial) {
+      return false;
+    }
+
+    const hasNameChanges = this.formNameValue().trim() !== this.initialNameValue().trim();
+    const hasDataChanges =
+      JSON.stringify(this.buildFormModelData()) !== JSON.stringify(initial);
+
+    return hasNameChanges || hasDataChanges;
   }
 
   validateJson(): void {
@@ -634,9 +663,12 @@ export class ModelFormComponent implements OnInit {
     });
 
     this.setupFormValueTracking();
+    this.initialNameValue.set(prefillName ?? '');
 
     const formModel = legacyApiToForm(record, category as MODEL_REFERENCE_CATEGORY);
     this.populateFormFromFormModel(formModel);
+    this.initialFormData.set(structuredClone(this.buildFormModelData()));
+    this.originalFormData.set(null);
 
     // Delay validation to allow signals to propagate
     setTimeout(() => this.validateJson(), 0);
@@ -682,6 +714,7 @@ export class ModelFormComponent implements OnInit {
     });
 
     this.setupFormValueTracking();
+    this.initialNameValue.set(modelName);
     this.populateFormFromFormModel(formModel);
     this.loadedFormModel.set(formModel);
 

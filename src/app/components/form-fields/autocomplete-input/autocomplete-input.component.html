@@ -18,6 +18,7 @@
       (blur)="handleBlur()"
       [attr.aria-controls]="suggestionsId"
       [attr.aria-expanded]="showSuggestions()"
+      [attr.aria-label]="ariaLabel() || label() || placeholder()"
       [attr.aria-autocomplete]="suggestions().length > 0 ? 'list' : null"
       role="combobox"
     />
@@ -28,7 +29,7 @@
         [id]="suggestionsId"
         class="autocomplete-dropdown autocomplete-dropdown-fixed"
         role="listbox"
-        [attr.aria-label]="label() + ' suggestions'"
+        [attr.aria-label]="(ariaLabel() || label() || placeholder()) + ' suggestions'"
         [style.top.px]="dropdownTop()"
         [style.left.px]="dropdownLeft()"
         [style.width.px]="dropdownWidth()"
@@ -46,7 +47,12 @@
             role="option"
             [attr.aria-selected]="idx === selectedSuggestionIndex()"
           >
-            {{ suggestion }}
+            <span class="flex items-center justify-between gap-2 w-full">
+              <span class="truncate">{{ suggestion }}</span>
+              @if (getOptionAnnotation(suggestion); as annotation) {
+                <span class="autocomplete-annotation">{{ annotation }}</span>
+              }
+            </span>
           </button>
         }
       </div>

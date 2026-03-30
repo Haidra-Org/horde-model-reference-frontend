@@ -219,51 +219,51 @@ import { hasShowcases } from './model-row.utils';
                   </h4>
                   <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                      <thead>
+                      <thead class="table-head-subtle">
                         <tr class="border-b border-gray-200 dark:border-gray-700">
-                          <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th class="table-header-cell-xs-caps">
                             Full Name
                           </th>
-                          <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th class="table-header-cell-xs-caps">
                             Backend
                           </th>
-                          <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th class="table-header-cell-xs-caps">
                             Author
                           </th>
-                          <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th class="table-header-cell-xs-center-caps">
                             Workers
                           </th>
-                          <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th class="table-header-cell-xs-center-caps">
                             Queued
                           </th>
-                          <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th class="table-header-cell-xs-right-caps">
                             Usage (Total)
                           </th>
                         </tr>
                       </thead>
-                      <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                      <tbody class="table-body-default">
                         @for (variation of groupedModel()!.variations; track variation.name) {
-                          <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td class="px-3 py-2 font-mono text-xs text-gray-900 dark:text-gray-100">
+                          <tr class="table-row-hover-subtle">
+                            <td class="table-cell-mono-xs">
                               {{ variation.name }}
                             </td>
-                            <td class="px-3 py-2">
+                            <td class="table-cell-xs">
                               @if (variation.parsedName?.backend) {
                                 <horde-badge variant="info" class="text-xs">{{ variation.parsedName?.backend }}</horde-badge>
                               } @else {
-                                <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
+                                <span class="table-cell-muted-xs-inline">-</span>
                               }
                             </td>
-                            <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
+                            <td class="table-cell-xs">
                               {{ variation.parsedName?.author ?? '-' }}
                             </td>
-                            <td class="px-3 py-2 text-center text-gray-700 dark:text-gray-300">
+                            <td class="table-cell-xs-center">
                               {{ variation.workerCount ?? 0 }}
                             </td>
-                            <td class="px-3 py-2 text-center text-gray-700 dark:text-gray-300">
+                            <td class="table-cell-xs-center">
                               {{ variation.queuedJobs ?? 0 }}
                             </td>
-                            <td class="px-3 py-2 text-right text-gray-700 dark:text-gray-300">
+                            <td class="table-cell-xs-right">
                               {{ variation.usageStats?.total ?? 0 }}
                             </td>
                           </tr>
@@ -370,8 +370,8 @@ export class ModelRowComponent {
     if (statsState === 'loading') {
       return {
         'animate-pulse': true,
-        'bg-blue-500': true,
-        'dark:bg-blue-400': true,
+        'bg-primary-500': true,
+        'dark:bg-primary-400': true,
       };
     }
 

@@ -1,18 +1,18 @@
-<section class="flex flex-col gap-6 p-6">
-  <header class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow">
+<section class="audit-page">
+  <header class="audit-hero-card">
     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div>
-        <p class="text-sm uppercase tracking-wide text-primary-300">Read-only workflow</p>
-        <h1 class="text-2xl font-semibold">Pending Queue Audit Trail</h1>
-        <p class="text-sm text-slate-300">
+        <p class="audit-eyebrow">Read-only workflow</p>
+        <h1 class="audit-title">Pending Queue Audit Trail</h1>
+        <p class="audit-description">
           Inspect pending changes and historical approval batches pulled directly from the FastAPI
           audit endpoints.
         </p>
       </div>
-      <div class="flex flex-col gap-2 text-sm">
+      <div class="audit-controls">
         <label for="audit-domain-select" class="font-medium">Audit domain</label>
-        <select id="audit-domain-select" class="rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
-          [value]="selectedDomain()" (change)="onDomainSelectChange($event)">
+        <select id="audit-domain-select" class="audit-select" [value]="selectedDomain()"
+          (change)="onDomainSelectChange($event)">
           @for (domain of domainOptions; track domain) {
           <option [value]="domain">{{ formatDomain(domain) }}</option>
           }
@@ -21,14 +21,14 @@
           Refresh data
         </button>
         @if (hasStaleData()) {
-        <div class="rounded border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+        <div class="alert-banner alert-banner-warning alert-banner-inline">
           Snapshot is older than 5 minutes
           @if (formatRelativeTime(currentSnapshot()?.generated_at)) {
           · Last refresh {{ formatRelativeTime(currentSnapshot()?.generated_at) }}
           }
         </div>
         } @else if (currentSnapshot()?.generated_at) {
-        <span class="text-xs uppercase tracking-wide text-slate-400">
+        <span class="audit-generated-at">
           Last generated {{ formatRelativeTime(currentSnapshot()?.generated_at) }}
         </span>
         }
@@ -36,73 +36,70 @@
     </div>
   </header>
 
-
   @if (errorMessage()) {
-  <section class="rounded-lg border border-rose-500/40 bg-rose-900/50 p-4 text-sm text-rose-50">
+  <section class="alert-banner alert-banner-danger">
     {{ errorMessage() }}
   </section>
   }
 
   @if (auditDisabled()) {
-  <section class="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-50">
+  <section class="alert-banner alert-banner-warning">
     Audit trail endpoints are disabled on this deployment. Enable <code>audit.enabled</code> in
     the backend configuration or switch to a replica with audit logging before returning to this
     page.
   </section>
   }
 
-  <section class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-    <div class="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+  <section class="audit-panel">
+    <div class="audit-panel-header">
       <div>
-        <h2 class="text-lg font-semibold">Pending Changes</h2>
-        <p class="text-sm text-slate-300">
+        <h2 class="audit-panel-title">Pending Changes</h2>
+        <p class="audit-panel-subtitle">
           Currently waiting for approval ({{ pendingChangesCount() }})
         </p>
       </div>
       @if (loadingCurrent()) {
-      <span class="text-sm text-slate-400">Loading pending changes…</span>
+      <span class="audit-loading-text">Loading pending changes…</span>
       }
     </div>
 
     @if (!loadingCurrent() && pendingChanges().length === 0) {
-    <p class="text-sm text-slate-400">No pending changes for the selected domain.</p>
+    <p class="audit-empty-text">No pending changes for the selected domain.</p>
     } @else if (pendingChanges().length > 0) {
-    <div class="overflow-auto rounded-lg border border-slate-800">
-      <table class="min-w-full divide-y divide-slate-800 text-sm">
-        <thead class="bg-slate-900/60 text-left text-xs uppercase tracking-wide text-slate-400">
+    <div class="audit-table-wrapper">
+      <table class="audit-table">
+        <thead class="audit-table-head">
           <tr>
-            <th class="px-3 py-2">Change</th>
-            <th class="px-3 py-2">Model</th>
-            <th class="px-3 py-2">Operation</th>
-            <th class="px-3 py-2">Requested By</th>
-            <th class="px-3 py-2">Requested At</th>
-            <th class="px-3 py-2">Events</th>
+            <th class="table-header-cell-xs">Change</th>
+            <th class="table-header-cell-xs">Model</th>
+            <th class="table-header-cell-xs">Operation</th>
+            <th class="table-header-cell-xs">Requested By</th>
+            <th class="table-header-cell-xs">Requested At</th>
+            <th class="table-header-cell-xs">Events</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-900">
+        <tbody class="divide-y divide-gray-900">
           @for (change of pendingChanges(); track trackChange($index, change)) {
-          <tr class="hover:bg-slate-900/50">
-            <td class="px-3 py-2 font-mono text-xs">#{{ change.change_id }}</td>
-            <td class="px-3 py-2">{{ change.model_name || '—' }}</td>
-            <td class="px-3 py-2">{{ change.operation || 'pending' }}</td>
-            <td class="px-3 py-2">{{ change.requested_by || 'unknown' }}</td>
-            <td class="px-3 py-2">
+          <tr class="audit-table-row">
+            <td class="table-cell-mono-xs">#{{ change.change_id }}</td>
+            <td class="table-cell-xs">{{ change.model_name || '—' }}</td>
+            <td class="table-cell-xs">{{ change.operation || 'pending' }}</td>
+            <td class="table-cell-xs">{{ change.requested_by || 'unknown' }}</td>
+            <td class="table-cell-xs">
               @if (change.requested_at) {
               {{ toDate(change.requested_at) | date: 'short' }}
               } @else {
               —
               }
             </td>
-            <td class="px-3 py-2">
+            <td class="table-cell-xs">
               <div class="flex flex-col gap-1">
                 <span>{{ change.events?.length || 0 }} events</span>
-                <div class="flex flex-wrap gap-2 text-xs text-primary-300">
-                  <button type="button" class="underline-offset-2 hover:underline"
-                    (click)="openPendingChangeTimeline(change)">
+                <div class="audit-action-links">
+                  <button type="button" class="audit-link" (click)="openPendingChangeTimeline(change)">
                     View timeline
                   </button>
-                  <button type="button" class="text-slate-400 underline-offset-2 hover:underline"
-                    (click)="copyPendingChangeJson(change)">
+                  <button type="button" class="audit-link-muted" (click)="copyPendingChangeJson(change)">
                     Copy JSON
                   </button>
                 </div>
@@ -117,19 +114,17 @@
   </section>
 
   @if (selectedPendingChange(); as change) {
-  <div class="fixed inset-0 z-40 flex justify-center bg-slate-950/70 backdrop-blur-sm" role="presentation" tabindex="0"
-    (click)="onPendingChangeBackdrop($event)" (keydown.enter)="closePendingChangeTimeline()"
-    (keydown.space)="closePendingChangeTimeline()" (keydown.escape)="closePendingChangeTimeline()">
-    <section
-      class="m-4 flex h-full w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-2xl"
-      role="dialog" aria-modal="true" [attr.aria-label]="'Pending change detail'">
-      <header class="flex flex-col gap-3 border-b border-slate-800 pb-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="audit-overlay" role="presentation" tabindex="0" (click)="onPendingChangeBackdrop($event)"
+    (keydown.enter)="closePendingChangeTimeline()" (keydown.space)="closePendingChangeTimeline()"
+    (keydown.escape)="closePendingChangeTimeline()">
+    <section class="audit-modal" role="dialog" aria-modal="true" [attr.aria-label]="'Pending change detail'">
+      <header class="audit-modal-header">
         <div>
-          <p class="text-xs uppercase tracking-wide text-primary-300">Pending change timeline</p>
-          <h2 class="text-xl font-semibold">
+          <p class="audit-eyebrow">Pending change timeline</p>
+          <h2 class="text-xl font-semibold text-gray-100">
             Change #{{ change.change_id }} · {{ change.model_name || 'Unnamed' }}
           </h2>
-          <p class="text-sm text-slate-300">
+          <p class="audit-panel-subtitle">
             {{ change.operation || 'Operation' }} · Requested by
             {{ change.requested_by || 'unknown' }}
             @if (change.requested_at) {
@@ -147,21 +142,21 @@
         </div>
       </header>
 
-      <dl class="grid gap-4 text-sm text-slate-300 sm:grid-cols-2">
+      <dl class="audit-definition-grid">
         <div>
-          <dt class="text-xs uppercase tracking-wide text-slate-500">Category</dt>
+          <dt class="audit-definition-term">Category</dt>
           <dd>{{ change.category || '—' }}</dd>
         </div>
         <div>
-          <dt class="text-xs uppercase tracking-wide text-slate-500">Status</dt>
+          <dt class="audit-definition-term">Status</dt>
           <dd>{{ change.status || 'PENDING' }}</dd>
         </div>
         <div>
-          <dt class="text-xs uppercase tracking-wide text-slate-500">Batch</dt>
+          <dt class="audit-definition-term">Batch</dt>
           <dd>{{ change.batch_id || 'Not assigned' }}</dd>
         </div>
         <div>
-          <dt class="text-xs uppercase tracking-wide text-slate-500">Events</dt>
+          <dt class="audit-definition-term">Events</dt>
           <dd>{{ change.events?.length || 0 }}</dd>
         </div>
       </dl>
@@ -171,32 +166,31 @@
   </div>
   }
 
-  <section class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-    <div class="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+  <section class="audit-panel">
+    <div class="audit-panel-header">
       <div>
-        <h2 class="text-lg font-semibold">Batch History</h2>
-        <p class="text-sm text-slate-300">Recently approved or rejected batches</p>
+        <h2 class="audit-panel-title">Batch History</h2>
+        <p class="audit-panel-subtitle">Recently approved or rejected batches</p>
       </div>
       @if (loadingBatches()) {
-      <span class="text-sm text-slate-400">Loading batches…</span>
+      <span class="audit-loading-text">Loading batches…</span>
       }
     </div>
 
     @if (!loadingBatches() && batchSummaries().length === 0) {
-    <p class="text-sm text-slate-400">No processed batches yet.</p>
+    <p class="audit-empty-text">No processed batches yet.</p>
     } @else {
     <div class="flex flex-col gap-3">
       @for (batch of batchSummaries(); track trackBatch($index, batch)) {
-      <button type="button"
-        class="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-left transition hover:border-primary-500 hover:bg-slate-900/60"
-        (click)="openBatchDetail(batch)" [attr.aria-pressed]="selectedBatch()?.batch_id === batch.batch_id"
-        [class.border-primary-500]="selectedBatch()?.batch_id === batch.batch_id">
+      <button type="button" class="audit-batch-card" (click)="openBatchDetail(batch)"
+        [attr.aria-pressed]="selectedBatch()?.batch_id === batch.batch_id"
+        [class.audit-batch-card-active]="selectedBatch()?.batch_id === batch.batch_id">
         <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <h3 class="text-base font-medium">
+            <h3 class="text-base font-medium text-gray-100">
               Batch #{{ batch.batch_id }} · {{ batch.batch_title || 'Untitled batch' }}
             </h3>
-            <p class="text-xs text-slate-400">
+            <p class="audit-muted-xs">
               @if (batch.approved_at) {
               Approved {{ toDate(batch.approved_at) | date: 'medium' }}
               }
@@ -206,13 +200,13 @@
             </p>
           </div>
           <div class="flex flex-wrap gap-2 text-xs">
-            <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-200">
+            <span class="status-badge status-badge-success">
               Approved {{ batch.approved_change_count || 0 }}
             </span>
-            <span class="rounded-full bg-rose-500/20 px-3 py-1 text-rose-200">
+            <span class="status-badge status-badge-danger">
               Rejected {{ batch.rejected_change_count || 0 }}
             </span>
-            <span class="rounded-full bg-sky-500/20 px-3 py-1 text-sky-200">
+            <span class="status-badge status-badge-info">
               Applied {{ batch.applied_change_count || 0 }}
             </span>
           </div>

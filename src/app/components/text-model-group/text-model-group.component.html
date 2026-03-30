@@ -42,6 +42,14 @@
         <button class="btn btn-secondary" (click)="goBackToList()">
           ← Back to List
         </button>
+        @if (writable()) {
+        <button class="btn btn-primary" (click)="openAddVariation()">
+          + Add Variation
+        </button>
+        <button class="btn btn-secondary" (click)="openMultiVariation()">
+          ⊞ Batch Create
+        </button>
+        }
         @if (writable() && canonicalMembers().length > 1 && !deletingAll()) {
         <button class="btn btn-danger" (click)="confirmDeleteAll()">
           Delete All
@@ -52,13 +60,207 @@
   </div>
 </div>
 
-<!-- Canonical Members Table -->
+<!-- Health Warnings -->
+@if (healthWarnings().length > 0) {
+<div class="alert alert-warning mb-6">
+  <strong>Group Health Check</strong>
+  <ul class="mt-1 ml-4 list-disc text-sm">
+    @for (warning of healthWarnings(); track warning) {
+    <li>{{ warning }}</li>
+    }
+  </ul>
+</div>
+}
+
+<!-- Add Variation Panel -->
+@if (showAddVariation()) {
+<app-add-variation-panel [groupName]="groupName()" [groupData]="groupData()!" (created)="onVariationCreated()"
+  (dirtyChange)="onAddVariationDirtyChange($event)" (cancelled)="closeAddVariation()" />
+}
+
+<!-- Multi-Variation Panel -->
+@if (showMultiVariation()) {
+<app-multi-variation-panel [groupName]="groupName()" [groupData]="groupData()!" (created)="onMultiVariationCreated()"
+  (dirtyChange)="onMultiVariationDirtyChange($event)" (cancelled)="closeMultiVariation()" />
+}
+
+<!-- Common Fields Panel -->
+@if (groupData() && Object.keys(commonFields()).length > 0) {
+<div class="card mb-6 transition-colors duration-200" [class.border-primary-300]="editingCommonFields()"
+  [class.dark:border-primary-700]="editingCommonFields()" [class.bg-primary-50/30]="editingCommonFields()"
+  [class.dark:bg-primary-950/20]="editingCommonFields()">
+  <div class="card-header flex items-center justify-between">
+    <div>
+      <h2 class="heading-section">Shared Fields</h2>
+      <p class="text-sm text-muted mt-1">
+        Fields identical across all {{ canonicalMembers().length }} canonical members.
+      </p>
+      @if (editingCommonFields()) {
+      <p class="text-xs text-primary-700 dark:text-primary-300 mt-1 font-medium">Editing mode is active.</p>
+      }
+    </div>
+    @if (editingCommonFields()) {
+    <span class="badge badge-info">Editing</span>
+    } @else if (writable()) {
+    <button class="btn btn-sm btn-secondary" (click)="startEditingCommonFields()">
+      Edit Shared
+    </button>
+    }
+  </div>
+  <div class="card-body">
+    @if (editingCommonFields()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      @if (commonFieldEdits()['baseline'] !== undefined) {
+      <div>
+        <label class="form-label" for="edit-baseline">Baseline</label>
+        <input id="edit-baseline" type="text" class="form-input" [ngModel]="commonFieldEdits()['baseline']"
+          (ngModelChange)="updateCommonFieldEdit('baseline', $event)" />
+      </div>
+      }
+      @if (commonFieldEdits()['description'] !== undefined) {
+      <div class="md:col-span-2">
+        <label class="form-label" for="edit-description">Description</label>
+        <textarea id="edit-description" class="form-textarea" rows="2" [ngModel]="commonFieldEdits()['description']"
+          (ngModelChange)="updateCommonFieldEdit('description', $event)"></textarea>
+      </div>
+      }
+      @if (commonFieldEdits()['url'] !== undefined) {
+      <div>
+        <label class="form-label" for="edit-url">URL</label>
+        <input id="edit-url" type="url" class="form-input" [ngModel]="commonFieldEdits()['url']"
+          (ngModelChange)="updateCommonFieldEdit('url', $event)" />
+      </div>
+      }
+      @if (commonFieldEdits()['nsfw'] !== undefined) {
+      <div>
+        <label class="form-label" for="edit-nsfw">NSFW</label>
+        <input id="edit-nsfw" type="checkbox" class="form-checkbox" [ngModel]="commonFieldEdits()['nsfw']"
+          (ngModelChange)="updateCommonFieldEdit('nsfw', $event)" />
+      </div>
+      }
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button class="btn btn-primary" [disabled]="savingCommonFields()" (click)="saveCommonFields()">
+        {{ savingCommonFields() ? 'Saving...' : 'Save (queues ' + canonicalMembers().length + ' updates)' }}
+      </button>
+      <button class="btn btn-secondary" (click)="cancelEditingCommonFields()">Cancel</button>
+    </div>
+    } @else {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      @for (entry of Object.entries(commonFields()); track entry[0]) {
+      <div>
+        <span class="field-label">{{ entry[0] }}</span>
+        <span class="field-value block mt-0.5">
+          @if (entry[1] === true || entry[1] === false) {
+          {{ entry[1] ? 'Yes' : 'No' }}
+          } @else if (isArray(entry[1])) {
+          {{ asStringArray(entry[1]).join(', ') }}
+          } @else {
+          {{ entry[1] }}
+          }
+        </span>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
+}
+
+<!-- Canonical Members -->
 @if (canonicalMembers().length > 0) {
+
+<!-- Size Sub-Groups for large groups -->
+@if (useSizeSubGroups()) {
+<div class="space-y-4 mb-6">
+  @for (subGroup of sizeSubGroups(); track subGroup.size) {
+  <div class="card">
+    <button class="card-header cursor-pointer flex items-center justify-between w-full text-left"
+      (click)="toggleSizeGroup(subGroup)">
+      <div class="flex items-center gap-3">
+        <span class="text-lg font-mono">{{ subGroup.expanded ? '▼' : '▶' }}</span>
+        <h2 class="heading-section">{{ subGroup.size }}</h2>
+        <span class="tag tag-secondary">{{ subGroup.members.length }} variant{{ subGroup.members.length === 1 ? '' : 's'
+          }}</span>
+      </div>
+    </button>
+    @if (subGroup.expanded) {
+    <div class="card-body p-0">
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Variant</th>
+              <th>Quant</th>
+              <th>Params</th>
+              <th>NSFW</th>
+              @if (writable()) {
+              <th class="text-center">Actions</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (member of subGroup.members; track member.name) {
+            <tr>
+              <td class="font-medium text-gray-900 dark:text-gray-100">
+                <div class="flex flex-col">
+                  <span>{{ member.name }}</span>
+                  @if (member.display_name && member.display_name !== member.name) {
+                  <span class="text-xs text-muted">{{ member.display_name }}</span>
+                  }
+                </div>
+              </td>
+              <td>{{ member.parsed.variant ?? '-' }}</td>
+              <td>
+                @if (member.parsed.quant) {
+                <span class="tag tag-secondary">{{ member.parsed.quant }}</span>
+                } @else {
+                <span class="text-muted">-</span>
+                }
+              </td>
+              <td>
+                @if (member.parameters) {
+                <span class="tag tag-info">{{ formatParams(member.parameters) }}</span>
+                } @else {
+                <span class="text-muted">-</span>
+                }
+              </td>
+              <td>
+                @if (member.nsfw === true) {
+                <horde-badge variant="warning">NSFW</horde-badge>
+                } @else if (member.nsfw === false) {
+                <horde-badge variant="success">SFW</horde-badge>
+                } @else {
+                <horde-badge variant="secondary">Unknown</horde-badge>
+                }
+              </td>
+              @if (writable()) {
+              <td class="text-center">
+                <div class="flex gap-2 justify-center whitespace-nowrap">
+                  <button class="btn btn-sm btn-primary" (click)="editMember(member)">Edit</button>
+                  <button class="btn btn-sm btn-danger" (click)="confirmDeleteMember(member)">Delete</button>
+                </div>
+              </td>
+              }
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
+} @else {
+
+<!-- Flat table for small groups -->
 <div class="card mb-6">
   <div class="card-header">
     <h2 class="heading-section">Canonical Models</h2>
     <p class="text-sm text-muted mt-1">
-      These are the actual model records. Backend duplicates (aphrodite/, koboldcpp/) are auto-generated from these.
+      These are the actual model records. Backend duplicates are auto-generated from these.
     </p>
   </div>
   <div class="card-body p-0">
@@ -67,9 +269,11 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Parameters</th>
+            <th>Size</th>
+            <th>Variant</th>
+            <th>Quant</th>
+            <th>Params</th>
             <th>Baseline</th>
-            <th>Style</th>
             <th>NSFW</th>
             <th>Description</th>
             @if (writable()) {
@@ -78,15 +282,30 @@
           </tr>
         </thead>
         <tbody>
-          @for (member of canonicalMembers(); track member.recordKey) {
+          @for (member of canonicalMembers(); track member.name) {
           <tr>
             <td class="font-medium text-gray-900 dark:text-gray-100">
               <div class="flex flex-col">
-                <span>{{ member.recordKey }}</span>
-                @if (member.displayName && member.displayName !== member.recordKey) {
-                <span class="text-xs text-muted">{{ member.displayName }}</span>
+                <span>{{ member.name }}</span>
+                @if (member.display_name && member.display_name !== member.name) {
+                <span class="text-xs text-muted">{{ member.display_name }}</span>
                 }
               </div>
+            </td>
+            <td>
+              @if (member.parsed.size) {
+              <span class="tag tag-info">{{ member.parsed.size }}</span>
+              } @else {
+              <span class="text-muted">-</span>
+              }
+            </td>
+            <td>{{ member.parsed.variant ?? '-' }}</td>
+            <td>
+              @if (member.parsed.quant) {
+              <span class="tag tag-secondary">{{ member.parsed.quant }}</span>
+              } @else {
+              <span class="text-muted">-</span>
+              }
             </td>
             <td>
               @if (member.parameters) {
@@ -96,7 +315,6 @@
               }
             </td>
             <td>{{ member.baseline ?? '-' }}</td>
-            <td>{{ member.style ?? '-' }}</td>
             <td>
               @if (member.nsfw === true) {
               <horde-badge variant="warning">NSFW</horde-badge>
@@ -114,12 +332,8 @@
             @if (writable()) {
             <td class="text-center">
               <div class="flex gap-2 justify-center whitespace-nowrap">
-                <button class="btn btn-sm btn-primary" (click)="editMember(member)">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="confirmDeleteMember(member)">
-                  Delete
-                </button>
+                <button class="btn btn-sm btn-primary" (click)="editMember(member)">Edit</button>
+                <button class="btn btn-sm btn-danger" (click)="confirmDeleteMember(member)">Delete</button>
               </div>
             </td>
             }
@@ -130,6 +344,7 @@
     </div>
   </div>
 </div>
+}
 }
 
 <!-- Backend Duplicates Section -->
@@ -154,13 +369,13 @@
           </tr>
         </thead>
         <tbody>
-          @for (dup of backendDuplicates(); track dup.recordKey) {
+          @for (dup of backendDuplicates(); track dup.name) {
           <tr>
             <td class="font-mono text-sm text-gray-900 dark:text-gray-100">
-              {{ dup.recordKey }}
+              {{ dup.name }}
             </td>
             <td>
-              <horde-badge variant="info">{{ dup.backendPrefix }}</horde-badge>
+              <horde-badge variant="info">{{ dup.backend_prefix }}</horde-badge>
             </td>
             <td>
               @if (dup.parameters) {
@@ -180,7 +395,7 @@
 }
 
 <!-- Empty State -->
-@if (members().length === 0) {
+@if (groupData()?.members?.length === 0) {
 <div class="card">
   <div class="card-body text-center py-12">
     <p class="text-lg text-muted">No models found in this group.</p>
@@ -205,8 +420,8 @@
       <p class="text-sm text-muted mb-3">
         Type the model name to confirm:
       </p>
-      <input type="text" class="form-input" [placeholder]="modelToDelete()!" [ngModel]="deleteConfirmationInput()"
-        (ngModelChange)="deleteConfirmationInput.set($event)" />
+      <input id="delete-model-confirm" type="text" class="form-input" [placeholder]="modelToDelete()!"
+        [ngModel]="deleteConfirmationInput()" (ngModelChange)="deleteConfirmationInput.set($event)" />
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
@@ -234,8 +449,8 @@
       <p class="text-sm text-muted mb-3">
         Type the group name (<strong>{{ groupName() }}</strong>) to confirm:
       </p>
-      <input type="text" class="form-input" [placeholder]="groupName()" [ngModel]="deleteAllVariantsConfirmation()"
-        (ngModelChange)="deleteAllVariantsConfirmation.set($event)" />
+      <input id="delete-all-confirm" type="text" class="form-input" [placeholder]="groupName()"
+        [ngModel]="deleteAllVariantsConfirmation()" (ngModelChange)="deleteAllVariantsConfirmation.set($event)" />
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" (click)="cancelDeleteAll()">Cancel</button>

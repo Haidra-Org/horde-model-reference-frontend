@@ -869,6 +869,20 @@
     @apply text-gray-900 dark:text-gray-100 font-semibold;
   }
 
+  .inline-stat-link {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+    @apply hover:text-gray-900 dark:hover:text-gray-200;
+    @apply cursor-pointer;
+  }
+
+  .inline-stat-separator-dot {
+    @apply text-gray-300 dark:text-gray-600 mx-1;
+  }
+
+  .inline-meta-link {
+    @apply hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer;
+  }
+
   .inline-stat-badge {
     @apply text-xs px-2 py-0.5 rounded font-medium;
   }
@@ -930,6 +944,7 @@
     @apply border border-gray-300 dark:border-gray-600;
     @apply rounded-lg shadow-lg;
     @apply overflow-y-auto;
+    max-height: min(300px, 50vh);
     /* Use z-[9999] to ensure it stays above all other content including modals and containers */
     z-index: 9999;
   }
@@ -965,6 +980,12 @@
   /* Matched item styling for filtered suggestions */
   .autocomplete-item-matched {
     @apply font-semibold;
+  }
+
+  .autocomplete-annotation {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium;
+    @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300;
+    @apply whitespace-nowrap;
   }
 
   /* Stat card value display */

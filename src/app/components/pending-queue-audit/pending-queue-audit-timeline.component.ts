@@ -8,7 +8,7 @@ import type { PendingQueueAuditEvent } from '../../models/pending-queue-audit';
   template: `
     <div class="timeline-container">
       @if (!normalizedEvents().length) {
-        <p class="text-sm text-slate-400">No timeline events recorded for this change.</p>
+        <p class="timeline-empty-text">No timeline events recorded for this change.</p>
       } @else {
         <ol class="timeline-list">
           @for (event of normalizedEvents(); track trackEvent($index, event)) {
@@ -25,12 +25,12 @@ import type { PendingQueueAuditEvent } from '../../models/pending-queue-audit';
                   </span>
                 </div>
                 @if (event.event_id) {
-                  <p class="text-xs text-slate-400">Event #{{ event.event_id }}</p>
+                  <p class="timeline-event-id">Event #{{ event.event_id }}</p>
                 }
                 @if (hasPayload(event.payload)) {
-                  <details class="mt-2 text-xs text-slate-200">
-                    <summary class="cursor-pointer text-slate-300">Payload</summary>
-                    <pre class="mt-1 max-h-48 overflow-auto rounded bg-slate-900/70 p-2">{{
+                  <details class="timeline-payload">
+                    <summary class="timeline-payload-summary">Payload</summary>
+                    <pre class="timeline-payload-pre">{{
                       event.payload | json
                     }}</pre>
                   </details>

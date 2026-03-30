@@ -32,9 +32,11 @@ export class AutocompleteInputComponent {
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   readonly label = input<string>('');
+  readonly ariaLabel = input<string>('');
   readonly placeholder = input<string>('Type or select...');
   readonly value = input<string | null>(null);
   readonly suggestions = input<readonly string[]>([]);
+  readonly optionAnnotations = input<Record<string, string>>({});
   readonly valueChange = output<string | null>();
 
   readonly inputValue = signal('');
@@ -184,6 +186,10 @@ export class AutocompleteInputComponent {
     this.showSuggestions.set(false);
     this.selectedSuggestionIndex.set(-1);
     this.inputElement()?.nativeElement.focus();
+  }
+
+  getOptionAnnotation(suggestion: string): string | null {
+    return this.optionAnnotations()[suggestion] ?? null;
   }
 
   handleBlur(): void {

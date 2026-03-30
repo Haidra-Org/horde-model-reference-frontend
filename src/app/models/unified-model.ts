@@ -4,7 +4,7 @@ import {
   HordeModelUsageStats,
   HordeWorker,
 } from './horde-api.models';
-import type { BackendCombinedModelStatistics } from './api.models';
+import type { BackendCombinedModelStatistics, TextModelGroupSummary } from './api.models';
 import {
   parseTextModelName,
   getBaseModelName,
@@ -165,6 +165,11 @@ export interface GroupedTextModel extends Omit<UnifiedModelData, 'name' | 'worke
    * Parameter count (from one of the variations)
    */
   parameters?: number;
+
+  /**
+   * Server-provided group summary with aggregated metadata
+   */
+  groupSummary?: TextModelGroupSummary;
 }
 
 /**
@@ -699,6 +704,33 @@ export function createGroupedTextModels(
       // Type assertion to access legacy fields
       const legacyPrimary = primaryVariation as Record<string, unknown>;
 
+      // Use server-provided group summary if available, else fall back to first variation
+      const summary = legacyPrimary['text_model_group_summary'] as
+        | TextModelGroupSummary
+        | undefined;
+
+      let description: string | undefined;
+      let baseline: string | undefined;
+      let tags: string[] | undefined;
+      let nsfw: boolean | undefined;
+
+      if (summary) {
+        baseline = summary.common_baseline ?? undefined;
+        nsfw = summary.any_nsfw;
+        tags = summary.merged_tags.length > 0 ? summary.merged_tags : undefined;
+        // Pick the first variation that has a description
+        description = summary.any_has_description
+          ? (variations
+              .map((v) => (v as Record<string, unknown>)['description'] as string | undefined)
+              .find((d) => !!d) ?? undefined)
+          : undefined;
+      } else {
+        description = legacyPrimary['description'] as string | undefined;
+        baseline = legacyPrimary['baseline'] as string | undefined;
+        tags = legacyPrimary['tags'] as string[] | undefined;
+        nsfw = legacyPrimary['nsfw'] as boolean | undefined;
+      }
+
       const grouped: GroupedTextModel = {
         name: baseName,
         isGrouped: true,
@@ -711,11 +743,12 @@ export function createGroupedTextModels(
         usageStats: aggregated.combinedUsageStats,
         workers: aggregated.allWorkers,
         parsedName: primaryVariation.parsedName,
-        description: legacyPrimary['description'] as string | undefined,
-        baseline: legacyPrimary['baseline'] as string | undefined,
-        tags: legacyPrimary['tags'] as string[] | undefined,
-        nsfw: legacyPrimary['nsfw'] as boolean | undefined,
+        description,
+        baseline,
+        tags,
+        nsfw,
         parameters: legacyPrimary['parameters'] as number | undefined,
+        groupSummary: summary,
       };
 
       result.push(grouped);

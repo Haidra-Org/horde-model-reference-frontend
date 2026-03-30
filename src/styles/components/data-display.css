@@ -523,6 +523,9 @@
   .status-badge-neutral {
     @apply bg-gray-700/40 text-gray-200;
   }
+  .status-badge-info {
+    @apply bg-info-500/20 text-info-200;
+  }
 
   /* Change type badge: includes border for model-level status pills */
   .change-badge {
@@ -564,5 +567,35 @@
   }
   .diff-value-new {
     @apply block rounded bg-gray-900 px-2 py-1 text-success-300;
+  }
+
+  /* Alert banner: rounded translucent box for inline alerts in audit panels */
+  .alert-banner {
+    @apply rounded-lg border p-4 text-sm;
+  }
+  .alert-banner-warning {
+    @apply border-warning-500/40 bg-warning-500/10 text-warning-100;
+  }
+  .alert-banner-danger {
+    @apply border-danger-500/40 bg-danger-900/50 text-danger-50;
+  }
+
+  /* Stat count: large colored number for summary statistics */
+  .stat-count-success {
+    @apply text-success-300;
+  }
+  .stat-count-danger {
+    @apply text-danger-300;
+  }
+  .stat-count-info {
+    @apply text-info-300;
+  }
+
+  /* Critical indicator ring and badge */
+  .critical-ring {
+    @apply ring-2 ring-warning-500/40;
+  }
+  .critical-badge {
+    @apply rounded-full bg-warning-500/20 px-2 py-0.5 text-xs font-medium text-warning-200;
   }
 }

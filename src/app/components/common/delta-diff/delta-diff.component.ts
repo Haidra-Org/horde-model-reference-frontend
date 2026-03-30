@@ -303,12 +303,14 @@ export class DeltaDiffComponent {
   readonly fieldDiffs = computed<FieldDiffItem[]>(() => {
     const d = this.diff();
     if (!d?.field_diffs) return [];
-    return d.field_diffs.map((f) => ({
-      field_path: f['field_path'] as string,
-      old_value: f['old_value'],
-      new_value: f['new_value'],
-      change_type: f['change_type'] as 'added' | 'removed' | 'modified',
-    }));
+    return d.field_diffs
+      .filter((f): f is { [key: string]: unknown } => f != null)
+      .map((f) => ({
+        field_path: f['field_path'] as string,
+        old_value: f['old_value'],
+        new_value: f['new_value'],
+        change_type: f['change_type'] as 'added' | 'removed' | 'modified',
+      }));
   });
 
   readonly addedCount = computed(() => this.diff()?.fields_added?.length ?? 0);

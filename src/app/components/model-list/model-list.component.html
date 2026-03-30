@@ -11,7 +11,7 @@
       </button>
       <div class="flex-1 flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h1 class="heading-section">
             {{ recordDisplayMap[category()] || category() }}
           </h1>
           <div class="tab-navigation-compact">
@@ -53,20 +53,17 @@
       @if (statType === 'baseline' && topBaselinesDisplay().totalCount > 0) {
       <div class="inline-stat-item">
         @for (stat of topBaselinesDisplay().topBaselines.slice(0, 3); track stat.baseline; let last = $last) {
-        <button type="button"
-          class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
-          (click)="addBaselineToSearch(stat.baseline)" [title]="getBaselineDisplayName(stat.baseline)">
+        <button type="button" class="inline-stat-link" (click)="addBaselineToSearch(stat.baseline)"
+          [title]="getBaselineDisplayName(stat.baseline)">
           {{ stat.count }} {{ getBaselineDisplayName(stat.baseline) }}</button>@if (!last ||
         topBaselinesDisplay().remainingCount > 0 || topBaselinesDisplay().topBaselines.length > 3) {<span
-          class="text-gray-300 dark:text-gray-600 mx-1">&middot;</span>}
+          class="inline-stat-separator-dot">&middot;</span>}
         }
         @if (
         topBaselinesDisplay().remainingCount > 0 ||
         topBaselinesDisplay().topBaselines.length > 3
         ) {
-        <button type="button"
-          class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
-          (click)="showBaselineDetails()">
+        <button type="button" class="inline-stat-link" (click)="showBaselineDetails()">
           +{{
           topBaselinesDisplay().remainingCount +
           (topBaselinesDisplay().topBaselines.length - 3)
@@ -89,15 +86,15 @@
         @if (statType === 'nsfw' && nsfwStatsDisplay().length > 0) {
         <span class="flex items-center gap-1">
           @for (stat of nsfwStatsDisplay(); track stat.label; let last = $last) {
-          <button type="button" class="hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
+          <button type="button" class="inline-meta-link"
             (click)="addNsfwFilterToSearch(stat.value)">
             {{ stat.count }} {{ stat.label }}
-          </button>@if (!last) {<span class="text-gray-300 dark:text-gray-600 mx-0.5">&middot;</span>}
+          </button>@if (!last) {<span class="inline-stat-separator-dot">&middot;</span>}
           }
         </span>
         }
         @if (statType === 'size' && sizeStats() > 0) {
-        <button type="button" class="hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer"
+        <button type="button" class="inline-meta-link"
           (click)="showSizeDetails()" title="Total disk size">
           {{ formatSizeInGB(sizeStats()) }} GB total
         </button>

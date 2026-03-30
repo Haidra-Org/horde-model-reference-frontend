@@ -1,11 +1,69 @@
 # Contributing to Horde Model Reference Frontend
 
+## Getting Started
+
+```bash
+# Prerequisites: Node.js (v18+)
+npm install
+
+# Start dev server (http://localhost:4200)
+npm start
+```
+
+## Code Conventions
+
+### Angular Patterns
+
+- **Standalone components** — All components are standalone. Do NOT set `standalone: true` in decorators (it's the default).
+- **OnPush change detection** — Every component must set `changeDetection: ChangeDetectionStrategy.OnPush`.
+- **Signal-based state** — Use `signal()`, `computed()`, and `input()` / `output()` functions.
+- **`inject()` function** — Use `inject()` instead of constructor injection.
+- **Native control flow** — Use `@if`, `@for`, `@switch` instead of `*ngIf`, `*ngFor`, `*ngSwitch`.
+- **Host bindings** — Put host bindings in the `host` object of `@Component`, not `@HostBinding`/`@HostListener`.
+
+### Styling
+
+All styles are centralized in `src/styles/` and `src/shared/design-system/`. Component CSS files must be empty (with three documented exceptions).
+
+Key rules:
+- **Use semantic CSS classes** (`.alert-danger`, `.status-badge-success`) over inline Tailwind utility chains.
+- **Use theme color tokens** (`primary-*`, `success-*`, `danger-*`, `warning-*`, `info-*`, `gray-*`). Never use raw Tailwind color names (`red-*`, `blue-*`, `emerald-*`, `amber-*`, etc.) in templates.
+- **No inline `style=` attributes** in templates.
+- **No `styles:` or `styleUrl:`** in component decorators (except json-editor, json-display, delta-diff).
+- **No hardcoded `rgb()`/`rgba()`/hex** values in component code.
+- **Always include `dark:` variants** for colors and backgrounds.
+
+See [STYLING.md](STYLING.md) for the complete styling guide and class reference.
+
+### TypeScript
+
+- Strict type checking enabled — avoid `any`, use `unknown` when uncertain.
+- Import generated types from `api-client/`, custom types from `models/`.
+- Generated code under `src/app/api-client/` is auto-generated — **do not edit manually**.
+
 ## Linting
 
 This project uses ESLint for linting. To run the linter:
 
 ```bash
 npm run lint
+```
+
+## Pre-Commit Checks
+
+Before committing, verify:
+
+```bash
+# TypeScript compilation
+npx tsc --noEmit
+
+# Lint
+npm run lint
+
+# Tests
+npm test
+
+# Styling compliance (see STYLING.md for full list)
 ```
 
 ## API Client Generation
@@ -92,3 +150,11 @@ src/
 │       └── api.models.ts        # TypeScript interfaces
 └── environments/                # Environment configs
 ```
+
+## Project Documentation
+
+- [STYLING.md](STYLING.md) — Styling conventions, color system, class reference
+- [.claude/CLAUDE.md](.claude/CLAUDE.md) — Full architecture reference
+- [scripts/README.md](scripts/README.md) — API client generation scripts
+- [src/app/models/README.md](src/app/models/README.md) — Type system and generated types
+- [docs/style-cleanup-and-glass-migration/](docs/style-cleanup-and-glass-migration/) — Styling roadmap

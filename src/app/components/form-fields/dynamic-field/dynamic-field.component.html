@@ -16,7 +16,7 @@
     }
     <app-field-tooltip [fieldId]="config().id" />
     @if (config().required) {
-    <span class="text-red-500">*</span>
+    <span class="text-danger-500">*</span>
     }
     @if (dirty()) {
     <span class="field-dirty-chip" [title]="serverValue() ? 'Was: ' + serverValue() : 'Modified'">
@@ -81,7 +81,7 @@
     {{ cfg.label }}
     <app-field-tooltip [fieldId]="cfg.id" />
     @if (cfg.required) {
-    <span class="text-red-500">*</span>
+    <span class="text-danger-500">*</span>
     }
     @if (dirty()) {
     <span class="field-dirty-chip" [title]="serverValue() ? 'Was: ' + serverValue() : 'Modified'">

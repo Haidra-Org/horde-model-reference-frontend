@@ -195,4 +195,73 @@
     @apply bg-info-50 text-info-800 border-info-500;
     @apply dark:bg-info-900/20 dark:text-info-300 dark:border-info-400;
   }
+
+  /* Text group variation workflows */
+  .group-panel-header {
+    @apply border-b border-gray-200;
+    @apply bg-gradient-to-r from-primary-50 via-white to-info-50;
+    @apply dark:border-gray-700 dark:from-primary-950/30 dark:via-gray-900 dark:to-info-950/20;
+  }
+
+  .group-panel-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-wide text-primary-700;
+    @apply dark:text-primary-300;
+  }
+
+  .group-panel-stage-chip {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs font-medium;
+    @apply bg-white text-gray-700 border-gray-300;
+    @apply dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600;
+  }
+
+  .group-panel-stage-index {
+    @apply inline-flex w-5 h-5 items-center justify-center rounded-full text-[11px] font-semibold;
+    @apply bg-primary-100 text-primary-800;
+    @apply dark:bg-primary-900/40 dark:text-primary-300;
+  }
+
+  .group-panel-section {
+    @apply rounded-lg border border-gray-200 p-4;
+    @apply bg-white/70 dark:bg-gray-900/30 dark:border-gray-700;
+  }
+
+  .group-panel-section-header {
+    @apply flex items-start gap-3 mb-4;
+  }
+
+  .group-panel-step-badge {
+    @apply inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold;
+    @apply bg-primary-100 text-primary-800;
+    @apply dark:bg-primary-900/40 dark:text-primary-300;
+  }
+
+  .group-panel-preview-card {
+    @apply rounded-lg border border-gray-200 p-4;
+    @apply bg-gray-50/70 dark:bg-gray-900/50 dark:border-gray-700;
+  }
+
+  .group-panel-readiness-row {
+    @apply flex items-center justify-between gap-2 text-sm px-2.5 py-2 rounded;
+    @apply bg-white border border-gray-200;
+    @apply dark:bg-gray-800/60 dark:border-gray-700;
+  }
+
+  .group-choice-chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border cursor-pointer text-sm transition-colors;
+  }
+
+  .group-choice-chip--neutral {
+    @apply bg-white border-gray-300 text-gray-600 hover:border-primary-400;
+    @apply dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:border-primary-500;
+  }
+
+  .group-choice-chip--info {
+    @apply bg-info-100 border-info-400 text-info-700;
+    @apply dark:bg-info-900/30 dark:border-info-600 dark:text-info-300;
+  }
+
+  .group-choice-chip--warning {
+    @apply bg-warning-100 border-warning-400 text-warning-700;
+    @apply dark:bg-warning-900/30 dark:border-warning-600 dark:text-warning-300;
+  }
 }

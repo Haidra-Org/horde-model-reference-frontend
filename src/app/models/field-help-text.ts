@@ -116,6 +116,18 @@ export const FIELD_HELP_TEXT: Record<string, FieldHelpEntry> = {
     summary: 'Version identifier or variant name for this model release.',
     examples: 'e.g., 1.0, v2.1, fp16, GGUF-Q4_K_M',
   },
+  variant: {
+    summary: 'Optional specialization label used in the model name.',
+    impact:
+      'Helps users differentiate behavior-focused releases under the same base model and size.',
+    examples: 'e.g., Instruct, Chat, Base, Code',
+  },
+  quant: {
+    summary: 'Quantization format suffix for compressed text-model variants.',
+    impact:
+      'Quantization affects VRAM footprint, speed, and output quality, so accurate labels improve worker routing.',
+    examples: 'e.g., Q4_K_M, Q5_K_M, GPTQ, AWQ, EXL2',
+  },
   features_not_supported: {
     summary: 'Features that this model does not support.',
     impact: 'Workers and requesters check this to avoid requesting unsupported operations.',
