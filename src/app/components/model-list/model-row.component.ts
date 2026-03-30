@@ -1,5 +1,6 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -23,6 +24,7 @@ import { hasShowcases } from './model-row.utils';
   selector: 'app-model-row',
   imports: [
     RouterLink,
+    HordeBadgeComponent,
     ModelRowHeaderComponent,
     ModelRowFieldsComponent,
     ModelRowShowcasesComponent,
@@ -113,11 +115,11 @@ import { hasShowcases } from './model-row.utils';
       @if (!isTextGeneration()) {
         <td>
           @if (legacyModel().nsfw === true) {
-            <span class="badge badge-warning">NSFW</span>
+            <horde-badge variant="warning">NSFW</horde-badge>
           } @else if (legacyModel().nsfw === false) {
-            <span class="badge badge-success">SFW</span>
+            <horde-badge variant="success">SFW</horde-badge>
           } @else {
-            <span class="badge badge-secondary">Unknown</span>
+            <horde-badge variant="secondary">Unknown</horde-badge>
           }
         </td>
       }
@@ -160,11 +162,11 @@ import { hasShowcases } from './model-row.utils';
                 </p>
                 <div class="flex flex-wrap items-center gap-2 mt-2">
                   @if (legacyModel().nsfw === true) {
-                    <span class="badge badge-warning">NSFW</span>
+                    <horde-badge variant="warning">NSFW</horde-badge>
                   } @else if (legacyModel().nsfw === false) {
-                    <span class="badge badge-success">SFW</span>
+                    <horde-badge variant="success">SFW</horde-badge>
                   } @else {
-                    <span class="badge badge-secondary">Unknown</span>
+                    <horde-badge variant="secondary">Unknown</horde-badge>
                   }
                   @if (tags().length > 0) {
                     @for (tag of tags(); track tag) {
@@ -247,7 +249,7 @@ import { hasShowcases } from './model-row.utils';
                             </td>
                             <td class="px-3 py-2">
                               @if (variation.parsedName?.backend) {
-                                <span class="badge badge-info text-xs">{{ variation.parsedName?.backend }}</span>
+                                <horde-badge variant="info" class="text-xs">{{ variation.parsedName?.backend }}</horde-badge>
                               } @else {
                                 <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
                               }
@@ -302,7 +304,7 @@ import { hasShowcases } from './model-row.utils';
       </tr>
     }
   `,
-  styles: [':host { display: contents; }'],
+  host: { style: 'display: contents' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModelRowComponent {

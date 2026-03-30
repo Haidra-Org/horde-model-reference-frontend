@@ -460,4 +460,109 @@
     @apply pt-4 border-t border-gray-100;
     @apply dark:border-gray-800;
   }
+
+  /* === Column Width Utilities (for <col> elements in data tables) === */
+
+  .col-w-3 {
+    width: 3%;
+  }
+  .col-w-6 {
+    width: 6%;
+  }
+  .col-w-6-5 {
+    width: 6.5%;
+  }
+  .col-w-8 {
+    width: 8%;
+  }
+  .col-w-9 {
+    width: 9%;
+  }
+  .col-w-33-5 {
+    width: 33.5%;
+  }
+
+  /* === Audit Status Indicators === */
+
+  /* Filter pill: base style for filter toggle buttons in audit panels */
+  .filter-pill {
+    @apply rounded-full border border-gray-600 px-3 py-1 text-gray-300 transition;
+    @apply dark:border-gray-600 dark:text-gray-300;
+  }
+
+  /* Filter pill active states */
+  .filter-pill-active-primary {
+    @apply bg-primary-500/20 border-primary-400 text-primary-100;
+  }
+  .filter-pill-active-success {
+    @apply bg-success-500/20 border-success-400 text-success-100;
+  }
+  .filter-pill-active-warning {
+    @apply bg-warning-500/20 border-warning-400 text-warning-100;
+  }
+  .filter-pill-active-danger {
+    @apply bg-danger-500/20 border-danger-400 text-danger-100;
+  }
+  .filter-pill-active-neutral {
+    @apply bg-gray-600/20 border-gray-400 text-gray-100;
+  }
+
+  /* Status badge: colored pill for inline status labels */
+  .status-badge {
+    @apply rounded-full px-3 py-1 text-sm font-medium;
+  }
+  .status-badge-success {
+    @apply bg-success-500/20 text-success-200;
+  }
+  .status-badge-warning {
+    @apply bg-warning-500/20 text-warning-200;
+  }
+  .status-badge-danger {
+    @apply bg-danger-500/20 text-danger-200;
+  }
+  .status-badge-neutral {
+    @apply bg-gray-700/40 text-gray-200;
+  }
+
+  /* Change type badge: includes border for model-level status pills */
+  .change-badge {
+    @apply rounded-full border px-3 py-1 text-sm font-medium;
+  }
+  .change-badge-added {
+    @apply bg-success-500/20 text-success-200 border-success-400;
+  }
+  .change-badge-modified {
+    @apply bg-warning-500/20 text-warning-200 border-warning-400;
+  }
+  .change-badge-deleted {
+    @apply bg-danger-500/20 text-danger-200 border-danger-400;
+  }
+  .change-badge-unchanged {
+    @apply bg-gray-600/20 text-gray-200 border-gray-400;
+  }
+  .change-badge-unknown {
+    @apply bg-gray-700/40 text-gray-200 border-gray-700;
+  }
+
+  /* Field change text color indicators */
+  .change-text-added {
+    @apply text-success-300;
+  }
+  .change-text-modified {
+    @apply text-warning-300;
+  }
+  .change-text-removed {
+    @apply text-danger-300;
+  }
+  .change-text-neutral {
+    @apply text-gray-300;
+  }
+
+  /* Diff value display (before/after) */
+  .diff-value-old {
+    @apply block rounded bg-gray-900 px-2 py-1 text-danger-300;
+  }
+  .diff-value-new {
+    @apply block rounded bg-gray-900 px-2 py-1 text-success-300;
+  }
 }

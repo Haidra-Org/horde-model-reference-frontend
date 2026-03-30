@@ -7,15 +7,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { BackendAuditVariation } from './backendAuditVariation';
+import { BackendVariationStats } from './backendVariationStats';
 import { DeletionRiskFlags } from './deletionRiskFlags';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 import { UsageTrend } from './usageTrend';
 
 /**
- * Audit information for a single model.  Contains model metadata along with deletion risk assessment and usage statistics.
+ * Deletion risk information for a single model.  Contains model metadata along with deletion risk assessment and usage statistics.
  */
-export interface ModelAuditInfo {
+export interface ModelDeletionRiskInfo {
   /**
    * The model name.
    */
@@ -78,7 +78,7 @@ export interface ModelAuditInfo {
    * List of download host domains.
    */
   download_hosts?: Array<string>;
-  backend_variations?: Array<BackendAuditVariation> | null;
+  backend_variations?: Array<BackendVariationStats> | null;
   /**
    * Determine if model is in critical state.  For text_generation: usage_month < threshold AND worker_count < threshold For other models: zero month usage AND no active workers (original logic)  Returns:     True if model meets critical criteria.
    */
@@ -88,4 +88,4 @@ export interface ModelAuditInfo {
    */
   readonly has_warning: boolean;
 }
-export namespace ModelAuditInfo {}
+export namespace ModelDeletionRiskInfo {}

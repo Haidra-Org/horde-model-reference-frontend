@@ -96,25 +96,20 @@
         </div>
       </div>
       <div class="flex flex-wrap gap-2 text-xs">
-        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
-          [class.bg-primary-500/20]="statusFilter() === 'all'" [class.border-primary-400]="statusFilter() === 'all'"
-          [class.text-primary-100]="statusFilter() === 'all'" (click)="setStatusFilter('all')">
+        <button type="button" class="filter-pill" [class.filter-pill-active-primary]="statusFilter() === 'all'"
+          (click)="setStatusFilter('all')">
           All ({{ statusCounts().all }})
         </button>
-        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
-          [class.bg-amber-500/20]="statusFilter() === 'pending'" [class.border-amber-400]="statusFilter() === 'pending'"
-          [class.text-amber-100]="statusFilter() === 'pending'" (click)="setStatusFilter('pending')">
+        <button type="button" class="filter-pill" [class.filter-pill-active-warning]="statusFilter() === 'pending'"
+          (click)="setStatusFilter('pending')">
           Pending ({{ statusCounts().pending }})
         </button>
-        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
-          [class.bg-emerald-500/20]="statusFilter() === 'applied'"
-          [class.border-emerald-400]="statusFilter() === 'applied'"
-          [class.text-emerald-100]="statusFilter() === 'applied'" (click)="setStatusFilter('applied')">
+        <button type="button" class="filter-pill" [class.filter-pill-active-success]="statusFilter() === 'applied'"
+          (click)="setStatusFilter('applied')">
           Applied ({{ statusCounts().applied }})
         </button>
-        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 text-slate-200 transition"
-          [class.bg-rose-500/20]="statusFilter() === 'rejected'" [class.border-rose-400]="statusFilter() === 'rejected'"
-          [class.text-rose-100]="statusFilter() === 'rejected'" (click)="setStatusFilter('rejected')">
+        <button type="button" class="filter-pill" [class.filter-pill-active-danger]="statusFilter() === 'rejected'"
+          (click)="setStatusFilter('rejected')">
           Rejected ({{ statusCounts().rejected }})
         </button>
       </div>
@@ -138,14 +133,10 @@
               }
             </p>
           </div>
-          <span class="rounded-full px-3 py-1 text-sm font-medium"
-            [class.bg-emerald-500/20]="formatStatus(change) === 'applied'"
-            [class.text-emerald-200]="formatStatus(change) === 'applied'"
-            [class.bg-rose-500/20]="formatStatus(change) === 'rejected'"
-            [class.text-rose-200]="formatStatus(change) === 'rejected'"
-            [class.bg-amber-500/20]="formatStatus(change) === 'pending'"
-            [class.text-amber-200]="formatStatus(change) === 'pending'"
-            [class.bg-slate-700/40]="formatStatus(change) !== 'applied' && formatStatus(change) !== 'rejected' && formatStatus(change) !== 'pending'">
+          <span class="status-badge" [class.status-badge-success]="formatStatus(change) === 'applied'"
+            [class.status-badge-danger]="formatStatus(change) === 'rejected'"
+            [class.status-badge-warning]="formatStatus(change) === 'pending'"
+            [class.status-badge-neutral]="formatStatus(change) !== 'applied' && formatStatus(change) !== 'rejected' && formatStatus(change) !== 'pending'">
             {{ statusLabel(change) }}
           </span>
         </div>

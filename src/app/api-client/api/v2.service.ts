@@ -31,11 +31,11 @@ import { ApplyPendingChangesResponse } from '../model/applyPendingChangesRespons
 // @ts-ignore
 import { ApplySingleChangeResponse } from '../model/applySingleChangeResponse';
 // @ts-ignore
-import { AuditDomain } from '../model/auditDomain';
-// @ts-ignore
 import { BatchNetChangeResponse } from '../model/batchNetChangeResponse';
 // @ts-ignore
-import { CategoryAuditResponse } from '../model/categoryAuditResponse';
+import { CanonicalFormat } from '../model/canonicalFormat';
+// @ts-ignore
+import { CategoryDeletionRiskResponse } from '../model/categoryDeletionRiskResponse';
 // @ts-ignore
 import { CategoryLastUpdatedResponse } from '../model/categoryLastUpdatedResponse';
 // @ts-ignore
@@ -84,6 +84,8 @@ import { PurgePendingChangesRequest } from '../model/purgePendingChangesRequest'
 import { PurgePendingChangesResponse } from '../model/purgePendingChangesResponse';
 // @ts-ignore
 import { ResponseReadV2ReferenceValue } from '../model/responseReadV2ReferenceValue';
+// @ts-ignore
+import { SearchResponse } from '../model/searchResponse';
 // @ts-ignore
 import { TextGenerationModelRecordInput } from '../model/textGenerationModelRecordInput';
 // @ts-ignore
@@ -1326,7 +1328,7 @@ export class V2Service extends BaseService {
    */
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1337,7 +1339,7 @@ export class V2Service extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1348,7 +1350,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1359,7 +1361,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1435,7 +1437,7 @@ export class V2Service extends BaseService {
    */
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_4(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1446,7 +1448,7 @@ export class V2Service extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_4(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1457,7 +1459,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_4(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1468,7 +1470,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_4(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1541,7 +1543,7 @@ export class V2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1551,7 +1553,7 @@ export class V2Service extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1561,7 +1563,7 @@ export class V2Service extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1571,7 +1573,7 @@ export class V2Service extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1642,7 +1644,7 @@ export class V2Service extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_5(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1652,7 +1654,7 @@ export class V2Service extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_5(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1662,7 +1664,7 @@ export class V2Service extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_5(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1672,7 +1674,7 @@ export class V2Service extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_5(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2238,7 +2240,7 @@ export class V2Service extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2249,7 +2251,7 @@ export class V2Service extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2260,7 +2262,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2271,7 +2273,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2350,7 +2352,7 @@ export class V2Service extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2361,7 +2363,7 @@ export class V2Service extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2372,7 +2374,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2383,7 +2385,7 @@ export class V2Service extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2788,7 +2790,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2800,7 +2802,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2812,7 +2814,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2824,7 +2826,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2901,7 +2903,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_10(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2913,7 +2915,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_10(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2925,7 +2927,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_10(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2937,7 +2939,7 @@ export class V2Service extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_10(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2988,6 +2990,124 @@ export class V2Service extends BaseService {
     let localVarPath = `/model_references/v2/pending_queue/audit/batches`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<PendingQueueAuditBatchPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get popular models ranked by live Horde usage
+   * Return models ranked by live Horde popularity metrics.  Only &#x60;&#x60;image_generation&#x60;&#x60; and &#x60;&#x60;text_generation&#x60;&#x60; have Horde API data. Other categories return an empty list.
+   * @param modelCategoryName
+   * @param limit Max results
+   * @param sortBy Metric to rank by
+   * @param includeWorkers Include per-worker details
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
+    modelCategoryName: string,
+    limit?: number,
+    sortBy?: 'worker_count' | 'usage_day' | 'usage_month' | 'usage_total',
+    includeWorkers?: boolean,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<Array<{ [key: string]: any }>>;
+  public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
+    modelCategoryName: string,
+    limit?: number,
+    sortBy?: 'worker_count' | 'usage_day' | 'usage_month' | 'usage_total',
+    includeWorkers?: boolean,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<Array<{ [key: string]: any }>>>;
+  public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
+    modelCategoryName: string,
+    limit?: number,
+    sortBy?: 'worker_count' | 'usage_day' | 'usage_month' | 'usage_total',
+    includeWorkers?: boolean,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<Array<{ [key: string]: any }>>>;
+  public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
+    modelCategoryName: string,
+    limit?: number,
+    sortBy?: 'worker_count' | 'usage_day' | 'usage_month' | 'usage_total',
+    includeWorkers?: boolean,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelCategoryName === null || modelCategoryName === undefined) {
+      throw new Error(
+        'Required parameter modelCategoryName was null or undefined when calling popularModelsModelReferencesV2ModelCategoryNamePopularGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>sortBy, 'sort_by');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>includeWorkers,
+      'include_workers',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/popular`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<Array<{ [key: string]: any }>>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -3926,8 +4046,8 @@ export class V2Service extends BaseService {
   }
 
   /**
-   * Get audit analysis for a model category
-   * Get comprehensive audit analysis for a model reference category.  Analyzes all models in the category to identify deletion risks including: - Missing or invalid download URLs - Non-preferred file hosts - Missing required fields (description, baseline) - Zero active workers - Low or no recent usage  Returns both per-model audit information and aggregate summary statistics. Audit results are cached (default 300s TTL) and automatically invalidated when model data changes.  Args:     model_category_name: The model reference category to audit.     manager: The model reference manager (injected).     horde_api: The Horde API integration (injected).     audit_cache: The audit cache (injected).     group_text_models: Group text models by base name (strips quantization info).     include_backend_variations: Include per-backend breakdown for text models (ungrouped view).     preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).     limit: Maximum number of models to return (None &#x3D; all).     offset: Number of models to skip (for pagination).  Returns:     CategoryAuditResponse with per-model audit info and summary.  Raises:     HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.
+   * Get deletion risk analysis for a model category
+   * Get comprehensive deletion risk analysis for a model reference category.  Analyzes all models in the category to identify deletion risks including: - Missing or invalid download URLs - Non-preferred file hosts - Missing required fields (description, baseline) - Zero active workers - Low or no recent usage  Returns both per-model risk information and aggregate summary statistics. Results are cached (default 300s TTL) and automatically invalidated when model data changes.  Args:     model_category_name: The model reference category to analyze.     manager: The model reference manager (injected).     horde_api: The Horde API integration (injected).     risk_cache: The deletion risk cache (injected).     group_text_models: Group text models by base name (strips quantization info).     include_backend_variations: Include per-backend breakdown for text models (ungrouped view).     preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).     limit: Maximum number of models to return (None &#x3D; all).     offset: Number of models to skip (for pagination).  Returns:     CategoryDeletionRiskResponse with per-model risk info and summary.  Raises:     HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.
    * @param modelCategoryName
    * @param groupTextModels Group text models by base name (strips quantization)
    * @param includeBackendVariations Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models&#x3D;False.
@@ -3937,7 +4057,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2CategoryAudit(
+  public readV2CategoryDeletionRisk(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
     includeBackendVariations?: boolean,
@@ -3951,8 +4071,8 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<CategoryAuditResponse>;
-  public readV2CategoryAudit(
+  ): Observable<CategoryDeletionRiskResponse>;
+  public readV2CategoryDeletionRisk(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
     includeBackendVariations?: boolean,
@@ -3966,8 +4086,8 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<CategoryAuditResponse>>;
-  public readV2CategoryAudit(
+  ): Observable<HttpResponse<CategoryDeletionRiskResponse>>;
+  public readV2CategoryDeletionRisk(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
     includeBackendVariations?: boolean,
@@ -3981,8 +4101,8 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<CategoryAuditResponse>>;
-  public readV2CategoryAudit(
+  ): Observable<HttpEvent<CategoryDeletionRiskResponse>>;
+  public readV2CategoryDeletionRisk(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     groupTextModels?: boolean,
     includeBackendVariations?: boolean,
@@ -3999,7 +4119,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryAudit.',
+        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryDeletionRisk.',
       );
     }
 
@@ -4041,18 +4161,22 @@ export class V2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/statistics/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/audit`;
+    let localVarPath = `/model_references/statistics/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/deletion-risk`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<CategoryAuditResponse>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<CategoryDeletionRiskResponse>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
@@ -5042,6 +5166,631 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Search models across all categories
+   * Search models across all categories with generic filters only.
+   * @param nsfw Filter by NSFW status
+   * @param nameContains Case-insensitive name substring match
+   * @param tagsAny Models with any of these tags
+   * @param tagsAll Models with all of these tags
+   * @param tagsNone Models with none of these tags
+   * @param sortBy Field name to sort by
+   * @param sortDesc Sort descending
+   * @param limit Max results to return
+   * @param offset Number of results to skip
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public searchAllModelReferencesV2SearchGet(
+    nsfw?: boolean,
+    nameContains?: string,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<SearchResponse>;
+  public searchAllModelReferencesV2SearchGet(
+    nsfw?: boolean,
+    nameContains?: string,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<SearchResponse>>;
+  public searchAllModelReferencesV2SearchGet(
+    nsfw?: boolean,
+    nameContains?: string,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<SearchResponse>>;
+  public searchAllModelReferencesV2SearchGet(
+    nsfw?: boolean,
+    nameContains?: string,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>nsfw, 'nsfw');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>nameContains,
+      'name_contains',
+    );
+    if (tagsAny) {
+      tagsAny.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'tags_any',
+        );
+      });
+    }
+    if (tagsAll) {
+      tagsAll.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'tags_all',
+        );
+      });
+    }
+    if (tagsNone) {
+      tagsNone.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'tags_none',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>sortBy, 'sort_by');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>sortDesc,
+      'sort_desc',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/search`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<SearchResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Search models in a category
+   * Search models within a specific category with filtering, sorting, and pagination.
+   * @param modelCategoryName
+   * @param nsfw Filter by NSFW status
+   * @param baseline Filter by baseline
+   * @param inpainting Filter by inpainting (image only)
+   * @param tagsAny Models with any of these tags
+   * @param tagsAll Models with all of these tags
+   * @param tagsNone Models with none of these tags
+   * @param nameContains Case-insensitive name substring match
+   * @param sortBy Field name to sort by
+   * @param sortDesc Sort descending
+   * @param limit Max results to return
+   * @param offset Number of results to skip
+   * @param backend Text model backend filter
+   * @param excludeBackendVariations Exclude text model backend variations
+   * @param quantized Filter by quantization (text only)
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public searchCategoryModelReferencesV2ModelCategoryNameSearchGet(
+    modelCategoryName: string,
+    nsfw?: boolean,
+    baseline?: string,
+    inpainting?: boolean,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    nameContains?: string,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    backend?: string,
+    excludeBackendVariations?: boolean,
+    quantized?: boolean,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<SearchResponse>;
+  public searchCategoryModelReferencesV2ModelCategoryNameSearchGet(
+    modelCategoryName: string,
+    nsfw?: boolean,
+    baseline?: string,
+    inpainting?: boolean,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    nameContains?: string,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    backend?: string,
+    excludeBackendVariations?: boolean,
+    quantized?: boolean,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<SearchResponse>>;
+  public searchCategoryModelReferencesV2ModelCategoryNameSearchGet(
+    modelCategoryName: string,
+    nsfw?: boolean,
+    baseline?: string,
+    inpainting?: boolean,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    nameContains?: string,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    backend?: string,
+    excludeBackendVariations?: boolean,
+    quantized?: boolean,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<SearchResponse>>;
+  public searchCategoryModelReferencesV2ModelCategoryNameSearchGet(
+    modelCategoryName: string,
+    nsfw?: boolean,
+    baseline?: string,
+    inpainting?: boolean,
+    tagsAny?: Array<string>,
+    tagsAll?: Array<string>,
+    tagsNone?: Array<string>,
+    nameContains?: string,
+    sortBy?: string,
+    sortDesc?: boolean,
+    limit?: number,
+    offset?: number,
+    backend?: string,
+    excludeBackendVariations?: boolean,
+    quantized?: boolean,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelCategoryName === null || modelCategoryName === undefined) {
+      throw new Error(
+        'Required parameter modelCategoryName was null or undefined when calling searchCategoryModelReferencesV2ModelCategoryNameSearchGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>nsfw, 'nsfw');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>baseline,
+      'baseline',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>inpainting,
+      'inpainting',
+    );
+    if (tagsAny) {
+      tagsAny.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'tags_any',
+        );
+      });
+    }
+    if (tagsAll) {
+      tagsAll.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'tags_all',
+        );
+      });
+    }
+    if (tagsNone) {
+      tagsNone.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'tags_none',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>nameContains,
+      'name_contains',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>sortBy, 'sort_by');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>sortDesc,
+      'sort_desc',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>backend,
+      'backend',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>excludeBackendVariations,
+      'exclude_backend_variations',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>quantized,
+      'quantized',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/search`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<SearchResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Update an existing ControlNet model in v2 format
+   * Update an existing ControlNet model in v2 format.  ⚠️ **This endpoint is only available when &#x60;canonical_format&#x3D;\&#39;v2\&#39;&#x60; in PRIMARY mode.**  The model must already exist in the ControlNet category. Use POST to create new models.
+   * @param modelName
+   * @param controlNetModelRecordInput
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateV2ControlnetModel(
+    modelName: string,
+    controlNetModelRecordInput: ControlNetModelRecordInput,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public updateV2ControlnetModel(
+    modelName: string,
+    controlNetModelRecordInput: ControlNetModelRecordInput,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public updateV2ControlnetModel(
+    modelName: string,
+    controlNetModelRecordInput: ControlNetModelRecordInput,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public updateV2ControlnetModel(
+    modelName: string,
+    controlNetModelRecordInput: ControlNetModelRecordInput,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling updateV2ControlnetModel.',
+      );
+    }
+    if (controlNetModelRecordInput === null || controlNetModelRecordInput === undefined) {
+      throw new Error(
+        'Required parameter controlNetModelRecordInput was null or undefined when calling updateV2ControlnetModel.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet/update_model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: controlNetModelRecordInput,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Update an existing image generation model in v2 format
+   * Update an existing image generation model in v2 format.  ⚠️ **This endpoint is only available when &#x60;canonical_format&#x3D;\&#39;v2\&#39;&#x60; in PRIMARY mode.**  The model must already exist in the image generation category. Use POST to create new models.
+   * @param modelName
+   * @param imageGenerationModelRecordInput
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateV2ImageGenerationModel(
+    modelName: string,
+    imageGenerationModelRecordInput: ImageGenerationModelRecordInput,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public updateV2ImageGenerationModel(
+    modelName: string,
+    imageGenerationModelRecordInput: ImageGenerationModelRecordInput,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public updateV2ImageGenerationModel(
+    modelName: string,
+    imageGenerationModelRecordInput: ImageGenerationModelRecordInput,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public updateV2ImageGenerationModel(
+    modelName: string,
+    imageGenerationModelRecordInput: ImageGenerationModelRecordInput,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling updateV2ImageGenerationModel.',
+      );
+    }
+    if (imageGenerationModelRecordInput === null || imageGenerationModelRecordInput === undefined) {
+      throw new Error(
+        'Required parameter imageGenerationModelRecordInput was null or undefined when calling updateV2ImageGenerationModel.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/image_generation/update_model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: imageGenerationModelRecordInput,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Update an existing model in v2 format
    * Update an existing model in v2 format.  ⚠️ **This endpoint is only available when &#x60;canonical_format&#x3D;\&#39;v2\&#39;&#x60; in PRIMARY mode.**  The model must already exist in the specified category. Use POST to create new models.  - Preserves original &#x60;created_at&#x60; and &#x60;created_by&#x60; metadata - Updates &#x60;updated_at&#x60; timestamp
    * @param modelCategoryName
@@ -5157,6 +5906,121 @@ export class V2Service extends BaseService {
     return this.httpClient.request<PendingChangeRecord>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: newModelRecord,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Update an existing text generation model in v2 format
+   * Update an existing text generation model in v2 format.  ⚠️ **This endpoint is only available when &#x60;canonical_format&#x3D;\&#39;v2\&#39;&#x60; in PRIMARY mode.**  The model must already exist in the text generation category. Use POST to create new models.
+   * @param modelName
+   * @param textGenerationModelRecordInput
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateV2TextGenerationModel(
+    modelName: string,
+    textGenerationModelRecordInput: TextGenerationModelRecordInput,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public updateV2TextGenerationModel(
+    modelName: string,
+    textGenerationModelRecordInput: TextGenerationModelRecordInput,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public updateV2TextGenerationModel(
+    modelName: string,
+    textGenerationModelRecordInput: TextGenerationModelRecordInput,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public updateV2TextGenerationModel(
+    modelName: string,
+    textGenerationModelRecordInput: TextGenerationModelRecordInput,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling updateV2TextGenerationModel.',
+      );
+    }
+    if (textGenerationModelRecordInput === null || textGenerationModelRecordInput === undefined) {
+      throw new Error(
+        'Required parameter textGenerationModelRecordInput was null or undefined when calling updateV2TextGenerationModel.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/update_model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: textGenerationModelRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,

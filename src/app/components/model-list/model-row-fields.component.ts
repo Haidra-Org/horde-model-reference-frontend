@@ -1,4 +1,5 @@
 import { Component, input, computed, ChangeDetectionStrategy, inject } from '@angular/core';
+import { HordeBadgeComponent, type BadgeVariant } from '@haidra/design-system/badge';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -24,7 +25,7 @@ import { HordeApiService } from '../../services/horde-api.service';
 
 @Component({
   selector: 'app-model-row-fields',
-  imports: [TooltipDirective],
+  imports: [TooltipDirective, HordeBadgeComponent],
   template: `
     @if (mode() === 'grid') {
       <div>
@@ -52,14 +53,15 @@ import { HordeApiService } from '../../services/horde-api.service';
             <h4 class="detail-section-heading">
               Horde Status
               @if (isGroupedWithAggregatedStats()) {
-                <span
-                  class="badge badge-info text-xs ml-2 normal-case tracking-normal"
+                <horde-badge
+                  variant="info"
+                  class="text-xs ml-2 normal-case tracking-normal"
                   title="Statistics aggregated from {{
                     groupedModel()!.variations.length
                   }} model variations"
                 >
                   Aggregated ({{ groupedModel()!.variations.length }} variants)
-                </span>
+                </horde-badge>
               }
             </h4>
             @if (isHordeLoading()) {
@@ -86,9 +88,9 @@ import { HordeApiService } from '../../services/horde-api.service';
                 <div>
                   <div class="field-label">Active Workers</div>
                   <div class="field-value">
-                    <span class="badge" [class]="workerCountBadgeClass()">
+                    <horde-badge [variant]="workerCountVariant()">
                       {{ model().workerCount ?? 0 }}
-                    </span>
+                    </horde-badge>
                   </div>
                 </div>
                 @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
@@ -297,9 +299,9 @@ export class ModelRowFieldsComponent {
     return isLoading && !hasData;
   });
 
-  readonly workerCountBadgeClass = computed(() => {
+  readonly workerCountVariant = computed((): BadgeVariant => {
     const count = this.model().workerCount ?? 0;
-    return count > 0 ? 'badge-success' : 'badge-secondary';
+    return count > 0 ? 'success' : 'secondary';
   });
 
   readonly queuedUnit = computed(() => {

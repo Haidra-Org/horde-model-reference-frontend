@@ -7,16 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CategoryAuditSummary } from './categoryAuditSummary';
-import { ModelAuditInfo } from './modelAuditInfo';
+import { ModelDeletionRiskInfo } from './modelDeletionRiskInfo';
+import { CategoryDeletionRiskSummary } from './categoryDeletionRiskSummary';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
- * Complete audit response for a category.  Contains both per-model audit information and aggregate summary.
+ * Complete deletion risk response for a category.  Contains both per-model deletion risk information and aggregate summary.
  */
-export interface CategoryAuditResponse {
+export interface CategoryDeletionRiskResponse {
   /**
-   * The category being audited.
+   * The category being analyzed.
    */
   category: MODEL_REFERENCE_CATEGORY;
   /**
@@ -37,12 +37,12 @@ export interface CategoryAuditResponse {
   offset?: number;
   limit?: number | null;
   /**
-   * List of audit information for each model.
+   * List of deletion risk information for each model.
    */
-  models: Array<ModelAuditInfo>;
+  models: Array<ModelDeletionRiskInfo>;
   /**
    * Aggregate summary statistics.
    */
-  summary: CategoryAuditSummary;
+  summary: CategoryDeletionRiskSummary;
 }
-export namespace CategoryAuditResponse {}
+export namespace CategoryDeletionRiskResponse {}

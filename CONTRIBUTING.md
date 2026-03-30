@@ -10,7 +10,21 @@ npm run lint
 
 ## API Client Generation
 
-The TypeScript Angular API client is automatically generated from the OpenAPI schema. To regenerate:
+The TypeScript Angular API client is automatically generated from the OpenAPI schema.
+
+Install the OpenAPI Generator CLI globally if you haven't already:
+
+```bash
+npm install @openapitools/openapi-generator-cli -g
+```
+
+... or as a dev dependency:
+
+```bash
+npm install @openapitools/openapi-generator-cli --save-dev
+```
+
+To regenerate:
 
 ```bash
 # Generate from backend service (must be running)

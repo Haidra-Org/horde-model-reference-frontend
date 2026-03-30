@@ -42,9 +42,9 @@ import {
 } from '../../models/unified-model';
 import { HordeModelUsageStats } from '../../models/horde-api.models';
 import {
-  ModelAuditInfo,
+  ModelDeletionRiskInfo,
   DeletionRiskFlags,
-  CategoryAuditResponse,
+  CategoryDeletionRiskResponse,
 } from '../../api-client';
 import { BASELINE_SHORTHAND_MAP, RECORD_DISPLAY_MAP } from '../../models/maps';
 import {
@@ -58,11 +58,11 @@ import {
 } from '../../utils/audit-metrics.utils';
 
 /**
- * Enriched model data with audit metrics (mapped from backend ModelAuditInfo)
+ * Enriched model data with audit metrics (mapped from backend ModelDeletionRiskInfo)
  */
 interface ModelWithAuditMetrics {
   model: UnifiedModelData | GroupedTextModel;
-  auditInfo: ModelAuditInfo | null; // Null in degraded mode
+  auditInfo: ModelDeletionRiskInfo | null; // Null in degraded mode
   // Core metrics
   name: string;
   workerCount: number;
@@ -120,7 +120,7 @@ export class ModelAuditComponent implements OnInit {
   // Route and data
   readonly category = signal<string>('');
   readonly models = signal<(UnifiedModelData | GroupedTextModel)[]>([]);
-  readonly auditResponse = signal<CategoryAuditResponse | null>(null);
+  readonly auditResponse = signal<CategoryDeletionRiskResponse | null>(null);
   readonly loading = signal(true);
   readonly auditLoading = signal(false);
   readonly degradedMode = signal(false); // True when audit API fails
@@ -310,7 +310,7 @@ export class ModelAuditComponent implements OnInit {
           // For grouped models without a direct aggregated entry, aggregate audit data from all variations
           const variationAuditInfos = groupedModel.variations
             .map((v) => auditResp.models.find((a) => a.name === v.name))
-            .filter((a): a is ModelAuditInfo => a !== undefined);
+            .filter((a): a is ModelDeletionRiskInfo => a !== undefined);
 
           if (variationAuditInfos.length === 0) {
             // No audit data for this grouped model - use degraded metrics
@@ -473,7 +473,7 @@ export class ModelAuditComponent implements OnInit {
 
   private createGroupedMetricsFromAuditInfo(
     groupedModel: GroupedTextModel,
-    auditInfo: ModelAuditInfo,
+    auditInfo: ModelDeletionRiskInfo,
     categoryTotal: number,
   ): ModelWithAuditMetrics {
     const usageMonth = auditInfo.usage_month ?? 0;
@@ -575,7 +575,7 @@ export class ModelAuditComponent implements OnInit {
    * Each model entry shows the model with backend_variations for per-backend breakdown
    */
   private createUngroupedMetricsFromAudit(
-    auditResp: CategoryAuditResponse,
+    auditResp: CategoryDeletionRiskResponse,
   ): ModelWithAuditMetrics[] {
     return auditResp.models.map((auditInfo) => {
       const fileHosts = auditInfo.download_hosts ?? [];
@@ -1014,7 +1014,7 @@ export class ModelAuditComponent implements OnInit {
     category: string,
     presetName: string,
     showUngroupedView: boolean,
-  ): Observable<CategoryAuditResponse | null> {
+  ): Observable<CategoryDeletionRiskResponse | null> {
     const isTextGen = category === 'text_generation';
     // When ungrouped view is enabled for text models, we don't group but request backend variations
     const groupModels = isTextGen && !showUngroupedView;

@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
@@ -55,7 +56,7 @@ function hasBackendPrefix(name: string): string | undefined {
 
 @Component({
   selector: 'app-text-model-group',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, HordeBadgeComponent],
   templateUrl: './text-model-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

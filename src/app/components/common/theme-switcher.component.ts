@@ -57,54 +57,7 @@ import { ThemeCategoryId } from '../../models/theme.model';
       </div>
     </div>
   `,
-  styles: `
-    .theme-switcher {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      min-width: 220px;
-    }
 
-    .theme-switcher.theme-switcher-compact {
-      flex-direction: row;
-      align-items: center;
-      gap: 0.5rem;
-      min-width: unset;
-    }
-
-    .theme-switcher-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .theme-switcher-controls.theme-switcher-controls-compact {
-      gap: 0.25rem;
-    }
-
-    .theme-switcher-select-compact {
-      min-width: 160px;
-    }
-
-    .theme-mode-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      background: transparent;
-      color: inherit;
-      padding: 0.4rem;
-      border-radius: 0.5rem;
-      transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
-      cursor: pointer;
-    }
-
-    .theme-mode-toggle:hover {
-      background-color: rgba(107, 114, 128, 0.15);
-    }
-  `,
 })
 export class ThemeSwitcherComponent {
   private static nextId = 0;

@@ -1,5 +1,13 @@
 @import 'tailwindcss';
+
+/* Shared design system (submodule at src/shared/design-system/) */
+@import '../shared/design-system/tokens/index.css';
+@import '../shared/design-system/primitives/index.css';
+
+/* Local theme extensions (project-specific tokens) */
 @import './theme/variables.css';
+
+/* Local component extensions (project-specific classes) */
 @import './components/base.css';
 @import './components/data-display.css';
 @import './components/layout.css';

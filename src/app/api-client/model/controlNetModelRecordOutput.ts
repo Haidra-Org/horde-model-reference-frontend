@@ -25,6 +25,6 @@ export interface ControlNetModelRecordOutput {
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
-  controlnet_style: string;
+  controlnet_style?: string | null;
 }
 export namespace ControlNetModelRecordOutput {}

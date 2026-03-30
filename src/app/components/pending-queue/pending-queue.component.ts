@@ -153,6 +153,7 @@ export class PendingQueueComponent {
     const statusCounts: Record<PendingChangeStatus, number> = {
       pending: 0,
       approved: 0,
+      applying: 0,
       rejected: 0,
       applied: 0,
     };
@@ -251,7 +252,7 @@ export class PendingQueueComponent {
     batchId: null,
   });
 
-  readonly statusOptions: PendingChangeStatus[] = ['pending', 'approved', 'rejected', 'applied'];
+  readonly statusOptions: PendingChangeStatus[] = ['pending', 'approved', 'applying', 'rejected', 'applied'];
   readonly operationOptions: AuditOperation[] = ['create', 'update', 'delete'];
   readonly hasFilters = computed(() => {
     const value = this.filters();
@@ -263,6 +264,7 @@ export class PendingQueueComponent {
     const statusCounts: Record<PendingChangeStatus, number> = {
       pending: 0,
       approved: 0,
+      applying: 0,
       rejected: 0,
       applied: 0,
     } as const;

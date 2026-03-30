@@ -153,7 +153,12 @@
   }
 
   .field-group-content {
-    @apply px-4 py-4 bg-white dark:bg-gray-800;
+    @apply px-4 py-4;
+    background: var(--color-glass-surface-nested);
+  }
+
+  .dark .field-group-content {
+    background: var(--color-glass-surface-dark-nested);
   }
 
   /* Form section groupings */
@@ -166,10 +171,15 @@
     @apply dark:border-gray-700;
   }
 
-  /* ===== Form Section Card (new section wrapper) ===== */
+  /* ===== Form Section Card — nested glass surface (no blur to avoid stacking) ===== */
   .form-section-card {
-    @apply border-b border-gray-200 dark:border-gray-700;
-    @apply bg-white dark:bg-gray-800;
+    background: var(--color-glass-surface-nested);
+    border-bottom: 1px solid var(--color-glass-border-subtle);
+  }
+
+  .dark .form-section-card {
+    background: var(--color-glass-surface-dark-nested);
+    border-bottom-color: var(--color-glass-border-dark-subtle);
   }
 
   .form-section-card--collapsed {
@@ -179,7 +189,7 @@
   .form-section-header {
     @apply w-full flex items-center justify-between;
     @apply px-5 py-3 min-h-[48px];
-    @apply bg-white dark:bg-gray-800;
+    background: transparent;
     @apply border-b border-gray-100 dark:border-gray-700;
     @apply transition-colors duration-100;
   }
@@ -684,9 +694,20 @@
     @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 overflow-x-auto text-sm whitespace-pre-wrap break-words;
   }
 
-  /* Sidebar borders and backgrounds */
+  /* Sidebar borders and backgrounds — glass surface */
   .sidebar-container {
-    @apply h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0;
+    @apply h-full flex flex-col transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0;
+    background: var(--color-glass-surface-panel);
+    backdrop-filter: blur(var(--blur-glass-sm));
+    -webkit-backdrop-filter: blur(var(--blur-glass-sm));
+    border-right: 1px solid var(--color-glass-border-subtle);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .dark .sidebar-container {
+    background: var(--color-glass-surface-dark);
+    border-right-color: var(--color-glass-border-dark-subtle);
+    box-shadow: var(--shadow-glass-dark);
   }
 
   .sidebar-expanded {
@@ -736,9 +757,20 @@
     @apply lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors;
   }
 
-  /* Navigation bar styling */
+  /* Navigation bar styling — tinted glass surface (primary color with translucency) */
   .nav-bar {
-    @apply sticky top-0 z-50 bg-primary-700 dark:bg-gray-900 text-white border-b border-primary-800 dark:border-gray-700;
+    @apply sticky top-0 z-50 text-white;
+    background: rgb(29 78 216 / 0.88);
+    backdrop-filter: blur(var(--blur-glass-sm));
+    -webkit-backdrop-filter: blur(var(--blur-glass-sm));
+    border-bottom: 1px solid rgb(30 64 175 / 0.5);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .dark .nav-bar {
+    background: rgb(17 24 39 / 0.85);
+    border-bottom-color: var(--color-glass-border-dark-subtle);
+    box-shadow: var(--shadow-glass-dark);
   }
 
   .nav-content {

@@ -263,7 +263,7 @@ const controlnetAdapter: CategoryAdapter<ControlNetFieldsData> = {
   v2ToForm(model) {
     const m = model as ControlNetModelRecordOutput;
     return {
-      controlnet_style: m.controlnet_style,
+      controlnet_style: m.controlnet_style ?? '',
     };
   },
 

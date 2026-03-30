@@ -1,0 +1,3 @@
+[submodule "src/shared/design-system"]
+	path = src/shared/design-system
+	url = https://github.com/Haidra-Org/horde-design-system

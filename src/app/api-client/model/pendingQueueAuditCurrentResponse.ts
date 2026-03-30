@@ -7,14 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AuditDomain } from './auditDomain';
+import { CanonicalFormat } from './canonicalFormat';
 import { PendingQueueAuditChange } from './pendingQueueAuditChange';
 
 /**
  * Snapshot of currently pending (unapproved) changes.
  */
 export interface PendingQueueAuditCurrentResponse {
-  domain: AuditDomain;
+  domain: CanonicalFormat;
   pending_changes: Array<PendingQueueAuditChange>;
   total_pending: number;
   generated_at: number;

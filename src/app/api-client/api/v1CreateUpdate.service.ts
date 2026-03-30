@@ -1159,7 +1159,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Delete a legacy model entry.
-   * Delete a model from a legacy model reference category.  When pending queue is enabled, this enqueues the deletion and returns HTTP 202. When pending queue is disabled, this deletes the model immediately and returns HTTP 200.
+   * Delete a model from a legacy model reference category.  When pending queue is enabled, this enqueues the deletion and returns HTTP 202. When pending queue is disabled, this deletes the model immediately and returns HTTP 204.
    * @param modelCategoryName
    * @param modelName
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -1175,7 +1175,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<any>;
+  ): Observable<PendingChangeRecord>;
   public deleteLegacyModel(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
@@ -1186,7 +1186,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<any>>;
+  ): Observable<HttpResponse<PendingChangeRecord>>;
   public deleteLegacyModel(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
@@ -1197,7 +1197,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<any>>;
+  ): Observable<HttpEvent<PendingChangeRecord>>;
   public deleteLegacyModel(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
@@ -1252,7 +1252,7 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<PendingChangeRecord>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
@@ -1265,7 +1265,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing BLIP model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyBlipRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1370,7 +1370,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing CLIP model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyClipRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1475,7 +1475,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing Codeformer model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyCodeformerRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1584,7 +1584,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing ControlNet model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyControlnetRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1693,7 +1693,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing ESRGAN model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyEsrganRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1798,7 +1798,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing GFPGAN model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyGfpganRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1903,7 +1903,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing miscellaneous model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyMiscellaneousRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -2012,7 +2012,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyStableDiffusionRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -2120,7 +2120,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing safety checker model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacySafetyCheckerRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -2229,7 +2229,7 @@ export class V1CreateUpdateService extends BaseService {
 
   /**
    * Update an existing model in legacy format
-   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;legacy\&#39; in PRIMARY mode.
+   * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
    * @param legacyTextGenerationRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.

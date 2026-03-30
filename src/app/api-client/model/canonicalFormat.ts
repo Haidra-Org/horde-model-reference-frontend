@@ -9,10 +9,10 @@
  */
 
 /**
- * Which format is the canonical source of truth for model data.  This controls which API version has write access: - \'legacy\': v1 API has CRUD operations, v2 API is read-only - \'v2\': v2 API has CRUD operations, v1 API is read-only
+ * Which format is the canonical source of truth for model data.  This controls which API version has write access: - \'LEGACY\': v1 API has CRUD operations, v2 API is read-only - \'v2\': v2 API has CRUD operations, v1 API is read-only
  */
 export const CanonicalFormat = {
   Legacy: 'LEGACY',
-  V2: 'V2',
+  V2: 'v2',
 } as const;
 export type CanonicalFormat = (typeof CanonicalFormat)[keyof typeof CanonicalFormat];

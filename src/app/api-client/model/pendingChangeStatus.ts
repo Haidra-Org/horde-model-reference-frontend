@@ -9,11 +9,12 @@
  */
 
 /**
- * Lifecycle states for queued changes.
+ * Lifecycle states for queued changes.  State transitions::      PENDING → APPROVED → APPLYING → APPLIED     PENDING → REJECTED  The ``APPLYING`` state is a transient lock held while the backend write is in progress.  If the process crashes during this window, records stuck in ``APPLYING`` are detected on restart and logged as warnings.
  */
 export const PendingChangeStatus = {
   Pending: 'pending',
   Approved: 'approved',
+  Applying: 'applying',
   Applied: 'applied',
   Rejected: 'rejected',
 } as const;

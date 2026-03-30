@@ -744,7 +744,7 @@ export class MetadataService extends BaseService {
 
   /**
    * Get last update timestamp for canonical format (legacy)
-   * Get the last update timestamp for the canonical format.  This endpoint returns the maximum last_updated timestamp across all categories for legacy format operations. Only available when canonical_format&#x3D;\&#39;legacy\&#39;.  Returns:     LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.  Raises:     HTTPException: 503 if metadata is not supported or canonical_format !&#x3D; \&#39;legacy\&#39;.
+   * Get the last update timestamp for the canonical format.  This endpoint returns the maximum last_updated timestamp across all categories for legacy format operations. Only available when canonical_format&#x3D;\&#39;LEGACY\&#39;.  Returns:     LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.  Raises:     HTTPException: 503 if metadata is not supported or canonical_format !&#x3D; \&#39;LEGACY\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -822,7 +822,7 @@ export class MetadataService extends BaseService {
 
   /**
    * Get last update timestamp for canonical format (legacy)
-   * Get the last update timestamp for the canonical format.  This endpoint returns the maximum last_updated timestamp across all categories for legacy format operations. Only available when canonical_format&#x3D;\&#39;legacy\&#39;.  Returns:     LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.  Raises:     HTTPException: 503 if metadata is not supported or canonical_format !&#x3D; \&#39;legacy\&#39;.
+   * Get the last update timestamp for the canonical format.  This endpoint returns the maximum last_updated timestamp across all categories for legacy format operations. Only available when canonical_format&#x3D;\&#39;LEGACY\&#39;.  Returns:     LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.  Raises:     HTTPException: 503 if metadata is not supported or canonical_format !&#x3D; \&#39;LEGACY\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */

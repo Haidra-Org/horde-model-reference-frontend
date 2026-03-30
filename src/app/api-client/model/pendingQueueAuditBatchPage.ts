@@ -8,13 +8,13 @@
  * Do not edit the class manually.
  */
 import { PendingQueueAuditBatchSummary } from './pendingQueueAuditBatchSummary';
-import { AuditDomain } from './auditDomain';
+import { CanonicalFormat } from './canonicalFormat';
 
 /**
  * Cursor-based page of batch summaries.
  */
 export interface PendingQueueAuditBatchPage {
-  domain: AuditDomain;
+  domain: CanonicalFormat;
   batches: Array<PendingQueueAuditBatchSummary>;
   next_cursor?: number | null;
 }

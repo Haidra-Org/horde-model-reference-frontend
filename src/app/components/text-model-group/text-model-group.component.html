@@ -99,11 +99,11 @@
             <td>{{ member.style ?? '-' }}</td>
             <td>
               @if (member.nsfw === true) {
-              <span class="badge badge-warning">NSFW</span>
+              <horde-badge variant="warning">NSFW</horde-badge>
               } @else if (member.nsfw === false) {
-              <span class="badge badge-success">SFW</span>
+              <horde-badge variant="success">SFW</horde-badge>
               } @else {
-              <span class="badge badge-secondary">Unknown</span>
+              <horde-badge variant="secondary">Unknown</horde-badge>
               }
             </td>
             <td>
@@ -160,7 +160,7 @@
               {{ dup.recordKey }}
             </td>
             <td>
-              <span class="badge badge-info">{{ dup.backendPrefix }}</span>
+              <horde-badge variant="info">{{ dup.backendPrefix }}</horde-badge>
             </td>
             <td>
               @if (dup.parameters) {

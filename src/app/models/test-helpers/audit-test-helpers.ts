@@ -3,10 +3,10 @@
  */
 
 import {
-  CategoryAuditResponse,
-  CategoryAuditSummary,
+  CategoryDeletionRiskResponse,
+  CategoryDeletionRiskSummary,
   DeletionRiskFlags,
-  ModelAuditInfo,
+  ModelDeletionRiskInfo,
   UsageTrend,
   MODEL_REFERENCE_CATEGORY,
 } from '../../api-client';
@@ -45,9 +45,9 @@ export function createMockUsageTrend(overrides?: Partial<UsageTrend>): UsageTren
 }
 
 /**
- * Creates a mock ModelAuditInfo object with minimal required fields
+ * Creates a mock ModelDeletionRiskInfo object with minimal required fields
  */
-export function createMockModelAuditInfo(overrides?: Partial<ModelAuditInfo>): ModelAuditInfo {
+export function createMockModelAuditInfo(overrides?: Partial<ModelDeletionRiskInfo>): ModelDeletionRiskInfo {
   const flags = overrides?.deletion_risk_flags ?? createMockDeletionRiskFlags();
   const workerCount = overrides?.worker_count ?? 0;
   const usageMonth = overrides?.usage_month ?? 0;
@@ -89,11 +89,11 @@ export function createMockModelAuditInfo(overrides?: Partial<ModelAuditInfo>): M
 }
 
 /**
- * Creates a mock CategoryAuditSummary with minimal required fields
+ * Creates a mock CategoryDeletionRiskSummary with minimal required fields
  */
 export function createMockCategoryAuditSummary(
-  overrides?: Partial<CategoryAuditSummary>,
-): CategoryAuditSummary {
+  overrides?: Partial<CategoryDeletionRiskSummary>,
+): CategoryDeletionRiskSummary {
   return {
     total_models: 0,
     models_at_risk: 0,
@@ -114,11 +114,11 @@ export function createMockCategoryAuditSummary(
 }
 
 /**
- * Creates a mock CategoryAuditResponse with minimal required fields
+ * Creates a mock CategoryDeletionRiskResponse with minimal required fields
  */
 export function createMockCategoryAuditResponse(
-  overrides?: Partial<CategoryAuditResponse>,
-): CategoryAuditResponse {
+  overrides?: Partial<CategoryDeletionRiskResponse>,
+): CategoryDeletionRiskResponse {
   return {
     category: 'image_generation' as MODEL_REFERENCE_CATEGORY,
     category_total_month_usage: 0,
@@ -133,10 +133,10 @@ export function createMockCategoryAuditResponse(
 }
 
 /**
- * Builder pattern for creating ModelAuditInfo test data
+ * Builder pattern for creating ModelDeletionRiskInfo test data
  */
 export class ModelAuditInfoBuilder {
-  private info: ModelAuditInfo;
+  private info: ModelDeletionRiskInfo;
 
   constructor() {
     this.info = createMockModelAuditInfo();
@@ -294,16 +294,16 @@ export class ModelAuditInfoBuilder {
     return this;
   }
 
-  build(): ModelAuditInfo {
+  build(): ModelDeletionRiskInfo {
     return this.info;
   }
 }
 
 /**
- * Builder pattern for creating CategoryAuditResponse test data
+ * Builder pattern for creating CategoryDeletionRiskResponse test data
  */
 export class CategoryAuditResponseBuilder {
-  private response: CategoryAuditResponse;
+  private response: CategoryDeletionRiskResponse;
 
   constructor() {
     this.response = createMockCategoryAuditResponse();
@@ -319,7 +319,7 @@ export class CategoryAuditResponseBuilder {
     return this;
   }
 
-  withModels(models: ModelAuditInfo[]): this {
+  withModels(models: ModelDeletionRiskInfo[]): this {
     this.response.models = models;
     this.response.total_count = models.length;
     this.response.returned_count = models.length;
@@ -334,21 +334,21 @@ export class CategoryAuditResponseBuilder {
     return this;
   }
 
-  withSummary(summary: Partial<CategoryAuditSummary>): this {
+  withSummary(summary: Partial<CategoryDeletionRiskSummary>): this {
     this.response.summary = createMockCategoryAuditSummary(summary);
     return this;
   }
 
-  build(): CategoryAuditResponse {
+  build(): CategoryDeletionRiskResponse {
     return this.response;
   }
 }
 
 /**
- * Generates a large dataset of ModelAuditInfo for performance testing
+ * Generates a large dataset of ModelDeletionRiskInfo for performance testing
  */
-export function generateLargeAuditDataset(count: number): ModelAuditInfo[] {
-  const models: ModelAuditInfo[] = [];
+export function generateLargeAuditDataset(count: number): ModelDeletionRiskInfo[] {
+  const models: ModelDeletionRiskInfo[] = [];
   const baselines = ['stable_diffusion_1', 'stable_diffusion_2', 'stable_diffusion_xl', 'flux_1'];
   const hosts = ['huggingface.co', 'civitai.com', 'github.com'];
 
@@ -401,12 +401,12 @@ export function generateLargeAuditDataset(count: number): ModelAuditInfo[] {
 }
 
 /**
- * Creates a CategoryAuditResponse with a large dataset for performance testing
+ * Creates a CategoryDeletionRiskResponse with a large dataset for performance testing
  */
 export function generateLargeAuditResponse(
   modelCount: number,
   category: MODEL_REFERENCE_CATEGORY = 'image_generation' as MODEL_REFERENCE_CATEGORY,
-): CategoryAuditResponse {
+): CategoryDeletionRiskResponse {
   const models = generateLargeAuditDataset(modelCount);
   const totalMonthUsage = models.reduce((sum, m) => sum + (m.usage_month ?? 0), 0);
 

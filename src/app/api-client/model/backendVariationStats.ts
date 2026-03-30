@@ -9,9 +9,9 @@
  */
 
 /**
- * Per-backend statistics for a text generation model in audit context.  Provides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical). Used in ungrouped audit view to show backend-specific details for each model.
+ * Per-backend statistics for a text generation model in deletion risk context.  Provides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical). Used in ungrouped deletion risk view to show backend-specific details for each model.
  */
-export interface BackendAuditVariation {
+export interface BackendVariationStats {
   /**
    * Backend name (e.g., \'aphrodite\', \'koboldcpp\', \'canonical\').
    */

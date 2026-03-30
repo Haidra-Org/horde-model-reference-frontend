@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://models.tazlin.net/api',
+  apiBaseUrl: 'https://models.aihorde.net/api',
 };

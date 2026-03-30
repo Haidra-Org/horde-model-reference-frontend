@@ -11,9 +11,15 @@
  */
 import { defineConfig } from 'vitest/config';
 import angular from '@analogjs/vite-plugin-angular';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [angular()],
+  resolve: {
+    alias: {
+      '@haidra/design-system': resolve(__dirname, 'src/shared/design-system/components'),
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -1,4 +1,5 @@
 import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
+import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -20,6 +21,7 @@ import {
 
 @Component({
   selector: 'app-model-row-header',
+  imports: [HordeBadgeComponent],
   template: `
     @if (mode() === 'compact') {
       <span class="flex items-center gap-2">
@@ -33,7 +35,7 @@ import {
         <div class="flex items-center gap-2 mb-2">
           <h3 class="model-card-title flex-1">{{ model().name }}</h3>
           @if (model().version) {
-            <span class="badge badge-secondary flex-shrink-0">v{{ model().version }}</span>
+            <horde-badge variant="secondary" class="flex-shrink-0">v{{ model().version }}</horde-badge>
           }
         </div>
         <div class="flex items-start justify-between gap-3 mb-3">
@@ -104,7 +106,7 @@ import {
               }
             }
             <!-- Worker Count Badge (always shown) -->
-            <span class="badge badge-info" [title]="workerCountTooltip()">
+            <horde-badge variant="info" [title]="workerCountTooltip()">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -114,7 +116,7 @@ import {
                 />
               </svg>
               {{ workerCount() }} {{ workerCount() === 1 ? 'worker' : 'workers' }}
-            </span>
+            </horde-badge>
           </div>
         </div>
 
@@ -168,18 +170,18 @@ import {
 
               <!-- NSFW Badge -->
               @if (model().nsfw === true) {
-                <span class="badge badge-warning">NSFW</span>
+                <horde-badge variant="warning">NSFW</horde-badge>
               } @else if (model().nsfw === false) {
-                <span class="badge badge-success">Safe</span>
+                <horde-badge variant="success">Safe</horde-badge>
               } @else {
-                <span class="badge badge-secondary">Unknown</span>
+                <horde-badge variant="secondary">Unknown</horde-badge>
               }
 
               <!-- Download Count Badge -->
               @if (downloadCount() > 0) {
-                <span class="badge badge-info">{{ downloadCount() }} files</span>
+                <horde-badge variant="info">{{ downloadCount() }} files</horde-badge>
               } @else {
-                <span class="badge badge-secondary">No files</span>
+                <horde-badge variant="secondary">No files</horde-badge>
               }
             }
           </div>

@@ -4,12 +4,575 @@
     "title": "FastAPI",
     "version": "0.1.0"
   },
-  "servers": [
-    {
-      "url": "/api"
-    }
-  ],
   "paths": {
+    "/model_references/v2/{model_category_name}/search": {
+      "get": {
+        "tags": [
+          "v2",
+          "search"
+        ],
+        "summary": "Search models in a category",
+        "description": "Search models within a specific category with filtering, sorting, and pagination.",
+        "operationId": "search_category_model_references_v2__model_category_name__search_get",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Category Name"
+            }
+          },
+          {
+            "name": "nsfw",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by NSFW status",
+              "title": "Nsfw"
+            },
+            "description": "Filter by NSFW status"
+          },
+          {
+            "name": "baseline",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by baseline",
+              "title": "Baseline"
+            },
+            "description": "Filter by baseline"
+          },
+          {
+            "name": "inpainting",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by inpainting (image only)",
+              "title": "Inpainting"
+            },
+            "description": "Filter by inpainting (image only)"
+          },
+          {
+            "name": "tags_any",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Models with any of these tags",
+              "title": "Tags Any"
+            },
+            "description": "Models with any of these tags"
+          },
+          {
+            "name": "tags_all",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Models with all of these tags",
+              "title": "Tags All"
+            },
+            "description": "Models with all of these tags"
+          },
+          {
+            "name": "tags_none",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Models with none of these tags",
+              "title": "Tags None"
+            },
+            "description": "Models with none of these tags"
+          },
+          {
+            "name": "name_contains",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive name substring match",
+              "title": "Name Contains"
+            },
+            "description": "Case-insensitive name substring match"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Field name to sort by",
+              "title": "Sort By"
+            },
+            "description": "Field name to sort by"
+          },
+          {
+            "name": "sort_desc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Sort descending",
+              "default": false,
+              "title": "Sort Desc"
+            },
+            "description": "Sort descending"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Max results to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max results to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of results to skip",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of results to skip"
+          },
+          {
+            "name": "backend",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Text model backend filter",
+              "title": "Backend"
+            },
+            "description": "Text model backend filter"
+          },
+          {
+            "name": "exclude_backend_variations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Exclude text model backend variations",
+              "default": false,
+              "title": "Exclude Backend Variations"
+            },
+            "description": "Exclude text model backend variations"
+          },
+          {
+            "name": "quantized",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by quantization (text only)",
+              "title": "Quantized"
+            },
+            "description": "Filter by quantization (text only)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/search": {
+      "get": {
+        "tags": [
+          "v2",
+          "search"
+        ],
+        "summary": "Search models across all categories",
+        "description": "Search models across all categories with generic filters only.",
+        "operationId": "search_all_model_references_v2_search_get",
+        "parameters": [
+          {
+            "name": "nsfw",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by NSFW status",
+              "title": "Nsfw"
+            },
+            "description": "Filter by NSFW status"
+          },
+          {
+            "name": "name_contains",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive name substring match",
+              "title": "Name Contains"
+            },
+            "description": "Case-insensitive name substring match"
+          },
+          {
+            "name": "tags_any",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Models with any of these tags",
+              "title": "Tags Any"
+            },
+            "description": "Models with any of these tags"
+          },
+          {
+            "name": "tags_all",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Models with all of these tags",
+              "title": "Tags All"
+            },
+            "description": "Models with all of these tags"
+          },
+          {
+            "name": "tags_none",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Models with none of these tags",
+              "title": "Tags None"
+            },
+            "description": "Models with none of these tags"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Field name to sort by",
+              "title": "Sort By"
+            },
+            "description": "Field name to sort by"
+          },
+          {
+            "name": "sort_desc",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Sort descending",
+              "default": false,
+              "title": "Sort Desc"
+            },
+            "description": "Sort descending"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Max results to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max results to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of results to skip",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of results to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/{model_category_name}/popular": {
+      "get": {
+        "tags": [
+          "v2",
+          "search"
+        ],
+        "summary": "Get popular models ranked by live Horde usage",
+        "description": "Return models ranked by live Horde popularity metrics.\n\nOnly ``image_generation`` and ``text_generation`` have Horde API data.\nOther categories return an empty list.",
+        "operationId": "popular_models_model_references_v2__model_category_name__popular_get",
+        "parameters": [
+          {
+            "name": "model_category_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Category Name"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Max results",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Max results"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "worker_count",
+                "usage_day",
+                "usage_month",
+                "usage_total"
+              ],
+              "type": "string",
+              "description": "Metric to rank by",
+              "default": "worker_count",
+              "title": "Sort By"
+            },
+            "description": "Metric to rank by"
+          },
+          {
+            "name": "include_workers",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include per-worker details",
+              "default": false,
+              "title": "Include Workers"
+            },
+            "description": "Include per-worker details"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Popular Models Model References V2  Model Category Name  Popular Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/model_references/v2/pending_queue/changes": {
       "get": {
         "tags": [
@@ -827,7 +1390,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -931,7 +1494,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -1011,7 +1574,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -1102,7 +1665,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -1295,6 +1858,33 @@
                         "$ref": "#/components/schemas/ControlNetModelRecord-Output"
                       },
                       {
+                        "$ref": "#/components/schemas/BlipModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ClipModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/CodeformerModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EsrganModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/GfpganModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/SafetyCheckerModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/VideoGenerationModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/AudioGenerationModelRecord-Output"
+                      },
+                      {
+                        "$ref": "#/components/schemas/MiscellaneousModelRecord-Output"
+                      },
+                      {
                         "$ref": "#/components/schemas/GenericModelRecord-Output"
                       }
                     ],
@@ -1462,6 +2052,33 @@
                   },
                   {
                     "$ref": "#/components/schemas/ControlNetModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/BlipModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ClipModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CodeformerModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/EsrganModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GfpganModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SafetyCheckerModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoGenerationModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AudioGenerationModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/MiscellaneousModelRecord-Input"
                   },
                   {
                     "$ref": "#/components/schemas/GenericModelRecord-Input"
@@ -2006,6 +2623,33 @@
                     "$ref": "#/components/schemas/ControlNetModelRecord-Input"
                   },
                   {
+                    "$ref": "#/components/schemas/BlipModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ClipModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CodeformerModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/EsrganModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GfpganModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SafetyCheckerModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/VideoGenerationModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AudioGenerationModelRecord-Input"
+                  },
+                  {
+                    "$ref": "#/components/schemas/MiscellaneousModelRecord-Input"
+                  },
+                  {
                     "$ref": "#/components/schemas/GenericModelRecord-Input"
                   }
                 ],
@@ -2074,6 +2718,300 @@
           },
           "409": {
             "description": "Model already exists (use PUT to update)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error in request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable (v2 canonical mode required)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/image_generation/update_model/{model_name}": {
+      "put": {
+        "tags": [
+          "v2"
+        ],
+        "summary": "Update an existing image generation model in v2 format",
+        "description": "Update an existing image generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the image generation category. Use POST to create new models.",
+        "operationId": "update_v2_image_generation_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageGenerationModelRecord-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Model change queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            },
+            "links": {
+              "GetUpdatedImageModel": {
+                "operationId": "read_v2_single_model",
+                "parameters": {
+                  "model_category_name": "image_generation",
+                  "model_name": "$request.path.model_name"
+                },
+                "description": "Retrieve the updated image generation model."
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Model not found (use POST to create)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error in request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable (v2 canonical mode required)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/update_model/{model_name}": {
+      "put": {
+        "tags": [
+          "v2"
+        ],
+        "summary": "Update an existing text generation model in v2 format",
+        "description": "Update an existing text generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the text generation category. Use POST to create new models.",
+        "operationId": "update_v2_text_generation_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextGenerationModelRecord-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Model change queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            },
+            "links": {
+              "GetUpdatedTextModel": {
+                "operationId": "read_v2_single_model",
+                "parameters": {
+                  "model_category_name": "text_generation",
+                  "model_name": "$request.path.model_name"
+                },
+                "description": "Retrieve the updated text generation model."
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Model not found (use POST to create)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error in request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable (v2 canonical mode required)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/controlnet/update_model/{model_name}": {
+      "put": {
+        "tags": [
+          "v2"
+        ],
+        "summary": "Update an existing ControlNet model in v2 format",
+        "description": "Update an existing ControlNet model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the ControlNet category. Use POST to create new models.",
+        "operationId": "update_v2_controlnet_model",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlNetModelRecord-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Model change queued for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingChangeRecord"
+                }
+              }
+            },
+            "links": {
+              "GetUpdatedControlNetModel": {
+                "operationId": "read_v2_single_model",
+                "parameters": {
+                  "model_category_name": "controlnet",
+                  "model_name": "$request.path.model_name"
+                },
+                "description": "Retrieve the updated ControlNet model."
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Model not found (use POST to create)",
             "content": {
               "application/json": {
                 "schema": {
@@ -2334,15 +3272,15 @@
         }
       }
     },
-    "/model_references/statistics/{model_category_name}/audit": {
+    "/model_references/statistics/{model_category_name}/deletion-risk": {
       "get": {
         "tags": [
           "v2",
-          "audit"
+          "deletion-risk"
         ],
-        "summary": "Get audit analysis for a model category",
-        "description": "Get comprehensive audit analysis for a model reference category.\n\nAnalyzes all models in the category to identify deletion risks including:\n- Missing or invalid download URLs\n- Non-preferred file hosts\n- Missing required fields (description, baseline)\n- Zero active workers\n- Low or no recent usage\n\nReturns both per-model audit information and aggregate summary statistics.\nAudit results are cached (default 300s TTL) and automatically invalidated\nwhen model data changes.\n\nArgs:\n    model_category_name: The model reference category to audit.\n    manager: The model reference manager (injected).\n    horde_api: The Horde API integration (injected).\n    audit_cache: The audit cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    include_backend_variations: Include per-backend breakdown for text models (ungrouped view).\n    preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).\n    limit: Maximum number of models to return (None = all).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryAuditResponse with per-model audit info and summary.\n\nRaises:\n    HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.",
-        "operationId": "read_v2_category_audit",
+        "summary": "Get deletion risk analysis for a model category",
+        "description": "Get comprehensive deletion risk analysis for a model reference category.\n\nAnalyzes all models in the category to identify deletion risks including:\n- Missing or invalid download URLs\n- Non-preferred file hosts\n- Missing required fields (description, baseline)\n- Zero active workers\n- Low or no recent usage\n\nReturns both per-model risk information and aggregate summary statistics.\nResults are cached (default 300s TTL) and automatically invalidated\nwhen model data changes.\n\nArgs:\n    model_category_name: The model reference category to analyze.\n    manager: The model reference manager (injected).\n    horde_api: The Horde API integration (injected).\n    risk_cache: The deletion risk cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    include_backend_variations: Include per-backend breakdown for text models (ungrouped view).\n    preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).\n    limit: Maximum number of models to return (None = all).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryDeletionRiskResponse with per-model risk info and summary.\n\nRaises:\n    HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.",
+        "operationId": "read_v2_category_deletion_risk",
         "parameters": [
           {
             "name": "model_category_name",
@@ -2429,17 +3367,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Category audit analysis retrieved successfully",
+            "description": "Category deletion risk analysis retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryAuditResponse"
+                  "$ref": "#/components/schemas/CategoryDeletionRiskResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid category or unsupported category for audit"
+            "description": "Invalid category or unsupported for deletion risk analysis"
           },
           "404": {
             "description": "Category not found"
@@ -2455,7 +3393,7 @@
             }
           },
           "500": {
-            "description": "Internal server error fetching Horde API data or computing audit"
+            "description": "Internal server error fetching Horde API data or computing deletion risk"
           }
         }
       }
@@ -3486,7 +4424,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -3590,7 +4528,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -3670,7 +4608,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -3761,7 +4699,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "$ref": "#/components/schemas/AuditDomain"
+                  "$ref": "#/components/schemas/CanonicalFormat"
                 },
                 {
                   "type": "null"
@@ -3979,7 +4917,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_text_generation_model",
         "security": [
           {
@@ -4086,7 +5024,7 @@
           "v1_create_update"
         ],
         "summary": "Delete a legacy model entry.",
-        "description": "Delete a model from a legacy model reference category.\n\nWhen pending queue is enabled, this enqueues the deletion and returns HTTP 202.\nWhen pending queue is disabled, this deletes the model immediately and returns HTTP 200.",
+        "description": "Delete a model from a legacy model reference category.\n\nWhen pending queue is enabled, this enqueues the deletion and returns HTTP 202.\nWhen pending queue is disabled, this deletes the model immediately and returns HTTP 204.",
         "operationId": "delete_legacy_model",
         "security": [
           {
@@ -4113,14 +5051,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Model deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
           "202": {
             "description": "Model deletion queued for approval",
             "content": {
@@ -4130,6 +5060,9 @@
                 }
               }
             }
+          },
+          "204": {
+            "description": "Model deleted successfully"
           },
           "404": {
             "description": "Model not found"
@@ -4156,7 +5089,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_model",
         "requestBody": {
           "content": {
@@ -4272,7 +5205,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing CLIP model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_clip_model",
         "requestBody": {
           "content": {
@@ -4388,7 +5321,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing BLIP model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_blip_model",
         "requestBody": {
           "content": {
@@ -4504,7 +5437,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing Codeformer model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_codeformer_model",
         "requestBody": {
           "content": {
@@ -4620,7 +5553,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing ControlNet model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_controlnet_model",
         "requestBody": {
           "content": {
@@ -4736,7 +5669,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing ESRGAN model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_esrgan_model",
         "requestBody": {
           "content": {
@@ -4852,7 +5785,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing GFPGAN model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_gfpgan_model",
         "requestBody": {
           "content": {
@@ -4968,7 +5901,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing safety checker model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_safety_checker_model",
         "requestBody": {
           "content": {
@@ -5084,7 +6017,7 @@
           "v1_create_update"
         ],
         "summary": "Update an existing miscellaneous model in legacy format",
-        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='legacy' in PRIMARY mode.",
+        "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_miscellaneous_model",
         "requestBody": {
           "content": {
@@ -5203,7 +6136,7 @@
           "metadata"
         ],
         "summary": "Get last update timestamp for canonical format (legacy)",
-        "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor legacy format operations. Only available when canonical_format='legacy'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'legacy'.",
+        "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor legacy format operations. Only available when canonical_format='LEGACY'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'LEGACY'.",
         "operationId": "read_legacy_last_updated",
         "responses": {
           "200": {
@@ -5663,14 +6596,183 @@
         "title": "ApplySingleChangeResponse",
         "description": "Response payload for applying a single pending change.\n\nIncludes the updated record and batch split information when applicable."
       },
-      "AuditDomain": {
-        "type": "string",
-        "enum": [
-          "legacy",
-          "v2"
+      "AudioGenerationModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "audio_generation"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw",
+            "default": false
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
         ],
-        "title": "AuditDomain",
-        "description": "Supported domains for audit events."
+        "title": "AudioGenerationModelRecord",
+        "description": "An audio generation model entry in the model reference."
+      },
+      "AudioGenerationModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "audio_generation"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw",
+            "default": false
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "AudioGenerationModelRecord",
+        "description": "An audio generation model entry in the model reference."
       },
       "AuditOperation": {
         "type": "string",
@@ -5682,7 +6784,29 @@
         "title": "AuditOperation",
         "description": "CRUD operations captured by the audit log."
       },
-      "BackendAuditVariation": {
+      "BackendInfo": {
+        "properties": {
+          "replicate_mode": {
+            "$ref": "#/components/schemas/ReplicateMode"
+          },
+          "canonical_format": {
+            "$ref": "#/components/schemas/CanonicalFormat"
+          },
+          "writable": {
+            "type": "boolean",
+            "title": "Writable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replicate_mode",
+          "canonical_format",
+          "writable"
+        ],
+        "title": "BackendInfo",
+        "description": "Information about the backend configuration and capabilities.\n\nThis is returned by the /replicate_mode endpoint to provide clients\nwith the information they need to correctly interact with the API."
+      },
+      "BackendVariationStats": {
         "properties": {
           "backend": {
             "type": "string",
@@ -5740,30 +6864,8 @@
           "backend",
           "variant_name"
         ],
-        "title": "BackendAuditVariation",
-        "description": "Per-backend statistics for a text generation model in audit context.\n\nProvides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical).\nUsed in ungrouped audit view to show backend-specific details for each model."
-      },
-      "BackendInfo": {
-        "properties": {
-          "replicate_mode": {
-            "$ref": "#/components/schemas/ReplicateMode"
-          },
-          "canonical_format": {
-            "$ref": "#/components/schemas/CanonicalFormat"
-          },
-          "writable": {
-            "type": "boolean",
-            "title": "Writable"
-          }
-        },
-        "type": "object",
-        "required": [
-          "replicate_mode",
-          "canonical_format",
-          "writable"
-        ],
-        "title": "BackendInfo",
-        "description": "Information about the backend configuration and capabilities.\n\nThis is returned by the /replicate_mode endpoint to provide clients\nwith the information they need to correctly interact with the API."
+        "title": "BackendVariationStats",
+        "description": "Per-backend statistics for a text generation model in deletion risk context.\n\nProvides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical).\nUsed in ungrouped deletion risk view to show backend-specific details for each model."
       },
       "BaselineStats": {
         "properties": {
@@ -5813,7 +6915,7 @@
             "title": "Batch Title"
           },
           "domain": {
-            "$ref": "#/components/schemas/AuditDomain"
+            "$ref": "#/components/schemas/CanonicalFormat"
           },
           "model_changes": {
             "items": {
@@ -5866,6 +6968,124 @@
         "title": "BatchNetChangeResponse",
         "description": "Response containing net changes for all models in a batch."
       },
+      "BlipModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "blip"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "BlipModelRecord",
+        "description": "A BLIP model entry in the model reference."
+      },
+      "BlipModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "blip"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "BlipModelRecord",
+        "description": "A BLIP model entry in the model reference."
+      },
       "CONTROLNET_STYLE": {
         "type": "string",
         "enum": [
@@ -5889,16 +7109,16 @@
         "type": "string",
         "enum": [
           "LEGACY",
-          "V2"
+          "v2"
         ],
         "title": "CanonicalFormat",
-        "description": "Which format is the canonical source of truth for model data.\n\nThis controls which API version has write access:\n- 'legacy': v1 API has CRUD operations, v2 API is read-only\n- 'v2': v2 API has CRUD operations, v1 API is read-only"
+        "description": "Which format is the canonical source of truth for model data.\n\nThis controls which API version has write access:\n- 'LEGACY': v1 API has CRUD operations, v2 API is read-only\n- 'v2': v2 API has CRUD operations, v1 API is read-only"
       },
-      "CategoryAuditResponse": {
+      "CategoryDeletionRiskResponse": {
         "properties": {
           "category": {
             "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
-            "description": "The category being audited."
+            "description": "The category being analyzed."
           },
           "category_total_month_usage": {
             "type": "integer",
@@ -5941,14 +7161,14 @@
           },
           "models": {
             "items": {
-              "$ref": "#/components/schemas/ModelAuditInfo"
+              "$ref": "#/components/schemas/ModelDeletionRiskInfo"
             },
             "type": "array",
             "title": "Models",
-            "description": "List of audit information for each model."
+            "description": "List of deletion risk information for each model."
           },
           "summary": {
-            "$ref": "#/components/schemas/CategoryAuditSummary",
+            "$ref": "#/components/schemas/CategoryDeletionRiskSummary",
             "description": "Aggregate summary statistics."
           }
         },
@@ -5959,10 +7179,10 @@
           "models",
           "summary"
         ],
-        "title": "CategoryAuditResponse",
-        "description": "Complete audit response for a category.\n\nContains both per-model audit information and aggregate summary."
+        "title": "CategoryDeletionRiskResponse",
+        "description": "Complete deletion risk response for a category.\n\nContains both per-model deletion risk information and aggregate summary."
       },
-      "CategoryAuditSummary": {
+      "CategoryDeletionRiskSummary": {
         "properties": {
           "total_models": {
             "type": "integer",
@@ -6066,8 +7286,8 @@
           "models_with_warnings",
           "average_risk_score"
         ],
-        "title": "CategoryAuditSummary",
-        "description": "Summary statistics for a category audit.\n\nAggregates audit information across all models in a category."
+        "title": "CategoryDeletionRiskSummary",
+        "description": "Summary statistics for a category deletion risk analysis.\n\nAggregates deletion risk information across all models in a category."
       },
       "CategoryLastUpdatedResponse": {
         "properties": {
@@ -6334,6 +7554,264 @@
         "title": "CategoryStatistics",
         "description": "Comprehensive statistics for a model reference category.\n\nContains aggregate metrics, distributions, and metadata about all models in a category."
       },
+      "ClipModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "clip"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "pretrained_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pretrained Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "ClipModelRecord",
+        "description": "A CLIP model entry in the model reference."
+      },
+      "ClipModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "clip"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "pretrained_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pretrained Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "ClipModelRecord",
+        "description": "A CLIP model entry in the model reference."
+      },
+      "CodeformerModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "codeformer"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CodeformerModelRecord",
+        "description": "A Codeformer model entry in the model reference."
+      },
+      "CodeformerModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "codeformer"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CodeformerModelRecord",
+        "description": "A Codeformer model entry in the model reference."
+      },
       "ContainsMessage": {
         "properties": {
           "message": {
@@ -6416,10 +7894,10 @@
           "controlnet_style": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/CONTROLNET_STYLE"
+                "type": "string"
               },
               {
-                "type": "string"
+                "type": "null"
               }
             ],
             "title": "Controlnet Style"
@@ -6427,8 +7905,7 @@
         },
         "type": "object",
         "required": [
-          "name",
-          "controlnet_style"
+          "name"
         ],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
@@ -6487,10 +7964,10 @@
           "controlnet_style": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/CONTROLNET_STYLE"
+                "type": "string"
               },
               {
-                "type": "string"
+                "type": "null"
               }
             ],
             "title": "Controlnet Style"
@@ -6498,8 +7975,7 @@
         },
         "type": "object",
         "required": [
-          "name",
-          "controlnet_style"
+          "name"
         ],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
@@ -6745,6 +8221,124 @@
         "title": "ErrorResponse",
         "description": "Standardized error response."
       },
+      "EsrganModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "esrgan"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "EsrganModelRecord",
+        "description": "An ESRGAN model entry in the model reference."
+      },
+      "EsrganModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "esrgan"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "EsrganModelRecord",
+        "description": "An ESRGAN model entry in the model reference."
+      },
       "FieldChangeType": {
         "type": "string",
         "enum": [
@@ -6852,15 +8446,8 @@
       "GenericModelRecord-Input": {
         "properties": {
           "record_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Record Type"
+            "title": "Record Type",
+            "type": "string"
           },
           "name": {
             "type": "string",
@@ -6920,15 +8507,8 @@
       "GenericModelRecord-Output": {
         "properties": {
           "record_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Record Type"
+            "title": "Record Type",
+            "type": "string"
           },
           "name": {
             "type": "string",
@@ -7055,6 +8635,124 @@
         "title": "GenericModelRecordMetadata",
         "description": "Metadata for a generic model record."
       },
+      "GfpganModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "gfpgan"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "GfpganModelRecord",
+        "description": "A GFPGAN model entry in the model reference."
+      },
+      "GfpganModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "gfpgan"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "GfpganModelRecord",
+        "description": "A GFPGAN model entry in the model reference."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -7132,15 +8830,8 @@
             "default": false
           },
           "baseline": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Baseline"
+            "title": "Baseline",
+            "type": "string"
           },
           "optimization": {
             "anyOf": [
@@ -7225,9 +8916,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "$ref": "#/components/schemas/MODEL_STYLE"
               },
               {
                 "type": "null"
@@ -7365,15 +9053,8 @@
             "default": false
           },
           "baseline": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/KNOWN_IMAGE_GENERATION_BASELINE"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Baseline"
+            "title": "Baseline",
+            "type": "string"
           },
           "optimization": {
             "anyOf": [
@@ -7458,9 +9139,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "$ref": "#/components/schemas/MODEL_STYLE"
               },
               {
                 "type": "null"
@@ -10176,7 +11854,142 @@
         "title": "MODEL_STYLE",
         "description": "An enum of all the model styles."
       },
-      "ModelAuditInfo": {
+      "MiscellaneousModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "miscellaneous"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "MiscellaneousModelRecord",
+        "description": "A miscellaneous model entry in the model reference."
+      },
+      "MiscellaneousModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "miscellaneous"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "MiscellaneousModelRecord",
+        "description": "A miscellaneous model entry in the model reference."
+      },
+      "ModelClassification": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/MODEL_DOMAIN"
+          },
+          "purpose": {
+            "$ref": "#/components/schemas/MODEL_PURPOSE"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "purpose"
+        ],
+        "title": "ModelClassification",
+        "description": "Contains specific information about how to categorize a model.\n\nThis includes the model's `MODEL_DOMAIN` and `MODEL_PURPOSE`."
+      },
+      "ModelDeletionRiskInfo": {
         "properties": {
           "name": {
             "type": "string",
@@ -10339,7 +12152,7 @@
             "anyOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/BackendAuditVariation"
+                  "$ref": "#/components/schemas/BackendVariationStats"
                 },
                 "type": "array"
               },
@@ -10374,25 +12187,8 @@
           "is_critical",
           "has_warning"
         ],
-        "title": "ModelAuditInfo",
-        "description": "Audit information for a single model.\n\nContains model metadata along with deletion risk assessment and usage statistics."
-      },
-      "ModelClassification": {
-        "properties": {
-          "domain": {
-            "$ref": "#/components/schemas/MODEL_DOMAIN"
-          },
-          "purpose": {
-            "$ref": "#/components/schemas/MODEL_PURPOSE"
-          }
-        },
-        "type": "object",
-        "required": [
-          "domain",
-          "purpose"
-        ],
-        "title": "ModelClassification",
-        "description": "Contains specific information about how to categorize a model.\n\nThis includes the model's `MODEL_DOMAIN` and `MODEL_PURPOSE`."
+        "title": "ModelDeletionRiskInfo",
+        "description": "Deletion risk information for a single model.\n\nContains model metadata along with deletion risk assessment and usage statistics."
       },
       "ModelNetChange": {
         "properties": {
@@ -10965,6 +12761,20 @@
               }
             ],
             "title": "Request Metadata"
+          },
+          "related_models": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Models"
           }
         },
         "type": "object",
@@ -10984,11 +12794,12 @@
         "enum": [
           "pending",
           "approved",
+          "applying",
           "applied",
           "rejected"
         ],
         "title": "PendingChangeStatus",
-        "description": "Lifecycle states for queued changes."
+        "description": "Lifecycle states for queued changes.\n\nState transitions::\n\n    PENDING → APPROVED → APPLYING → APPLIED\n    PENDING → REJECTED\n\nThe ``APPLYING`` state is a transient lock held while the backend write is\nin progress.  If the process crashes during this window, records stuck in\n``APPLYING`` are detected on restart and logged as warnings."
       },
       "PendingQueueAuditBatchDetail": {
         "properties": {
@@ -11089,7 +12900,7 @@
       "PendingQueueAuditBatchPage": {
         "properties": {
           "domain": {
-            "$ref": "#/components/schemas/AuditDomain"
+            "$ref": "#/components/schemas/CanonicalFormat"
           },
           "batches": {
             "items": {
@@ -11398,7 +13209,7 @@
       "PendingQueueAuditCurrentResponse": {
         "properties": {
           "domain": {
-            "$ref": "#/components/schemas/AuditDomain"
+            "$ref": "#/components/schemas/CanonicalFormat"
           },
           "pending_changes": {
             "items": {
@@ -11611,6 +13422,162 @@
         ],
         "title": "ReplicateMode",
         "description": "Indicates if copies of the model reference are canonical or replicated."
+      },
+      "SafetyCheckerModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "safety_checker"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "SafetyCheckerModelRecord",
+        "description": "A safety checker model entry in the model reference."
+      },
+      "SafetyCheckerModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "safety_checker"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "SafetyCheckerModelRecord",
+        "description": "A safety checker model entry in the model reference."
+      },
+      "SearchResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "total",
+          "offset",
+          "limit",
+          "has_more"
+        ],
+        "title": "SearchResponse",
+        "description": "Paginated search response."
       },
       "TagStats": {
         "properties": {
@@ -12137,6 +14104,184 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VideoGenerationModelRecord-Input": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "video_generation"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw",
+            "default": false
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "VideoGenerationModelRecord",
+        "description": "A video generation model entry in the model reference."
+      },
+      "VideoGenerationModelRecord-Output": {
+        "properties": {
+          "record_type": {
+            "$ref": "#/components/schemas/MODEL_REFERENCE_CATEGORY",
+            "default": "video_generation"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "finetune_series": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FineTuneSeriesInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/GenericModelRecordMetadata"
+          },
+          "config": {
+            "$ref": "#/components/schemas/GenericModelRecordConfig"
+          },
+          "model_classification": {
+            "$ref": "#/components/schemas/ModelClassification"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "nsfw": {
+            "type": "boolean",
+            "title": "Nsfw",
+            "default": false
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "VideoGenerationModelRecord",
+        "description": "A video generation model entry in the model reference."
       }
     },
     "securitySchemes": {
@@ -12146,5 +14291,10 @@
         "name": "apikey"
       }
     }
-  }
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ]
 }

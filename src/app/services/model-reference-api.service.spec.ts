@@ -5,7 +5,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ModelReferenceApiService } from './model-reference-api.service';
 import { environment } from '../../environments/environment';
 import { BASE_PATH, MODEL_REFERENCE_CATEGORY, PendingChangeRecord } from '../api-client';
-import type { CategoryStatistics, CategoryAuditResponse } from '../api-client';
+import type { CategoryStatistics, CategoryDeletionRiskResponse } from '../api-client';
 import { FormModelData } from '../adapters/model-format-adapter';
 import { withDone } from '../../testing/with-done';
 
@@ -207,7 +207,7 @@ describe('ModelReferenceApiService', () => {
       'should fetch category audit successfully with default parameters',
       withDone((done) => {
         const category = 'image_generation';
-        const mockAudit: CategoryAuditResponse = {
+        const mockAudit: CategoryDeletionRiskResponse = {
           category: 'image_generation',
           category_total_month_usage: 50000,
           total_count: 150,
@@ -284,7 +284,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         expect(req.request.method).toBe('GET');
         req.flush(mockAudit);
@@ -302,7 +302,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.error(new ProgressEvent('Network error'));
       }),
@@ -313,7 +313,7 @@ describe('ModelReferenceApiService', () => {
       withDone((done) => {
         const category = 'image_generation';
         const preset = 'deletion_candidates';
-        const mockAudit: CategoryAuditResponse = {
+        const mockAudit: CategoryDeletionRiskResponse = {
           category: 'image_generation',
           category_total_month_usage: 50000,
           total_count: 150,
@@ -347,7 +347,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&preset=${preset}&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&preset=${preset}&offset=0`,
         );
         expect(req.request.method).toBe('GET');
         req.flush(mockAudit);
@@ -359,7 +359,7 @@ describe('ModelReferenceApiService', () => {
       withDone((done) => {
         const category = 'text_generation';
         const preset = 'zero_usage';
-        const mockAudit: CategoryAuditResponse = {
+        const mockAudit: CategoryDeletionRiskResponse = {
           category: 'text_generation',
           category_total_month_usage: 10000,
           total_count: 50,
@@ -393,7 +393,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=true&include_backend_variations=false&preset=${preset}&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=true&include_backend_variations=false&preset=${preset}&offset=0`,
         );
         expect(req.request.method).toBe('GET');
         req.flush(mockAudit);
@@ -404,7 +404,7 @@ describe('ModelReferenceApiService', () => {
       'should handle audit response with critical flags',
       withDone((done) => {
         const category = 'image_generation';
-        const mockAudit: CategoryAuditResponse = {
+        const mockAudit: CategoryDeletionRiskResponse = {
           category: 'image_generation',
           category_total_month_usage: 50000,
           total_count: 1,
@@ -486,7 +486,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.flush(mockAudit);
       }),
@@ -496,7 +496,7 @@ describe('ModelReferenceApiService', () => {
       'should validate all deletion risk flags are present',
       withDone((done) => {
         const category = 'image_generation';
-        const mockAudit: CategoryAuditResponse = {
+        const mockAudit: CategoryDeletionRiskResponse = {
           category: 'image_generation',
           category_total_month_usage: 50000,
           total_count: 1,
@@ -573,7 +573,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.flush(mockAudit);
       }),
@@ -584,7 +584,7 @@ describe('ModelReferenceApiService', () => {
       withDone((done) => {
         const category = 'image_generation';
         const preset = 'critical';
-        const mockAudit: CategoryAuditResponse = {
+        const mockAudit: CategoryDeletionRiskResponse = {
           category: 'image_generation',
           category_total_month_usage: 50000,
           total_count: 150,
@@ -650,7 +650,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&preset=${preset}&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&preset=${preset}&offset=0`,
         );
         req.flush(mockAudit);
       }),
@@ -686,7 +686,7 @@ describe('ModelReferenceApiService', () => {
         });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/statistics/${category}/audit?group_text_models=false&include_backend_variations=false&offset=0`,
+          `${baseUrl}/model_references/statistics/${category}/deletion-risk?group_text_models=false&include_backend_variations=false&offset=0`,
         );
         req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
       }),

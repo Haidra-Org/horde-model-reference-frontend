@@ -338,6 +338,23 @@ describe('model-format-adapter', () => {
       expect(roundTripped.controlnet_style).toBe('canny');
     });
 
+    it('should default controlnet_style to empty string when null or undefined', () => {
+      const category = MODEL_REFERENCE_CATEGORY.Controlnet;
+
+      const withNull = { ...makeV2ControlnetModel(), controlnet_style: null } as ControlNetModelRecordOutput;
+      const nullForm = v2ApiToForm(withNull, category);
+      expect(nullForm.categoryData.kind).toBe('controlnet');
+      if (nullForm.categoryData.kind === 'controlnet') {
+        expect(nullForm.categoryData.data.controlnet_style).toBe('');
+      }
+
+      const withUndefined = { ...makeV2ControlnetModel(), controlnet_style: undefined } as ControlNetModelRecordOutput;
+      const undefForm = v2ApiToForm(withUndefined, category);
+      if (undefForm.categoryData.kind === 'controlnet') {
+        expect(undefForm.categoryData.data.controlnet_style).toBe('');
+      }
+    });
+
     it('should preserve V2 fields (model_classification, finetune_series)', () => {
       const original = makeV2ImageGenModel();
       const category = MODEL_REFERENCE_CATEGORY.ImageGeneration;

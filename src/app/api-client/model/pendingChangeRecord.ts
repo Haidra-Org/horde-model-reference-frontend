@@ -40,5 +40,6 @@ export interface PendingChangeRecord {
   applied_job_id?: string | null;
   updated_at?: number;
   request_metadata?: { [key: string]: any } | null;
+  related_models?: Array<string> | null;
 }
 export namespace PendingChangeRecord {}

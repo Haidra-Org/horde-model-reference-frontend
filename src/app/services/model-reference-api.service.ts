@@ -14,14 +14,14 @@ import {
   V1CreateUpdateService,
   V2Service,
   StatisticsService,
-  AuditService,
+  DeletionRiskService,
   MODEL_REFERENCE_CATEGORY,
   BackendInfo,
   CanonicalFormat,
   ReplicateMode,
   ResponseReadV2ReferenceValue,
   CategoryStatistics,
-  CategoryAuditResponse,
+  CategoryDeletionRiskResponse,
   PendingChangeRecord,
   HTTPValidationError,
   NewModelRecord,
@@ -57,7 +57,7 @@ export class ModelReferenceApiService {
   private readonly v1CreateUpdateService = inject(V1CreateUpdateService);
   private readonly v2Service = inject(V2Service);
   private readonly statisticsService = inject(StatisticsService);
-  private readonly auditService = inject(AuditService);
+  private readonly deletionRiskService = inject(DeletionRiskService);
   private readonly validationService = inject(ModelValidationService);
   private readonly notifications = inject(NotificationService);
 
@@ -537,16 +537,16 @@ export class ModelReferenceApiService {
    * @param groupTextModels Whether to group text models by base name (strips quantization)
    * @param preset Optional preset filter to apply (deletion_candidates, zero_usage, etc.)
    * @param includeBackendVariations Whether to include per-backend breakdown for text models (ungrouped view)
-   * @returns Observable of CategoryAuditResponse or null on error
+   * @returns Observable of CategoryDeletionRiskResponse or null on error
    */
   getCategoryAudit(
     category: string,
     groupTextModels = false,
     preset?: string,
     includeBackendVariations = false,
-  ): Observable<CategoryAuditResponse | null> {
-    return this.auditService
-      .readV2CategoryAudit(
+  ): Observable<CategoryDeletionRiskResponse | null> {
+    return this.deletionRiskService
+      .readV2CategoryDeletionRisk(
         category as MODEL_REFERENCE_CATEGORY,
         groupTextModels,
         includeBackendVariations,

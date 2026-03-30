@@ -42,72 +42,7 @@ import type { PendingQueueAuditEvent } from '../../models/pending-queue-audit';
       }
     </div>
   `,
-  styles: [
-    `
-      .timeline-container {
-        position: relative;
-      }
-      .timeline-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      .timeline-row {
-        display: flex;
-        gap: 1rem;
-        padding-bottom: 1rem;
-      }
-      .timeline-row:last-child .timeline-line {
-        display: none;
-      }
-      .timeline-marker {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .timeline-dot {
-        width: 0.75rem;
-        height: 0.75rem;
-        border-radius: 9999px;
-        background-color: rgb(59 130 246);
-        box-shadow: 0 0 0 2px rgb(30 41 59);
-      }
-      .timeline-line {
-        flex: 1;
-        width: 2px;
-        background: linear-gradient(180deg, rgba(59, 130, 246, 0.6), rgba(15, 23, 42, 0));
-        margin-top: 0.25rem;
-      }
-      .timeline-content {
-        flex: 1;
-        background-color: rgba(15, 23, 42, 0.7);
-        border: 1px solid rgba(51, 65, 85, 0.8);
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-      }
-      .timeline-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-      }
-      @media (min-width: 640px) {
-        .timeline-meta {
-          flex-direction: row;
-          align-items: baseline;
-          justify-content: space-between;
-        }
-      }
-      .timeline-action {
-        font-weight: 600;
-        text-transform: capitalize;
-        color: rgb(226 232 240);
-      }
-      .timeline-timestamp {
-        font-size: 0.85rem;
-        color: rgb(148 163 184);
-      }
-    `,
-  ],
+
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PendingQueueAuditTimelineComponent {

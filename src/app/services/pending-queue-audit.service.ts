@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { BASE_PATH } from '../api-client';
+import { BASE_PATH, CanonicalFormat } from '../api-client';
 import type { BatchNetChangeResponse } from '../api-client/model/models';
 import {
   AuditDomain,
@@ -109,7 +109,8 @@ export class PendingQueueAuditService {
 
   updateCacheFromPage(page: PendingQueueAuditBatchPage, domain?: AuditDomain | null): void {
     page.batches.forEach((summary: PendingQueueAuditBatchSummary) => {
-      const cacheKey = this.buildCacheKey(summary.batch_id, domain ?? page.domain);
+      const domainValue = domain ?? (page.domain === 'LEGACY' ? 'legacy' : page.domain);
+      const cacheKey = this.buildCacheKey(summary.batch_id, domainValue as AuditDomain);
       const cached = this.detailCache.get(cacheKey);
       if (cached) {
         this.detailCache.set(cacheKey, { ...cached, ...summary });
@@ -126,7 +127,9 @@ export class PendingQueueAuditService {
     let params = new HttpParams();
 
     if (domain) {
-      params = params.set('domain_override', domain);
+      // Map internal lowercase 'legacy' to API's uppercase 'LEGACY'
+      const apiDomain = domain === 'legacy' ? CanonicalFormat.Legacy : CanonicalFormat.V2;
+      params = params.set('domain_override', apiDomain);
     }
 
     if (cursor && cursor > 0) {

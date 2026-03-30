@@ -1,14 +1,16 @@
 import { Component, input, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { onImageError } from './model-row.utils';
 
 @Component({
   selector: 'app-model-row-showcases',
+  imports: [HordeBadgeComponent],
   template: `
     @if (showcases() && showcases()!.length > 0) {
       <section class="detail-panel">
         <h4 class="detail-section-heading flex items-center gap-2">
           Showcases
-          <span class="badge badge-info normal-case tracking-normal">{{ showcases()!.length }}</span>
+          <horde-badge variant="info" class="normal-case tracking-normal">{{ showcases()!.length }}</horde-badge>
           <button
             type="button"
             class="btn btn-sm btn-secondary ml-auto normal-case tracking-normal"

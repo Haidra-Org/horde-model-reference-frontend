@@ -31,9 +31,9 @@ import { ApplyPendingChangesResponse } from '../model/applyPendingChangesRespons
 // @ts-ignore
 import { ApplySingleChangeResponse } from '../model/applySingleChangeResponse';
 // @ts-ignore
-import { AuditDomain } from '../model/auditDomain';
-// @ts-ignore
 import { BatchNetChangeResponse } from '../model/batchNetChangeResponse';
+// @ts-ignore
+import { CanonicalFormat } from '../model/canonicalFormat';
 // @ts-ignore
 import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
@@ -1440,7 +1440,7 @@ export class PendingQueueService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1451,7 +1451,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1462,7 +1462,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1473,7 +1473,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1549,7 +1549,7 @@ export class PendingQueueService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_7(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1560,7 +1560,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_7(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1571,7 +1571,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_7(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1582,7 +1582,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_7(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1658,7 +1658,7 @@ export class PendingQueueService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1669,7 +1669,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1680,7 +1680,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1691,7 +1691,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1767,7 +1767,7 @@ export class PendingQueueService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1778,7 +1778,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1789,7 +1789,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1800,7 +1800,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_8(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1873,7 +1873,7 @@ export class PendingQueueService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1883,7 +1883,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1893,7 +1893,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1903,7 +1903,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1974,7 +1974,7 @@ export class PendingQueueService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_9(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1984,7 +1984,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_9(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1994,7 +1994,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_9(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2004,7 +2004,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_9(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2075,7 +2075,7 @@ export class PendingQueueService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2085,7 +2085,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2095,7 +2095,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2105,7 +2105,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2176,7 +2176,7 @@ export class PendingQueueService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_10(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2186,7 +2186,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_10(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2196,7 +2196,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_10(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2206,7 +2206,7 @@ export class PendingQueueService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_10(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -3095,7 +3095,7 @@ export class PendingQueueService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -3106,7 +3106,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -3117,7 +3117,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -3128,7 +3128,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -3207,7 +3207,7 @@ export class PendingQueueService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_15(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -3218,7 +3218,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_15(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -3229,7 +3229,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_15(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -3240,7 +3240,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_15(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -3319,7 +3319,7 @@ export class PendingQueueService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -3330,7 +3330,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -3341,7 +3341,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -3352,7 +3352,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -3431,7 +3431,7 @@ export class PendingQueueService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_16(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -3442,7 +3442,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_16(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -3453,7 +3453,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_16(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -3464,7 +3464,7 @@ export class PendingQueueService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_16(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -4193,7 +4193,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -4205,7 +4205,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -4217,7 +4217,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -4229,7 +4229,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -4306,7 +4306,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_19(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -4318,7 +4318,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_19(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -4330,7 +4330,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_19(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -4342,7 +4342,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_19(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -4419,7 +4419,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -4431,7 +4431,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -4443,7 +4443,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -4455,7 +4455,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -4532,7 +4532,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_20(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -4544,7 +4544,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_20(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -4556,7 +4556,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_20(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -4568,7 +4568,7 @@ export class PendingQueueService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_20(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {

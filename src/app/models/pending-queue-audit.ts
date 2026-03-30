@@ -6,11 +6,11 @@ import type {
   PendingQueueAuditCurrentResponse as ApiPendingQueueAuditCurrentResponse,
   PendingQueueAuditEvent as ApiPendingQueueAuditEvent,
 } from '../api-client';
-import { AuditDomain as ApiAuditDomain } from '../api-client';
 
-export type AuditDomain = ApiAuditDomain;
+// Matches BackendCapabilities.canonicalFormat values (lowercase 'legacy', unlike API's 'LEGACY')
+export type AuditDomain = 'legacy' | 'v2';
 
-export const AUDIT_DOMAINS: AuditDomain[] = [ApiAuditDomain.Legacy, ApiAuditDomain.V2];
+export const AUDIT_DOMAINS: AuditDomain[] = ['legacy', 'v2'];
 
 export type PendingQueueAuditEvent = ApiPendingQueueAuditEvent;
 export type PendingQueueAuditChange = ApiPendingQueueAuditChange;

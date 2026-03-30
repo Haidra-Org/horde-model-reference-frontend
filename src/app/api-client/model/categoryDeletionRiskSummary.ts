@@ -9,9 +9,9 @@
  */
 
 /**
- * Summary statistics for a category audit.  Aggregates audit information across all models in a category.
+ * Summary statistics for a category deletion risk analysis.  Aggregates deletion risk information across all models in a category.
  */
-export interface CategoryAuditSummary {
+export interface CategoryDeletionRiskSummary {
   /**
    * Total number of models in the category.
    */

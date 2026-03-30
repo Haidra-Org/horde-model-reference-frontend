@@ -14,10 +14,11 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HordeBadgeComponent } from '@haidra/design-system/badge';
 
 @Component({
   selector: 'app-tag-input',
-  imports: [FormsModule],
+  imports: [FormsModule, HordeBadgeComponent],
   templateUrl: './tag-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -656,6 +656,18 @@ async function main() {
   console.log('╚═══════════════════════════════════════════════════════════════╝\n');
 
   try {
+    // Verify openapi-generator-cli is installed. Note that this "error" ('You're trying to run a package that should be provided by a local binary, but isn't') is simply returned 
+    
+    generation_cli_return_string = execSync('npx openapi-generator-cli version', { shell: true }).toString().trim();
+
+    if (generation_cli_return_string.includes('You\'re trying to run a package that should be provided by a local binary, but isn\'t')) {
+      console.error('\n❌ openapi-generator-cli is not installed!');
+      console.error('Please install it globally with: npm install -g @openapitools/openapi-generator-cli');
+      process.exit(1);
+    }
+
+    
+
     // Step 0: Validate output directory
     validateOutputDirectory();
 

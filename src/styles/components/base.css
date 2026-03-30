@@ -1,92 +1,11 @@
 @layer components {
-  /* Button variants with enhanced focus states */
-  .btn {
-    @apply px-4 py-2 rounded font-medium text-sm transition-colors duration-100;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-  }
-
-  .btn:hover:not(:disabled) {
-    /* Color-only hover — no translate or shadow */
-  }
-
-  .btn-primary {
-    @apply bg-primary-600 text-white;
-    @apply focus:ring-primary-500;
-    @apply dark:bg-primary-500 dark:focus:ring-primary-400;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    @apply bg-primary-700;
-    @apply dark:bg-primary-600;
-  }
-
-  .btn-secondary {
-    @apply bg-gray-200 text-gray-900 border border-gray-300;
-    @apply focus:ring-gray-500;
-    @apply dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:focus:ring-gray-400;
-  }
-
-  .btn-secondary:hover:not(:disabled) {
-    @apply bg-gray-300 border-gray-400;
-    @apply dark:bg-gray-600 dark:border-gray-500;
-  }
-
-  .btn-danger {
-    @apply bg-danger-600 text-white;
-    @apply focus:ring-danger-500;
-    @apply dark:bg-danger-500 dark:focus:ring-danger-400;
-  }
-
-  .btn-danger:hover:not(:disabled) {
-    @apply bg-danger-700;
-    @apply dark:bg-danger-600;
-  }
-
-  .btn-success {
-    @apply bg-success-600 text-white;
-    @apply focus:ring-success-500;
-    @apply dark:bg-success-500 dark:focus:ring-success-400;
-  }
-
-  .btn-success:hover:not(:disabled) {
-    @apply bg-success-700;
-    @apply dark:bg-success-600;
-  }
-
-  .btn-sm {
-    @apply px-3 py-1.5 text-xs;
-  }
-
-  .btn-lg {
-    @apply px-6 py-3 text-base;
-  }
-
-  /* Badge variants */
-  .badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium;
-  }
-
-  .badge-success {
-    @apply bg-success-100 text-success-800;
-    @apply dark:bg-success-900/30 dark:text-success-300;
-  }
-
-  .badge-danger {
-    @apply bg-danger-100 text-danger-800;
-    @apply dark:bg-danger-900/30 dark:text-danger-300;
-  }
-
-  .badge-warning {
-    @apply bg-warning-100 text-warning-800;
-    @apply dark:bg-warning-900/30 dark:text-warning-300;
-  }
-
-  .badge-info,
-  .badge-secondary {
-    @apply bg-gray-100 text-gray-700;
-    @apply dark:bg-gray-600 dark:text-gray-100 dark:border dark:border-gray-700;
-  }
+  /* =================================================================
+     PROJECT-SPECIFIC COMPONENT EXTENSIONS
+     Shared primitives (surfaces, buttons, badges, cards, forms,
+     modals, alerts, typography) are provided by the design system
+     at src/shared/design-system/primitives/.
+     This file contains only horde-model-reference-frontend extensions.
+     ================================================================= */
 
   /* Operation-specific badge variants for pending queue */
   .badge-create {
@@ -124,20 +43,6 @@
     @apply text-[10px] px-1.5 py-0.5;
   }
 
-  /* Form controls with enhanced focus and validation states */
-  .form-input,
-  .form-textarea,
-  .form-select {
-    @apply w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white;
-    @apply transition-colors duration-100;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
-    @apply disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500;
-    @apply placeholder:italic placeholder:text-gray-400;
-    @apply dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100;
-    @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
-    @apply dark:placeholder:text-gray-500;
-  }
-
   /* Validation states for form inputs */
   .form-input-error,
   .form-textarea-error,
@@ -151,48 +56,6 @@
   .form-select-success {
     @apply border-success-500 focus:ring-success-500 focus:border-success-500;
     @apply dark:border-success-400 dark:focus:ring-success-400 dark:focus:border-success-400;
-  }
-
-  .form-label {
-    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5;
-  }
-
-  .form-hint {
-    @apply text-gray-400 text-xs mt-1;
-    @apply dark:text-gray-500;
-  }
-
-  .form-textarea {
-    @apply resize-y min-h-[80px];
-  }
-
-  .form-select {
-    @apply cursor-pointer;
-  }
-
-  .form-error {
-    @apply text-danger-600 text-xs mt-1;
-    @apply dark:text-danger-400;
-  }
-
-  /* Card */
-  .card {
-    @apply bg-white rounded border border-gray-200;
-    @apply dark:bg-gray-800 dark:border-gray-700;
-  }
-
-  .card-header {
-    @apply px-4 py-2 border-b border-gray-200;
-    @apply dark:border-gray-700;
-  }
-
-  .card-body {
-    @apply px-4 py-4;
-  }
-
-  .card-footer {
-    @apply px-4 py-4 bg-gray-50 border-t border-gray-200;
-    @apply dark:bg-gray-900/50 dark:border-gray-700;
   }
 
   /* Overview/Hero card with gradient background */
@@ -263,48 +126,14 @@
     @apply dark:text-gray-300;
   }
 
-  /* Modal */
-  .modal-overlay {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50;
-    @apply flex items-center justify-center p-4;
-  }
-
-  .modal-dialog {
-    @apply bg-white rounded shadow-lg flex flex-col;
-    @apply p-6;
-    min-width: 20rem; /* never too narrow */
-    width: fit-content; /* shrink to content when small */
-    max-width: clamp(20rem, 90vw, 56rem); /* but never exceed viewport or large cap */
-    max-height: 90vh; /* viewport-sensitive height limit */
-    @apply dark:bg-gray-800;
-  }
-
-  /* Large modal variant for parameter tables and similar content */
+  /* Modal size variants (base modal classes are shared) */
   .modal-dialog--lg {
     width: 50vw;
     max-width: 90rem;
   }
 
-  /* Extra-wide modal variant for heavy content (e.g., JSON) */
   .modal-dialog--xl {
     max-width: clamp(20rem, 90vw, 80rem);
-  }
-
-  .modal-title {
-    @apply text-xl font-semibold text-gray-900 mb-4;
-    @apply flex-shrink-0;
-    @apply dark:text-gray-100;
-  }
-
-  .modal-content {
-    @apply text-gray-700 mb-6;
-    @apply overflow-y-auto;
-    @apply dark:text-gray-300;
-  }
-
-  .modal-actions {
-    @apply flex gap-3 justify-end;
-    @apply flex-shrink-0;
   }
 
   /* Tags (smaller, outline-style badges for inline use) */
@@ -327,75 +156,12 @@
     @apply dark:bg-info-950 dark:text-info-300 dark:border-info-700;
   }
 
-  /* Field labels and values for detail views */
-  .field-label {
-    @apply font-medium text-gray-700 mb-0.5;
-    @apply dark:text-gray-300;
-  }
-
-  .field-value {
-    @apply text-gray-600;
-    @apply dark:text-gray-400;
-  }
-
-  /* Links */
-  .link {
-    @apply text-primary-600 hover:underline;
-    @apply dark:text-primary-400;
-  }
-
-  /* Muted/helper text */
-  .text-muted,
+  /* Small muted text variant (base .text-muted is shared) */
   .text-muted-sm {
-    @apply text-gray-500 dark:text-gray-400;
+    @apply text-sm text-gray-500 dark:text-gray-400;
   }
 
-  .text-muted-sm {
-    @apply text-sm;
-  }
-
-  /* Headings */
-  .heading-page,
-  .heading-section,
-  .heading-card {
-    @apply font-semibold text-gray-900 dark:text-gray-100;
-  }
-
-  .heading-page {
-    @apply text-2xl;
-  }
-
-  .heading-section {
-    @apply text-lg;
-  }
-
-  .heading-card {
-    @apply text-base;
-  }
-
-  /* Inline label annotations */
-  .label-hint {
-    @apply text-xs text-gray-500 font-normal ml-2;
-    @apply dark:text-gray-400;
-  }
-
-  .label-warning {
-    @apply text-xs text-warning-600 font-normal ml-1;
-    @apply dark:text-warning-400;
-  }
-
-  /* Checkbox */
-  .form-checkbox {
-    @apply w-4 h-4 text-primary-600 bg-white border-gray-300 rounded;
-    @apply focus:ring-2 focus:ring-primary-500;
-    @apply dark:bg-gray-800 dark:border-gray-600;
-  }
-
-  .checkbox-label {
-    @apply text-sm text-gray-700;
-    @apply dark:text-gray-300;
-  }
-
+  /* Checkbox grouping and hints (base .form-checkbox/.checkbox-label are shared) */
   .checkbox-group {
     @apply flex flex-col gap-2;
   }
@@ -403,31 +169,6 @@
   .checkbox-hint {
     @apply text-xs text-gray-500;
     @apply dark:text-gray-400;
-  }
-
-  /* Alert */
-  .alert {
-    @apply px-4 py-3 text-sm font-medium border-l-4;
-  }
-
-  .alert-success {
-    @apply bg-success-50 text-success-800 border-success-600;
-    @apply dark:bg-success-900/90 dark:text-success-100 dark:border-success-400;
-  }
-
-  .alert-danger {
-    @apply bg-danger-50 text-danger-800 border-danger-600;
-    @apply dark:bg-danger-900/90 dark:text-danger-100 dark:border-danger-400;
-  }
-
-  .alert-warning {
-    @apply bg-warning-50 text-warning-800 border-warning-600;
-    @apply dark:bg-warning-900/90 dark:text-warning-100 dark:border-warning-400;
-  }
-
-  .alert-info {
-    @apply bg-info-50 text-info-800 border-info-600;
-    @apply dark:bg-info-900/90 dark:text-info-100 dark:border-info-400;
   }
 
   /* Info boxes for informational messages */

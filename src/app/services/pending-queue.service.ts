@@ -189,7 +189,7 @@ export class PendingQueueService {
 
   private normalizeStatus(status: PendingChangeStatus | null | undefined): PendingChangeStatus {
     const normalized = (status ?? 'pending').toString().trim().toLowerCase();
-    const allowed: PendingChangeStatus[] = ['pending', 'approved', 'rejected', 'applied'];
+    const allowed: PendingChangeStatus[] = ['pending', 'approved', 'applying', 'rejected', 'applied'];
     return allowed.includes(normalized as PendingChangeStatus)
       ? (normalized as PendingChangeStatus)
       : 'pending';

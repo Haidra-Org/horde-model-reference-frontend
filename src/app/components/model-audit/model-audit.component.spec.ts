@@ -8,9 +8,9 @@ import { ModelAuditComponent } from './model-audit.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import type {
-  CategoryAuditResponse,
+  CategoryDeletionRiskResponse,
   DeletionRiskFlags,
-  ModelAuditInfo,
+  ModelDeletionRiskInfo,
   MODEL_REFERENCE_CATEGORY,
 } from '../../api-client';
 import { LegacyRecordUnion } from '../../models';
@@ -100,7 +100,7 @@ describe('ModelAuditComponent', () => {
     },
   ];
 
-  const mockAuditResponse: CategoryAuditResponse = {
+  const mockAuditResponse: CategoryDeletionRiskResponse = {
     category: 'image_generation',
     category_total_month_usage: 150,
     total_count: 2,
@@ -145,7 +145,7 @@ describe('ModelAuditComponent', () => {
         download_hosts: ['huggingface.co'],
         cost_benefit_score: 40.0,
         size_gb: 2.5,
-      } as ModelAuditInfo,
+      } as ModelDeletionRiskInfo,
       {
         name: 'test-model-2',
         category: 'image_generation',
@@ -184,7 +184,7 @@ describe('ModelAuditComponent', () => {
         download_hosts: ['civitai.com'],
         cost_benefit_score: null,
         size_gb: null,
-      } as ModelAuditInfo,
+      } as ModelDeletionRiskInfo,
     ],
     summary: {
       total_models: 2,
@@ -437,7 +437,7 @@ describe('ModelAuditComponent', () => {
 
   describe('critical and warning flags', () => {
     it('should identify critical models (zero month usage AND no workers)', () => {
-      const criticalAudit: CategoryAuditResponse = {
+      const criticalAudit: CategoryDeletionRiskResponse = {
         ...mockAuditResponse,
         models: [
           {
@@ -453,7 +453,7 @@ describe('ModelAuditComponent', () => {
             at_risk: true,
             is_critical: true,
             has_warning: false,
-          } as ModelAuditInfo,
+          } as ModelDeletionRiskInfo,
         ],
       };
 
@@ -467,7 +467,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should identify models with warnings (host issues)', () => {
-      const warningAudit: CategoryAuditResponse = {
+      const warningAudit: CategoryDeletionRiskResponse = {
         ...mockAuditResponse,
         models: [
           {
@@ -481,7 +481,7 @@ describe('ModelAuditComponent', () => {
             at_risk: true,
             is_critical: false,
             has_warning: true,
-          } as ModelAuditInfo,
+          } as ModelDeletionRiskInfo,
         ],
       };
 
@@ -535,7 +535,7 @@ describe('ModelAuditComponent', () => {
 
   describe('preset filtering', () => {
     it('should request audit data with preset parameter', async () => {
-      const filteredAudit: CategoryAuditResponse = {
+      const filteredAudit: CategoryDeletionRiskResponse = {
         ...mockAuditResponse,
         total_count: 2,
         returned_count: 1,
@@ -576,8 +576,8 @@ describe('ModelAuditComponent', () => {
         return of([]);
       });
 
-      const imageAuditSubject = new Subject<CategoryAuditResponse | null>();
-      const textAuditSubject = new Subject<CategoryAuditResponse | null>();
+      const imageAuditSubject = new Subject<CategoryDeletionRiskResponse | null>();
+      const textAuditSubject = new Subject<CategoryDeletionRiskResponse | null>();
       apiService.getCategoryAudit.mockImplementation((category: string) => {
         if (category === 'image_generation') {
           return imageAuditSubject.asObservable();
@@ -602,7 +602,7 @@ describe('ModelAuditComponent', () => {
         low_usage: false,
       } as DeletionRiskFlags;
 
-      const textAudit: CategoryAuditResponse = {
+      const textAudit: CategoryDeletionRiskResponse = {
         category: 'text_generation',
         category_total_month_usage: 5,
         models: [
@@ -631,7 +631,7 @@ describe('ModelAuditComponent', () => {
             size_gb: null,
             is_critical: false,
             has_warning: false,
-          } as ModelAuditInfo,
+          } as ModelDeletionRiskInfo,
         ],
         summary: {
           total_models: 1,
@@ -643,7 +643,7 @@ describe('ModelAuditComponent', () => {
         },
       };
 
-      const imageAudit: CategoryAuditResponse = {
+      const imageAudit: CategoryDeletionRiskResponse = {
         category: 'image_generation',
         category_total_month_usage: 3,
         models: [
@@ -672,7 +672,7 @@ describe('ModelAuditComponent', () => {
             size_gb: null,
             is_critical: false,
             has_warning: false,
-          } as ModelAuditInfo,
+          } as ModelDeletionRiskInfo,
         ],
         summary: {
           total_models: 1,
@@ -815,7 +815,7 @@ describe('ModelAuditComponent', () => {
 
   describe('row styling', () => {
     it('should apply critical styling for critical models', () => {
-      const criticalAudit: CategoryAuditResponse = {
+      const criticalAudit: CategoryDeletionRiskResponse = {
         ...mockAuditResponse,
         models: [
           {
@@ -827,7 +827,7 @@ describe('ModelAuditComponent', () => {
             },
             is_critical: true,
             has_warning: false,
-          } as ModelAuditInfo,
+          } as ModelDeletionRiskInfo,
         ],
       };
 
@@ -842,7 +842,7 @@ describe('ModelAuditComponent', () => {
     });
 
     it('should apply warning styling for models with warnings', () => {
-      const warningAudit: CategoryAuditResponse = {
+      const warningAudit: CategoryDeletionRiskResponse = {
         ...mockAuditResponse,
         models: [
           {
@@ -853,7 +853,7 @@ describe('ModelAuditComponent', () => {
             },
             is_critical: false,
             has_warning: true,
-          } as ModelAuditInfo,
+          } as ModelDeletionRiskInfo,
         ],
       };
 

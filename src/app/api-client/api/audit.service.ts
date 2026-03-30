@@ -23,17 +23,13 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
-import { AuditDomain } from '../model/auditDomain';
-// @ts-ignore
 import { BatchNetChangeResponse } from '../model/batchNetChangeResponse';
 // @ts-ignore
-import { CategoryAuditResponse } from '../model/categoryAuditResponse';
+import { CanonicalFormat } from '../model/canonicalFormat';
 // @ts-ignore
 import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
-// @ts-ignore
-import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
 // @ts-ignore
 import { PendingQueueAuditBatchDetail } from '../model/pendingQueueAuditBatchDetail';
 // @ts-ignore
@@ -68,7 +64,7 @@ export class AuditService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -79,7 +75,7 @@ export class AuditService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -90,7 +86,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -101,7 +97,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -177,7 +173,7 @@ export class AuditService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -188,7 +184,7 @@ export class AuditService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -199,7 +195,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -210,7 +206,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV1PendingQueueAuditBatchesBatchIdNetChangesGet_1(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -286,7 +282,7 @@ export class AuditService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -297,7 +293,7 @@ export class AuditService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -308,7 +304,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -319,7 +315,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -395,7 +391,7 @@ export class AuditService extends BaseService {
    */
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -406,7 +402,7 @@ export class AuditService extends BaseService {
   ): Observable<BatchNetChangeResponse>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -417,7 +413,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -428,7 +424,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
   public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_2(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -501,7 +497,7 @@ export class AuditService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -511,7 +507,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -521,7 +517,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -531,7 +527,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -602,7 +598,7 @@ export class AuditService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -612,7 +608,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -622,7 +618,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -632,7 +628,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV1PendingQueueAuditCurrentGet_3(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -703,7 +699,7 @@ export class AuditService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -713,7 +709,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -723,7 +719,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -733,7 +729,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -804,7 +800,7 @@ export class AuditService extends BaseService {
    * @param reportProgress flag to report request and response progress.
    */
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -814,7 +810,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -824,7 +820,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -834,7 +830,7 @@ export class AuditService extends BaseService {
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
   public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_4(
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -907,7 +903,7 @@ export class AuditService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -918,7 +914,7 @@ export class AuditService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -929,7 +925,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -940,7 +936,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1019,7 +1015,7 @@ export class AuditService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1030,7 +1026,7 @@ export class AuditService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1041,7 +1037,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1052,7 +1048,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV1PendingQueueAuditBatchesBatchIdGet_5(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1131,7 +1127,7 @@ export class AuditService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1142,7 +1138,7 @@ export class AuditService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1153,7 +1149,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1164,7 +1160,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1243,7 +1239,7 @@ export class AuditService extends BaseService {
    */
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1254,7 +1250,7 @@ export class AuditService extends BaseService {
   ): Observable<PendingQueueAuditBatchDetail>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1265,7 +1261,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1276,7 +1272,7 @@ export class AuditService extends BaseService {
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
   public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_6(
     batchId: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1357,7 +1353,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1369,7 +1365,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1381,7 +1377,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1393,7 +1389,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1470,7 +1466,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1482,7 +1478,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1494,7 +1490,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1506,7 +1502,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_7(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1583,7 +1579,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1595,7 +1591,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1607,7 +1603,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1619,7 +1615,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1696,7 +1692,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1708,7 +1704,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1720,7 +1716,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1732,7 +1728,7 @@ export class AuditService extends BaseService {
   public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_8(
     cursor?: number,
     limit?: number,
-    domainOverride?: AuditDomain,
+    domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1796,135 +1792,5 @@ export class AuditService extends BaseService {
         reportProgress: reportProgress,
       },
     );
-  }
-
-  /**
-   * Get audit analysis for a model category
-   * Get comprehensive audit analysis for a model reference category.  Analyzes all models in the category to identify deletion risks including: - Missing or invalid download URLs - Non-preferred file hosts - Missing required fields (description, baseline) - Zero active workers - Low or no recent usage  Returns both per-model audit information and aggregate summary statistics. Audit results are cached (default 300s TTL) and automatically invalidated when model data changes.  Args:     model_category_name: The model reference category to audit.     manager: The model reference manager (injected).     horde_api: The Horde API integration (injected).     audit_cache: The audit cache (injected).     group_text_models: Group text models by base name (strips quantization info).     include_backend_variations: Include per-backend breakdown for text models (ungrouped view).     preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).     limit: Maximum number of models to return (None &#x3D; all).     offset: Number of models to skip (for pagination).  Returns:     CategoryAuditResponse with per-model audit info and summary.  Raises:     HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.
-   * @param modelCategoryName
-   * @param groupTextModels Group text models by base name (strips quantization)
-   * @param includeBackendVariations Include per-backend breakdown (aphrodite, koboldcpp) for text models. Only applies when group_text_models&#x3D;False.
-   * @param preset Apply preset filter to results. Valid presets: deletion_candidates, zero_usage, no_workers, missing_data, host_issues, critical, low_usage
-   * @param limit Maximum number of models to return (None &#x3D; all)
-   * @param offset Number of models to skip (for pagination)
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   */
-  public readV2CategoryAudit(
-    modelCategoryName: MODEL_REFERENCE_CATEGORY,
-    groupTextModels?: boolean,
-    includeBackendVariations?: boolean,
-    preset?: string,
-    limit?: number,
-    offset?: number,
-    observe?: 'body',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<CategoryAuditResponse>;
-  public readV2CategoryAudit(
-    modelCategoryName: MODEL_REFERENCE_CATEGORY,
-    groupTextModels?: boolean,
-    includeBackendVariations?: boolean,
-    preset?: string,
-    limit?: number,
-    offset?: number,
-    observe?: 'response',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<CategoryAuditResponse>>;
-  public readV2CategoryAudit(
-    modelCategoryName: MODEL_REFERENCE_CATEGORY,
-    groupTextModels?: boolean,
-    includeBackendVariations?: boolean,
-    preset?: string,
-    limit?: number,
-    offset?: number,
-    observe?: 'events',
-    reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<CategoryAuditResponse>>;
-  public readV2CategoryAudit(
-    modelCategoryName: MODEL_REFERENCE_CATEGORY,
-    groupTextModels?: boolean,
-    includeBackendVariations?: boolean,
-    preset?: string,
-    limit?: number,
-    offset?: number,
-    observe: any = 'body',
-    reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<any> {
-    if (modelCategoryName === null || modelCategoryName === undefined) {
-      throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryAudit.',
-      );
-    }
-
-    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      <any>groupTextModels,
-      'group_text_models',
-    );
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      <any>includeBackendVariations,
-      'include_backend_variations',
-    );
-    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>preset, 'preset');
-    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
-    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
-
-    let localVarHeaders = this.defaultHeaders;
-
-    const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
-    if (localVarHttpHeaderAcceptSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-    }
-
-    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-    const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-    let responseType_: 'text' | 'json' | 'blob' = 'json';
-    if (localVarHttpHeaderAcceptSelected) {
-      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-        responseType_ = 'text';
-      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-        responseType_ = 'json';
-      } else {
-        responseType_ = 'blob';
-      }
-    }
-
-    let localVarPath = `/model_references/statistics/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/audit`;
-    const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<CategoryAuditResponse>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
   }
 }

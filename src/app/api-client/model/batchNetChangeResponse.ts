@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AuditDomain } from './auditDomain';
+import { CanonicalFormat } from './canonicalFormat';
 import { ModelNetChange } from './modelNetChange';
 
 /**
@@ -16,7 +16,7 @@ import { ModelNetChange } from './modelNetChange';
 export interface BatchNetChangeResponse {
   batch_id: number;
   batch_title?: string | null;
-  domain: AuditDomain;
+  domain: CanonicalFormat;
   model_changes?: Array<ModelNetChange>;
   models_added?: number;
   models_modified?: number;

@@ -9,10 +9,12 @@
  */
 
 /**
- * Supported domains for audit events.
+ * Paginated search response.
  */
-export const AuditDomain = {
-  Legacy: 'legacy',
-  V2: 'v2',
-} as const;
-export type AuditDomain = (typeof AuditDomain)[keyof typeof AuditDomain];
+export interface SearchResponse {
+  results: Array<{ [key: string]: any }>;
+  total: number;
+  offset: number;
+  limit: number;
+  has_more: boolean;
+}

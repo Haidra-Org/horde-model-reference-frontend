@@ -72,6 +72,23 @@
       backdrop-filter: none !important;
     }
 
+    /* Disable glass surface effects — solid opaque surfaces only */
+    & .surface-glass,
+    & .surface-glass--elevated,
+    & .surface-glass--nested,
+    & .surface-glass--subtle,
+    & .surface-floating,
+    & .card,
+    & .card-header,
+    & .card-footer,
+    & .nav-bar,
+    & .sidebar-container,
+    & .modal-dialog,
+    & .help-menu-dropdown {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
     /* Dramatically reduced padding and spacing for dense layouts */
     & .page-container {
       @apply p-2 space-y-2;
@@ -462,6 +479,63 @@
       @apply bg-white border-gray-400;
     }
 
+    & .card-header {
+      background: var(--color-gray-100) !important;
+      border-bottom: 1px solid var(--color-gray-300) !important;
+    }
+
+    & .card-footer {
+      background: var(--color-gray-50) !important;
+      border-top: 1px solid var(--color-gray-300) !important;
+    }
+
+    & .nav-bar {
+      @apply bg-primary-700;
+      border-bottom: 1px solid var(--color-primary-800) !important;
+      box-shadow: none !important;
+    }
+
+    & .sidebar-container {
+      background: white !important;
+      border-right: 1px solid var(--color-gray-400) !important;
+      box-shadow: none !important;
+    }
+
+    & .modal-dialog {
+      background: white !important;
+      border: 2px solid var(--color-gray-400) !important;
+    }
+
+    & .help-menu-dropdown {
+      background: white !important;
+      border: 1px solid var(--color-gray-400) !important;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1) !important;
+    }
+
+    & .form-section-card {
+      background: var(--color-gray-50) !important;
+      border-bottom: 1px solid var(--color-gray-300) !important;
+    }
+
+    & .field-group-content {
+      background: white !important;
+    }
+
+    & .surface-glass,
+    & .surface-glass--elevated,
+    & .surface-floating {
+      background: white !important;
+      border: 2px solid var(--color-gray-400) !important;
+      box-shadow: none !important;
+    }
+
+    & .surface-glass--nested,
+    & .surface-glass--subtle {
+      background: var(--color-gray-50) !important;
+      border: 1px solid var(--color-gray-300) !important;
+      box-shadow: none !important;
+    }
+
     & .btn-primary {
       @apply bg-primary-700 hover:bg-primary-800 border border-primary-800;
     }
@@ -502,6 +576,63 @@
   .theme-utilitarian-dark {
     & .card {
       @apply bg-gray-950 border-gray-600;
+    }
+
+    & .card-header {
+      background: var(--color-gray-900) !important;
+      border-bottom: 1px solid var(--color-gray-700) !important;
+    }
+
+    & .card-footer {
+      background: var(--color-gray-950) !important;
+      border-top: 1px solid var(--color-gray-700) !important;
+    }
+
+    & .nav-bar {
+      @apply bg-gray-950;
+      border-bottom: 1px solid var(--color-gray-700) !important;
+      box-shadow: none !important;
+    }
+
+    & .sidebar-container {
+      background: var(--color-gray-900) !important;
+      border-right: 1px solid var(--color-gray-600) !important;
+      box-shadow: none !important;
+    }
+
+    & .modal-dialog {
+      background: var(--color-gray-900) !important;
+      border: 2px solid var(--color-gray-600) !important;
+    }
+
+    & .help-menu-dropdown {
+      background: var(--color-gray-900) !important;
+      border: 1px solid var(--color-gray-600) !important;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.3) !important;
+    }
+
+    & .form-section-card {
+      background: var(--color-gray-950) !important;
+      border-bottom: 1px solid var(--color-gray-700) !important;
+    }
+
+    & .field-group-content {
+      background: var(--color-gray-900) !important;
+    }
+
+    & .surface-glass,
+    & .surface-glass--elevated,
+    & .surface-floating {
+      background: var(--color-gray-900) !important;
+      border: 2px solid var(--color-gray-600) !important;
+      box-shadow: none !important;
+    }
+
+    & .surface-glass--nested,
+    & .surface-glass--subtle {
+      background: var(--color-gray-950) !important;
+      border: 1px solid var(--color-gray-700) !important;
+      box-shadow: none !important;
     }
 
     & .btn-primary {
