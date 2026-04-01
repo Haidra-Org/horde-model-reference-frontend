@@ -72,7 +72,7 @@
     } @else if (pendingChanges().length > 0) {
       <div class="audit-table-wrapper">
         <table class="audit-table">
-          <thead class="audit-table-head">
+          <thead class="table-head-subtle">
             <tr>
               <th class="table-header-cell-xs">Change</th>
               <th class="table-header-cell-xs">Model</th>
@@ -82,9 +82,9 @@
               <th class="table-header-cell-xs">Events</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-900">
+          <tbody class="table-body-default">
             @for (change of pendingChanges(); track trackChange($index, change)) {
-              <tr class="audit-table-row">
+              <tr class="table-row-hover-subtle">
                 <td class="table-cell-mono-xs">#{{ change.change_id }}</td>
                 <td class="table-cell-xs">{{ change.model_name || '—' }}</td>
                 <td class="table-cell-xs">{{ change.operation || 'pending' }}</td>

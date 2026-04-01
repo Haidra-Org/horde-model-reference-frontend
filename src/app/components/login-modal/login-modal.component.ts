@@ -1,10 +1,12 @@
 import { Component, inject, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { HordeAlertComponent } from '@haidra/design-system/alert';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 @Component({
   selector: 'app-login-modal',
-  imports: [FormsModule],
+  imports: [FormsModule, HordeAlertComponent, HordeButtonComponent],
   templateUrl: './login-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

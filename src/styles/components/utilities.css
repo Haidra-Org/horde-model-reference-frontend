@@ -1,23 +1,6 @@
 @layer components {
   /* === Phase 1 UX Improvements === */
 
-  /* Tab navigation for model list/audit views */
-  .tab-navigation {
-    @apply flex gap-2 border-b border-gray-200 dark:border-gray-700;
-  }
-
-  .tab-link {
-    @apply flex items-center gap-2 px-4 py-2.5 border-b-2 border-transparent;
-    @apply text-gray-600 hover:text-gray-900 hover:border-gray-300;
-    @apply transition-all duration-150 font-medium text-sm;
-    @apply dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600;
-  }
-
-  .tab-link.tab-active {
-    @apply text-primary-600 border-primary-600;
-    @apply dark:text-primary-400 dark:border-primary-400;
-  }
-
   /* Audit report link for model list header */
   .audit-report-link {
     @apply flex items-center gap-3 px-4 py-2.5;
@@ -600,70 +583,6 @@
     @apply font-semibold text-info-900 dark:text-info-100 mb-2;
   }
 
-  /* Table header utilities for audit and data tables */
-  .table-header-cell-xs,
-  .table-header-cell-xs-center,
-  .table-header-cell-xs-right {
-    @apply px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-400;
-  }
-
-  .table-header-cell-xs {
-    @apply text-left;
-  }
-
-  .table-header-cell-xs-center {
-    @apply text-center;
-  }
-
-  .table-header-cell-xs-right {
-    @apply text-right;
-  }
-
-  /* Table cell utilities */
-  .table-cell-mono-xs {
-    @apply px-3 py-2 font-mono text-xs text-gray-900 dark:text-gray-100;
-  }
-
-  .table-cell-xs {
-    @apply px-3 py-2 text-gray-700 dark:text-gray-300 text-xs;
-  }
-
-  .table-cell-xs-center {
-    @apply px-3 py-2 text-center text-gray-700 dark:text-gray-300 text-xs;
-  }
-
-  .table-cell-xs-right {
-    @apply px-3 py-2 text-right text-gray-700 dark:text-gray-300 text-xs;
-  }
-
-  .table-header-cell-xs-caps {
-    @apply px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
-  }
-
-  .table-header-cell-xs-center-caps {
-    @apply px-3 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
-  }
-
-  .table-header-cell-xs-right-caps {
-    @apply px-3 py-2 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
-  }
-
-  .table-head-subtle {
-    @apply bg-gray-100 dark:bg-gray-700;
-  }
-
-  .table-body-default {
-    @apply bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700;
-  }
-
-  .table-row-hover-subtle {
-    @apply hover:bg-gray-50 dark:hover:bg-gray-800/50;
-  }
-
-  .table-cell-muted-xs-inline {
-    @apply text-gray-400 dark:text-gray-500 text-xs;
-  }
-
   .table-cell-truncate {
     @apply max-w-0 overflow-hidden text-ellipsis whitespace-nowrap;
   }
@@ -719,24 +638,6 @@
   }
 
   /* === Compact Component Variants === */
-
-  /* Compact tab link for inline navigation */
-  .tab-link-compact {
-    @apply flex items-center gap-2 px-4 py-1 border-b-2 border-transparent;
-    @apply text-gray-600 hover:text-gray-900 hover:border-gray-300;
-    @apply transition-all duration-150 font-medium text-xs;
-    @apply dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600;
-  }
-
-  .tab-link-compact.tab-active {
-    @apply text-primary-600 border-primary-600;
-    @apply dark:text-primary-400 dark:border-primary-400;
-  }
-
-  /* Compact tab navigation container */
-  .tab-navigation-compact {
-    @apply flex gap-1 border-b border-gray-200 dark:border-gray-700;
-  }
 
   /* Compact button variants */
   .btn-compact {
@@ -1228,14 +1129,6 @@
 
   .audit-table {
     @apply min-w-full divide-y divide-gray-800 text-sm;
-  }
-
-  .audit-table-head {
-    @apply bg-gray-900/60 text-left text-xs uppercase tracking-wide text-gray-400;
-  }
-
-  .audit-table-row {
-    @apply transition-colors hover:bg-gray-900/50;
   }
 
   .audit-action-links {

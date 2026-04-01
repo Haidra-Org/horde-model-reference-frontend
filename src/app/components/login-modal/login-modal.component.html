@@ -42,20 +42,21 @@
         </div>
 
         @if (error()) {
-          <div class="alert alert-danger">
+          <horde-alert variant="danger">
             {{ error() }}
-          </div>
+          </horde-alert>
         }
       </form>
     </div>
 
     <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading()">
+      <horde-button variant="secondary" (click)="onCancel()" [disabled]="loading()">
         Cancel
-      </button>
-      <button
+      </horde-button>
+      <horde-button
         type="submit"
-        class="btn btn-primary"
+        variant="primary"
+        [loading]="loading()"
         (click)="onSubmit()"
         [disabled]="loading() || !apiKey().trim()"
       >
@@ -64,7 +65,7 @@
         } @else {
           <span>Login</span>
         }
-      </button>
+      </horde-button>
     </div>
   </div>
 </div>

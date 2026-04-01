@@ -23,7 +23,7 @@
           <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {{ recordDisplayName() }}
           </h1>
-          <div class="tab-navigation-compact">
+          <div class="tab-navigation tab-navigation-compact">
             <a
               [routerLink]="['/categories', category()]"
               routerLinkActive="tab-active"
@@ -170,7 +170,7 @@
 
   <!-- Degraded Mode Warning -->
   @if (degradedMode()) {
-    <div class="alert alert-error mb-4">
+    <div class="alert alert-danger mb-4">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
