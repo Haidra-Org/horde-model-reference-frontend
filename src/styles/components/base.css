@@ -43,21 +43,6 @@
     @apply text-[10px] px-1.5 py-0.5;
   }
 
-  /* Validation states for form inputs */
-  .form-input-error,
-  .form-textarea-error,
-  .form-select-error {
-    @apply border-danger-500 focus:ring-danger-500 focus:border-danger-500;
-    @apply dark:border-danger-400 dark:focus:ring-danger-400 dark:focus:border-danger-400;
-  }
-
-  .form-input-success,
-  .form-textarea-success,
-  .form-select-success {
-    @apply border-success-500 focus:ring-success-500 focus:border-success-500;
-    @apply dark:border-success-400 dark:focus:ring-success-400 dark:focus:border-success-400;
-  }
-
   /* Overview/Hero card with gradient background */
   .card-overview {
     @apply bg-primary-50 rounded p-6 border-l-4 border-primary-500;
@@ -124,36 +109,6 @@
   .code-block pre {
     @apply whitespace-pre-wrap break-words text-gray-700 font-mono text-xs leading-relaxed;
     @apply dark:text-gray-300;
-  }
-
-  /* Modal size variants (base modal classes are shared) */
-  .modal-dialog--lg {
-    width: 50vw;
-    max-width: 90rem;
-  }
-
-  .modal-dialog--xl {
-    max-width: clamp(20rem, 90vw, 80rem);
-  }
-
-  /* Tags (smaller, outline-style badges for inline use) */
-  .tag {
-    @apply text-xs px-2 py-0.5 rounded border;
-  }
-
-  .tag-primary {
-    @apply bg-primary-50 text-primary-700 border-primary-300;
-    @apply dark:bg-primary-950 dark:text-primary-300 dark:border-primary-700;
-  }
-
-  .tag-success {
-    @apply bg-success-50 text-success-700 border-success-300;
-    @apply dark:bg-success-950 dark:text-success-300 dark:border-success-700;
-  }
-
-  .tag-info {
-    @apply bg-info-50 text-info-700 border-info-300;
-    @apply dark:bg-info-950 dark:text-info-300 dark:border-info-700;
   }
 
   /* Small muted text variant (base .text-muted is shared) */

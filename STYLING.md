@@ -1,6 +1,6 @@
 # Styling Guide
 
-Styling conventions for the Horde Model Reference frontend. For the CSS class catalog and extended reference, see the centralized CSS files under `src/styles/`.
+Styling conventions for the Horde Model Reference frontend. This project consumes the [shared Horde design system](src/shared/design-system/) as its foundation. For the shared design token reference and surface system, see [the design system docs](src/shared/design-system/docs/design-system.md). For the shared CSS class catalog, see [the design system component patterns](src/shared/design-system/docs/component-patterns.md). For project-specific styles, see `src/styles/`.
 
 ---
 

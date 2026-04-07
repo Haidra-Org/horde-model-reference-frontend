@@ -85,37 +85,6 @@
     @apply dark:text-gray-300;
   }
 
-  /* Enhanced tooltips with glossary styling */
-  .tooltip-trigger {
-    @apply border-b border-dotted border-gray-400 cursor-help;
-    @apply dark:border-gray-500;
-  }
-
-  .tooltip-enhanced {
-    @apply absolute z-[9999] max-w-sm p-3 bg-gray-900 text-white text-sm rounded-lg shadow-xl;
-    @apply border border-gray-700;
-    @apply dark:bg-gray-800 dark:border-gray-600;
-  }
-
-  .tooltip-enhanced-title {
-    @apply font-semibold text-primary-300 mb-1;
-  }
-
-  .tooltip-enhanced-content {
-    @apply text-gray-200 leading-relaxed mb-2;
-    @apply dark:text-gray-300;
-  }
-
-  .tooltip-enhanced-example {
-    @apply text-xs text-gray-400 italic border-l-2 border-gray-600 pl-2 mt-2;
-    @apply dark:border-gray-500 dark:text-gray-400;
-  }
-
-  .tooltip-enhanced-link {
-    @apply text-xs text-primary-400 hover:underline mt-2 inline-block;
-    @apply dark:text-primary-300;
-  }
-
   /* Field impact and best practice hints */
   .field-impact,
   .field-best-practice {

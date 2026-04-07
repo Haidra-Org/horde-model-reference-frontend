@@ -7,10 +7,11 @@ import { TextModelGroupComponent } from './text-model-group.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
+import { GroupMembersResponse, GroupMemberInfo } from '../../api-client';
 
 interface ApiServiceSpy {
   backendCapabilities: ReturnType<typeof signal>;
-  getLegacyModelsInCategory: ReturnType<typeof vi.fn>;
+  getGroupMembers: ReturnType<typeof vi.fn>;
   deleteModel: ReturnType<typeof vi.fn>;
 }
 
@@ -24,26 +25,57 @@ interface AuthSpy {
   isAuthenticated: ReturnType<typeof computed>;
 }
 
-function buildTextGenResponse(
-  models: Record<
-    string,
-    {
-      text_model_group: string;
-      parameters?: number;
-      baseline?: string;
-      nsfw?: boolean;
-      description?: string;
-      tags?: string[];
-      style?: string;
-      display_name?: string;
-    }
-  >,
-): Record<string, Record<string, unknown>> {
-  const response: Record<string, Record<string, unknown>> = {};
-  for (const [key, data] of Object.entries(models)) {
-    response[key] = { name: key, ...data };
-  }
-  return response;
+function buildMember(
+  name: string,
+  opts: {
+    parameters?: number;
+    baseline?: string;
+    nsfw?: boolean;
+    description?: string;
+    tags?: string[];
+    style?: string;
+    display_name?: string;
+    is_backend_duplicate?: boolean;
+    backend_prefix?: string | null;
+  } = {},
+): GroupMemberInfo {
+  return {
+    name,
+    parsed: { base_name: name },
+    parameters: opts.parameters ?? null,
+    baseline: opts.baseline ?? null,
+    nsfw: opts.nsfw ?? null,
+    description: opts.description ?? null,
+    tags: opts.tags ?? null,
+    style: opts.style ?? null,
+    display_name: opts.display_name ?? null,
+    is_backend_duplicate: opts.is_backend_duplicate ?? false,
+    backend_prefix: opts.backend_prefix ?? null,
+  };
+}
+
+function buildGroupResponse(
+  groupName: string,
+  members: GroupMemberInfo[],
+  available_sizes: string[] = [],
+): GroupMembersResponse {
+  return {
+    group_name: groupName,
+    members,
+    common_fields: {},
+    available_sizes,
+    available_variants: [],
+    available_quants: [],
+    available_versions: [],
+    name_format: {
+      separator: '-',
+      part_order: ['base'],
+      author_included: false,
+      template: '{base}',
+    },
+    canonical_count: members.filter((m) => !m.is_backend_duplicate).length,
+    backend_duplicate_count: members.filter((m) => m.is_backend_duplicate).length,
+  };
 }
 
 describe('TextModelGroupComponent', () => {
@@ -66,7 +98,7 @@ describe('TextModelGroupComponent', () => {
 
     api = {
       backendCapabilities: signal({ writable: true, mode: 'PRIMARY', canonicalFormat: 'legacy' }),
-      getLegacyModelsInCategory: vi.fn().mockReturnValue(of({})),
+      getGroupMembers: vi.fn().mockReturnValue(of(buildGroupResponse('Llama-3', []))),
       deleteModel: vi.fn(),
     };
 
@@ -98,97 +130,106 @@ describe('TextModelGroupComponent', () => {
     vi.spyOn(router, 'navigate').mockResolvedValue(true);
   });
 
-  function initWithResponse(response: Record<string, Record<string, unknown>>): void {
-    api.getLegacyModelsInCategory.mockReturnValue(of(response));
+  function initWithGroupResponse(response: GroupMembersResponse): void {
+    api.getGroupMembers.mockReturnValue(of(response));
     fixture = TestBed.createComponent(TextModelGroupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }
 
   describe('group member extraction', () => {
-    it('filters models matching the target group name', () => {
-      const response = buildTextGenResponse({
-        'Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-        'Llama-3-1B-Instruct': { text_model_group: 'Llama-3', parameters: 1_000_000_000 },
-        'Mistral-7B': { text_model_group: 'Mistral', parameters: 7_000_000_000 },
-      });
+    it('filters to only group members (backend handles filtering)', () => {
+      const response = buildGroupResponse('Llama-3', [
+        buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000 }),
+        buildMember('Llama-3-1B-Instruct', { parameters: 1_000_000_000 }),
+      ]);
 
-      initWithResponse(response);
+      initWithGroupResponse(response);
 
-      expect(component.members().length).toBe(2);
-      expect(component.members().map((m) => m.recordKey)).toEqual([
-        'Llama-3-1B-Instruct',
+      expect(component.canonicalMembers().length).toBe(2);
+      expect(component.canonicalMembers().map((m) => m.name)).toEqual([
         'Llama-3-8B-Instruct',
+        'Llama-3-1B-Instruct',
       ]);
     });
 
     it('separates canonical members from backend duplicates', () => {
-      const response = buildTextGenResponse({
-        'Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-        'aphrodite/Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-        'koboldcpp/Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-      });
+      const response = buildGroupResponse('Llama-3', [
+        buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000 }),
+        buildMember('aphrodite/Llama-3-8B-Instruct', {
+          parameters: 8_000_000_000,
+          is_backend_duplicate: true,
+          backend_prefix: 'aphrodite',
+        }),
+        buildMember('koboldcpp/Llama-3-8B-Instruct', {
+          parameters: 8_000_000_000,
+          is_backend_duplicate: true,
+          backend_prefix: 'koboldcpp',
+        }),
+      ]);
 
-      initWithResponse(response);
+      initWithGroupResponse(response);
 
       expect(component.canonicalMembers().length).toBe(1);
-      expect(component.canonicalMembers()[0].recordKey).toBe('Llama-3-8B-Instruct');
+      expect(component.canonicalMembers()[0].name).toBe('Llama-3-8B-Instruct');
 
       expect(component.backendDuplicates().length).toBe(2);
-      expect(component.backendDuplicates().map((m) => m.backendPrefix)).toEqual(
+      expect(component.backendDuplicates().map((m) => m.backend_prefix)).toEqual(
         expect.arrayContaining(['aphrodite', 'koboldcpp']),
       );
     });
 
-    it('sorts canonical members before backend duplicates', () => {
-      const response = buildTextGenResponse({
-        'aphrodite/Llama-3-8B-Instruct': { text_model_group: 'Llama-3' },
-        'Llama-3-8B-Instruct': { text_model_group: 'Llama-3' },
-        'koboldcpp/Llama-3-8B-Instruct': { text_model_group: 'Llama-3' },
-      });
+    it('separates canonical from duplicates correctly in mixed order', () => {
+      const response = buildGroupResponse('Llama-3', [
+        buildMember('aphrodite/Llama-3-8B-Instruct', {
+          is_backend_duplicate: true,
+          backend_prefix: 'aphrodite',
+        }),
+        buildMember('Llama-3-8B-Instruct'),
+        buildMember('koboldcpp/Llama-3-8B-Instruct', {
+          is_backend_duplicate: true,
+          backend_prefix: 'koboldcpp',
+        }),
+      ]);
 
-      initWithResponse(response);
+      initWithGroupResponse(response);
 
-      const allMembers = component.members();
-      const firstCanonicalIndex = allMembers.findIndex((m) => !m.isBackendDuplicate);
-      const firstDuplicateIndex = allMembers.findIndex((m) => m.isBackendDuplicate);
-      expect(firstCanonicalIndex).toBeLessThan(firstDuplicateIndex);
+      expect(component.canonicalMembers().length).toBe(1);
+      expect(component.backendDuplicates().length).toBe(2);
     });
 
-    it('returns empty members when no models match the group', () => {
-      const response = buildTextGenResponse({
-        'Mistral-7B': { text_model_group: 'Mistral', parameters: 7_000_000_000 },
-      });
+    it('returns empty members when response has no members', () => {
+      const response = buildGroupResponse('Llama-3', []);
 
-      initWithResponse(response);
+      initWithGroupResponse(response);
 
-      expect(component.members().length).toBe(0);
+      expect(component.canonicalMembers().length).toBe(0);
       expect(notification.error).toHaveBeenCalledWith(expect.stringContaining('No models found'));
     });
   });
 
   describe('parameter summary', () => {
-    it('computes unique parameter sizes from canonical members', () => {
-      const response = buildTextGenResponse({
-        'Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-        'Llama-3-1B-Instruct': { text_model_group: 'Llama-3', parameters: 1_000_000_000 },
-        'Llama-3-70B-Instruct': { text_model_group: 'Llama-3', parameters: 70_000_000_000 },
-        'aphrodite/Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-      });
+    it('returns available sizes from the response', () => {
+      const response = buildGroupResponse(
+        'Llama-3',
+        [
+          buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000 }),
+          buildMember('Llama-3-1B-Instruct', { parameters: 1_000_000_000 }),
+          buildMember('Llama-3-70B-Instruct', { parameters: 70_000_000_000 }),
+        ],
+        ['1B', '8B', '70B'],
+      );
 
-      initWithResponse(response);
+      initWithGroupResponse(response);
 
-      // canonical members: 1B, 8B, 70B (aphrodite duplicate excluded)
       const summary = component.parameterSummary();
       expect(summary).toEqual(['1B', '8B', '70B']);
     });
 
-    it('returns null when no parameters are present', () => {
-      const response = buildTextGenResponse({
-        'Llama-3-Instruct': { text_model_group: 'Llama-3' },
-      });
+    it('returns null when no sizes are available', () => {
+      const response = buildGroupResponse('Llama-3', [buildMember('Llama-3-Instruct')]);
 
-      initWithResponse(response);
+      initWithGroupResponse(response);
 
       expect(component.parameterSummary()).toBeNull();
     });
@@ -196,24 +237,22 @@ describe('TextModelGroupComponent', () => {
 
   describe('navigation', () => {
     it('navigates to edit route with actual record key', () => {
-      const response = buildTextGenResponse({
-        'Llama-3-8B-Instruct': { text_model_group: 'Llama-3', parameters: 8_000_000_000 },
-      });
-      initWithResponse(response);
+      const response = buildGroupResponse('Llama-3', [
+        buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000 }),
+      ]);
+      initWithGroupResponse(response);
 
       const member = component.canonicalMembers()[0];
       component.editMember(member);
 
-      expect(router.navigate).toHaveBeenCalledWith([
-        '/categories',
-        'text_generation',
-        'edit',
-        'Llama-3-8B-Instruct',
-      ]);
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['/categories', 'text_generation', 'edit', 'Llama-3-8B-Instruct'],
+        { queryParams: { groupName: 'Llama-3' } },
+      );
     });
 
     it('navigates back to model list', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.goBackToList();
 
       expect(router.navigate).toHaveBeenCalledWith(['/categories', 'text_generation']);
@@ -222,29 +261,27 @@ describe('TextModelGroupComponent', () => {
 
   describe('writable state', () => {
     it('is writable when backend supports writes and user is authenticated', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       expect(component.writable()).toBe(true);
     });
 
     it('is not writable when backend does not support writes', () => {
       api.backendCapabilities.set({ writable: false, mode: 'REPLICA', canonicalFormat: 'legacy' });
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       expect(component.writable()).toBe(false);
     });
 
     it('is not writable when user is not authenticated', () => {
       isAuthenticatedSource.set(false);
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       expect(component.writable()).toBe(false);
     });
   });
 
   describe('delete single member', () => {
     it('sets modelToDelete on confirmDeleteMember', () => {
-      const response = buildTextGenResponse({
-        'Llama-3-8B-Instruct': { text_model_group: 'Llama-3' },
-      });
-      initWithResponse(response);
+      const response = buildGroupResponse('Llama-3', [buildMember('Llama-3-8B-Instruct')]);
+      initWithGroupResponse(response);
 
       const member = component.canonicalMembers()[0];
       component.confirmDeleteMember(member);
@@ -253,7 +290,7 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('clears modelToDelete on cancelDelete', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.modelToDelete.set('some-model');
       component.deleteConfirmationInput.set('some-model');
 
@@ -264,7 +301,7 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('deleteAllowed is true when confirmation matches', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.modelToDelete.set('Llama-3-8B');
       component.deleteConfirmationInput.set('Llama-3-8B');
 
@@ -272,7 +309,7 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('deleteAllowed is false when confirmation does not match', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.modelToDelete.set('Llama-3-8B');
       component.deleteConfirmationInput.set('wrong-name');
 
@@ -282,7 +319,7 @@ describe('TextModelGroupComponent', () => {
 
   describe('delete all members', () => {
     it('deleteAllAllowed requires group name confirmation', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.groupName.set('Llama-3');
       component.deleteAllVariantsConfirmation.set('Llama-3');
 
@@ -290,7 +327,7 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('deleteAllAllowed is false with wrong confirmation', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.groupName.set('Llama-3');
       component.deleteAllVariantsConfirmation.set('wrong');
 
@@ -298,13 +335,13 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('confirmDeleteAll sets deletingAll flag', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.confirmDeleteAll();
       expect(component.deletingAll()).toBe(true);
     });
 
     it('cancelDeleteAll clears state', () => {
-      initWithResponse({});
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.deletingAll.set(true);
       component.deleteAllVariantsConfirmation.set('some-text');
 

@@ -637,7 +637,7 @@
               <th class="w-12">
                 <input
                   type="checkbox"
-                  class="form-checkbox"
+                  class="checkbox-input"
                   [checked]="selectedCount() === filteredCount() && filteredCount() > 0"
                   (change)="selectedCount() === filteredCount() ? selectNone() : selectAll()"
                 />
@@ -742,7 +742,7 @@
                 <td (click)="$event.stopPropagation()">
                   <input
                     type="checkbox"
-                    class="form-checkbox"
+                    class="checkbox-input"
                     [checked]="isModelSelected(item.model.name)"
                     (change)="toggleModelSelection(item.model.name)"
                   />

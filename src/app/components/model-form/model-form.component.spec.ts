@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReplaySubject, of } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 
 import { ModelFormComponent } from './model-form.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
@@ -53,7 +53,10 @@ describe('ModelFormComponent', () => {
         { provide: ModelReferenceApiService, useClass: MockModelReferenceApiService },
         { provide: NotificationService, useClass: MockNotificationService },
         { provide: Router, useClass: MockRouter },
-        { provide: ActivatedRoute, useValue: { params: params$.asObservable() } },
+        {
+          provide: ActivatedRoute,
+          useValue: { params: params$.asObservable(), queryParamMap: of(convertToParamMap({})) },
+        },
         { provide: PendingQueueSummaryService, useClass: MockPendingQueueSummaryService },
       ],
     })

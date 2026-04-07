@@ -25,7 +25,7 @@ The official version of this frontend is deployed at [models.aihorde.net](https:
 ### Prerequisites
 
 - Node.js (v18 or higher)
-  - I recommend using [nvm](https://github.com/nvm-sh/nvm) to manage Node versions
+  - It is recommended to use [nvm](https://github.com/nvm-sh/nvm) to manage Node versions
 - Angular CLI (`npm install -g @angular/cli`)
 - Running instance of horde-model-reference backend service
 
