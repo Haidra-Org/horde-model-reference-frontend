@@ -45,7 +45,7 @@
         </div>
         <div class="flex gap-2 items-center">
           @if (writable()) {
-            <button class="btn btn-sm btn-primary" (click)="createModel()">+ Create</button>
+            <horde-button variant="primary" size="sm" (click)="createModel()">+ Create</horde-button>
           }
         </div>
       </div>
@@ -176,7 +176,7 @@
         <span class="toggle-label-compact">Active Only</span>
       </label>
       @if (hasActiveFilters()) {
-        <button type="button" class="btn btn-xs btn-secondary" (click)="clearAllFilters()">
+        <horde-button variant="secondary" size="xs" (click)="clearAllFilters()">
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -186,7 +186,7 @@
             ></path>
           </svg>
           Clear
-        </button>
+        </horde-button>
       }
 
       <div class="view-mode-toggle gap-tight" role="group">
@@ -631,18 +631,18 @@
               </div>
               <div class="model-card-footer">
                 @if (isGhostModel(model)) {
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-secondary"
+                  <horde-button
+                    variant="secondary"
+                    size="sm"
                     (click)="navigateToPendingChange(getPendingOverlay(model)!.pendingChangeId)"
                   >
                     View Pending Change
-                  </button>
+                  </horde-button>
                 } @else {
                   <div class="flex gap-2 whitespace-nowrap">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-primary"
+                    <horde-button
+                      variant="primary"
+                      size="sm"
                       (click)="seeDetailsInTable(model.name)"
                       title="Switch to table view and show full details for this model"
                     >
@@ -667,15 +667,15 @@
                         ></path>
                       </svg>
                       See Details
-                    </button>
-                    <button class="btn btn-sm btn-secondary" (click)="showJson(model)">Json</button>
+                    </horde-button>
+                    <horde-button variant="secondary" size="sm" (click)="showJson(model)">Json</horde-button>
                     @if (writable()) {
-                      <button class="btn btn-sm btn-primary" (click)="editModel(model.name)">
+                      <horde-button variant="primary" size="sm" (click)="editModel(model.name)">
                         Edit
-                      </button>
-                      <button class="btn btn-sm btn-danger" (click)="confirmDelete(model.name)">
+                      </horde-button>
+                      <horde-button variant="danger" size="sm" (click)="confirmDelete(model.name)">
                         Delete
-                      </button>
+                      </horde-button>
                     }
                   </div>
                 }
@@ -725,14 +725,14 @@
         </div>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-        <button
-          class="btn btn-danger"
+        <horde-button variant="secondary" (click)="cancelDelete()">Cancel</horde-button>
+        <horde-button
+          variant="danger"
           [disabled]="!deleteAllowed()"
           (click)="deleteModel(modelToDelete()!)"
         >
           Delete
-        </button>
+        </horde-button>
       </div>
     </div>
   </div>
@@ -760,10 +760,10 @@
         <app-json-display [data]="modelJsonToShow()!" />
       </div>
       <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">
+        <horde-button variant="secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">
           Copy
-        </button>
-        <button class="btn btn-primary" (click)="closeJsonModal()">Close</button>
+        </horde-button>
+        <horde-button variant="primary" (click)="closeJsonModal()">Close</horde-button>
       </div>
     </div>
   </div>
@@ -835,8 +835,8 @@
         <pre class="json-display-container">{{ statDetailsToShow()!.content }}</pre>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-secondary" (click)="copyStatDetailsToClipboard()">Copy</button>
-        <button class="btn btn-primary" (click)="closeStatDetails()">Close</button>
+        <horde-button variant="secondary" (click)="copyStatDetailsToClipboard()">Copy</horde-button>
+        <horde-button variant="primary" (click)="closeStatDetails()">Close</horde-button>
       </div>
     </div>
   </div>

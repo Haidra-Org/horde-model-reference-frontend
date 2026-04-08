@@ -138,9 +138,10 @@ export class CommonFieldsComponent implements OnInit {
             currentData.description || null,
             (value) => this.updateField('description', value),
           )
-            .rows(3)
+            .rows(5)
             .placeholder('Brief description of the model and its capabilities')
             .helpText('A concise summary that helps users understand what this model does')
+            .wrapperClass('field-description-primary')
             .gridSpan(2)
             .priority('required')
             .build(),
@@ -160,7 +161,7 @@ export class CommonFieldsComponent implements OnInit {
           )
             .placeholder('e.g., 1.0, v2.1, fp16')
             .helpText('Version identifier or variant name for this model release')
-            .gridSpan(3)
+            .gridSpan(2)
             .priority('recommended')
             .build(),
         ],

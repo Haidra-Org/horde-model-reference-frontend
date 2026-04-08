@@ -1,6 +1,7 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import {
   LegacyRecordUnion,
   isLegacyStableDiffusionRecord,
@@ -25,6 +26,7 @@ import { hasShowcases } from './model-row.utils';
   imports: [
     RouterLink,
     HordeBadgeComponent,
+    HordeButtonComponent,
     ModelRowHeaderComponent,
     ModelRowFieldsComponent,
     ModelRowShowcasesComponent,
@@ -134,15 +136,15 @@ import { hasShowcases } from './model-row.utils';
       </td>
       <td class="text-center">
         @if (isGhost()) {
-          <button
-            type="button"
-            class="btn btn-xs btn-secondary"
+          <horde-button
+            variant="secondary"
+            size="xs"
             (click)="
               $event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)
             "
           >
             View Pending
-          </button>
+          </horde-button>
         } @else {
           <app-model-row-actions
             [model]="legacyModel()"

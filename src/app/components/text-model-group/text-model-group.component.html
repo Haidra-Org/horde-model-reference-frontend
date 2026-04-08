@@ -42,13 +42,13 @@
           }
         </div>
         <div class="flex gap-2 flex-shrink-0">
-          <button class="btn btn-secondary" (click)="goBackToList()">← Back to List</button>
+          <horde-button variant="secondary" (click)="goBackToList()">← Back to List</horde-button>
           @if (writable()) {
-            <button class="btn btn-primary" (click)="openAddVariation()">+ Add Variation</button>
-            <button class="btn btn-secondary" (click)="openMultiVariation()">⊞ Batch Create</button>
+            <horde-button variant="primary" (click)="openAddVariation()">+ Add Variation</horde-button>
+            <horde-button variant="secondary" (click)="openMultiVariation()">⊞ Batch Create</horde-button>
           }
           @if (writable() && canonicalMembers().length > 1 && !deletingAll()) {
-            <button class="btn btn-danger" (click)="confirmDeleteAll()">Delete All</button>
+            <horde-button variant="danger" (click)="confirmDeleteAll()">Delete All</horde-button>
           }
         </div>
       </div>
@@ -113,9 +113,9 @@
         @if (editingCommonFields()) {
           <span class="badge badge-info">Editing</span>
         } @else if (writable()) {
-          <button class="btn btn-sm btn-secondary" (click)="startEditingCommonFields()">
+          <horde-button variant="secondary" size="sm" (click)="startEditingCommonFields()">
             Edit Shared
-          </button>
+          </horde-button>
         }
       </div>
       <div class="card-body">
@@ -171,8 +171,8 @@
             }
           </div>
           <div class="flex gap-2 mt-4">
-            <button
-              class="btn btn-primary"
+            <horde-button
+              variant="primary"
               [disabled]="savingCommonFields()"
               (click)="saveCommonFields()"
             >
@@ -181,8 +181,8 @@
                   ? 'Saving...'
                   : 'Save (queues ' + canonicalMembers().length + ' updates)'
               }}
-            </button>
-            <button class="btn btn-secondary" (click)="cancelEditingCommonFields()">Cancel</button>
+            </horde-button>
+            <horde-button variant="secondary" (click)="cancelEditingCommonFields()">Cancel</horde-button>
           </div>
         } @else {
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -283,15 +283,16 @@
                           @if (writable()) {
                             <td class="text-center">
                               <div class="flex gap-2 justify-center whitespace-nowrap">
-                                <button class="btn btn-sm btn-primary" (click)="editMember(member)">
+                                <horde-button variant="primary" size="sm" (click)="editMember(member)">
                                   Edit
-                                </button>
-                                <button
-                                  class="btn btn-sm btn-danger"
+                                </horde-button>
+                                <horde-button
+                                  variant="danger"
+                                  size="sm"
                                   (click)="confirmDeleteMember(member)"
                                 >
                                   Delete
-                                </button>
+                                </horde-button>
                               </div>
                             </td>
                           }
@@ -383,15 +384,16 @@
                     @if (writable()) {
                       <td class="text-center">
                         <div class="flex gap-2 justify-center whitespace-nowrap">
-                          <button class="btn btn-sm btn-primary" (click)="editMember(member)">
+                          <horde-button variant="primary" size="sm" (click)="editMember(member)">
                             Edit
-                          </button>
-                          <button
-                            class="btn btn-sm btn-danger"
+                          </horde-button>
+                          <horde-button
+                            variant="danger"
+                            size="sm"
                             (click)="confirmDeleteMember(member)"
                           >
                             Delete
-                          </button>
+                          </horde-button>
                         </div>
                       </td>
                     }
@@ -458,7 +460,7 @@
     <div class="card">
       <div class="card-body text-center py-12">
         <p class="text-lg text-muted">No models found in this group.</p>
-        <button class="btn btn-primary mt-4" (click)="goBackToList()">Back to Model List</button>
+        <horde-button variant="primary" class="mt-4" (click)="goBackToList()">Back to Model List</horde-button>
       </div>
     </div>
   }
@@ -496,14 +498,14 @@
           />
         </div>
         <div class="modal-actions">
-          <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-          <button
-            class="btn btn-danger"
+          <horde-button variant="secondary" (click)="cancelDelete()">Cancel</horde-button>
+          <horde-button
+            variant="danger"
             [disabled]="!deleteAllowed()"
             (click)="deleteMember(modelToDelete()!)"
           >
             Delete
-          </button>
+          </horde-button>
         </div>
       </div>
     </div>
@@ -546,14 +548,14 @@
           />
         </div>
         <div class="modal-actions">
-          <button class="btn btn-secondary" (click)="cancelDeleteAll()">Cancel</button>
-          <button
-            class="btn btn-danger"
+          <horde-button variant="secondary" (click)="cancelDeleteAll()">Cancel</horde-button>
+          <horde-button
+            variant="danger"
             [disabled]="!deleteAllAllowed()"
             (click)="deleteAllMembers()"
           >
             Delete All ({{ canonicalMembers().length }})
-          </button>
+          </horde-button>
         </div>
       </div>
     </div>

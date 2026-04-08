@@ -25,9 +25,9 @@
     <div class="card-body space-y-4">
       <div class="section-header">
         <h4 class="section-title">Downloads</h4>
-        <button type="button" class="btn btn-sm btn-primary" (click)="addDownload()">
+        <horde-button variant="primary" size="sm" (click)="addDownload()">
           + Add Download
-        </button>
+        </horde-button>
       </div>
 
       @if (downloads().length > 0) {
@@ -57,14 +57,15 @@
                       placeholder="https://..."
                       aria-required="true"
                     />
-                    <button
-                      type="button"
-                      class="btn btn-secondary btn-sm md:self-start"
+                    <horde-button
+                      variant="secondary"
+                      size="sm"
+                      class="md:self-start"
                       (click)="verifyUrl($index)"
                       [disabled]="isVerifying($index)"
                     >
                       {{ isVerifying($index) ? 'Verifying...' : 'Verify URL' }}
-                    </button>
+                    </horde-button>
                   </div>
                   @if (isCorsBlocked($index)) {
                     <p class="text-warning-600 dark:text-warning-400 text-xs">

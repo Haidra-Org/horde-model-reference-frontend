@@ -68,6 +68,7 @@ import {
 } from './stat-modal.component';
 import { JsonDisplayComponent } from '../common/json-display.component';
 import type { BackendStatisticsResponse } from '../../services/horde-api.service';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 type ViewMode = 'table' | 'card';
 
@@ -83,6 +84,7 @@ type ViewMode = 'table' | 'card';
     StatModalComponent,
     JsonDisplayComponent,
     ScrollingModule,
+    HordeButtonComponent,
   ],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

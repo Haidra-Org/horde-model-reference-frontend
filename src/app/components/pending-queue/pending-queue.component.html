@@ -66,18 +66,17 @@
       </div>
       <div class="flex items-center gap-2 shrink-0">
         @if (auth.isApprover() && allPendingIds().length > 0) {
-          <button
-            class="btn btn-primary"
-            type="button"
+          <horde-button
+            variant="primary"
             (click)="approveAllPending()"
             [disabled]="loading()"
           >
             Approve All ({{ allPendingIds().length }})
-          </button>
+          </horde-button>
         }
-        <button
-          class="btn btn-sm btn-secondary"
-          type="button"
+        <horde-button
+          variant="secondary"
+          size="sm"
           (click)="toggleSortOrder()"
           [title]="sortOrder() === 'newest' ? 'Newest First' : 'Oldest First'"
         >
@@ -98,10 +97,10 @@
               />
             }
           </svg>
-        </button>
-        <button
-          class="btn btn-sm btn-secondary"
-          type="button"
+        </horde-button>
+        <horde-button
+          variant="secondary"
+          size="sm"
           (click)="load()"
           [disabled]="loading()"
           title="Refresh"
@@ -120,7 +119,7 @@
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-        </button>
+        </horde-button>
       </div>
     </div>
 
@@ -243,7 +242,12 @@
       </button>
     </nav>
     @if (activeTab() !== 'history') {
-      <button class="btn btn-sm btn-secondary relative" type="button" (click)="toggleFilters()">
+      <horde-button
+        variant="secondary"
+        size="sm"
+        class="relative"
+        (click)="toggleFilters()"
+      >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -255,7 +259,7 @@
         @if (hasFilters()) {
           <span class="w-1.5 h-1.5 rounded-full bg-primary-500 absolute -top-0.5 -right-0.5"></span>
         }
-      </button>
+      </horde-button>
     }
   </div>
 
@@ -302,14 +306,14 @@
             (input)="onBatchIdChange(batchIdInput.value)"
             placeholder="Batch ID..."
           />
-          <button
-            class="btn btn-sm btn-secondary shrink-0"
-            type="button"
+          <horde-button
+            variant="secondary"
+            size="sm"
             (click)="resetFilters()"
             [disabled]="!hasFilters()"
           >
             Reset
-          </button>
+          </horde-button>
         </div>
       </div>
     </div>
@@ -555,14 +559,14 @@
                   </div>
                   <div class="flex items-center gap-2">
                     @if (auth.isApprover() && group.batchId !== null && hasApprovedChanges(group)) {
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-info"
+                      <horde-button
+                        variant="info"
+                        size="sm"
                         (click)="applyBatchFromGroup(group); $event.stopPropagation()"
                         [disabled]="loading()"
                       >
                         Apply Batch
-                      </button>
+                      </horde-button>
                     }
                     <div class="flex gap-1.5">
                       @for (status of statusOptions; track status) {
@@ -701,22 +705,20 @@
         </div>
       </div>
       <div class="modal-actions">
-        <button
-          class="btn btn-danger"
-          type="button"
+        <horde-button
+          variant="danger"
           (click)="confirmReject()"
           [disabled]="loading() || !rejectReason().trim()"
         >
           Confirm Rejection
-        </button>
-        <button
-          class="btn btn-secondary"
-          type="button"
+        </horde-button>
+        <horde-button
+          variant="secondary"
           (click)="closeRejectModal()"
           [disabled]="loading()"
         >
           Cancel
-        </button>
+        </horde-button>
       </div>
     </div>
   </div>

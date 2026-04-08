@@ -10,6 +10,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import { DownloadRecord } from '../../../api-client';
 import { createEmptyDownloadRecord } from '../../../utils/config-converter';
 import {
@@ -40,7 +41,7 @@ interface DownloadVerificationState {
  */
 @Component({
   selector: 'app-config-form-section-simplified',
-  imports: [FormsModule],
+  imports: [FormsModule, HordeButtonComponent],
   templateUrl: './config-form-section-simplified.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

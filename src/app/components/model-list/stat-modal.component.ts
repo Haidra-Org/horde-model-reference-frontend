@@ -1,4 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy, computed } from '@angular/core';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 export interface StatColumn {
   header: string;
@@ -52,7 +53,7 @@ export interface CountValueDetailTriple {
 
 @Component({
   selector: 'app-stat-modal',
-  imports: [],
+  imports: [HordeButtonComponent],
   template: `
     @if (isOpen()) {
       <div
@@ -109,7 +110,7 @@ export interface CountValueDetailTriple {
             </div>
           </div>
           <div class="modal-actions">
-            <button class="btn btn-primary" (click)="closeModal.emit()">Close</button>
+            <horde-button variant="primary" (click)="closeModal.emit()">Close</horde-button>
           </div>
         </div>
       </div>

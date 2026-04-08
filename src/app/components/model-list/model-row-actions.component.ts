@@ -1,14 +1,16 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import { LegacyRecordUnion } from '../../models';
 
 @Component({
   selector: 'app-model-row-actions',
+  imports: [HordeButtonComponent],
   template: `
     <div [class]="containerClass()">
-      <button class="btn btn-sm btn-secondary" (click)="onShowJson()">Json</button>
+      <horde-button variant="secondary" size="sm" (click)="onShowJson()">Json</horde-button>
       @if (writable()) {
-        <button class="btn btn-sm btn-primary" (click)="onEdit()">Edit</button>
-        <button class="btn btn-sm btn-danger" (click)="onDelete()">Delete</button>
+        <horde-button variant="primary" size="sm" (click)="onEdit()">Edit</horde-button>
+        <horde-button variant="danger" size="sm" (click)="onDelete()">Delete</horde-button>
       }
     </div>
   `,

@@ -24,6 +24,7 @@ import { ConfirmationModalComponent } from '../common/confirmation-modal/confirm
 import { DeltaDiffComponent } from '../common/delta-diff/delta-diff.component';
 import { ExpandableChangeRowComponent } from './expandable-change-row/expandable-change-row.component';
 import { PendingQueueAuditComponent } from '../pending-queue-audit/pending-queue-audit.component';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 type PendingQueueTab = 'queue' | 'my-submissions' | 'batches' | 'history';
 
@@ -95,6 +96,7 @@ interface NetSummary {
     DeltaDiffComponent,
     ExpandableChangeRowComponent,
     PendingQueueAuditComponent,
+    HordeButtonComponent,
   ],
   templateUrl: './pending-queue.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

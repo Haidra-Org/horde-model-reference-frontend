@@ -40,15 +40,15 @@
 
             <!-- Remove Button -->
             <div class="flex justify-end">
-              <button
-                type="button"
-                class="btn btn-sm btn-danger"
+              <horde-button
+                variant="danger"
+                size="sm"
                 (click)="removePair(pair.key)"
                 [attr.aria-label]="'Remove ' + pair.key"
                 title="Remove this requirement"
               >
                 <span class="text-lg leading-none">×</span>
-              </button>
+              </horde-button>
             </div>
           </div>
         </div>
@@ -114,14 +114,14 @@
 
       <!-- Add Button -->
       <div class="lg:col-span-2 lg:pt-6">
-        <button
-          type="button"
-          class="btn btn-primary w-full"
+        <horde-button
+          variant="primary"
+          class="w-full"
           (click)="addPair()"
           [disabled]="!newKey().trim() || !newValue().trim()"
         >
           <span class="text-lg mr-1">+</span> Add
-        </button>
+        </horde-button>
       </div>
     </div>
 

@@ -1,10 +1,11 @@
 import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import { LegacyConfig, LegacyConfigFile, LegacyConfigDownload } from '../../../models/api.models';
 
 @Component({
   selector: 'app-config-form-section',
-  imports: [FormsModule],
+  imports: [FormsModule, HordeButtonComponent],
   templateUrl: './config-form-section.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

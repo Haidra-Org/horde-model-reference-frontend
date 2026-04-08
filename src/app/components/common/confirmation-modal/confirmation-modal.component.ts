@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
+import { HordeButtonComponent, type ButtonVariant } from '@haidra/design-system/button';
 
 /**
  * Operation severity levels for visual styling.
@@ -28,6 +29,7 @@ export type OperationSeverity = 'create' | 'update' | 'delete' | 'info';
  */
 @Component({
   selector: 'app-confirmation-modal',
+  imports: [HordeButtonComponent],
   template: `
     @if (open()) {
       <div
@@ -130,46 +132,25 @@ export type OperationSeverity = 'create' | 'update' | 'delete' | 'info';
 
           <!-- Actions -->
           <div class="modal-actions">
-            <button
-              type="button"
-              class="btn btn-secondary"
+            <horde-button
+              variant="secondary"
               (click)="onCancel()"
               [disabled]="loading()"
             >
               {{ cancelText() }}
-            </button>
-            <button
-              type="button"
-              [class]="confirmButtonClass()"
+            </horde-button>
+            <horde-button
+              [variant]="confirmButtonVariant()"
               (click)="onConfirm()"
-              [disabled]="loading() || confirmDisabled()"
+              [disabled]="confirmDisabled()"
+              [loading]="loading()"
             >
               @if (loading()) {
-                <svg
-                  class="animate-spin -ml-1 mr-2 h-4 w-4 inline"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
                 Processing...
               } @else {
                 {{ confirmText() }}
               }
-            </button>
+            </horde-button>
           </div>
         </div>
       </div>
@@ -238,16 +219,15 @@ export class ConfirmationModalComponent {
     return `${base} ${severityClasses[this.severity()]}`;
   });
 
-  /** Computed class for the confirm button based on severity */
-  readonly confirmButtonClass = computed(() => {
-    const base = 'btn';
-    const severityClasses: Record<OperationSeverity, string> = {
-      create: 'btn-primary',
-      update: 'btn-primary', // Using primary for updates as it's still a positive action
-      delete: 'btn-danger',
-      info: 'btn-primary',
+  /** Computed variant for the confirm button based on severity */
+  readonly confirmButtonVariant = computed<ButtonVariant>(() => {
+    const severityVariants: Record<OperationSeverity, ButtonVariant> = {
+      create: 'primary',
+      update: 'primary',
+      delete: 'danger',
+      info: 'primary',
     };
-    return `${base} ${severityClasses[this.severity()]}`;
+    return severityVariants[this.severity()];
   });
 
   onConfirm(): void {

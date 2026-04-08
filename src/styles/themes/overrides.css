@@ -13,7 +13,12 @@
     & .data-table,
     & .filter-dropdown,
     & .card-showcase,
-    & .showcase-thumbnail {
+    & .showcase-thumbnail,
+    & .form-section-card,
+    & .form-sticky-footer,
+    & .edit-summary-dialog,
+    & .nested-item-card,
+    & .key-value-item-card {
       box-shadow: none !important;
     }
 
@@ -38,6 +43,15 @@
     & .code-block,
     & .tag,
     & .nested-item-card,
+    & .key-value-item-card,
+    & .form-section-card,
+    & .edit-summary-dialog,
+    & .submission-context-banner,
+    & .pending-warning-banner,
+    & .text-gen-info-callout,
+    & .min-required-callout,
+    & .validation-section-error,
+    & .validation-section-warning,
     & .field-group-collapsible,
     & .filter-dropdown,
     & .autocomplete-dropdown,
@@ -81,6 +95,10 @@
     & .card,
     & .card-header,
     & .card-footer,
+    & .form-section-card,
+    & .form-section-header,
+    & .form-sticky-footer,
+    & .edit-summary-dialog,
     & .nav-bar,
     & .sidebar-container,
     & .modal-dialog,
@@ -253,7 +271,10 @@
     & .card,
     & .field-group-collapsible,
     & .modal-dialog,
-    & .nested-item-card {
+    & .nested-item-card,
+    & .key-value-item-card,
+    & .form-section-card,
+    & .edit-summary-dialog {
       border-width: 2px !important;
     }
 

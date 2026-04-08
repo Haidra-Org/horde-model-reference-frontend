@@ -24,6 +24,7 @@ import { NotificationService } from '../../services/notification.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
 import { FieldTooltipComponent } from '../form-fields/field-tooltip/field-tooltip.component';
 import { NameCompositionPreviewComponent } from './name-composition-preview.component';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 interface GroupMembersResponseUsageFields {
   size_usage?: Record<string, number>;
@@ -38,6 +39,7 @@ interface GroupMembersResponseUsageFields {
     NameCompositionPreviewComponent,
     AutocompleteInputComponent,
     FieldTooltipComponent,
+    HordeButtonComponent,
   ],
   templateUrl: './add-variation-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -9,6 +9,7 @@ import {
   OnChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import { NotificationService } from '../../../services/notification.service';
 
 type ValueType = number | string | boolean | number[] | string[];
@@ -21,7 +22,7 @@ interface KeyValuePair {
 
 @Component({
   selector: 'app-key-value-editor',
-  imports: [FormsModule],
+  imports: [FormsModule, HordeButtonComponent],
   templateUrl: './key-value-editor.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

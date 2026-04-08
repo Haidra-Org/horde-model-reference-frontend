@@ -23,6 +23,7 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
 import { FieldTooltipComponent } from '../form-fields/field-tooltip/field-tooltip.component';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import {
   Subject,
   catchError,
@@ -60,7 +61,7 @@ interface PreviewRequest {
 
 @Component({
   selector: 'app-multi-variation-panel',
-  imports: [FormsModule, AutocompleteInputComponent, FieldTooltipComponent],
+  imports: [FormsModule, AutocompleteInputComponent, FieldTooltipComponent, HordeButtonComponent],
   templateUrl: './multi-variation-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

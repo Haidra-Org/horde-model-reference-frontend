@@ -12,6 +12,54 @@
     @apply grid grid-cols-1 lg:grid-cols-2 gap-4 items-start;
   }
 
+  /* ===== Model Form Workspace Rhythm ===== */
+  .model-form-shell {
+    @apply w-full mx-auto;
+    max-width: min(1280px, 100%);
+  }
+
+  .model-form-topbar {
+    @apply items-start gap-4;
+  }
+
+  .model-form-canvas {
+    @apply space-y-4;
+  }
+
+  .model-form-stack {
+    @apply space-y-4;
+  }
+
+  .model-form-shell .form-input,
+  .model-form-shell .form-textarea,
+  .model-form-shell .form-select {
+    @apply w-full;
+  }
+
+  .model-form-shell .form-textarea {
+    min-height: 7.5rem;
+    line-height: 1.55;
+  }
+
+  .model-form-shell .field-description-primary .form-textarea {
+    min-height: 9.5rem;
+  }
+
+  /* Keep dense discovery fields readable on large displays by avoiding over-wide 3/4-column rows */
+  @media (min-width: 768px) {
+    .model-form-shell .form-grid-3,
+    .model-form-shell .form-grid-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1700px) {
+    .model-form-shell .form-grid-3,
+    .model-form-shell .form-grid-4 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   /* Mobile-optimized form layouts */
   @media (max-width: 767px) {
     .form-grid-2,
@@ -39,6 +87,14 @@
     /* Reduce badge padding on mobile */
     .badge {
       @apply text-xs px-2 py-0.5;
+    }
+
+    .model-form-topbar {
+      @apply flex-col;
+    }
+
+    .model-form-topbar > .flex {
+      @apply w-full justify-end;
     }
   }
 
@@ -72,19 +128,37 @@
 
   /* ===== Field Region (lightweight labeled divider for groups) ===== */
   .field-region {
-    @apply mt-5;
+    @apply mt-5 pt-3;
+    border-top: 1px solid var(--color-glass-border-subtle);
+  }
+
+  .dark .field-region {
+    border-top-color: var(--color-glass-border-dark-subtle);
   }
 
   .field-region-toggle {
-    @apply text-sm font-medium text-gray-600 dark:text-gray-400;
-    @apply flex items-center gap-2 py-2;
-    @apply hover:text-gray-900 dark:hover:text-gray-200;
+    @apply text-sm font-semibold text-gray-700;
+    @apply flex items-center gap-2 py-2 px-3 rounded-md w-full text-left;
+    background: var(--color-glass-surface-subtle);
+    border: 1px solid var(--color-glass-border-subtle);
+    @apply hover:text-gray-900;
     @apply transition-colors duration-150;
-    @apply cursor-pointer bg-transparent border-0;
+    @apply cursor-pointer;
+  }
+
+  .dark .field-region-toggle {
+    background: var(--color-glass-surface-dark-subtle);
+    border-color: var(--color-glass-border-dark-subtle);
+    @apply text-gray-300 hover:text-gray-100;
   }
 
   .field-region-content {
-    @apply mt-3;
+    @apply mt-3 pl-3;
+    border-left: 2px dashed var(--color-glass-border-subtle);
+  }
+
+  .dark .field-region-content {
+    border-left-color: var(--color-glass-border-dark-subtle);
   }
 
   /* Spacing between field groups */
@@ -120,11 +194,11 @@
 
   .field-group-content {
     @apply px-4 py-4;
-    background: var(--color-glass-surface-nested);
+    background: var(--color-glass-surface-subtle);
   }
 
   .dark .field-group-content {
-    background: var(--color-glass-surface-dark-nested);
+    background: var(--color-glass-surface-dark-subtle);
   }
 
   /* Form section groupings */
@@ -137,31 +211,73 @@
     @apply dark:border-gray-700;
   }
 
-  /* ===== Form Section Card — nested glass surface (no blur to avoid stacking) ===== */
+  /* ===== Form Section Card — glass-treated card for form groupings ===== */
   .form-section-card {
-    background: var(--color-glass-surface-nested);
-    border-bottom: 1px solid var(--color-glass-border-subtle);
+    @apply rounded-lg overflow-hidden;
+    background: var(--color-glass-surface-panel);
+    border: 1px solid var(--color-glass-border-subtle);
+    box-shadow: var(--shadow-glass);
+    transition: box-shadow var(--transition-normal, 0.2s) ease;
   }
 
   .dark .form-section-card {
-    background: var(--color-glass-surface-dark-nested);
-    border-bottom-color: var(--color-glass-border-dark-subtle);
+    background: var(--color-glass-surface-dark);
+    border-color: var(--color-glass-border-dark-subtle);
+    box-shadow: var(--shadow-glass-dark);
   }
 
-  .form-section-card--collapsed {
-    /* No additional styling when collapsed */
+  .form-section-card--identity {
+    border-left: 4px solid var(--color-primary-300);
+  }
+
+  .dark .form-section-card--identity {
+    border-left-color: var(--color-primary-600);
+  }
+
+  .form-section-card--common {
+    border-left: 4px solid var(--color-info-300);
+  }
+
+  .dark .form-section-card--common {
+    border-left-color: var(--color-info-600);
+  }
+
+  .form-section-card--category {
+    border-left: 4px solid var(--color-success-300);
+  }
+
+  .dark .form-section-card--category {
+    border-left-color: var(--color-success-600);
+  }
+
+  .form-section-card--config {
+    border-left: 4px solid var(--color-warning-300);
+  }
+
+  .dark .form-section-card--config {
+    border-left-color: var(--color-warning-600);
   }
 
   .form-section-header {
     @apply w-full flex items-center justify-between;
     @apply px-5 py-3 min-h-[48px];
-    background: transparent;
-    @apply border-b border-gray-100 dark:border-gray-700;
+    background: var(--color-glass-surface-elevated);
+    border-bottom: 1px solid var(--color-glass-border-subtle);
     @apply transition-colors duration-100;
+  }
+
+  .dark .form-section-header {
+    background: var(--color-glass-surface-dark-elevated);
+    border-bottom-color: var(--color-glass-border-dark-subtle);
   }
 
   button.form-section-header:hover {
     @apply text-primary-700 dark:text-primary-300;
+  }
+
+  /* Collapsed state hides the bottom border since there's no body */
+  .form-section-card--collapsed .form-section-header {
+    border-bottom-color: transparent;
   }
 
   .form-section-header-left {
@@ -175,6 +291,38 @@
   .form-section-title {
     @apply text-lg font-bold text-gray-900 dark:text-gray-100;
     @apply flex items-center gap-2;
+  }
+
+  .form-section-card--identity .form-section-title {
+    @apply text-primary-800;
+  }
+
+  .dark .form-section-card--identity .form-section-title {
+    @apply text-primary-200;
+  }
+
+  .form-section-card--common .form-section-title {
+    @apply text-info-800;
+  }
+
+  .dark .form-section-card--common .form-section-title {
+    @apply text-info-200;
+  }
+
+  .form-section-card--category .form-section-title {
+    @apply text-success-800;
+  }
+
+  .dark .form-section-card--category .form-section-title {
+    @apply text-success-200;
+  }
+
+  .form-section-card--config .form-section-title {
+    @apply text-warning-800;
+  }
+
+  .dark .form-section-card--config .form-section-title {
+    @apply text-warning-200;
   }
 
   .form-section-subtitle {
@@ -283,10 +431,23 @@
   /* ===== Sticky Form Footer ===== */
   .form-sticky-footer {
     @apply sticky bottom-0 z-30;
-    @apply bg-white dark:bg-gray-900;
-    @apply border-t-2 border-gray-300 dark:border-gray-600;
     @apply px-6 py-3;
     @apply flex items-center justify-between;
+    background: var(--color-glass-surface-heavy);
+    backdrop-filter: blur(var(--blur-glass-md));
+    -webkit-backdrop-filter: blur(var(--blur-glass-md));
+    border-top: 1px solid var(--color-glass-border);
+    box-shadow:
+      0 -4px 16px rgb(0 0 0 / 0.06),
+      0 -1px 3px rgb(0 0 0 / 0.04);
+  }
+
+  .dark .form-sticky-footer {
+    background: var(--color-glass-surface-dark-heavy);
+    border-top-color: var(--color-glass-border-dark);
+    box-shadow:
+      0 -4px 16px rgb(0 0 0 / 0.25),
+      0 -1px 3px rgb(0 0 0 / 0.15);
   }
 
   .form-footer-status {
@@ -299,14 +460,24 @@
 
   /* ===== Submission Banner ===== */
   .submission-context-banner {
-    @apply flex items-start gap-3 px-4 py-3 text-sm;
-    @apply bg-info-50 border-l-4 border-info-500 text-info-800;
-    @apply dark:bg-info-900/20 dark:border-info-400 dark:text-info-200;
+    @apply flex items-start gap-3 px-4 py-3 text-sm rounded-lg;
+    @apply bg-info-50 border border-info-200 text-info-800;
+  }
+
+  .dark .submission-context-banner {
+    background-color: rgb(30 58 138 / 0.2);
+    border-color: rgb(59 130 246 / 0.4);
+    @apply text-info-200;
   }
 
   .submission-context-banner--warning {
-    @apply bg-warning-50 border-warning-500 text-warning-800;
-    @apply dark:bg-warning-900/20 dark:border-warning-400 dark:text-warning-200;
+    @apply bg-warning-50 border-warning-200 text-warning-800;
+  }
+
+  .dark .submission-context-banner--warning {
+    background-color: rgb(146 64 14 / 0.2);
+    border-color: rgb(217 119 6 / 0.4);
+    @apply text-warning-200;
   }
 
   .submission-context-icon {
@@ -336,16 +507,26 @@
 
   /* ===== Pending Change Warning Banner ===== */
   .pending-warning-banner {
-    @apply flex items-start gap-3 px-4 py-3 text-sm;
-    @apply bg-warning-50 border-l-4 border-warning-500 text-warning-800;
-    @apply dark:bg-warning-900/20 dark:border-warning-400 dark:text-warning-200;
+    @apply flex items-start gap-3 px-4 py-3 text-sm rounded-lg;
+    @apply bg-warning-50 border border-warning-200 text-warning-800;
+  }
+
+  .dark .pending-warning-banner {
+    background-color: rgb(146 64 14 / 0.2);
+    border-color: rgb(217 119 6 / 0.4);
+    @apply text-warning-200;
   }
 
   /* ===== Text Gen Simplified Mode ===== */
   .text-gen-info-callout {
-    @apply flex items-start gap-3 px-4 py-3 text-sm mb-4;
-    @apply bg-primary-50 border-l-4 border-primary-500 text-primary-800;
-    @apply dark:bg-primary-900/20 dark:border-primary-400 dark:text-primary-200;
+    @apply flex items-start gap-3 px-4 py-3 text-sm mb-4 rounded-lg;
+    @apply bg-primary-50 border border-primary-200 text-primary-800;
+  }
+
+  .dark .text-gen-info-callout {
+    background-color: rgb(30 64 175 / 0.15);
+    border-color: rgb(96 165 250 / 0.35);
+    @apply text-primary-200;
   }
 
   .advanced-toggle-btn {
@@ -358,10 +539,14 @@
 
   /* ===== Minimum Required Callout ===== */
   .min-required-callout {
-    @apply flex items-start gap-2 px-3 py-2 rounded-md text-xs;
+    @apply flex items-start gap-2 px-3 py-2 rounded-lg text-xs mb-4;
     @apply bg-gray-50 border border-gray-200 text-gray-600;
-    @apply dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-400;
-    @apply mb-4;
+  }
+
+  .dark .min-required-callout {
+    background: rgb(31 41 55 / 0.4);
+    border-color: rgb(255 255 255 / 0.08);
+    @apply text-gray-400;
   }
 
   /* ===== Edit Summary Drawer ===== */
@@ -371,15 +556,27 @@
   }
 
   .edit-summary-dialog {
-    @apply bg-white dark:bg-gray-800;
-    @apply shadow-lg;
+    @apply shadow-lg rounded-lg;
     @apply w-full max-w-lg max-h-[80vh] overflow-y-auto;
-    @apply border border-gray-200 dark:border-gray-700;
+    background: var(--color-glass-surface-heavy);
+    backdrop-filter: blur(var(--blur-glass-md));
+    -webkit-backdrop-filter: blur(var(--blur-glass-md));
+    border: 1px solid var(--color-glass-border);
+  }
+
+  .dark .edit-summary-dialog {
+    background: var(--color-glass-surface-dark-heavy);
+    border-color: var(--color-glass-border-dark);
+    box-shadow: var(--shadow-glass-dark-elevated);
   }
 
   .edit-summary-header {
     @apply flex items-center justify-between px-5 py-3;
-    @apply border-b border-gray-200 dark:border-gray-700;
+    border-bottom: 1px solid var(--color-glass-border-subtle);
+  }
+
+  .dark .edit-summary-header {
+    border-bottom-color: var(--color-glass-border-dark-subtle);
   }
 
   .edit-summary-body {
@@ -413,21 +610,37 @@
 
   /* Nested item card (for file/download entries) */
   .nested-item-card {
-    @apply p-4 bg-gray-50 space-y-3 relative border-l-2 border-gray-300;
-    @apply dark:bg-gray-800 dark:border-gray-600;
+    @apply p-4 space-y-3 relative rounded-lg;
+    background: var(--color-glass-surface-nested);
+    border: 1px solid var(--color-glass-border-subtle);
+    border-left: 3px solid var(--color-primary-300);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.03);
+  }
+
+  .dark .nested-item-card {
+    background: var(--color-glass-surface-dark-nested);
+    border-color: var(--color-glass-border-dark);
+    border-left-color: var(--color-primary-600);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.12);
   }
 
   .nested-item-remove-btn {
     @apply absolute top-2 right-2;
-    @apply px-3 py-1.5 text-xs rounded font-medium transition-colors duration-100;
+    @apply px-3 py-1.5 text-xs rounded-md font-medium transition-colors duration-100;
     @apply bg-danger-600 text-white;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply dark:bg-danger-500;
+  }
+
+  .dark .nested-item-remove-btn {
+    @apply bg-danger-500;
   }
 
   .nested-item-remove-btn:hover:not(:disabled) {
     @apply bg-danger-700;
-    @apply dark:bg-danger-600;
+  }
+
+  .dark .nested-item-remove-btn:hover:not(:disabled) {
+    @apply bg-danger-600;
   }
 
   .nested-item-grid {
@@ -436,7 +649,18 @@
 
   /* Key-value editor item card */
   .key-value-item-card {
-    @apply bg-gray-50 dark:bg-gray-800 p-3 border-l-2 border-gray-300 dark:border-gray-600;
+    @apply p-3 rounded-lg;
+    background: var(--color-glass-surface-nested);
+    border: 1px solid var(--color-glass-border-subtle);
+    border-left: 3px solid var(--color-gray-300);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.03);
+  }
+
+  .dark .key-value-item-card {
+    background: var(--color-glass-surface-dark-nested);
+    border-color: var(--color-glass-border-dark);
+    border-left-color: var(--color-gray-600);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.12);
   }
 
   /* Requirements section header */
@@ -472,15 +696,27 @@
 
   .validation-section-error,
   .validation-section-warning {
-    @apply border-l-4 pl-3;
+    @apply p-3 rounded-lg border;
   }
 
   .validation-section-error {
-    @apply border-l-danger-500 dark:border-l-danger-400;
+    @apply bg-danger-50 border-danger-200 text-danger-800;
+  }
+
+  .dark .validation-section-error {
+    background-color: rgb(127 29 29 / 0.2);
+    border-color: rgb(185 28 28 / 0.4);
+    @apply text-danger-200;
   }
 
   .validation-section-warning {
-    @apply border-l-warning-500 dark:border-l-warning-400;
+    @apply bg-warning-50 border-warning-200 text-warning-800;
+  }
+
+  .dark .validation-section-warning {
+    background-color: rgb(146 64 14 / 0.2);
+    border-color: rgb(217 119 6 / 0.4);
+    @apply text-warning-200;
   }
 
   .validation-heading,

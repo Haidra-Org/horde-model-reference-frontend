@@ -40,15 +40,15 @@
       [attr.aria-autocomplete]="suggestions().length > 0 ? 'list' : null"
       role="combobox"
     />
-    <button
-      type="button"
-      class="btn btn-sm btn-primary"
+    <horde-button
+      variant="primary"
+      size="sm"
       (click)="addValue()"
       [disabled]="!newValue().trim()"
       aria-label="Add item"
     >
       Add
-    </button>
+    </horde-button>
   </div>
 
   <!-- Dropdown rendered with fixed positioning to avoid container clipping -->

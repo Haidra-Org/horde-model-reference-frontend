@@ -52,6 +52,7 @@ import {
 } from '../form-fields/edit-summary/edit-summary.component';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { formatValue } from '../../utils/value-compare';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 @Component({
   selector: 'app-model-form',
@@ -67,6 +68,7 @@ import { formatValue } from '../../utils/value-compare';
     JsonEditorComponent,
     FormSectionComponent,
     EditSummaryComponent,
+    HordeButtonComponent,
   ],
   templateUrl: './model-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

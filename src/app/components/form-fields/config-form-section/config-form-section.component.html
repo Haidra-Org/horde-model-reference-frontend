@@ -19,9 +19,9 @@
       <div class="form-section">
         <div class="section-header">
           <h4 class="section-title">Files</h4>
-          <button type="button" class="btn btn-sm btn-primary" (click)="addFile()">
+          <horde-button variant="primary" size="sm" (click)="addFile()">
             + Add File
-          </button>
+          </horde-button>
         </div>
 
         @if (config()?.files && config()!.files!.length > 0) {
@@ -99,9 +99,9 @@
       <div class="form-section form-section-divider">
         <div class="section-header">
           <h4 class="section-title">Downloads</h4>
-          <button type="button" class="btn btn-sm btn-primary" (click)="addDownload()">
+          <horde-button variant="primary" size="sm" (click)="addDownload()">
             + Add Download
-          </button>
+          </horde-button>
         </div>
 
         @if (config()?.download && config()!.download!.length > 0) {

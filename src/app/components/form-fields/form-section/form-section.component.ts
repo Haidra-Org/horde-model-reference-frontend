@@ -9,7 +9,14 @@ import { Component, input, signal, computed, ChangeDetectionStrategy, OnInit } f
 @Component({
   selector: 'app-form-section',
   template: `
-    <div class="form-section-card" [class.form-section-card--collapsed]="isCollapsed()">
+    <div
+      class="form-section-card"
+      [class.form-section-card--collapsed]="isCollapsed()"
+      [class.form-section-card--identity]="tone() === 'identity'"
+      [class.form-section-card--common]="tone() === 'common'"
+      [class.form-section-card--category]="tone() === 'category'"
+      [class.form-section-card--config]="tone() === 'config'"
+    >
       <button
         type="button"
         class="form-section-header"
@@ -67,6 +74,7 @@ export class FormSectionComponent implements OnInit {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
   readonly icon = input<string>();
+  readonly tone = input<'neutral' | 'identity' | 'common' | 'category' | 'config'>('neutral');
   /** Label for a badge shown in the header (e.g., "Required", "Optional") */
   readonly badge = input<string>();
   readonly badgeVariant = input<'required' | 'recommended' | 'optional' | 'advanced'>();

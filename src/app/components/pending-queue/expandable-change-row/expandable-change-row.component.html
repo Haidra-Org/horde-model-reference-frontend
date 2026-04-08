@@ -197,9 +197,9 @@
 
     <!-- Action Row -->
     <div class="flex items-center gap-2 flex-wrap">
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary"
+      <horde-button
+        variant="secondary"
+        size="sm"
         (click)="viewInEditor(); $event.stopPropagation()"
       >
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,40 +211,40 @@
           />
         </svg>
         View in Editor
-      </button>
+      </horde-button>
       @if (auth.isApprover()) {
         @if (isPending()) {
-          <button
-            type="button"
-            class="btn btn-sm btn-primary"
+          <horde-button
+            variant="primary"
+            size="sm"
             (click)="approveRequested.emit(change()); $event.stopPropagation()"
           >
             Approve
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-danger"
+          </horde-button>
+          <horde-button
+            variant="danger"
+            size="sm"
             (click)="rejectRequested.emit(change()); $event.stopPropagation()"
           >
             Reject
-          </button>
+          </horde-button>
         }
         @if (isApproved()) {
-          <button
-            type="button"
-            class="btn btn-sm btn-success"
+          <horde-button
+            variant="success"
+            size="sm"
             (click)="applyRequested.emit(change()); $event.stopPropagation()"
           >
             Apply Change
-          </button>
+          </horde-button>
           @if (hasBatch()) {
-            <button
-              type="button"
-              class="btn btn-sm btn-info"
+            <horde-button
+              variant="info"
+              size="sm"
               (click)="applyBatchRequested.emit(change()); $event.stopPropagation()"
             >
               Apply Batch
-            </button>
+            </horde-button>
           }
         }
       }

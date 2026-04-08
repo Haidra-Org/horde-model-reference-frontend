@@ -20,10 +20,11 @@ import type {
 import { PendingQueueService } from '../../../services/pending-queue.service';
 import { AuthService } from '../../../services/auth.service';
 import { DeltaDiffComponent } from '../../common/delta-diff/delta-diff.component';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 @Component({
   selector: 'app-expandable-change-row',
-  imports: [DatePipe, DeltaDiffComponent],
+  imports: [DatePipe, DeltaDiffComponent, HordeButtonComponent],
   templateUrl: './expandable-change-row.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

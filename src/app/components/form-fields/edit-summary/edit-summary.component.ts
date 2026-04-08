@@ -7,6 +7,7 @@ import {
   ViewChild,
   effect,
 } from '@angular/core';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 export interface FieldDiff {
   field: string;
@@ -21,6 +22,7 @@ export interface FieldDiff {
  */
 @Component({
   selector: 'app-edit-summary',
+  imports: [HordeButtonComponent],
   template: `
     @if (open()) {
       <div
@@ -42,9 +44,9 @@ export interface FieldDiff {
         >
           <div class="edit-summary-header">
             <h3 id="edit-summary-title" class="heading-card">Review Changes</h3>
-            <button type="button" class="btn btn-secondary btn-sm" (click)="dismissed.emit()">
+            <horde-button variant="secondary" size="sm" (click)="dismissed.emit()">
               ✕
-            </button>
+            </horde-button>
           </div>
           <div class="edit-summary-body">
             @if (diffs().length === 0) {
@@ -73,13 +75,13 @@ export interface FieldDiff {
           <div
             class="flex justify-end gap-3 px-5 py-3 border-t border-gray-200 dark:border-gray-700"
           >
-            <button type="button" class="btn btn-secondary" (click)="dismissed.emit()">
+            <horde-button variant="secondary" (click)="dismissed.emit()">
               Cancel
-            </button>
+            </horde-button>
             @if (diffs().length > 0) {
-              <button type="button" class="btn btn-primary" (click)="confirmed.emit()">
+              <horde-button variant="primary" (click)="confirmed.emit()">
                 Confirm & Save
-              </button>
+              </horde-button>
             }
           </div>
         </div>

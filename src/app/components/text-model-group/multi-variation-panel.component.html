@@ -70,13 +70,14 @@
               (ngModelChange)="customSize.set($event)"
               (keydown.enter)="addCustomSize(); $event.preventDefault()"
             />
-            <button
-              class="btn btn-sm btn-secondary"
+            <horde-button
+              variant="secondary"
+              size="sm"
               [disabled]="!customSize().trim() || submitting()"
               (click)="addCustomSize()"
             >
               Add
-            </button>
+            </horde-button>
           </div>
           <p class="form-hint">Press Enter or click Add to include custom sizes.</p>
         </section>
@@ -129,13 +130,14 @@
               (ngModelChange)="customQuant.set($event)"
               (keydown.enter)="addCustomQuant(); $event.preventDefault()"
             />
-            <button
-              class="btn btn-sm btn-secondary"
+            <horde-button
+              variant="secondary"
+              size="sm"
               [disabled]="!customQuant().trim() || submitting()"
               (click)="addCustomQuant()"
             >
               Add
-            </button>
+            </horde-button>
           </div>
           <p class="form-hint">Press Enter or click Add to include custom quant labels.</p>
         </section>
@@ -200,9 +202,9 @@
             <div>
               <div class="flex items-center gap-2">
                 <label class="form-label" for="multi-var-params">Parameters</label>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-secondary"
+                <horde-button
+                  variant="secondary"
+                  size="sm"
                   [disabled]="submitting()"
                   (click)="toggleParameterSync()"
                   [attr.aria-label]="
@@ -210,7 +212,7 @@
                   "
                 >
                   {{ parametersLinked() ? 'Linked' : 'Manual' }}
-                </button>
+                </horde-button>
               </div>
 
               <div class="flex gap-1">
@@ -317,20 +319,22 @@
 
             @if (combos().length > 0) {
               <div class="flex gap-2">
-                <button
-                  class="btn btn-sm btn-secondary"
+                <horde-button
+                  variant="secondary"
+                  size="sm"
                   [disabled]="submitting()"
                   (click)="selectAllAvailable()"
                 >
                   Select All
-                </button>
-                <button
-                  class="btn btn-sm btn-secondary"
+                </horde-button>
+                <horde-button
+                  variant="secondary"
+                  size="sm"
                   [disabled]="submitting()"
                   (click)="deselectAll()"
                 >
                   Deselect All
-                </button>
+                </horde-button>
               </div>
             }
           </div>
@@ -419,15 +423,15 @@
                       }
                     </td>
                     <td class="px-3 py-2 text-center">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-secondary"
+                      <horde-button
+                        variant="secondary"
+                        size="sm"
                         [disabled]="submitting()"
                         (click)="removeCombo(combo)"
                         aria-label="Remove combination"
                       >
                         ×
-                      </button>
+                      </horde-button>
                     </td>
                   </tr>
                 }
@@ -494,14 +498,14 @@
 
       <div class="flex flex-wrap gap-2">
         @if (!submitting() && hasFailedCombos()) {
-          <button class="btn btn-secondary" (click)="retryFailed()">Retry Failed</button>
+          <horde-button variant="secondary" (click)="retryFailed()">Retry Failed</horde-button>
         }
-        <button class="btn btn-primary" [disabled]="!canSubmit()" (click)="submit()">
+        <horde-button variant="primary" [disabled]="!canSubmit()" (click)="submit()">
           {{ submitting() ? 'Creating...' : 'Create ' + selectedCount() + ' Variation(s)' }}
-        </button>
-        <button class="btn btn-secondary" [disabled]="submitting()" (click)="cancel()">
+        </horde-button>
+        <horde-button variant="secondary" [disabled]="submitting()" (click)="cancel()">
           Cancel
-        </button>
+        </horde-button>
       </div>
     </div>
   </div>

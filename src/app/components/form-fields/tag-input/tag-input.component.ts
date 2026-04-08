@@ -15,10 +15,11 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 @Component({
   selector: 'app-tag-input',
-  imports: [FormsModule, HordeBadgeComponent],
+  imports: [FormsModule, HordeBadgeComponent, HordeButtonComponent],
   templateUrl: './tag-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

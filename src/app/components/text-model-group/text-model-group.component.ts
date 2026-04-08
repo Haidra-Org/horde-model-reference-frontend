@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
@@ -31,6 +32,7 @@ export interface SizeSubGroup {
     RouterLink,
     FormsModule,
     HordeBadgeComponent,
+    HordeButtonComponent,
     AddVariationPanelComponent,
     MultiVariationPanelComponent,
   ],

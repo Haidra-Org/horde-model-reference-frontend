@@ -8,6 +8,7 @@ import {
   DestroyRef,
   EnvironmentInjector,
 } from '@angular/core';
+import { HordeButtonComponent } from '@haidra/design-system/button';
 
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -103,7 +104,7 @@ type SortDirection = 'asc' | 'desc' | null;
 
 @Component({
   selector: 'app-model-audit',
-  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule],
+  imports: [FormsModule, RouterLink, RouterLinkActive, ScrollingModule, HordeButtonComponent],
   templateUrl: './model-audit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

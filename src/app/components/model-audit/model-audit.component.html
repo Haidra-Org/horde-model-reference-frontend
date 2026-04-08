@@ -43,9 +43,9 @@
           </div>
         </div>
         <div class="flex gap-2 items-center">
-          <button
-            type="button"
-            class="btn btn-sm btn-secondary"
+          <horde-button
+            variant="secondary"
+            size="sm"
             (click)="refreshAuditData()"
             [disabled]="auditLoading()"
             [class.opacity-50]="auditLoading()"
@@ -71,10 +71,10 @@
             } @else {
               Refresh
             }
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-primary"
+          </horde-button>
+          <horde-button
+            variant="primary"
+            size="sm"
             (click)="exportToCSV()"
             [disabled]="filteredCount() === 0"
           >
@@ -87,7 +87,7 @@
               ></path>
             </svg>
             Export
-          </button>
+          </horde-button>
         </div>
       </div>
     </div>
@@ -598,13 +598,13 @@
           </div>
         }
         <div class="flex gap-1.5 ml-auto">
-          <button type="button" class="btn btn-xs btn-secondary" (click)="selectAll()">All</button>
-          <button type="button" class="btn btn-xs btn-secondary" (click)="selectFlagged()">
+          <horde-button variant="secondary" size="xs" (click)="selectAll()">All</horde-button>
+          <horde-button variant="secondary" size="xs" (click)="selectFlagged()">
             Flagged
-          </button>
-          <button type="button" class="btn btn-xs btn-secondary" (click)="selectNone()">
+          </horde-button>
+          <horde-button variant="secondary" size="xs" (click)="selectNone()">
             Clear
-          </button>
+          </horde-button>
         </div>
       </div>
     }
@@ -856,13 +856,13 @@
                 </td>
                 @if (auth.isAuthenticated()) {
                   <td (click)="$event.stopPropagation()">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-secondary"
+                    <horde-button
+                      variant="secondary"
+                      size="sm"
                       (click)="editModel(item.model.name)"
                     >
                       Edit
-                    </button>
+                    </horde-button>
                   </td>
                 }
               </tr>
@@ -934,13 +934,13 @@
                               </td>
                               @if (auth.isAuthenticated()) {
                                 <td class="table-cell-xs-center">
-                                  <button
-                                    type="button"
-                                    class="btn btn-xs btn-secondary"
+                                  <horde-button
+                                    variant="secondary"
+                                    size="xs"
                                     (click)="editModel(variation.name)"
                                   >
                                     Edit
-                                  </button>
+                                  </horde-button>
                                 </td>
                               }
                             </tr>
