@@ -1,171 +1,115 @@
 <div class="card">
-  <button
-    class="card-header-collapsible"
-    (click)="toggleExpanded()"
-    (keyup.enter)="toggleExpanded()"
-    (keyup.space)="toggleExpanded()"
-    tabindex="0"
-    type="button"
-    [attr.aria-expanded]="isExpanded()"
-    aria-label="Toggle configuration section"
-  >
+  <button class="card-header-collapsible" (click)="toggleExpanded()" (keyup.enter)="toggleExpanded()"
+    (keyup.space)="toggleExpanded()" tabindex="0" type="button" [attr.aria-expanded]="isExpanded()"
+    aria-label="Toggle configuration section">
     <h3 class="heading-card">Configuration</h3>
     <span class="card-header-collapsible-icon">{{ isExpanded() ? '▼' : '▶' }}</span>
   </button>
 
   @if (isExpanded()) {
-    <div class="card-body space-y-6">
-      <!-- Files Section -->
-      <div class="form-section">
-        <div class="section-header">
-          <h4 class="section-title">Files</h4>
-          <horde-button variant="primary" size="sm" (click)="addFile()">
-            + Add File
-          </horde-button>
-        </div>
-
-        @if (config()?.files && config()!.files!.length > 0) {
-          <div class="space-y-4">
-            @for (file of config()!.files!; track $index) {
-              <div class="nested-item-card">
-                <button
-                  type="button"
-                  class="nested-item-remove-btn"
-                  (click)="removeFile($index)"
-                  title="Remove file"
-                >
-                  ×
-                </button>
-
-                <div class="nested-item-grid">
-                  <div>
-                    <label for="file-{{ $index }}-path" class="form-label">Path *</label>
-                    <input
-                      id="file-{{ $index }}-path"
-                      type="text"
-                      class="form-input"
-                      [value]="file.path"
-                      (blur)="updateFile($index, 'path', $any($event.target).value)"
-                      placeholder="/path/to/file.ckpt"
-                      aria-required="true"
-                    />
-                  </div>
-
-                  <div class="form-field">
-                    <label for="file-{{ $index }}-type" class="form-label">File Type</label>
-                    <input
-                      id="file-{{ $index }}-type"
-                      type="text"
-                      class="form-input"
-                      [value]="file.file_type || ''"
-                      (blur)="updateFile($index, 'file_type', $any($event.target).value)"
-                      placeholder="e.g., ckpt, safetensors"
-                    />
-                  </div>
-
-                  <div class="form-field">
-                    <label for="file-{{ $index }}-sha256" class="form-label">SHA256 Sum</label>
-                    <input
-                      id="file-{{ $index }}-sha256"
-                      type="text"
-                      class="form-input font-mono text-xs"
-                      [value]="file.sha256sum || ''"
-                      (blur)="updateFile($index, 'sha256sum', $any($event.target).value)"
-                      placeholder="64-character hash"
-                    />
-                  </div>
-
-                  <div class="form-field">
-                    <label for="file-{{ $index }}-md5" class="form-label">MD5 Sum</label>
-                    <input
-                      id="file-{{ $index }}-md5"
-                      type="text"
-                      class="form-input font-mono text-xs"
-                      [value]="file.md5sum || ''"
-                      (blur)="updateFile($index, 'md5sum', $any($event.target).value)"
-                      placeholder="32-character hash"
-                    />
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <p class="empty-state">No files configured</p>
-        }
+  <div class="card-body space-y-6">
+    <!-- Files Section -->
+    <div class="form-section">
+      <div class="section-header">
+        <h4 class="section-title">Files</h4>
+        <horde-button variant="primary" size="sm" (click)="addFile()">
+          + Add File
+        </horde-button>
       </div>
 
-      <!-- Downloads Section -->
-      <div class="form-section form-section-divider">
-        <div class="section-header">
-          <h4 class="section-title">Downloads</h4>
-          <horde-button variant="primary" size="sm" (click)="addDownload()">
-            + Add Download
-          </horde-button>
-        </div>
+      @if (config()?.files && config()!.files!.length > 0) {
+      <div class="space-y-4">
+        @for (file of config()!.files!; track $index) {
+        <div class="nested-item-card">
+          <button type="button" class="nested-item-remove-btn" (click)="removeFile($index)" title="Remove file">
+            ×
+          </button>
 
-        @if (config()?.download && config()!.download!.length > 0) {
-          <div class="space-y-4">
-            @for (download of config()!.download!; track $index) {
-              <div class="nested-item-card">
-                <button
-                  type="button"
-                  class="nested-item-remove-btn"
-                  (click)="removeDownload($index)"
-                  title="Remove download"
-                >
-                  ×
-                </button>
+          <div class="nested-item-grid">
+            <div>
+              <label for="file-{{ $index }}-path" class="form-label">Path *</label>
+              <input id="file-{{ $index }}-path" type="text" class="form-input" [value]="file.path"
+                (blur)="updateFile($index, 'path', $any($event.target).value)" placeholder="/path/to/file.ckpt"
+                aria-required="true" />
+            </div>
 
-                <div class="nested-item-grid">
-                  <div class="form-field">
-                    <label for="download-{{ $index }}-name" class="form-label">File Name *</label>
-                    <input
-                      id="download-{{ $index }}-name"
-                      type="text"
-                      class="form-input"
-                      [value]="download.file_name || ''"
-                      (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
-                      placeholder="model.ckpt"
-                      aria-required="true"
-                    />
-                  </div>
+            <div class="form-field">
+              <label for="file-{{ $index }}-type" class="form-label">File Type</label>
+              <input id="file-{{ $index }}-type" type="text" class="form-input" [value]="file.file_type || ''"
+                (blur)="updateFile($index, 'file_type', $any($event.target).value)"
+                placeholder="e.g., ckpt, safetensors" />
+            </div>
 
-                  <div class="form-field">
-                    <label for="download-{{ $index }}-url" class="form-label">File URL *</label>
-                    <input
-                      id="download-{{ $index }}-url"
-                      type="text"
-                      class="form-input"
-                      [value]="download.file_url || ''"
-                      (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
-                      placeholder="https://..."
-                      aria-required="true"
-                    />
-                  </div>
+            <div class="form-field">
+              <label for="file-{{ $index }}-sha256" class="form-label">SHA256 Sum</label>
+              <input id="file-{{ $index }}-sha256" type="text" class="form-input font-mono text-xs"
+                [value]="file.sha256sum || ''" (blur)="updateFile($index, 'sha256sum', $any($event.target).value)"
+                placeholder="64-character hash" />
+            </div>
 
-                  <div class="form-field md:col-span-2">
-                    <label for="download-{{ $index }}-path" class="form-label">
-                      File Path
-                      <span class="label-hint"> (usually empty) </span>
-                    </label>
-                    <input
-                      id="download-{{ $index }}-path"
-                      type="text"
-                      class="form-input"
-                      [value]="download.file_path || ''"
-                      (blur)="updateDownload($index, 'file_path', $any($event.target).value)"
-                      placeholder=""
-                    />
-                  </div>
-                </div>
-              </div>
-            }
+            <div class="form-field">
+              <label for="file-{{ $index }}-md5" class="form-label">MD5 Sum</label>
+              <input id="file-{{ $index }}-md5" type="text" class="form-input font-mono text-xs"
+                [value]="file.md5sum || ''" (blur)="updateFile($index, 'md5sum', $any($event.target).value)"
+                placeholder="32-character hash" />
+            </div>
           </div>
-        } @else {
-          <p class="empty-state">No downloads configured</p>
+        </div>
         }
       </div>
+      } @else {
+      <p class="empty-state">No files configured</p>
+      }
     </div>
+
+    <!-- Downloads Section -->
+    <div class="form-section form-section-divider">
+      <div class="section-header">
+        <h4 class="section-title">Downloads</h4>
+        <horde-button variant="primary" size="sm" (click)="addDownload()">
+          + Add Download
+        </horde-button>
+      </div>
+
+      @if (config()?.download && config()!.download!.length > 0) {
+      <div class="space-y-4">
+        @for (download of config()!.download!; track $index) {
+        <div class="nested-item-card">
+          <button type="button" class="nested-item-remove-btn" (click)="removeDownload($index)" title="Remove download">
+            ×
+          </button>
+
+          <div class="nested-item-grid">
+            <div class="form-field">
+              <label for="download-{{ $index }}-name" class="form-label">File Name *</label>
+              <input id="download-{{ $index }}-name" type="text" class="form-input" [value]="download.file_name || ''"
+                (blur)="updateDownload($index, 'file_name', $any($event.target).value)" placeholder="model.ckpt"
+                aria-required="true" />
+            </div>
+
+            <div class="form-field">
+              <label for="download-{{ $index }}-url" class="form-label">File URL *</label>
+              <input id="download-{{ $index }}-url" type="text" class="form-input" [value]="download.file_url || ''"
+                (blur)="updateDownload($index, 'file_url', $any($event.target).value)" placeholder="https://..."
+                aria-required="true" />
+            </div>
+
+            <div class="form-field md:col-span-2">
+              <label for="download-{{ $index }}-path" class="form-label">
+                File Path
+                <span class="label-hint"> (usually empty) </span>
+              </label>
+              <input id="download-{{ $index }}-path" type="text" class="form-input" [value]="download.file_path || ''"
+                (blur)="updateDownload($index, 'file_path', $any($event.target).value)" placeholder="" />
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <p class="empty-state">No downloads configured</p>
+      }
+    </div>
+  </div>
   }
 </div>

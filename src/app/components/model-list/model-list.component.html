@@ -2,19 +2,10 @@
   <!-- Compact Page Header -->
   <div class="card page-header-compact">
     <div class="collapsible-toggle-compact">
-      <button
-        type="button"
-        class="icon-button-gray"
-        (click)="toggleHeaderCollapsed()"
-        [attr.aria-label]="headerCollapsed() ? 'Expand header' : 'Collapse header'"
-      >
-        <svg
-          class="collapse-icon"
-          [class.rotate-180]="!headerCollapsed()"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+      <button type="button" class="icon-button-gray" (click)="toggleHeaderCollapsed()"
+        [attr.aria-label]="headerCollapsed() ? 'Expand header' : 'Collapse header'">
+        <svg class="collapse-icon" [class.rotate-180]="!headerCollapsed()" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
         </svg>
       </button>
@@ -23,29 +14,20 @@
           <h1 class="heading-section">
             {{ recordDisplayMap[category()] || category() }}
           </h1>
-          <div class="tab-navigation tab-navigation-compact">
-            <a
-              [routerLink]="['/categories', category()]"
-              routerLinkActive="tab-active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              ariaCurrentWhenActive="page"
-              class="tab-link-compact"
-            >
+          <div class="tab-navigation tab-navigation-compact max-w-full">
+            <a [routerLink]="['/categories', category()]" routerLinkActive="tab-active"
+              [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page" class="tab-link-compact">
               Model List
             </a>
-            <a
-              [routerLink]="['/categories', category(), 'audit']"
-              routerLinkActive="tab-active"
-              ariaCurrentWhenActive="page"
-              class="tab-link-compact"
-            >
+            <a [routerLink]="['/categories', category(), 'audit']" routerLinkActive="tab-active"
+              ariaCurrentWhenActive="page" class="tab-link-compact">
               Audit
             </a>
           </div>
         </div>
         <div class="flex gap-2 items-center">
           @if (writable()) {
-            <horde-button variant="primary" size="sm" (click)="createModel()">+ Create</horde-button>
+          <horde-button variant="primary" size="sm" (click)="createModel()">+ Create</horde-button>
           }
         </div>
       </div>
@@ -58,786 +40,548 @@
         <span class="inline-stat-value">{{ totalModels() }}</span>
       </div>
       @if (filteredModels().length !== totalModels()) {
-        <div class="inline-stat-item">
-          <span class="inline-stat-label">Filtered:</span>
-          <span class="inline-stat-value">{{ filteredModels().length }}</span>
-        </div>
+      <div class="inline-stat-item">
+        <span class="inline-stat-label">Filtered:</span>
+        <span class="inline-stat-value">{{ filteredModels().length }}</span>
+      </div>
       }
 
       <div class="inline-stat-separator"></div>
 
       <!-- Category Statistics Inline -->
       @for (statType of categoryStatsConfig(); track statType) {
-        @if (statType === 'baseline' && topBaselinesDisplay().totalCount > 0) {
-          <div class="inline-stat-item">
-            @for (
-              stat of topBaselinesDisplay().topBaselines.slice(0, 3);
-              track stat.baseline;
-              let last = $last
-            ) {
-              <button
-                type="button"
-                class="inline-stat-link"
-                (click)="addBaselineToSearch(stat.baseline)"
-                [title]="getBaselineDisplayName(stat.baseline)"
-              >
-                {{ stat.count }} {{ getBaselineDisplayName(stat.baseline) }}
-              </button>
-              @if (
-                !last ||
-                topBaselinesDisplay().remainingCount > 0 ||
-                topBaselinesDisplay().topBaselines.length > 3
-              ) {
-                <span class="inline-stat-separator-dot">&middot;</span>
-              }
-            }
-            @if (
-              topBaselinesDisplay().remainingCount > 0 ||
-              topBaselinesDisplay().topBaselines.length > 3
-            ) {
-              <button type="button" class="inline-stat-link" (click)="showBaselineDetails()">
-                +{{
-                  topBaselinesDisplay().remainingCount +
-                    (topBaselinesDisplay().topBaselines.length - 3)
-                }}
-                more
-              </button>
-            }
-          </div>
+      @if (statType === 'baseline' && topBaselinesDisplay().totalCount > 0) {
+      <div class="inline-stat-item">
+        @for (
+        stat of topBaselinesDisplay().topBaselines.slice(0, 3);
+        track stat.baseline;
+        let last = $last
+        ) {
+        <button type="button" class="inline-stat-link" (click)="addBaselineToSearch(stat.baseline)"
+          [title]="getBaselineDisplayName(stat.baseline)">
+          {{ stat.count }} {{ getBaselineDisplayName(stat.baseline) }}
+        </button>
+        @if (
+        !last ||
+        topBaselinesDisplay().remainingCount > 0 ||
+        topBaselinesDisplay().topBaselines.length > 3
+        ) {
+        <span class="inline-stat-separator-dot">&middot;</span>
         }
+        }
+        @if (
+        topBaselinesDisplay().remainingCount > 0 ||
+        topBaselinesDisplay().topBaselines.length > 3
+        ) {
+        <button type="button" class="inline-stat-link" (click)="showBaselineDetails()">
+          +{{
+          topBaselinesDisplay().remainingCount +
+          (topBaselinesDisplay().topBaselines.length - 3)
+          }}
+          more
+        </button>
+        }
+      </div>
+      }
       }
     </div>
 
     <!-- Collapsible Details Section -->
     @if (!headerCollapsed()) {
-      <div class="collapsible-section collapsible-section-expanded px-4 pb-3">
-        <div class="text-xs text-gray-600 dark:text-gray-400 flex flex-wrap gap-3">
-          <span>CATEGORY: {{ category() }}</span>
-          @if (filteredModels().length > 0) {
-            @for (statType of categoryStatsConfig(); track statType) {
-              @if (statType === 'nsfw' && nsfwStatsDisplay().length > 0) {
-                <span class="flex items-center gap-1">
-                  @for (stat of nsfwStatsDisplay(); track stat.label; let last = $last) {
-                    <button
-                      type="button"
-                      class="inline-meta-link"
-                      (click)="addNsfwFilterToSearch(stat.value)"
-                    >
-                      {{ stat.count }} {{ stat.label }}
-                    </button>
-                    @if (!last) {
-                      <span class="inline-stat-separator-dot">&middot;</span>
-                    }
-                  }
-                </span>
-              }
-              @if (statType === 'size' && sizeStats() > 0) {
-                <button
-                  type="button"
-                  class="inline-meta-link"
-                  (click)="showSizeDetails()"
-                  title="Total disk size"
-                >
-                  {{ formatSizeInGB(sizeStats()) }} GB total
-                </button>
-              }
-            }
+    <div class="collapsible-section collapsible-section-expanded px-4 pb-3">
+      <div class="text-xs text-gray-600 dark:text-gray-400 flex flex-wrap gap-3">
+        <span>CATEGORY: {{ category() }}</span>
+        @if (filteredModels().length > 0) {
+        @for (statType of categoryStatsConfig(); track statType) {
+        @if (statType === 'nsfw' && nsfwStatsDisplay().length > 0) {
+        <span class="flex items-center gap-1">
+          @for (stat of nsfwStatsDisplay(); track stat.label; let last = $last) {
+          <button type="button" class="inline-meta-link" (click)="addNsfwFilterToSearch(stat.value)">
+            {{ stat.count }} {{ stat.label }}
+          </button>
+          @if (!last) {
+          <span class="inline-stat-separator-dot">&middot;</span>
           }
-        </div>
+          }
+        </span>
+        }
+        @if (statType === 'size' && sizeStats() > 0) {
+        <button type="button" class="inline-meta-link" (click)="showSizeDetails()" title="Total disk size">
+          {{ formatSizeInGB(sizeStats()) }} GB total
+        </button>
+        }
+        }
+        }
       </div>
+    </div>
     }
   </div>
 
   <!-- Compact Search and Toggle -->
   <div class="card filter-panel-compact">
-    <div class="filter-section-compact px-4 py-2">
+    <div class="filter-section-compact filter-section-compact--controls px-4 py-2">
       <label class="checkbox-toggle-compact">
-        <input
-          type="checkbox"
-          class="sr-only peer"
-          [checked]="showDetails()"
-          (change)="toggleShowDetails()"
-        />
+        <input type="checkbox" class="sr-only peer" [checked]="showDetails()" (change)="toggleShowDetails()" />
         <span class="toggle-switch-compact toggle-switch-primary">
           <span class="toggle-switch-slider-sm" [class.translate-x-4]="showDetails()"></span>
         </span>
         <span class="toggle-label-compact">Show Details</span>
       </label>
       <label class="checkbox-toggle-compact">
-        <input
-          type="checkbox"
-          class="sr-only peer"
-          [checked]="filterByActive()"
-          (change)="filterByActive.set(!filterByActive())"
-        />
+        <input type="checkbox" class="sr-only peer" [checked]="filterByActive()"
+          (change)="filterByActive.set(!filterByActive())" />
         <span class="toggle-switch-compact toggle-switch-success">
           <span class="toggle-switch-slider-sm" [class.translate-x-4]="filterByActive()"></span>
         </span>
         <span class="toggle-label-compact">Active Only</span>
       </label>
       @if (hasActiveFilters()) {
-        <horde-button variant="secondary" size="xs" (click)="clearAllFilters()">
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
-          Clear
-        </horde-button>
+      <horde-button variant="secondary" size="xs" (click)="clearAllFilters()">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Clear
+      </horde-button>
       }
 
       <div class="view-mode-toggle gap-tight" role="group">
         <span class="view-mode-label-xs">View:</span>
         <div class="view-mode-buttons">
-          <button
-            type="button"
-            class="view-mode-button-compact"
-            [class.view-mode-button--active]="viewMode() === 'table'"
-            (click)="setViewMode('table')"
-          >
+          <button type="button" class="view-mode-button-compact"
+            [class.view-mode-button--active]="viewMode() === 'table'" (click)="setViewMode('table')">
             Rows
           </button>
-          <button
-            type="button"
-            class="view-mode-button-compact"
-            [class.view-mode-button--active]="viewMode() === 'card'"
-            (click)="setViewMode('card')"
-          >
+          <button type="button" class="view-mode-button-compact"
+            [class.view-mode-button--active]="viewMode() === 'card'" (click)="setViewMode('card')">
             Cards
           </button>
         </div>
       </div>
 
       @if (viewMode() === 'card') {
-        <div class="view-mode-toggle gap-tight" role="group">
-          <span class="view-mode-label-xs">Sort:</span>
-          <div class="view-mode-buttons">
-            <button
-              type="button"
-              class="view-mode-button-compact"
-              [class.view-mode-button--active]="sortColumn() === 'index'"
-              (click)="toggleSort('index')"
-            >
-              # {{ getSortIcon('index') }}
-            </button>
-            <button
-              type="button"
-              class="view-mode-button-compact"
-              [class.view-mode-button--active]="sortColumn() === 'active'"
-              (click)="toggleSort('active')"
-            >
-              Active {{ getSortIcon('active') }}
-            </button>
-            <button
-              type="button"
-              class="view-mode-button-compact"
-              [class.view-mode-button--active]="sortColumn() === 'name'"
-              (click)="toggleSort('name')"
-            >
-              Name {{ getSortIcon('name') }}
-            </button>
-            <button
-              type="button"
-              class="view-mode-button-compact"
-              [class.view-mode-button--active]="sortColumn() === 'workers'"
-              (click)="toggleSort('workers')"
-            >
-              Workers {{ getSortIcon('workers') }}
-            </button>
-          </div>
+      <div class="view-mode-toggle gap-tight" role="group">
+        <span class="view-mode-label-xs">Sort:</span>
+        <div class="view-mode-buttons">
+          <button type="button" class="view-mode-button-compact"
+            [class.view-mode-button--active]="sortColumn() === 'index'" (click)="toggleSort('index')">
+            # {{ getSortIcon('index') }}
+          </button>
+          <button type="button" class="view-mode-button-compact"
+            [class.view-mode-button--active]="sortColumn() === 'active'" (click)="toggleSort('active')">
+            Active {{ getSortIcon('active') }}
+          </button>
+          <button type="button" class="view-mode-button-compact"
+            [class.view-mode-button--active]="sortColumn() === 'name'" (click)="toggleSort('name')">
+            Name {{ getSortIcon('name') }}
+          </button>
+          <button type="button" class="view-mode-button-compact"
+            [class.view-mode-button--active]="sortColumn() === 'workers'" (click)="toggleSort('workers')">
+            Workers {{ getSortIcon('workers') }}
+          </button>
         </div>
+      </div>
       }
     </div>
 
-    <div class="filter-section-compact px-4 pb-2">
+    <div class="filter-section-compact filter-section-compact--controls px-4 pb-2">
       <div>
-        <input
-          id="model-search"
-          type="search"
-          class="form-input-compact w-48"
-          placeholder="Search..."
-          [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event); searchTermSubject.next($event)"
-        />
+        <input id="model-search" type="search" class="form-input-compact w-full sm:w-48" placeholder="Search..."
+          [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event); searchTermSubject.next($event)" />
       </div>
       <div class="relative">
-        <button
-          id="tag-filter-btn"
-          type="button"
-          class="filter-button-compact"
-          (click)="toggleTagFilterDropdown()"
-        >
+        <button id="tag-filter-btn" type="button" class="filter-button-compact" (click)="toggleTagFilterDropdown()">
           <span class="truncate">
             @if (selectedTags().length === 0) {
-              Tags
+            Tags
             } @else {
-              {{ selectedTags().length }} tag(s)
+            {{ selectedTags().length }} tag(s)
             }
           </span>
-          <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
+          <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
 
         @if (tagFilterOpen()) {
-          <button
-            type="button"
-            class="filter-dropdown-backdrop"
-            (click)="closeTagFilterDropdown()"
-            aria-label="Close tag filter dropdown"
-          ></button>
-          <div class="filter-dropdown">
-            <div class="filter-dropdown-header">
-              <span class="text-xs font-medium">Tags</span>
-              @if (selectedTags().length > 0) {
-                <button type="button" class="text-xs link" (click)="clearAllTags()">Clear</button>
-              }
-            </div>
-            <div class="filter-dropdown-search">
-              <input
-                type="search"
-                class="form-input w-full text-xs"
-                placeholder="Search..."
-                [ngModel]="tagSearchTerm()"
-                (ngModelChange)="tagSearchTerm.set($event)"
-              />
-            </div>
-            <div class="filter-dropdown-content">
-              @if (availableTags().length === 0) {
-                <div class="dropdown-empty-state text-xs">No tags</div>
-              } @else if (filteredAvailableTags().length === 0) {
-                <div class="dropdown-empty-state text-xs">No matches</div>
-              } @else {
-                @for (tag of filteredAvailableTags(); track tag) {
-                  <label class="filter-dropdown-item">
-                    <input
-                      type="checkbox"
-                      class="w-3 h-3 rounded"
-                      [checked]="isTagSelected(tag)"
-                      (change)="toggleTag(tag)"
-                    />
-                    <span class="ml-2 text-xs">{{ tag }}</span>
-                  </label>
-                }
-              }
-            </div>
+        <button type="button" class="filter-dropdown-backdrop" (click)="closeTagFilterDropdown()"
+          aria-label="Close tag filter dropdown"></button>
+        <div class="filter-dropdown">
+          <div class="filter-dropdown-header">
+            <span class="text-xs font-medium">Tags</span>
+            @if (selectedTags().length > 0) {
+            <button type="button" class="text-xs link" (click)="clearAllTags()">Clear</button>
+            }
           </div>
+          <div class="filter-dropdown-search">
+            <input type="search" class="form-input w-full text-xs" placeholder="Search..." [ngModel]="tagSearchTerm()"
+              (ngModelChange)="tagSearchTerm.set($event)" />
+          </div>
+          <div class="filter-dropdown-content">
+            @if (availableTags().length === 0) {
+            <div class="dropdown-empty-state text-xs">No tags</div>
+            } @else if (filteredAvailableTags().length === 0) {
+            <div class="dropdown-empty-state text-xs">No matches</div>
+            } @else {
+            @for (tag of filteredAvailableTags(); track tag) {
+            <label class="filter-dropdown-item">
+              <input type="checkbox" class="w-3 h-3 rounded" [checked]="isTagSelected(tag)" (change)="toggleTag(tag)" />
+              <span class="ml-2 text-xs">{{ tag }}</span>
+            </label>
+            }
+            }
+          </div>
+        </div>
         }
       </div>
 
       @if (isTextGeneration()) {
-        <div class="relative">
-          <button
-            id="param-filter-btn"
-            type="button"
-            class="filter-button-compact"
-            (click)="toggleParameterTagFilterDropdown()"
-          >
-            <span class="truncate">
-              @if (selectedParameterTags().length === 0) {
-                Parameters
-              } @else {
-                {{ selectedParameterTags().length }} param(s)
-              }
-            </span>
-            <svg
-              class="w-3 h-3 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </button>
+      <div class="relative">
+        <button id="param-filter-btn" type="button" class="filter-button-compact"
+          (click)="toggleParameterTagFilterDropdown()">
+          <span class="truncate">
+            @if (selectedParameterTags().length === 0) {
+            Parameters
+            } @else {
+            {{ selectedParameterTags().length }} param(s)
+            }
+          </span>
+          <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
 
-          @if (parameterTagFilterOpen()) {
-            <button
-              type="button"
-              class="filter-dropdown-backdrop"
-              (click)="closeParameterTagFilterDropdown()"
-              aria-label="Close parameter filter dropdown"
-            ></button>
-            <div class="filter-dropdown">
-              <div class="filter-dropdown-header">
-                <span class="text-xs font-medium">Parameters</span>
-                @if (selectedParameterTags().length > 0) {
-                  <button type="button" class="text-xs link" (click)="clearAllParameterTags()">
-                    Clear
-                  </button>
-                }
-              </div>
-              <div class="filter-dropdown-search">
-                <input
-                  type="search"
-                  class="form-input w-full text-xs"
-                  placeholder="Search..."
-                  [ngModel]="parameterTagSearchTerm()"
-                  (ngModelChange)="parameterTagSearchTerm.set($event)"
-                />
-              </div>
-              <div class="filter-dropdown-content">
-                @if (availableParameterTags().length === 0) {
-                  <div class="empty-state-text text-xs">None</div>
-                } @else if (filteredAvailableParameterTags().length === 0) {
-                  <div class="empty-state-text text-xs">No matches</div>
-                } @else {
-                  @for (tag of filteredAvailableParameterTags(); track tag) {
-                    <label class="filter-dropdown-item">
-                      <input
-                        type="checkbox"
-                        class="w-3 h-3 rounded"
-                        [checked]="isParameterTagSelected(tag)"
-                        (change)="toggleParameterTag(tag)"
-                      />
-                      <span class="ml-2 text-xs">{{ tag }}</span>
-                    </label>
-                  }
-                }
-              </div>
-            </div>
-          }
+        @if (parameterTagFilterOpen()) {
+        <button type="button" class="filter-dropdown-backdrop" (click)="closeParameterTagFilterDropdown()"
+          aria-label="Close parameter filter dropdown"></button>
+        <div class="filter-dropdown">
+          <div class="filter-dropdown-header">
+            <span class="text-xs font-medium">Parameters</span>
+            @if (selectedParameterTags().length > 0) {
+            <button type="button" class="text-xs link" (click)="clearAllParameterTags()">
+              Clear
+            </button>
+            }
+          </div>
+          <div class="filter-dropdown-search">
+            <input type="search" class="form-input w-full text-xs" placeholder="Search..."
+              [ngModel]="parameterTagSearchTerm()" (ngModelChange)="parameterTagSearchTerm.set($event)" />
+          </div>
+          <div class="filter-dropdown-content">
+            @if (availableParameterTags().length === 0) {
+            <div class="empty-state-text text-xs">None</div>
+            } @else if (filteredAvailableParameterTags().length === 0) {
+            <div class="empty-state-text text-xs">No matches</div>
+            } @else {
+            @for (tag of filteredAvailableParameterTags(); track tag) {
+            <label class="filter-dropdown-item">
+              <input type="checkbox" class="w-3 h-3 rounded" [checked]="isParameterTagSelected(tag)"
+                (change)="toggleParameterTag(tag)" />
+              <span class="ml-2 text-xs">{{ tag }}</span>
+            </label>
+            }
+            }
+          </div>
         </div>
+        }
+      </div>
       }
 
       <!-- Selected Tags Display -->
       @if (selectedTags().length > 0 || selectedParameterTags().length > 0) {
-        <div class="flex-gap-2-wrap">
-          @for (tag of selectedTags(); track tag) {
-            <button
-              type="button"
-              class="active-filter-tag-compact"
-              (click)="toggleTag(tag)"
-              [title]="'Remove ' + tag"
-            >
-              <span>{{ tag }}</span>
-              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-          }
-          @for (tag of selectedParameterTags(); track tag) {
-            <button
-              type="button"
-              class="active-filter-tag-info-compact"
-              (click)="toggleParameterTag(tag)"
-              [title]="'Remove ' + tag"
-            >
-              <span>{{ tag }}</span>
-              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-          }
-        </div>
+      <div class="flex-gap-2-wrap">
+        @for (tag of selectedTags(); track tag) {
+        <button type="button" class="active-filter-tag-compact" (click)="toggleTag(tag)" [title]="'Remove ' + tag">
+          <span>{{ tag }}</span>
+          <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        }
+        @for (tag of selectedParameterTags(); track tag) {
+        <button type="button" class="active-filter-tag-info-compact" (click)="toggleParameterTag(tag)"
+          [title]="'Remove ' + tag">
+          <span>{{ tag }}</span>
+          <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        }
+      </div>
       }
     </div>
   </div>
 
   <!-- Loading/Empty States -->
   @if (loading()) {
-    <div class="card">
-      <div class="page-loading-state">Loading models...</div>
-    </div>
+  <div class="card">
+    <div class="page-loading-state">Loading models...</div>
+  </div>
   } @else if (filteredModels().length === 0) {
-    <div class="card">
-      <div class="page-loading-state">
-        @if (searchTerm()) {
-          No models match your search
-        } @else {
-          No models in this category
-        }
-      </div>
+  <div class="card">
+    <div class="page-loading-state">
+      @if (searchTerm()) {
+      No models match your search
+      } @else {
+      No models in this category
+      }
     </div>
+  </div>
   } @else {
-    @if (viewMode() === 'table') {
-      <!-- Data Table with Virtual Scrolling -->
-      <div class="card overflow-hidden">
-        <div class="data-table-header">
-          <table class="table table-fixed">
-            <colgroup>
-              <col class="w-12" />
-              <col class="w-16" />
-              <col class="w-16" />
-              <col class="w-64" />
-              <col class="w-64" />
-              <col class="w-48" />
-              <col class="w-40" />
-              @if (isTextGeneration()) {
-                <col class="w-24" />
-              }
-              @if (!isTextGeneration()) {
-                <col class="w-24" />
-              }
-              <col class="w-32" />
-              <col class="w-48" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th class="text-center"></th>
-                <th class="text-center cursor-pointer" (click)="toggleSort('index')">
-                  # {{ getSortIcon('index') }}
-                </th>
-                <th class="text-center cursor-pointer" (click)="toggleSort('active')">
-                  Active {{ getSortIcon('active') }}
-                </th>
-                <th class="cursor-pointer" (click)="toggleSort('name')">
-                  Name {{ getSortIcon('name') }}
-                </th>
-                <th>Description</th>
-                <th>Baseline</th>
-                <th>Tags</th>
-                @if (isTextGeneration()) {
-                  <th class="text-center"># Variations</th>
-                }
-                @if (!isTextGeneration()) {
-                  <th>NSFW</th>
-                }
-                <th class="text-center cursor-pointer" (click)="toggleSort('workers')">
-                  Workers {{ getSortIcon('workers') }}
-                </th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
+  @if (viewMode() === 'table') {
+  <!-- Data Table with Virtual Scrolling -->
+  <div class="card overflow-hidden">
+    <div class="data-table-header">
+      <table class="table table-fixed">
+        <colgroup>
+          <col class="w-12" />
+          <col class="w-16" />
+          <col class="w-16" />
+          <col class="w-64" />
+          <col class="w-64" />
+          <col class="w-48" />
+          <col class="w-40" />
+          @if (isTextGeneration()) {
+          <col class="w-24" />
+          }
+          @if (!isTextGeneration()) {
+          <col class="w-24" />
+          }
+          <col class="w-32" />
+          <col class="w-48" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="text-center"></th>
+            <th class="text-center cursor-pointer" (click)="toggleSort('index')">
+              # {{ getSortIcon('index') }}
+            </th>
+            <th class="text-center cursor-pointer" (click)="toggleSort('active')">
+              Active {{ getSortIcon('active') }}
+            </th>
+            <th class="cursor-pointer" (click)="toggleSort('name')">
+              Name {{ getSortIcon('name') }}
+            </th>
+            <th>Description</th>
+            <th>Baseline</th>
+            <th>Tags</th>
+            @if (isTextGeneration()) {
+            <th class="text-center"># Variations</th>
+            }
+            @if (!isTextGeneration()) {
+            <th>NSFW</th>
+            }
+            <th class="text-center cursor-pointer" (click)="toggleSort('workers')">
+              Workers {{ getSortIcon('workers') }}
+            </th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
 
-        <cdk-virtual-scroll-viewport
-          itemSize="50"
-          class="virtual-scroll-viewport"
-          [style.height.px]="viewportHeight()"
-          [minBufferPx]="400"
-          [maxBufferPx]="800"
-        >
-          <table class="table table-fixed">
-            <colgroup>
-              <col class="w-12" />
-              <col class="w-16" />
-              <col class="w-16" />
-              <col class="w-64" />
-              <col class="w-64" />
-              <col class="w-48" />
-              <col class="w-40" />
-              @if (isTextGeneration()) {
-                <col class="w-24" />
-              }
-              @if (!isTextGeneration()) {
-                <col class="w-24" />
-              }
-              <col class="w-32" />
-              <col class="w-48" />
-            </colgroup>
-            <tbody>
-              @for (model of sortedFilteredModels(); track model.name; let isEven = $even) {
-                <app-model-row
-                  [model]="model"
-                  [allModels]="models()"
-                  [writable]="writable()"
-                  [isEven]="isEven"
-                  [isTextGeneration]="isTextGeneration()"
-                  [category]="category()"
-                  [expandedRows]="expandedModels()"
-                  [expandedShowcases]="expandedShowcases()"
-                  [hordeStatsState]="hordeApi.hordeStatsState()"
-                  [pendingOverlay]="getPendingOverlay(model)"
-                  (showJson)="showJson($event)"
-                  (edit)="editModel($event)"
-                  (delete)="confirmDelete($event)"
-                  (toggleRow)="toggleRowExpansion($event)"
-                  (viewPendingChange)="navigateToPendingChange($event)"
-                />
-              }
-            </tbody>
-          </table>
-        </cdk-virtual-scroll-viewport>
-      </div>
-    } @else {
-      <div class="card">
-        <div class="model-card-grid" role="list">
-          @for (model of sortedFilteredModels(); track model.name) {
-            <article
-              class="model-card"
-              [class.ghost-row]="isGhostModel(model)"
-              [class.pending-indicator-delete]="
+    <cdk-virtual-scroll-viewport itemSize="50" class="virtual-scroll-viewport" [style.height.px]="viewportHeight()"
+      [minBufferPx]="400" [maxBufferPx]="800">
+      <table class="table table-fixed">
+        <colgroup>
+          <col class="w-12" />
+          <col class="w-16" />
+          <col class="w-16" />
+          <col class="w-64" />
+          <col class="w-64" />
+          <col class="w-48" />
+          <col class="w-40" />
+          @if (isTextGeneration()) {
+          <col class="w-24" />
+          }
+          @if (!isTextGeneration()) {
+          <col class="w-24" />
+          }
+          <col class="w-32" />
+          <col class="w-48" />
+        </colgroup>
+        <tbody>
+          @for (model of sortedFilteredModels(); track model.name; let isEven = $even) {
+          <app-model-row [model]="model" [allModels]="models()" [writable]="writable()" [isEven]="isEven"
+            [isTextGeneration]="isTextGeneration()" [category]="category()" [expandedRows]="expandedModels()"
+            [expandedShowcases]="expandedShowcases()" [hordeStatsState]="hordeApi.hordeStatsState()"
+            [pendingOverlay]="getPendingOverlay(model)" (showJson)="showJson($event)" (edit)="editModel($event)"
+            (delete)="confirmDelete($event)" (toggleRow)="toggleRowExpansion($event)"
+            (viewPendingChange)="navigateToPendingChange($event)" />
+          }
+        </tbody>
+      </table>
+    </cdk-virtual-scroll-viewport>
+  </div>
+  } @else {
+  <div class="card">
+    <div class="model-card-grid" role="list">
+      @for (model of sortedFilteredModels(); track model.name) {
+      <article class="model-card" [class.ghost-row]="isGhostModel(model)" [class.pending-indicator-delete]="
                 getPendingOverlay(model)?.pendingOperation === 'delete'
-              "
-              [class.pending-indicator-update]="
+              " [class.pending-indicator-update]="
                 getPendingOverlay(model)?.pendingOperation === 'update' && !isGhostModel(model)
-              "
-              role="listitem"
-            >
-              <div class="model-card-top">
-                <div class="flex items-center gap-2">
-                  <span class="model-card-index">#{{ getModelDisplayIndex(model) }}</span>
-                  @if (getPendingOverlay(model); as overlay) {
-                    <button
-                      type="button"
-                      [class]="
+              " role="listitem">
+        <div class="model-card-top">
+          <div class="flex items-center gap-2">
+            <span class="model-card-index">#{{ getModelDisplayIndex(model) }}</span>
+            @if (getPendingOverlay(model); as overlay) {
+            <button type="button" [class]="
                         overlay.isGhost
                           ? 'badge badge-warning badge-xs'
                           : overlay.pendingOperation === 'delete'
                             ? 'badge badge-danger badge-xs'
                             : 'badge badge-warning badge-xs'
-                      "
-                      (click)="navigateToPendingChange(overlay.pendingChangeId)"
-                      [title]="'View pending change #' + overlay.pendingChangeId"
-                    >
-                      {{
-                        overlay.isGhost
-                          ? 'Pending Creation'
-                          : overlay.pendingOperation === 'delete'
-                            ? 'Pending Deletion'
-                            : 'Pending Update'
-                      }}
-                    </button>
-                  }
-                </div>
-                <div class="model-card-status" [title]="getWorkerCountTooltip(model)">
-                  <span [class]="getModelStatusBadgeClass(model)" aria-hidden="true"></span>
-                  <span class="model-card-status-label">
-                    @if (hordeApi.hordeStatsState() === 'loading') {
-                      Updating status...
-                    } @else {
-                      {{ isModelActive(model) ? 'Active' : 'Idle' }}
-                    }
-                  </span>
-                </div>
-              </div>
-              <app-model-row-header [model]="model" [allModels]="models()" mode="card" />
-              <div class="model-card-body">
-                <app-model-row-fields [model]="model" mode="card" />
-              </div>
-              <div class="model-card-footer">
-                @if (isGhostModel(model)) {
-                  <horde-button
-                    variant="secondary"
-                    size="sm"
-                    (click)="navigateToPendingChange(getPendingOverlay(model)!.pendingChangeId)"
-                  >
-                    View Pending Change
-                  </horde-button>
-                } @else {
-                  <div class="flex gap-2 whitespace-nowrap">
-                    <horde-button
-                      variant="primary"
-                      size="sm"
-                      (click)="seeDetailsInTable(model.name)"
-                      title="Switch to table view and show full details for this model"
-                    >
-                      <svg
-                        class="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        ></path>
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        ></path>
-                      </svg>
-                      See Details
-                    </horde-button>
-                    <horde-button variant="secondary" size="sm" (click)="showJson(model)">Json</horde-button>
-                    @if (writable()) {
-                      <horde-button variant="primary" size="sm" (click)="editModel(model.name)">
-                        Edit
-                      </horde-button>
-                      <horde-button variant="danger" size="sm" (click)="confirmDelete(model.name)">
-                        Delete
-                      </horde-button>
-                    }
-                  </div>
-                }
-              </div>
-            </article>
+                      " (click)="navigateToPendingChange(overlay.pendingChangeId)"
+              [title]="'View pending change #' + overlay.pendingChangeId">
+              {{
+              overlay.isGhost
+              ? 'Pending Creation'
+              : overlay.pendingOperation === 'delete'
+              ? 'Pending Deletion'
+              : 'Pending Update'
+              }}
+            </button>
+            }
+          </div>
+          <div class="model-card-status" [title]="getWorkerCountTooltip(model)">
+            <span [class]="getModelStatusBadgeClass(model)" aria-hidden="true"></span>
+            <span class="model-card-status-label">
+              @if (hordeApi.hordeStatsState() === 'loading') {
+              Updating status...
+              } @else {
+              {{ isModelActive(model) ? 'Active' : 'Idle' }}
+              }
+            </span>
+          </div>
+        </div>
+        <app-model-row-header [model]="model" [allModels]="models()" mode="card" />
+        <div class="model-card-body">
+          <app-model-row-fields [model]="model" mode="card" />
+        </div>
+        <div class="model-card-footer">
+          @if (isGhostModel(model)) {
+          <horde-button variant="secondary" size="sm"
+            (click)="navigateToPendingChange(getPendingOverlay(model)!.pendingChangeId)">
+            View Pending Change
+          </horde-button>
+          } @else {
+          <div class="flex flex-wrap gap-2">
+            <horde-button variant="primary" size="sm" (click)="seeDetailsInTable(model.name)"
+              title="Switch to table view and show full details for this model">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                </path>
+              </svg>
+              See Details
+            </horde-button>
+            <horde-button variant="secondary" size="sm" (click)="showJson(model)">Json</horde-button>
+            @if (writable()) {
+            <horde-button variant="primary" size="sm" (click)="editModel(model.name)">
+              Edit
+            </horde-button>
+            <horde-button variant="danger" size="sm" (click)="confirmDelete(model.name)">
+              Delete
+            </horde-button>
+            }
+          </div>
           }
         </div>
-      </div>
-    }
+      </article>
+      }
+    </div>
+  </div>
+  }
   }
 </div>
 
 <!-- Delete Confirmation Modal -->
 @if (modelToDelete()) {
-  <div
-    class="modal-overlay"
-    tabindex="0"
-    (click)="cancelDelete()"
-    (keydown)="$event.key === 'Escape' && cancelDelete()"
-    aria-label="Close modal"
-  >
-    <div
-      class="modal-dialog"
-      (click)="$event.stopPropagation()"
-      (keydown)="$event.stopPropagation()"
-      aria-modal="true"
-      role="dialog"
-    >
-      <h2 class="modal-title">Confirm Delete</h2>
-      <div class="modal-content space-y-3">
-        <p>
-          Are you sure you want to delete <strong>{{ modelToDelete() }}</strong
-          >?
-        </p>
-        <p class="text-danger-bold">This action cannot be undone.</p>
-        <div>
-          <label for="delete-confirm" class="form-label">Type the model name to confirm:</label>
-          <input
-            id="delete-confirm"
-            type="text"
-            class="form-input"
-            placeholder="{{ modelToDelete() }}"
-            [ngModel]="deleteConfirmationInput()"
-            (ngModelChange)="deleteConfirmationInput.set($event)"
-            autocomplete="off"
-          />
-        </div>
-      </div>
-      <div class="modal-actions">
-        <horde-button variant="secondary" (click)="cancelDelete()">Cancel</horde-button>
-        <horde-button
-          variant="danger"
-          [disabled]="!deleteAllowed()"
-          (click)="deleteModel(modelToDelete()!)"
-        >
-          Delete
-        </horde-button>
+<div class="modal-overlay" tabindex="0" (click)="cancelDelete()" (keydown)="$event.key === 'Escape' && cancelDelete()"
+  aria-label="Close modal">
+  <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h2 class="modal-title">Confirm Delete</h2>
+    <div class="modal-content space-y-3">
+      <p>
+        Are you sure you want to delete <strong>{{ modelToDelete() }}</strong>?
+      </p>
+      <p class="text-danger-bold">This action cannot be undone.</p>
+      <div>
+        <label for="delete-confirm" class="form-label">Type the model name to confirm:</label>
+        <input id="delete-confirm" type="text" class="form-input" placeholder="{{ modelToDelete() }}"
+          [ngModel]="deleteConfirmationInput()" (ngModelChange)="deleteConfirmationInput.set($event)"
+          autocomplete="off" />
       </div>
     </div>
+    <div class="modal-actions">
+      <horde-button variant="secondary" (click)="cancelDelete()">Cancel</horde-button>
+      <horde-button variant="danger" [disabled]="!deleteAllowed()" (click)="deleteModel(modelToDelete()!)">
+        Delete
+      </horde-button>
+    </div>
   </div>
+</div>
 }
 
 <!-- JSON Display Modal -->
 @if (modelJsonToShow()) {
-  <div
-    class="modal-overlay"
-    tabindex="0"
-    (click)="closeJsonModal()"
-    (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeJsonModal()"
-    aria-label="Close modal"
-  >
-    <div
-      class="modal-dialog modal-dialog--xl"
-      tabindex="0"
-      (click)="$event.stopPropagation()"
-      (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()"
-      aria-modal="true"
-      role="dialog"
-    >
-      <h2 class="modal-title">Model JSON: {{ modelJsonToShow()!.name }}</h2>
-      <div class="modal-content">
-        <app-json-display [data]="modelJsonToShow()!" />
-      </div>
-      <div class="modal-actions">
-        <horde-button variant="secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">
-          Copy
-        </horde-button>
-        <horde-button variant="primary" (click)="closeJsonModal()">Close</horde-button>
-      </div>
+<div class="modal-overlay" tabindex="0" (click)="closeJsonModal()"
+  (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeJsonModal()" aria-label="Close modal">
+  <div class="modal-dialog modal-dialog--xl" tabindex="0" (click)="$event.stopPropagation()"
+    (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h2 class="modal-title">Model JSON: {{ modelJsonToShow()!.name }}</h2>
+    <div class="modal-content">
+      <app-json-display [data]="modelJsonToShow()!" />
+    </div>
+    <div class="modal-actions">
+      <horde-button variant="secondary" (click)="copyJsonToClipboard(modelJsonToShow()!)">
+        Copy
+      </horde-button>
+      <horde-button variant="primary" (click)="closeJsonModal()">Close</horde-button>
     </div>
   </div>
+</div>
 }
 
 <!-- Reusable Stat Modals -->
-<app-stat-modal
-  [isOpen]="showBaselineModal()"
-  [title]="'Baseline Breakdown'"
-  [countValueDescriptionData]="baselineModalData()"
-  (closeModal)="showBaselineModal.set(false)"
-  (rowClick)="addBaselineToSearchAndClose($event)"
-/>
+<app-stat-modal [isOpen]="showBaselineModal()" [title]="'Baseline Breakdown'"
+  [countValueDescriptionData]="baselineModalData()" (closeModal)="showBaselineModal.set(false)"
+  (rowClick)="addBaselineToSearchAndClose($event)" />
 
-<app-stat-modal
-  [isOpen]="showStyleModal()"
-  [title]="'Style Breakdown'"
-  [countValueData]="styleModalData()"
-  (closeModal)="showStyleModal.set(false)"
-  (rowClick)="addStatValueToSearch($event)"
-/>
+<app-stat-modal [isOpen]="showStyleModal()" [title]="'Style Breakdown'" [countValueData]="styleModalData()"
+  (closeModal)="showStyleModal.set(false)" (rowClick)="addStatValueToSearch($event)" />
 
-<app-stat-modal
-  [isOpen]="showNsfwModal()"
-  [title]="'Content Rating Breakdown'"
-  [countValueDescriptionData]="nsfwModalData()"
-  [countValueDescriptionHeaders]="['Count', 'Rating', 'Description']"
-  (closeModal)="showNsfwModal.set(false)"
-  (rowClick)="addNsfwModalValueToSearch($event)"
-/>
+<app-stat-modal [isOpen]="showNsfwModal()" [title]="'Content Rating Breakdown'"
+  [countValueDescriptionData]="nsfwModalData()" [countValueDescriptionHeaders]="['Count', 'Rating', 'Description']"
+  (closeModal)="showNsfwModal.set(false)" (rowClick)="addNsfwModalValueToSearch($event)" />
 
-<app-stat-modal
-  [isOpen]="showTagsModal()"
-  [title]="'All Tags (' + tagsModalData().length + ')'"
-  [countValueData]="tagsModalData()"
-  [countValueHeaders]="['Count', 'Tag']"
-  (closeModal)="showTagsModal.set(false)"
-  (rowClick)="addTagToSearch($event)"
-/>
+<app-stat-modal [isOpen]="showTagsModal()" [title]="'All Tags (' + tagsModalData().length + ')'"
+  [countValueData]="tagsModalData()" [countValueHeaders]="['Count', 'Tag']" (closeModal)="showTagsModal.set(false)"
+  (rowClick)="addTagToSearch($event)" />
 
-<app-stat-modal
-  [isOpen]="showParametersModal()"
-  [title]="'Parameter Distribution'"
-  [countValueDetailData]="parametersModalData()"
-  [countValueDetailHeaders]="['Count', 'Parameters', 'Exact Value']"
-  (closeModal)="showParametersModal.set(false)"
-  (rowClick)="addParameterToSearch($event)"
-/>
+<app-stat-modal [isOpen]="showParametersModal()" [title]="'Parameter Distribution'"
+  [countValueDetailData]="parametersModalData()" [countValueDetailHeaders]="['Count', 'Parameters', 'Exact Value']"
+  (closeModal)="showParametersModal.set(false)" (rowClick)="addParameterToSearch($event)" />
 
 <!-- Stat Details Modal (for text-based stats) -->
 @if (statDetailsToShow()) {
-  <div
-    class="modal-overlay"
-    tabindex="0"
-    (click)="closeStatDetails()"
-    (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeStatDetails()"
-    aria-label="Close modal"
-  >
-    <div
-      class="modal-dialog"
-      tabindex="0"
-      (click)="$event.stopPropagation()"
-      (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()"
-      aria-modal="true"
-      role="dialog"
-    >
-      <h2 class="modal-title">{{ statDetailsToShow()!.title }}</h2>
-      <div class="modal-content">
-        <pre class="json-display-container">{{ statDetailsToShow()!.content }}</pre>
-      </div>
-      <div class="modal-actions">
-        <horde-button variant="secondary" (click)="copyStatDetailsToClipboard()">Copy</horde-button>
-        <horde-button variant="primary" (click)="closeStatDetails()">Close</horde-button>
-      </div>
+<div class="modal-overlay" tabindex="0" (click)="closeStatDetails()"
+  (keydown)="($event.key === 'Enter' || $event.key === ' ') && closeStatDetails()" aria-label="Close modal">
+  <div class="modal-dialog" tabindex="0" (click)="$event.stopPropagation()"
+    (keydown)="($event.key === 'Enter' || $event.key === ' ') && $event.stopPropagation()" aria-modal="true"
+    role="dialog">
+    <h2 class="modal-title">{{ statDetailsToShow()!.title }}</h2>
+    <div class="modal-content">
+      <pre class="json-display-container">{{ statDetailsToShow()!.content }}</pre>
+    </div>
+    <div class="modal-actions">
+      <horde-button variant="secondary" (click)="copyStatDetailsToClipboard()">Copy</horde-button>
+      <horde-button variant="primary" (click)="closeStatDetails()">Close</horde-button>
     </div>
   </div>
+</div>
 }

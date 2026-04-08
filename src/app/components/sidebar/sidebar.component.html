@@ -1,8 +1,18 @@
+@if (isMobile() && !isCollapsed()) {
+  <button
+    type="button"
+    class="sidebar-backdrop"
+    (click)="toggle()"
+    aria-label="Close sidebar"
+  ></button>
+}
+
 <aside
   class="sidebar-container"
-  [class]="
-    isCollapsed() ? 'sidebar-container sidebar-collapsed' : 'sidebar-container sidebar-expanded'
-  "
+  [class.sidebar-collapsed]="isCollapsed()"
+  [class.sidebar-expanded]="!isCollapsed()"
+  [class.sidebar-mobile-overlay]="isMobile()"
+  [class.sidebar-mobile-open]="isMobile() && !isCollapsed()"
 >
   <div class="sidebar-header" [class.sidebar-header-collapsed]="isCollapsed()">
     @if (!isCollapsed()) {

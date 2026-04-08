@@ -34,6 +34,7 @@ export class SidebarComponent implements OnInit {
   readonly loading = signal(true);
   readonly currentCategory = signal<string | null>(null);
   readonly isCollapsed = this.sidebarService.isCollapsed;
+  readonly isMobile = this.sidebarService.isMobile;
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
   readonly recordDisplayMap = RECORD_DISPLAY_MAP;
@@ -71,6 +72,10 @@ export class SidebarComponent implements OnInit {
 
   selectCategory(category: string): void {
     this.router.navigate(['/categories', category]);
+
+    if (this.isMobile()) {
+      this.sidebarService.close();
+    }
   }
 
   private loadCategories(): void {

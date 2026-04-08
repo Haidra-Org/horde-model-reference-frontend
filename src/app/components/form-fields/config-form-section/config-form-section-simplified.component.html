@@ -1,14 +1,7 @@
 <div class="card">
-  <button
-    class="card-header-collapsible"
-    (click)="toggleExpanded()"
-    (keyup.enter)="toggleExpanded()"
-    (keyup.space)="toggleExpanded()"
-    type="button"
-    tabindex="0"
-    [attr.aria-expanded]="isExpanded()"
-    aria-label="Toggle simplified downloads section"
-  >
+  <button class="card-header-collapsible" (click)="toggleExpanded()" (keyup.enter)="toggleExpanded()"
+    (keyup.space)="toggleExpanded()" type="button" tabindex="0" [attr.aria-expanded]="isExpanded()"
+    aria-label="Toggle simplified downloads section">
     <div class="flex items-start justify-between w-full gap-4">
       <div>
         <h3 class="heading-card">Simplified Downloads</h3>
@@ -22,110 +15,82 @@
   </button>
 
   @if (isExpanded()) {
-    <div class="card-body space-y-4">
-      <div class="section-header">
-        <h4 class="section-title">Downloads</h4>
-        <horde-button variant="primary" size="sm" (click)="addDownload()">
-          + Add Download
-        </horde-button>
-      </div>
+  <div class="card-body space-y-4">
+    <div class="section-header">
+      <h4 class="section-title">Downloads</h4>
+      <horde-button variant="primary" size="sm" (click)="addDownload()">
+        + Add Download
+      </horde-button>
+    </div>
 
-      @if (downloads().length > 0) {
-        <div class="space-y-4">
-          @for (download of downloads(); track $index) {
-            <div class="nested-item-card">
-              <button
-                type="button"
-                class="nested-item-remove-btn"
-                (click)="removeDownload($index)"
-                title="Remove download"
-                aria-label="Remove download"
-              >
-                ×
-              </button>
+    @if (downloads().length > 0) {
+    <div class="space-y-4">
+      @for (download of downloads(); track $index) {
+      <div class="nested-item-card">
+        <button type="button" class="nested-item-remove-btn" (click)="removeDownload($index)" title="Remove download"
+          aria-label="Remove download">
+          ×
+        </button>
 
-              <div class="nested-item-grid">
-                <div class="md:col-span-2 space-y-2">
-                  <label for="download-url-{{ $index }}" class="form-label">File URL *</label>
-                  <div class="flex flex-col gap-2 md:flex-row md:items-center">
-                    <input
-                      id="download-url-{{ $index }}"
-                      type="text"
-                      class="form-input font-mono text-xs md:flex-1"
-                      [value]="download.file_url"
-                      (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
-                      placeholder="https://..."
-                      aria-required="true"
-                    />
-                    <horde-button
-                      variant="secondary"
-                      size="sm"
-                      class="md:self-start"
-                      (click)="verifyUrl($index)"
-                      [disabled]="isVerifying($index)"
-                    >
-                      {{ isVerifying($index) ? 'Verifying...' : 'Verify URL' }}
-                    </horde-button>
-                  </div>
-                  @if (isCorsBlocked($index)) {
-                    <p class="text-warning-600 dark:text-warning-400 text-xs">
-                      ⚠ {{ getVerificationError($index) }}
-                    </p>
-                  } @else if (getVerificationError($index)) {
-                    <p class="form-error">{{ getVerificationError($index) }}</p>
-                  }
-                  @if (isVerified($index)) {
-                    <p class="text-success-600 dark:text-success-400 text-xs">✓ Verified</p>
-                  } @else if (isCorsBlocked($index)) {
-                    <p class="text-warning-600 dark:text-warning-400 text-xs">
-                      ✓ Submission allowed — verify this URL manually
-                    </p>
-                  } @else if (!getVerificationError($index) && download.file_url) {
-                    <p class="text-warning-600 dark:text-warning-400 text-xs">⚠ Must verify</p>
-                  }
-                </div>
-
-                <div>
-                  <label for="download-name-{{ $index }}" class="form-label">File Name *</label>
-                  <input
-                    id="download-name-{{ $index }}"
-                    type="text"
-                    class="form-input"
-                    [value]="download.file_name"
-                    (blur)="updateDownload($index, 'file_name', $any($event.target).value)"
-                    placeholder="model-file-name.bin"
-                    aria-required="true"
-                  />
-                </div>
-
-                <div class="md:col-span-2">
-                  <label for="download-{{ $index }}-sha256" class="form-label-sm">
-                    SHA256
-                    <span class="label-hint">(auto-populated)</span>
-                  </label>
-                  <input
-                    id="download-{{ $index }}-sha256"
-                    type="text"
-                    class="form-input font-mono text-xs"
-                    [value]="download.sha256sum || ''"
-                    (blur)="updateDownload($index, 'sha256sum', $any($event.target).value)"
-                    placeholder="64-character hex"
-                    pattern="[a-fA-F0-9]{64}"
-                    [class.border-warning-500]="hasSha256Mismatch($index)"
-                  />
-                  @if (hasSha256Mismatch($index)) {
-                    <p class="text-warning-600 dark:text-warning-400 text-xs">
-                      ⚠ {{ getSha256MismatchWarning($index) }}
-                    </p>
-                  }
-                </div>
-              </div>
+        <div class="nested-item-grid">
+          <div class="md:col-span-2 space-y-2">
+            <label for="download-url-{{ $index }}" class="form-label">File URL *</label>
+            <div class="flex flex-col gap-2 md:flex-row md:items-center">
+              <input id="download-url-{{ $index }}" type="text" class="form-input font-mono text-xs md:flex-1"
+                [value]="download.file_url" (blur)="updateDownload($index, 'file_url', $any($event.target).value)"
+                placeholder="https://..." aria-required="true" />
+              <horde-button variant="secondary" size="sm" class="md:self-start" (click)="verifyUrl($index)"
+                [disabled]="isVerifying($index)">
+                {{ isVerifying($index) ? 'Verifying...' : 'Verify URL' }}
+              </horde-button>
             </div>
-          }
+            @if (isCorsBlocked($index)) {
+            <p class="text-warning-600 dark:text-warning-400 text-xs">
+              ⚠ {{ getVerificationError($index) }}
+            </p>
+            } @else if (getVerificationError($index)) {
+            <p class="form-error">{{ getVerificationError($index) }}</p>
+            }
+            @if (isVerified($index)) {
+            <p class="text-success-600 dark:text-success-400 text-xs">✓ Verified</p>
+            } @else if (isCorsBlocked($index)) {
+            <p class="text-warning-600 dark:text-warning-400 text-xs">
+              ✓ Submission allowed — verify this URL manually
+            </p>
+            } @else if (!getVerificationError($index) && download.file_url) {
+            <p class="text-warning-600 dark:text-warning-400 text-xs">⚠ Must verify</p>
+            }
+          </div>
+
+          <div>
+            <label for="download-name-{{ $index }}" class="form-label">File Name *</label>
+            <input id="download-name-{{ $index }}" type="text" class="form-input" [value]="download.file_name"
+              (blur)="updateDownload($index, 'file_name', $any($event.target).value)" placeholder="model-file-name.bin"
+              aria-required="true" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label for="download-{{ $index }}-sha256" class="form-label-sm">
+              SHA256
+              <span class="label-hint">(auto-populated)</span>
+            </label>
+            <input id="download-{{ $index }}-sha256" type="text" class="form-input font-mono text-xs"
+              [value]="download.sha256sum || ''" (blur)="updateDownload($index, 'sha256sum', $any($event.target).value)"
+              placeholder="64-character hex" pattern="[a-fA-F0-9]{64}"
+              [class.border-warning-500]="hasSha256Mismatch($index)" />
+            @if (hasSha256Mismatch($index)) {
+            <p class="text-warning-600 dark:text-warning-400 text-xs">
+              ⚠ {{ getSha256MismatchWarning($index) }}
+            </p>
+            }
+          </div>
         </div>
-      } @else {
-        <p class="empty-state text-center py-6">No simplified downloads configured</p>
+      </div>
       }
     </div>
+    } @else {
+    <p class="empty-state text-center py-6">No simplified downloads configured</p>
+    }
+  </div>
   }
 </div>

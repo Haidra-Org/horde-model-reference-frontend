@@ -128,8 +128,9 @@ export class ModelListComponent implements OnInit {
   readonly showNsfwModal = signal(false);
   readonly showTagsModal = signal(false);
   readonly headerCollapsed = signal(false);
-  readonly viewMode = signal<ViewMode>('table');
-  readonly isCardView = computed(() => this.viewMode() === 'card');
+  readonly viewMode = signal<ViewMode>(
+    typeof window !== 'undefined' && window.innerWidth < 1024 ? 'card' : 'table',
+  );
 
   @ViewChild(CdkVirtualScrollViewport) viewport?: CdkVirtualScrollViewport;
 
@@ -1368,9 +1369,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-          startWith<BackendStatisticsResponse | null>(null),
-          catchError(() => of(null)),
-        )
+        startWith<BackendStatisticsResponse | null>(null),
+        catchError(() => of(null)),
+      )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(

@@ -960,6 +960,13 @@
     @apply border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50;
   }
 
+  .sidebar-backdrop {
+    @apply fixed inset-0 z-40 bg-black/35;
+    top: 57px;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+
   /* Mobile hamburger toggle in nav bar */
   .sidebar-mobile-toggle {
     @apply lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors;
@@ -987,6 +994,48 @@
 
   .nav-title-button {
     @apply text-lg font-semibold hover:opacity-90 transition-opacity;
+  }
+
+  @media (max-width: 1023px) {
+    .sidebar-container {
+      @apply fixed left-0 h-auto;
+      top: 57px;
+      bottom: 0;
+      z-index: 45;
+      width: min(18rem, 86vw);
+      transform: translateX(-100%);
+      will-change: transform;
+    }
+
+    .sidebar-container.sidebar-mobile-open {
+      transform: translateX(0);
+    }
+
+    .sidebar-container.sidebar-collapsed,
+    .sidebar-container.sidebar-expanded {
+      width: min(18rem, 86vw);
+    }
+
+    .nav-content {
+      @apply gap-2;
+    }
+
+    .nav-title-button {
+      @apply text-base;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .sidebar-container {
+      @apply relative;
+      top: auto;
+      bottom: auto;
+      transform: none;
+    }
+
+    .sidebar-backdrop {
+      display: none;
+    }
   }
 
   /* Notification container */
@@ -1102,6 +1151,31 @@
 
   .filter-section-compact {
     @apply flex flex-wrap items-center gap-3;
+  }
+
+  .filter-section-compact--controls {
+    @apply items-center;
+  }
+
+  @media (max-width: 767px) {
+    .filter-section-compact--controls {
+      @apply items-stretch gap-2;
+    }
+
+    .filter-section-compact--controls > .relative,
+    .filter-section-compact--controls > div,
+    .filter-section-compact--controls > .view-mode-toggle {
+      @apply w-full;
+    }
+
+    .filter-section-compact--controls .view-mode-toggle {
+      @apply justify-between;
+    }
+
+    .filter-section-compact--controls .checkbox-item-label,
+    .filter-section-compact--controls .checkbox-toggle-compact {
+      @apply w-full justify-between;
+    }
   }
 
   /* Collapsible section with smooth animation */

@@ -7,16 +7,26 @@ import { isPlatformBrowser } from '@angular/common';
 export class SidebarService {
   private readonly platformId = inject(PLATFORM_ID);
   readonly isCollapsed = signal(false);
+  readonly isMobile = signal(false);
 
   constructor() {
-    // Set initial collapsed state based on screen size
+    // Initialize drawer state from viewport size.
     if (isPlatformBrowser(this.platformId)) {
-      const isMobile = window.innerWidth < 1024; // lg breakpoint
-      this.isCollapsed.set(isMobile);
+      const mobile = window.innerWidth < 1024;
+      this.isMobile.set(mobile);
+      this.isCollapsed.set(mobile);
     }
   }
 
   toggle(): void {
     this.isCollapsed.update((collapsed) => !collapsed);
+  }
+
+  close(): void {
+    this.isCollapsed.set(true);
+  }
+
+  open(): void {
+    this.isCollapsed.set(false);
   }
 }
