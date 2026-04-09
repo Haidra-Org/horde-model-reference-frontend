@@ -9,10 +9,12 @@
  */
 
 /**
- * Response from batch group common field update.
+ * A single legacy config download entry.
  */
-export interface BatchUpdateResponse {
-  updated_count: number;
-  batch_id: string;
-  pending_change_ids: Array<number>;
+export interface LegacyConfigDownload {
+  [key: string]: any | any;
+
+  file_name?: string | null;
+  file_path?: string | null;
+  file_url?: string | null;
 }

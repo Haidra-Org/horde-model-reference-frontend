@@ -79,6 +79,17 @@
   (dirtyChange)="onMultiVariationDirtyChange($event)" (cancelled)="closeMultiVariation()" />
 }
 
+<!-- Name Schema Editor -->
+@if (groupData()) {
+<app-name-schema-editor
+  [groupName]="groupName()"
+  [nameFormat]="groupData()!.name_format"
+  [isCustom]="nameSchemaIsCustom()"
+  [writable]="writable()"
+  (schemaChanged)="onSchemaChanged()"
+/>
+}
+
 <!-- Common Fields Panel -->
 @if (groupData() && Object.keys(commonFields()).length > 0) {
 <div class="card mb-6 transition-colors duration-200" [class.border-primary-300]="editingCommonFields()"
@@ -196,6 +207,9 @@
               <th>Quant</th>
               <th>Params</th>
               <th>NSFW</th>
+              @if (exceptionMembers().length > 0) {
+              <th>Exception</th>
+              }
               @if (writable()) {
               <th class="text-center">Actions</th>
               }
@@ -238,6 +252,15 @@
                 <horde-badge variant="secondary">Unknown</horde-badge>
                 }
               </td>
+              @if (exceptionMembers().length > 0) {
+              <td>
+                @if (exceptionMemberNames().has(member.name)) {
+                <span class="tag tag-warning" [title]="getExceptionReason(member.name) ?? ''">
+                  ⚠ {{ getExceptionReason(member.name) }}
+                </span>
+                }
+              </td>
+              }
               @if (writable()) {
               <td class="text-center">
                 <div class="flex gap-2 justify-center whitespace-nowrap">
@@ -282,6 +305,9 @@
             <th>Baseline</th>
             <th>NSFW</th>
             <th>Description</th>
+            @if (exceptionMembers().length > 0) {
+            <th>Exception</th>
+            }
             @if (writable()) {
             <th class="text-center">Actions</th>
             }
@@ -335,6 +361,15 @@
                 {{ member.description ?? '-' }}
               </div>
             </td>
+            @if (exceptionMembers().length > 0) {
+            <td>
+              @if (exceptionMemberNames().has(member.name)) {
+              <span class="tag tag-warning" [title]="getExceptionReason(member.name) ?? ''">
+                ⚠ {{ getExceptionReason(member.name) }}
+              </span>
+              }
+            </td>
+            }
             @if (writable()) {
             <td class="text-center">
               <div class="flex gap-2 justify-center whitespace-nowrap">

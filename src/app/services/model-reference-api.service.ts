@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import {
   FormModelData,
+  formToLegacyApi,
   formToV2Api,
   legacyApiToForm,
   v2ApiToForm,
@@ -10,6 +11,7 @@ import {
 import {
   DefaultService,
   V1Service,
+  V1CreateUpdateService,
   V2Service,
   StatisticsService,
   DeletionRiskService,
@@ -33,6 +35,13 @@ import {
   ComposeNameRequest,
   ComposeNameResponse,
   GroupMembersResponse,
+  GroupNameSchemaResponse,
+  GroupNameSchemaUpdateRequest,
+  LegacyStableDiffusionRecordInput,
+  LegacyTextGenerationRecordInput,
+  LegacyControlnetRecordInput,
+  LegacyClipRecordInput,
+  NameExceptionRequest,
   ParsedNameResponse,
 } from '../api-client';
 import {
@@ -52,6 +61,7 @@ export class ModelReferenceApiService {
   private readonly basePath = inject(BASE_PATH);
   private readonly defaultService = inject(DefaultService);
   private readonly legacyService = inject(V1Service);
+  private readonly v1CreateUpdateService = inject(V1CreateUpdateService);
   private readonly v2Service = inject(V2Service);
   private readonly statisticsService = inject(StatisticsService);
   private readonly deletionRiskService = inject(DeletionRiskService);
@@ -234,6 +244,12 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      const legacyPayload = formToLegacyApi(formData, modelName, categoryEnum);
+      return this.createViaV1Api(category, legacyPayload);
+    }
+
     const payload = formToV2Api(formData, modelName, categoryEnum);
     return this.createViaV2Api(category, payload);
   }
@@ -254,6 +270,12 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      const legacyPayload = formToLegacyApi(formData, modelName, categoryEnum);
+      return this.updateViaV1Api(category, legacyPayload);
+    }
+
     const payload = formToV2Api(formData, modelName, categoryEnum);
     return this.updateViaV2Api(category, modelName, payload);
   }
@@ -271,6 +293,11 @@ export class ModelReferenceApiService {
     }
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      return this.createViaV1Api(category, modelData);
+    }
+
     const formData = legacyApiToForm(modelData, categoryEnum);
     const payload = formToV2Api(formData, modelName, categoryEnum);
     return this.createViaV2Api(category, payload);
@@ -290,6 +317,11 @@ export class ModelReferenceApiService {
 
     const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
     const normalized: LegacyRecordUnion = { ...(modelData as LegacyRecordUnion), name: modelName };
+
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      return this.updateViaV1Api(category, normalized);
+    }
+
     const formData = legacyApiToForm(normalized, categoryEnum);
     const payload = formToV2Api(formData, modelName, categoryEnum);
     return this.updateViaV2Api(category, modelName, payload);
@@ -302,7 +334,16 @@ export class ModelReferenceApiService {
       );
     }
 
-    return this.v2Service.deleteV2Model(category as MODEL_REFERENCE_CATEGORY, modelName).pipe(
+    const categoryEnum = category as MODEL_REFERENCE_CATEGORY;
+
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      return this.v1CreateUpdateService.deleteLegacyModel(categoryEnum, modelName).pipe(
+        map(() => undefined),
+        catchError(this.handleError),
+      );
+    }
+
+    return this.v2Service.deleteV2Model(categoryEnum, modelName).pipe(
       map(() => undefined),
       catchError(this.handleError),
     );
@@ -346,6 +387,82 @@ export class ModelReferenceApiService {
     return this.v2Service
       .updateV2Model(category as MODEL_REFERENCE_CATEGORY, modelName, payload)
       .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Create a model using the V1 (legacy) API.
+   * Dispatches to category-specific create methods.
+   */
+  private createViaV1Api(
+    category: string,
+    payload: LegacyRecordUnion,
+  ): Observable<PendingChangeRecord> {
+    const categoryMethodMap: Record<string, () => Observable<unknown>> = {
+      image_generation: () =>
+        this.v1CreateUpdateService.createLegacyImageGenerationModel(
+          payload as LegacyStableDiffusionRecordInput,
+        ),
+      text_generation: () =>
+        this.v1CreateUpdateService.createLegacyTextGenerationModel(
+          payload as LegacyTextGenerationRecordInput,
+        ),
+      controlnet: () =>
+        this.v1CreateUpdateService.createLegacyControlnetModel(
+          payload as LegacyControlnetRecordInput,
+        ),
+      clip: () =>
+        this.v1CreateUpdateService.createLegacyClipModel(payload as LegacyClipRecordInput),
+    };
+
+    const createFn = categoryMethodMap[category];
+    if (createFn) {
+      return createFn().pipe(
+        map((response) => response as PendingChangeRecord),
+        catchError(this.handleError),
+      );
+    }
+
+    return throwError(
+      () => new Error(`V1 create not supported for category '${category}'`),
+    );
+  }
+
+  /**
+   * Update a model using the V1 (legacy) API.
+   * Dispatches to category-specific update methods.
+   */
+  private updateViaV1Api(
+    category: string,
+    payload: LegacyRecordUnion,
+  ): Observable<PendingChangeRecord> {
+    const categoryMethodMap: Record<string, () => Observable<unknown>> = {
+      image_generation: () =>
+        this.v1CreateUpdateService.updateLegacyModel(
+          payload as LegacyStableDiffusionRecordInput,
+        ),
+      text_generation: () =>
+        this.v1CreateUpdateService.updateLegacyTextGenerationModel(
+          payload as LegacyTextGenerationRecordInput,
+        ),
+      controlnet: () =>
+        this.v1CreateUpdateService.updateLegacyControlnetModel(
+          payload as LegacyControlnetRecordInput,
+        ),
+      clip: () =>
+        this.v1CreateUpdateService.updateLegacyClipModel(payload as LegacyClipRecordInput),
+    };
+
+    const updateFn = categoryMethodMap[category];
+    if (updateFn) {
+      return updateFn().pipe(
+        map((response) => response as PendingChangeRecord),
+        catchError(this.handleError),
+      );
+    }
+
+    return throwError(
+      () => new Error(`V1 update not supported for category '${category}'`),
+    );
   }
 
   /**
@@ -507,6 +624,51 @@ export class ModelReferenceApiService {
       }>(`${this.basePath}/model_references/v2/text_generation/distinct_baselines`)
       .pipe(
         map((response) => response.baselines ?? []),
+        catchError(this.handleError),
+      );
+  }
+
+  getGroupNameSchema(groupName: string): Observable<GroupNameSchemaResponse> {
+    return this.textUtilsService
+      .getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(groupName)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateGroupNameSchema(
+    groupName: string,
+    schema: GroupNameSchemaUpdateRequest,
+  ): Observable<GroupNameSchemaResponse> {
+    return this.textUtilsService
+      .updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
+        groupName,
+        schema,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteGroupNameSchema(groupName: string): Observable<GroupNameSchemaResponse> {
+    return this.textUtilsService
+      .deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(groupName)
+      .pipe(catchError(this.handleError));
+  }
+
+  setNameException(modelName: string, reason: string | null): Observable<object> {
+    const request: NameExceptionRequest = { reason };
+    return this.textUtilsService
+      .setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(
+        modelName,
+        request,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getGroupNames(): Observable<string[]> {
+    return this.http
+      .get<{ groups: string[] }>(
+        `${this.basePath}/model_references/v2/text_generation/groups`,
+      )
+      .pipe(
+        map((response) => response.groups ?? []),
         catchError(this.handleError),
       );
   }

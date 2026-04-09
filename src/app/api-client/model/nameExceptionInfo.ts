@@ -9,10 +9,9 @@
  */
 
 /**
- * Response from batch group common field update.
+ * A member that does not follow the group naming schema.
  */
-export interface BatchUpdateResponse {
-  updated_count: number;
-  batch_id: string;
-  pending_change_ids: Array<number>;
+export interface NameExceptionInfo {
+  name: string;
+  reason: string;
 }

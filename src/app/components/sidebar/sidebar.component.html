@@ -1,61 +1,45 @@
 @if (isMobile() && !isCollapsed()) {
-  <button
-    type="button"
-    class="sidebar-backdrop"
-    (click)="toggle()"
-    aria-label="Close sidebar"
-  ></button>
+<button type="button" class="sidebar-backdrop" (click)="toggle()" aria-label="Close sidebar"></button>
 }
 
-<aside
-  class="sidebar-container"
-  [class.sidebar-collapsed]="isCollapsed()"
-  [class.sidebar-expanded]="!isCollapsed()"
-  [class.sidebar-mobile-overlay]="isMobile()"
-  [class.sidebar-mobile-open]="isMobile() && !isCollapsed()"
->
+<aside class="sidebar-container" [class.sidebar-collapsed]="isCollapsed()" [class.sidebar-expanded]="!isCollapsed()"
+  [class.sidebar-mobile-overlay]="isMobile()" [class.sidebar-mobile-open]="isMobile() && !isCollapsed()">
   <div class="sidebar-header" [class.sidebar-header-collapsed]="isCollapsed()">
     @if (!isCollapsed()) {
-      <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden flex-1">
-        Model Categories
-      </h2>
+    <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden flex-1">
+      Model Categories
+    </h2>
     }
-    <button
-      class="sidebar-toggle-btn hidden lg:flex"
-      (click)="toggle()"
-      [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
-    >
+    <button class="sidebar-toggle-btn hidden lg:flex" (click)="toggle()"
+      [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
       <span class="sidebar-toggle-icon" [class.rotate-180]="isCollapsed()">‹</span>
     </button>
   </div>
 
   @if (!isCollapsed()) {
-    @if (loading()) {
-      <div class="sidebar-loading-text">Loading...</div>
-    } @else if (categories().length === 0) {
-      <div class="sidebar-loading-text">No categories available</div>
-    } @else {
-      <nav class="flex-1 overflow-y-auto">
-        @for (category of sortedCategories(); track category) {
-          <button
-            [class]="
+  @if (loading()) {
+  <div class="sidebar-loading-text">Loading...</div>
+  } @else if (categories().length === 0) {
+  <div class="sidebar-loading-text">No categories available</div>
+  } @else {
+  <nav class="flex-1 overflow-y-auto">
+    @for (category of sortedCategories(); track category) {
+    <button [class]="
               currentCategory() === category
                 ? 'sidebar-nav-item sidebar-nav-item-active'
                 : 'sidebar-nav-item sidebar-nav-item-inactive'
-            "
-            (click)="selectCategory(category)"
-          >
-            <span class="capitalize wrap-break-word">
-              {{ recordDisplayMap[category] || category }}
-            </span>
-            @if (pendingSummary.pendingCountFor(category) > 0) {
-              <span class="badge-count-sidebar">{{
-                pendingSummary.pendingCountFor(category)
-              }}</span>
-            }
-          </button>
-        }
-      </nav>
+            " (click)="selectCategory(category)">
+      <span class="capitalize wrap-break-word">
+        {{ recordDisplayMap[category] || category }}
+      </span>
+      @if (pendingSummary.pendingCountFor(category) > 0) {
+      <span class="badge-count-sidebar">{{
+        pendingSummary.pendingCountFor(category)
+        }}</span>
+      }
+    </button>
     }
+  </nav>
+  }
   }
 </aside>

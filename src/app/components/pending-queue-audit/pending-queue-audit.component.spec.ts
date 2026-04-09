@@ -58,14 +58,14 @@ describe('PendingQueueAuditComponent', () => {
   const currentSnapshot = (
     changes: PendingQueueAuditChange[],
   ): PendingQueueAuditCurrentResponse => ({
-    domain: 'legacy',
+    domain: 'LEGACY',
     pending_changes: changes,
     total_pending: changes.length,
     generated_at: 1_700_000_100,
   });
 
   const batchPage = (batches: number[], nextCursor: number | null): PendingQueueAuditBatchPage => ({
-    domain: 'legacy',
+    domain: 'LEGACY',
     batches: batches.map((id) => ({
       batch_id: id,
       batch_title: `Batch ${id}`,

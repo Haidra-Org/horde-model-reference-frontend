@@ -12,7 +12,6 @@
  * Status of the external AI Horde API connection.
  */
 export interface AIHordeStatus {
-  status: string;
   degraded: boolean;
   consecutive_failures: number;
   seconds_until_retry: number | null;

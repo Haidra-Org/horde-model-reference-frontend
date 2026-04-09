@@ -585,3 +585,11 @@
   </div>
 </div>
 }
+
+<!-- Text Create Choice Modal -->
+@if (showTextCreateChoice()) {
+<app-text-create-choice
+  (chosen)="onTextCreateChoice($event)"
+  (dismiss)="showTextCreateChoice.set(false)"
+/>
+}

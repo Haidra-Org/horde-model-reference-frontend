@@ -9,10 +9,8 @@
  */
 
 /**
- * Response from batch group common field update.
+ * Response containing sorted unique baseline values for text models.
  */
-export interface BatchUpdateResponse {
-  updated_count: number;
-  batch_id: string;
-  pending_change_ids: Array<number>;
+export interface DistinctBaselinesResponse {
+  baselines: Array<string>;
 }

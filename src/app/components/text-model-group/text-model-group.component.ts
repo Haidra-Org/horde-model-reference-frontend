@@ -16,9 +16,10 @@ import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
-import { GroupMemberInfo, GroupMembersResponse } from '../../api-client';
+import { GroupMemberInfo, GroupMembersResponse, NameExceptionInfo } from '../../api-client';
 import { AddVariationPanelComponent } from './add-variation-panel.component';
 import { MultiVariationPanelComponent } from './multi-variation-panel.component';
+import { NameSchemaEditorComponent } from './name-schema-editor.component';
 
 export interface SizeSubGroup {
   size: string;
@@ -35,6 +36,7 @@ export interface SizeSubGroup {
     HordeButtonComponent,
     AddVariationPanelComponent,
     MultiVariationPanelComponent,
+    NameSchemaEditorComponent,
   ],
   templateUrl: './text-model-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -98,6 +100,16 @@ export class TextModelGroupComponent implements OnInit {
   readonly commonFields = computed(() => {
     return this.groupData()?.common_fields ?? {};
   });
+
+  readonly nameSchemaIsCustom = computed(() => this.groupData()?.name_schema_is_custom ?? false);
+
+  readonly exceptionMembers = computed<NameExceptionInfo[]>(
+    () => this.groupData()?.exception_members ?? [],
+  );
+
+  readonly exceptionMemberNames = computed(
+    () => new Set(this.exceptionMembers().map((e) => e.name)),
+  );
 
   readonly commonFieldsDirty = computed(() => {
     if (!this.editingCommonFields()) {
@@ -344,6 +356,32 @@ export class TextModelGroupComponent implements OnInit {
   onMultiVariationCreated(): void {
     this.multiVariationDirty.set(false);
     this.reloadGroup();
+  }
+
+  onSchemaChanged(): void {
+    this.reloadGroup();
+  }
+
+  getExceptionReason(memberName: string): string | null {
+    const ex = this.exceptionMembers().find((e) => e.name === memberName);
+    return ex?.reason ?? null;
+  }
+
+  setNameException(memberName: string, reason: string | null): void {
+    this.api
+      .setNameException(memberName, reason)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notification.success(
+            reason ? `Marked "${memberName}" as exception` : `Cleared exception for "${memberName}"`,
+          );
+          this.reloadGroup();
+        },
+        error: (error: Error) => {
+          this.notification.error(error.message);
+        },
+      });
   }
 
   onAddVariationDirtyChange(isDirty: boolean): void {

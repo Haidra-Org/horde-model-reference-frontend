@@ -60,7 +60,7 @@ describe('PendingQueueAuditService', () => {
 
   it('lists batches with cursor and limit parameters', () => {
     const page: PendingQueueAuditBatchPage = {
-      domain: 'legacy',
+      domain: 'LEGACY',
       batches: [],
       next_cursor: 42,
     };

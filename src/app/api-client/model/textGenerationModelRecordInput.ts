@@ -36,5 +36,6 @@ export interface TextGenerationModelRecordInput {
   instruct_format?: string | null;
   settings?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
   text_model_group?: string | null;
+  name_schema_exception?: string | null;
 }
 export namespace TextGenerationModelRecordInput {}

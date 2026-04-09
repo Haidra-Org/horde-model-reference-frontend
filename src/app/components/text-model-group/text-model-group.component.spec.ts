@@ -75,6 +75,9 @@ function buildGroupResponse(
     },
     canonical_count: members.filter((m) => !m.is_backend_duplicate).length,
     backend_duplicate_count: members.filter((m) => m.is_backend_duplicate).length,
+    size_usage: {},
+    variant_usage: {},
+    quant_usage: {},
   };
 }
 

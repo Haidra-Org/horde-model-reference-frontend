@@ -4,6 +4,7 @@ import { ModelListComponent } from './components/model-list/model-list.component
 import { ModelFormComponent } from './components/model-form/model-form.component';
 import { ModelAuditComponent } from './components/model-audit/model-audit.component';
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
+import { CreateGroupWizardComponent } from './components/text-model-group/create-group-wizard.component';
 import { PendingQueueComponent } from './components/pending-queue/pending-queue.component';
 import { authenticatedGuard } from './guards/role.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
@@ -20,6 +21,11 @@ export const routes: Routes = [
   {
     path: 'categories/:category/create',
     component: ModelFormComponent,
+    canDeactivate: [unsavedChangesGuard],
+  },
+  {
+    path: 'categories/:category/create-group',
+    component: CreateGroupWizardComponent,
     canDeactivate: [unsavedChangesGuard],
   },
   {

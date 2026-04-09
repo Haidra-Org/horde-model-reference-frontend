@@ -18,6 +18,7 @@ import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { ModelRowHeaderComponent } from './model-row-header.component';
 import { ModelRowFieldsComponent } from './model-row-fields.component';
 import { ModelRowShowcasesComponent } from './model-row-showcases.component';
+import { ModelRowVariationsComponent } from './model-row-variations.component';
 import { ModelRowActionsComponent } from './model-row-actions.component';
 import { hasShowcases } from './model-row.utils';
 
@@ -30,6 +31,7 @@ import { hasShowcases } from './model-row.utils';
     ModelRowHeaderComponent,
     ModelRowFieldsComponent,
     ModelRowShowcasesComponent,
+    ModelRowVariationsComponent,
     ModelRowActionsComponent,
   ],
   template: `
@@ -68,6 +70,19 @@ import { hasShowcases } from './model-row.utils';
       </td>
       <td class="font-medium text-gray-900 dark:text-gray-100">
         <div class="flex items-center gap-2">
+          @if (isGrouped()) {
+            <a
+              [routerLink]="['/categories', 'text_generation', 'group', model().name]"
+              class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex-shrink-0"
+              title="View group"
+              (click)="$event.stopPropagation()"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </a>
+          }
           <app-model-row-header [model]="model()" [allModels]="allModels()" mode="compact" />
           @if (pendingOverlay()) {
             <button
@@ -114,7 +129,19 @@ import { hasShowcases } from './model-row.utils';
       @if (isTextGeneration()) {
         <td class="text-center text-sm text-gray-700 dark:text-gray-300">
           @if (isGrouped() && groupedModel()) {
-            {{ groupedModel()!.variations.length }}
+            <div class="flex flex-col items-center gap-0.5">
+              <span>{{ groupedModel()!.variations.length }}</span>
+              @if (groupSizes().length > 0) {
+                <div class="flex flex-wrap justify-center gap-0.5">
+                  @for (size of groupSizes().slice(0, 3); track size) {
+                    <span class="tag tag-info text-[10px] py-0 px-1">{{ size }}</span>
+                  }
+                  @if (groupSizes().length > 3) {
+                    <span class="text-[10px] text-muted">+{{ groupSizes().length - 3 }}</span>
+                  }
+                </div>
+              }
+            </div>
           } @else {
             1
           }
@@ -222,58 +249,11 @@ import { hasShowcases } from './model-row.utils';
             <!-- Backend/Author Variations Section (Grouped Text Models) -->
             @if (isGrouped() && groupedModel()) {
               @defer (on viewport; prefetch on hover) {
-                <section class="detail-panel">
-                  <h4 class="detail-section-heading">
-                    Backend & Author Variations
-                    <span class="text-gray-400 normal-case tracking-normal font-normal">
-                      ({{ groupedModel()!.variations.length }} total)
-                    </span>
-                  </h4>
-                  <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                      <thead class="table-head-subtle">
-                        <tr class="border-b border-gray-200 dark:border-gray-700">
-                          <th class="table-header-cell-xs-caps">Full Name</th>
-                          <th class="table-header-cell-xs-caps">Backend</th>
-                          <th class="table-header-cell-xs-caps">Author</th>
-                          <th class="table-header-cell-xs-center-caps">Workers</th>
-                          <th class="table-header-cell-xs-center-caps">Queued</th>
-                          <th class="table-header-cell-xs-right-caps">Usage (Total)</th>
-                        </tr>
-                      </thead>
-                      <tbody class="table-body-default">
-                        @for (variation of groupedModel()!.variations; track variation.name) {
-                          <tr class="table-row-hover-subtle">
-                            <td class="table-cell-mono-xs">
-                              {{ variation.name }}
-                            </td>
-                            <td class="table-cell-xs">
-                              @if (variation.parsedName?.backend) {
-                                <horde-badge variant="info" class="text-xs">{{
-                                  variation.parsedName?.backend
-                                }}</horde-badge>
-                              } @else {
-                                <span class="table-cell-muted-xs-inline">-</span>
-                              }
-                            </td>
-                            <td class="table-cell-xs">
-                              {{ variation.parsedName?.author ?? '-' }}
-                            </td>
-                            <td class="table-cell-xs-center">
-                              {{ variation.workerCount ?? 0 }}
-                            </td>
-                            <td class="table-cell-xs-center">
-                              {{ variation.queuedJobs ?? 0 }}
-                            </td>
-                            <td class="table-cell-xs-right">
-                              {{ variation.usageStats?.total ?? 0 }}
-                            </td>
-                          </tr>
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
+                <app-model-row-variations
+                  [variations]="groupedModel()!.variations"
+                  [groupName]="groupedModel()!.name"
+                  [groupSummary]="groupedModel()!.groupSummary"
+                />
               } @placeholder {
                 <div class="py-4">
                   <div class="animate-pulse space-y-2">
@@ -409,6 +389,8 @@ export class ModelRowComponent {
   readonly groupedModel = computed(() => {
     return this.isGrouped() ? (this.model() as GroupedTextModel) : null;
   });
+
+  readonly groupSizes = computed(() => this.groupedModel()?.groupSummary?.available_sizes ?? []);
 
   readonly workerCountTooltip = computed(() => {
     const statsState = this.hordeStatsState();

@@ -785,12 +785,40 @@ describe('ModelReferenceApiService', () => {
     );
 
     it(
-      'should always route image_generation to V2 create endpoint',
+      'should route image_generation to V1 create endpoint when canonicalFormat is legacy',
       withDone((done) => {
         service.backendCapabilities.set({
           writable: true,
           mode: 'PRIMARY',
           canonicalFormat: 'legacy',
+        });
+
+        service
+          .createModel('image_generation', 'test-sd-model', makeImageGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/image_generation`,
+        );
+        expect(req.request.method).toBe('POST');
+
+        const body = req.request.body;
+        expect(body.name).toBe('test-sd-model');
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route image_generation to V2 create endpoint when canonicalFormat is v2',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'v2',
         });
 
         service
@@ -815,12 +843,37 @@ describe('ModelReferenceApiService', () => {
     );
 
     it(
-      'should always route text_generation to V2 create endpoint',
+      'should route text_generation to V1 create endpoint when canonicalFormat is legacy',
       withDone((done) => {
         service.backendCapabilities.set({
           writable: true,
           mode: 'PRIMARY',
           canonicalFormat: 'legacy',
+        });
+
+        service
+          .createModel('text_generation', 'test-llm', makeTextGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/text_generation`,
+        );
+        expect(req.request.method).toBe('POST');
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route text_generation to V2 create endpoint when canonicalFormat is v2',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'v2',
         });
 
         service
@@ -862,12 +915,38 @@ describe('ModelReferenceApiService', () => {
     );
 
     it(
-      'should always route to V2 update endpoint',
+      'should route to V1 update endpoint when canonicalFormat is legacy',
       withDone((done) => {
         service.backendCapabilities.set({
           writable: true,
           mode: 'PRIMARY',
           canonicalFormat: 'legacy',
+        });
+
+        service
+          .updateModel('image_generation', 'test-sd-model', makeImageGenFormData())
+          .subscribe((result) => {
+            expect(result).toEqual(mockPendingChange);
+            done();
+          });
+
+        const req = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/image_generation`,
+        );
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body.name).toBe('test-sd-model');
+
+        req.flush(mockPendingChange);
+      }),
+    );
+
+    it(
+      'should route to V2 update endpoint when canonicalFormat is v2',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'v2',
         });
 
         service

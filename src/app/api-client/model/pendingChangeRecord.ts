@@ -15,6 +15,9 @@ import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
  * Single pending change tracked by the queue.
  */
 export interface PendingChangeRecord {
+  /**
+   * Unique monotonic identifier for this change, allocated by PendingQueueStore. Callers should pass 0 as a sentinel when constructing new records; the store replaces it with the next available ID in enqueue_change(). After persistence, this is the canonical identifier used to approve, reject, apply, and audit-trail this change.
+   */
   change_id: number;
   category: MODEL_REFERENCE_CATEGORY;
   model_name: string;

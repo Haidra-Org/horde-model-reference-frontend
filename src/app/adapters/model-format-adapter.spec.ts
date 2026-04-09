@@ -155,7 +155,7 @@ function makeV2ControlnetModel(): ControlNetModelRecordOutput {
     version: '1.0',
     controlnet_style: 'canny',
     config: { download: [] },
-    model_classification: { domain: 'image', purpose: 'controlnet' },
+    model_classification: { domain: 'image', purpose: 'auxiliary_or_patch' },
     finetune_series: null,
   } as ControlNetModelRecordOutput;
 }

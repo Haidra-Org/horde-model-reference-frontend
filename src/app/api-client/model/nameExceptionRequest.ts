@@ -9,10 +9,8 @@
  */
 
 /**
- * Response from batch group common field update.
+ * Set or clear a name schema exception on a model.
  */
-export interface BatchUpdateResponse {
-  updated_count: number;
-  batch_id: string;
-  pending_change_ids: Array<number>;
+export interface NameExceptionRequest {
+  reason: string | null;
 }

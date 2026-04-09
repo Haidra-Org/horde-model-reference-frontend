@@ -55,9 +55,17 @@ import { ContainsMessage } from '../model/containsMessage';
 // @ts-ignore
 import { ControlNetModelRecordInput } from '../model/controlNetModelRecordInput';
 // @ts-ignore
+import { DistinctBaselinesResponse } from '../model/distinctBaselinesResponse';
+// @ts-ignore
 import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
+import { GroupListResponse } from '../model/groupListResponse';
+// @ts-ignore
 import { GroupMembersResponse } from '../model/groupMembersResponse';
+// @ts-ignore
+import { GroupNameSchemaResponse } from '../model/groupNameSchemaResponse';
+// @ts-ignore
+import { GroupNameSchemaUpdateRequest } from '../model/groupNameSchemaUpdateRequest';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
@@ -66,6 +74,8 @@ import { ImageGenerationModelRecordInput } from '../model/imageGenerationModelRe
 import { LastUpdatedResponse } from '../model/lastUpdatedResponse';
 // @ts-ignore
 import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
+// @ts-ignore
+import { NameExceptionRequest } from '../model/nameExceptionRequest';
 // @ts-ignore
 import { NewModelRecord } from '../model/newModelRecord';
 // @ts-ignore
@@ -1323,6 +1333,102 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Delete a custom naming schema (revert to inferred)
+   * Remove the persisted naming schema so the group reverts to inference.
+   * @param groupName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
+    groupName: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any>;
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
+    groupName: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<any>>;
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
+    groupName: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<any>>;
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
+    groupName: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (groupName === null || groupName === undefined) {
+      throw new Error(
+        'Required parameter groupName was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Delete a v2 model entry
    * Queue deletion of a model from a v2 model reference category.
    * @param modelCategoryName
@@ -1934,6 +2040,84 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Get unique baseline values for text generation models
+   * Return sorted unique non-empty baselines from text_generation models.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getDistinctBaselinesModelReferencesV2TextGenerationDistinctBaselinesGet(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<DistinctBaselinesResponse>;
+  public getDistinctBaselinesModelReferencesV2TextGenerationDistinctBaselinesGet(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<DistinctBaselinesResponse>>;
+  public getDistinctBaselinesModelReferencesV2TextGenerationDistinctBaselinesGet(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<DistinctBaselinesResponse>>;
+  public getDistinctBaselinesModelReferencesV2TextGenerationDistinctBaselinesGet(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/distinct_baselines`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<DistinctBaselinesResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Get all members of a text model group
    * Get all models in a text model group with parsed name info and common fields.
    * @param groupName
@@ -2012,6 +2196,95 @@ export class V2Service extends BaseService {
     let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupMembersResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get the naming schema for a text model group
+   * Return the persisted naming schema if one exists, otherwise infer from member names.
+   * @param groupName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
+    groupName: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<GroupNameSchemaResponse>;
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
+    groupName: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<GroupNameSchemaResponse>>;
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
+    groupName: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<GroupNameSchemaResponse>>;
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
+    groupName: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (groupName === null || groupName === undefined) {
+      throw new Error(
+        'Required parameter groupName was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<GroupNameSchemaResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
@@ -2652,6 +2925,84 @@ export class V2Service extends BaseService {
         reportProgress: reportProgress,
       },
     );
+  }
+
+  /**
+   * List all text model group names
+   * Return sorted distinct &#x60;&#x60;text_model_group&#x60;&#x60; values across all text models.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listGroupsModelReferencesV2TextGenerationGroupsGet(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<GroupListResponse>;
+  public listGroupsModelReferencesV2TextGenerationGroupsGet(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<GroupListResponse>>;
+  public listGroupsModelReferencesV2TextGenerationGroupsGet(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<GroupListResponse>>;
+  public listGroupsModelReferencesV2TextGenerationGroupsGet(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/groups`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<GroupListResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -5853,6 +6204,121 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Set or clear the naming schema exception flag on a model
+   * Set or clear the &#x60;&#x60;name_schema_exception&#x60;&#x60; field on a text model.  Pass &#x60;&#x60;{\&quot;reason\&quot;: \&quot;some reason\&quot;}&#x60;&#x60; to flag the model or &#x60;&#x60;{\&quot;reason\&quot;: null}&#x60;&#x60; to clear. Changes go through the pending queue.
+   * @param modelName
+   * @param nameExceptionRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(
+    modelName: string,
+    nameExceptionRequest: NameExceptionRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any>;
+  public setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(
+    modelName: string,
+    nameExceptionRequest: NameExceptionRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<any>>;
+  public setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(
+    modelName: string,
+    nameExceptionRequest: NameExceptionRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<any>>;
+  public setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(
+    modelName: string,
+    nameExceptionRequest: NameExceptionRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut.',
+      );
+    }
+    if (nameExceptionRequest === null || nameExceptionRequest === undefined) {
+      throw new Error(
+        'Required parameter nameExceptionRequest was null or undefined when calling setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_exception`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: nameExceptionRequest,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Batch-update common fields across all canonical members of a group
    * Update shared fields across all canonical members of a text model group.  Creates one PendingChangeRecord per canonical member with a shared batch_id.
    * @param groupName
@@ -5958,6 +6424,121 @@ export class V2Service extends BaseService {
     return this.httpClient.request<BatchUpdateResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: commonFieldsUpdateRequest,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Save a custom naming schema for a text model group
+   * Persist a custom naming schema for a text model group.
+   * @param groupName
+   * @param groupNameSchemaUpdateRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
+    groupName: string,
+    groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<GroupNameSchemaResponse>;
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
+    groupName: string,
+    groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<GroupNameSchemaResponse>>;
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
+    groupName: string,
+    groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<GroupNameSchemaResponse>>;
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
+    groupName: string,
+    groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (groupName === null || groupName === undefined) {
+      throw new Error(
+        'Required parameter groupName was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut.',
+      );
+    }
+    if (groupNameSchemaUpdateRequest === null || groupNameSchemaUpdateRequest === undefined) {
+      throw new Error(
+        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<GroupNameSchemaResponse>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: groupNameSchemaUpdateRequest,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,

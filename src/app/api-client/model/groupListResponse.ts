@@ -9,10 +9,8 @@
  */
 
 /**
- * Response from batch group common field update.
+ * Response listing all text model group names.
  */
-export interface BatchUpdateResponse {
-  updated_count: number;
-  batch_id: string;
-  pending_change_ids: Array<number>;
+export interface GroupListResponse {
+  groups: Array<string>;
 }

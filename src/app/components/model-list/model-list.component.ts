@@ -69,6 +69,10 @@ import {
 import { JsonDisplayComponent } from '../common/json-display.component';
 import type { BackendStatisticsResponse } from '../../services/horde-api.service';
 import { HordeButtonComponent } from '@haidra/design-system/button';
+import {
+  TextCreateChoiceComponent,
+  CreateChoice,
+} from '../text-model-group/text-create-choice.component';
 
 type ViewMode = 'table' | 'card';
 
@@ -85,6 +89,7 @@ type ViewMode = 'table' | 'card';
     JsonDisplayComponent,
     ScrollingModule,
     HordeButtonComponent,
+    TextCreateChoiceComponent,
   ],
   templateUrl: './model-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -864,7 +869,28 @@ export class ModelListComponent implements OnInit {
   }
 
   createModel(): void {
+    if (this.category() === MODEL_REFERENCE_CATEGORY.TextGeneration) {
+      this.showTextCreateChoice.set(true);
+      return;
+    }
     this.router.navigate(['/categories', this.category(), 'create']);
+  }
+
+  readonly showTextCreateChoice = signal(false);
+
+  onTextCreateChoice(choice: CreateChoice): void {
+    this.showTextCreateChoice.set(false);
+    switch (choice.kind) {
+      case 'new-group':
+        this.router.navigate(['/categories', this.category(), 'create-group']);
+        break;
+      case 'add-to-group':
+        this.router.navigate(['/categories', this.category(), 'group', choice.groupName]);
+        break;
+      case 'standalone':
+        this.router.navigate(['/categories', this.category(), 'create']);
+        break;
+    }
   }
 
   editModel(modelName: string): void {
