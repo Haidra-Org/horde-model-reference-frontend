@@ -15,6 +15,7 @@ import { DownloadRecord } from '../../../api-client';
 import { createEmptyDownloadRecord } from '../../../utils/config-converter';
 import {
   UrlVerificationService,
+  UrlVerificationShaSource,
   UrlVerificationResult,
 } from '../../../services/url-verification.service';
 
@@ -30,6 +31,7 @@ interface DownloadVerificationState {
   hasMismatch?: boolean; // True if original and verified don't match
   verifiedUrl?: string; // The URL that was successfully verified
   corsBlocked?: boolean; // True when CORS prevented verification but URL may be valid
+  sha256Source?: UrlVerificationShaSource;
 }
 
 /**
@@ -205,6 +207,7 @@ export class ConfigFormSectionSimplifiedComponent {
       verified: false,
       verifying: true,
       error: undefined,
+      sha256Source: undefined,
     });
 
     // Perform verification
@@ -239,6 +242,7 @@ export class ConfigFormSectionSimplifiedComponent {
             verifiedSha256sum: verifiedSha256,
             hasMismatch,
             verifiedUrl: url,
+            sha256Source: result.sha256Source,
           });
         } else if (result.corsBlocked) {
           this.updateVerificationState(index, {
@@ -247,12 +251,14 @@ export class ConfigFormSectionSimplifiedComponent {
             corsBlocked: true,
             error: result.error,
             verifiedUrl: url,
+            sha256Source: undefined,
           });
         } else {
           this.updateVerificationState(index, {
             verified: false,
             verifying: false,
             error: result.error || 'Verification failed',
+            sha256Source: undefined,
           });
         }
         // Note: validation errors are emitted automatically via effect
@@ -262,6 +268,7 @@ export class ConfigFormSectionSimplifiedComponent {
           verified: false,
           verifying: false,
           error: 'Verification failed due to network error',
+          sha256Source: undefined,
         });
         // Note: validation errors are emitted automatically via effect
       },
@@ -323,6 +330,24 @@ export class ConfigFormSectionSimplifiedComponent {
     if (state.hasMismatch && state.originalSha256sum && state.verifiedSha256sum) {
       return `SHA256 mismatch detected! Original: ${state.originalSha256sum.substring(0, 16)}... | Verified: ${state.verifiedSha256sum.substring(0, 16)}...`;
     }
+    return undefined;
+  }
+
+  getSha256SourceHint(index: number): string | undefined {
+    const source = this.getVerificationState(index).sha256Source;
+
+    if (source === 'redirect-x-linked-etag') {
+      return 'SHA256 recovered from Hugging Face redirect metadata (X-Linked-ETag).';
+    }
+
+    if (source === 'x-linked-etag') {
+      return 'SHA256 extracted from X-Linked-ETag response header.';
+    }
+
+    if (source === 'hf-tree-lfs-oid') {
+      return 'SHA256 recovered from Hugging Face model tree metadata (LFS OID).';
+    }
+
     return undefined;
   }
 

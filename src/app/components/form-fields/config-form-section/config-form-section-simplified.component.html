@@ -83,6 +83,11 @@
               ⚠ {{ getSha256MismatchWarning($index) }}
             </p>
             }
+            @if (getSha256SourceHint($index)) {
+            <p class="text-info-600 dark:text-info-400 text-xs">
+              ℹ {{ getSha256SourceHint($index) }}
+            </p>
+            }
           </div>
         </div>
       </div>
