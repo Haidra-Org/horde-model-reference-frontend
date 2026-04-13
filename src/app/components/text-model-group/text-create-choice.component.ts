@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, output, signal, inject, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  output,
+  signal,
+  inject,
+  DestroyRef,
+  computed,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { HordeButtonComponent } from '@haidra/design-system/button';
@@ -15,8 +23,23 @@ export type CreateChoice =
   imports: [FormsModule, HordeButtonComponent, AutocompleteInputComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="create-choice-title" tabindex="0" (click)="dismiss.emit()" (keydown)="$event.key === 'Escape' && dismiss.emit()">
-      <div class="modal-dialog max-w-lg" role="document" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+    <div
+      class="modal-overlay modal-overlay--high text-create-choice-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-choice-title"
+      tabindex="0"
+      (click)="dismiss.emit()"
+      (keydown)="$event.key === 'Escape' && dismiss.emit()"
+    >
+      <div class="modal-backdrop modal-backdrop--blur text-create-choice-backdrop" aria-hidden="true"></div>
+
+      <div
+        class="modal-dialog modal-dialog--xl text-create-choice-dialog"
+        role="document"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <h2 class="modal-title" id="create-choice-title">Create Text Generation Model</h2>
         <div class="modal-content">
           <p class="text-muted text-sm mb-4">
@@ -39,40 +62,65 @@ export type CreateChoice =
             </button>
 
             <!-- Add to Existing Group -->
-            <button
-              type="button"
-              class="flex items-start gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 transition-colors text-left"
+            <div
+              class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors"
               [class.border-primary-500]="showGroupPicker()"
-              (click)="showGroupPicker.set(true)"
+              [class.bg-primary-50]="showGroupPicker()"
+              [class.dark:bg-primary-950]="showGroupPicker()"
             >
-              <span class="text-2xl mt-0.5">➕</span>
-              <div class="flex-1">
-                <span class="font-semibold text-gray-900 dark:text-gray-100">Add to Existing Group</span>
-                <p class="text-xs text-muted mt-0.5">
-                  Add a new size, quant, or variant to an existing model group.
-                </p>
-                @if (showGroupPicker()) {
-                  <div class="mt-3" role="group" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                    <app-autocomplete-input
-                      [value]="selectedGroup()"
-                      [suggestions]="groupNames()"
-                      placeholder="Search groups..."
-                      (valueChange)="selectedGroup.set($event ?? '')"
-                    />
-                    @if (selectedGroup()) {
-                      <horde-button
-                        variant="primary"
-                        size="sm"
-                        class="mt-2"
-                        (click)="chosen.emit({ kind: 'add-to-group', groupName: selectedGroup() })"
-                      >
-                        Go to {{ selectedGroup() }}
-                      </horde-button>
+              <button
+                type="button"
+                class="flex w-full items-start gap-3 text-left"
+                (click)="openGroupPicker()"
+              >
+                <span class="text-2xl mt-0.5">➕</span>
+                <div class="flex-1">
+                  <span class="font-semibold text-gray-900 dark:text-gray-100">Add to Existing Group</span>
+                  <p class="text-xs text-muted mt-0.5">
+                    Add a new size, quant, or variant to an existing model group.
+                  </p>
+                </div>
+              </button>
+
+              @if (showGroupPicker()) {
+                <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700" role="group">
+                  <app-autocomplete-input
+                    [label]="'Search groups'"
+                    [ariaLabel]="'Search groups'"
+                    [value]="selectedGroup()"
+                    [suggestions]="groupNames()"
+                    placeholder="Search groups..."
+                    (valueChange)="selectedGroup.set($event ?? '')"
+                  />
+
+                  @if (loadingGroups()) {
+                    <p class="text-xs text-muted mt-2">Loading available groups...</p>
+                  } @else if (groupNames().length === 0) {
+                    <p class="text-xs text-warning-600 dark:text-warning-400 mt-2">
+                      No groups were found. Create a new group instead.
+                    </p>
+                  }
+
+                  @if (selectedGroup()) {
+                    <horde-button
+                      variant="primary"
+                      size="sm"
+                      class="mt-2"
+                      [disabled]="!selectedGroupExists()"
+                      (click)="chooseSelectedGroup()"
+                    >
+                      Go to {{ selectedGroup().trim() }}
+                    </horde-button>
+
+                    @if (!selectedGroupExists()) {
+                      <p class="text-xs text-warning-600 dark:text-warning-400 mt-2">
+                        Select an existing group from autocomplete suggestions.
+                      </p>
                     }
-                  </div>
-                }
-              </div>
-            </button>
+                  }
+                </div>
+              }
+            </div>
 
             <!-- Standalone -->
             <button
@@ -107,14 +155,51 @@ export class TextCreateChoiceComponent {
   readonly showGroupPicker = signal(false);
   readonly selectedGroup = signal('');
   readonly groupNames = signal<string[]>([]);
+  readonly loadingGroups = signal(false);
+
+  readonly selectedGroupExists = computed(() => {
+    const selected = this.selectedGroup().trim().toLowerCase();
+    if (!selected) {
+      return false;
+    }
+
+    return this.groupNames().some((name) => name.toLowerCase() === selected);
+  });
 
   constructor() {
+    this.loadGroupNames();
+  }
+
+  openGroupPicker(): void {
+    this.showGroupPicker.set(true);
+    if (this.groupNames().length === 0 && !this.loadingGroups()) {
+      this.loadGroupNames();
+    }
+  }
+
+  chooseSelectedGroup(): void {
+    const groupName = this.selectedGroup().trim();
+    if (!groupName || !this.selectedGroupExists()) {
+      return;
+    }
+
+    this.chosen.emit({ kind: 'add-to-group', groupName });
+  }
+
+  private loadGroupNames(): void {
+    this.loadingGroups.set(true);
     this.api
       .getGroupNames()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (names) => this.groupNames.set(names),
-        error: () => this.groupNames.set([]),
+        next: (names) => {
+          this.groupNames.set(names);
+          this.loadingGroups.set(false);
+        },
+        error: () => {
+          this.groupNames.set([]);
+          this.loadingGroups.set(false);
+        },
       });
   }
 }

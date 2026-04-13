@@ -25,6 +25,12 @@ type WizardStep = 'identity' | 'variation' | 'review';
 
 const DEFAULT_SEPARATOR = '-';
 const DEFAULT_PART_ORDER = ['size', 'variant', 'version', 'quant'];
+const TEMPLATE_PREVIEW_PART_EXAMPLES: Record<string, string> = {
+  size: '8B',
+  variant: 'Instruct',
+  version: 'v1',
+  quant: 'Q4_K_M',
+};
 
 @Component({
   selector: 'app-create-group-wizard',
@@ -101,6 +107,18 @@ export class CreateGroupWizardComponent {
     const parts = this.partOrder();
     const sep = this.separator();
     return `{base}${parts.map((p) => `${sep}{${p}}`).join('')}`;
+  });
+
+  readonly previewExampleName = computed(() => {
+    const base = this.groupName().trim() || 'Llama-3.1';
+    const sep = this.separator();
+    const renderedParts = this.partOrder().map(
+      (part) => TEMPLATE_PREVIEW_PART_EXAMPLES[part] ?? `{${part}}`,
+    );
+    const renderedName = [base, ...renderedParts].join(sep);
+    const author = this.author().trim();
+
+    return author ? `${author}/${renderedName}` : renderedName;
   });
 
   constructor() {

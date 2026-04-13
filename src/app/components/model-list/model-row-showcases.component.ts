@@ -8,28 +8,37 @@ import { onImageError } from './model-row.utils';
   imports: [HordeBadgeComponent, HordeButtonComponent],
   template: `
     @if (showcases() && showcases()!.length > 0) {
-      <section class="detail-panel">
-        <h4 class="detail-section-heading flex items-center gap-2">
-          Showcases
-          <horde-badge variant="info" class="normal-case tracking-normal">{{
-            showcases()!.length
-          }}</horde-badge>
-          <horde-button
-            variant="secondary"
-            size="sm"
-            class="ml-auto normal-case tracking-normal"
-            (click)="toggleExpanded()"
-          >
-            {{ expanded() ? 'Hide' : 'Show' }}
-          </horde-button>
-        </h4>
+      <section class="detail-panel model-detail-panel model-detail-panel--showcases">
+        <div class="model-showcase-header">
+          <div class="model-showcase-header-content">
+            <h4 class="detail-section-heading model-detail-section-heading-strong">
+              Generation Showcase Gallery
+            </h4>
+            <p class="model-showcase-subtitle">
+              Visual inspection snapshots for prompt fidelity, composition, and style consistency.
+            </p>
+          </div>
+
+          <div class="model-showcase-header-actions">
+            <horde-badge variant="info" class="normal-case tracking-normal">
+              {{ showcases()!.length }} images
+            </horde-badge>
+            <horde-button
+              variant="secondary"
+              size="sm"
+              class="normal-case tracking-normal"
+              (click)="toggleExpanded()"
+            >
+              {{ expanded() ? 'Collapse Gallery' : 'Expand Gallery' }}
+            </horde-button>
+          </div>
+        </div>
+
         @if (expanded()) {
-          <div
-            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3"
-          >
+          <div class="model-showcase-grid">
             @for (showcase of showcases(); track showcase; let idx = $index) {
               <div
-                class="card-showcase"
+                class="card-showcase model-showcase-card"
                 (click)="openLightbox(idx)"
                 (keydown.enter)="openLightbox(idx)"
                 tabindex="0"
@@ -44,7 +53,7 @@ import { onImageError } from './model-row.utils';
                 />
                 <div class="showcase-overlay">
                   <svg
-                    class="w-10 h-10 text-white drop-shadow-lg"
+                    class="w-8 h-8 text-white drop-shadow-lg"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -58,7 +67,7 @@ import { onImageError } from './model-row.utils';
                   </svg>
                 </div>
                 <div>
-                  <span class="showcase-label">Image {{ idx + 1 }}</span>
+                  <span class="showcase-label">Sample {{ idx + 1 }}</span>
                 </div>
               </div>
             }

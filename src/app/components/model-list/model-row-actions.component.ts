@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { HordeButtonComponent } from '@haidra/design-system/button';
 import { LegacyRecordUnion } from '../../models';
 
@@ -7,10 +7,12 @@ import { LegacyRecordUnion } from '../../models';
   imports: [HordeButtonComponent],
   template: `
     <div [class]="containerClass()">
-      <horde-button variant="secondary" size="sm" (click)="onShowJson()">Json</horde-button>
+      <horde-button variant="secondary" [size]="buttonSize()" (click)="onShowJson()">JSON</horde-button>
       @if (writable()) {
-        <horde-button variant="primary" size="sm" (click)="onEdit()">Edit</horde-button>
-        <horde-button variant="danger" size="sm" (click)="onDelete()">Delete</horde-button>
+        <horde-button variant="primary" [size]="buttonSize()" (click)="onEdit()">Edit</horde-button>
+        <horde-button variant="danger" [size]="buttonSize()" (click)="onDelete()">
+          {{ deleteLabel() }}
+        </horde-button>
       }
     </div>
   `,
@@ -25,10 +27,13 @@ export class ModelRowActionsComponent {
   readonly edit = output<string>();
   readonly delete = output<string>();
 
+  readonly buttonSize = computed(() => (this.layout() === 'vertical' ? 'sm' : 'xs'));
+  readonly deleteLabel = computed(() => (this.layout() === 'vertical' ? 'Delete' : 'Del'));
+
   readonly containerClass = () =>
     this.layout() === 'vertical'
       ? 'flex flex-col gap-2 whitespace-nowrap'
-      : 'flex gap-2 whitespace-nowrap';
+      : 'flex items-center justify-end gap-1.5 whitespace-nowrap';
 
   onShowJson(): void {
     this.showJson.emit(this.model());

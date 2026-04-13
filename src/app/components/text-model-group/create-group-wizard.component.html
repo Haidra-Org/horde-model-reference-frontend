@@ -1,4 +1,4 @@
-<div class="container mx-auto max-w-3xl px-4 py-6">
+<div class="container mx-auto max-w-5xl px-4 py-6">
   <!-- Header -->
   <div class="mb-6">
     <h1 class="heading-page">Create New Model Group</h1>
@@ -9,42 +9,25 @@
 
   <!-- Step Indicator -->
   <div class="flex items-center gap-2 mb-6 text-sm">
-    <button
-      type="button"
-      class="px-3 py-1 rounded-full transition-colors"
-      [class.bg-primary-600]="step() === 'identity'"
-      [class.text-white]="step() === 'identity'"
-      [class.bg-gray-200]="step() !== 'identity'"
-      [class.dark:bg-gray-700]="step() !== 'identity'"
-      (click)="goToStep('identity')"
-    >
+    <button type="button" class="px-3 py-1 rounded-full transition-colors"
+      [class.bg-primary-600]="step() === 'identity'" [class.text-white]="step() === 'identity'"
+      [class.bg-gray-200]="step() !== 'identity'" [class.dark:bg-gray-700]="step() !== 'identity'"
+      (click)="goToStep('identity')">
       1. Group Identity
     </button>
     <span class="text-gray-400">→</span>
-    <button
-      type="button"
-      class="px-3 py-1 rounded-full transition-colors"
-      [class.bg-primary-600]="step() === 'variation'"
-      [class.text-white]="step() === 'variation'"
-      [class.bg-gray-200]="step() !== 'variation'"
-      [class.dark:bg-gray-700]="step() !== 'variation'"
-      [disabled]="!step1Valid()"
-      (click)="goToStep('variation')"
-    >
+    <button type="button" class="px-3 py-1 rounded-full transition-colors"
+      [class.bg-primary-600]="step() === 'variation'" [class.text-white]="step() === 'variation'"
+      [class.bg-gray-200]="step() !== 'variation'" [class.dark:bg-gray-700]="step() !== 'variation'"
+      [disabled]="!step1Valid()" (click)="goToStep('variation')">
       2. First Variation
     </button>
     <span class="text-gray-400">→</span>
-    <button
-      type="button"
-      class="px-3 py-1 rounded-full transition-colors"
-      [class.bg-primary-600]="step() === 'review'"
-      [class.text-white]="step() === 'review'"
-      [class.bg-gray-200]="step() !== 'review'"
-      [class.dark:bg-gray-700]="step() !== 'review'"
-      [disabled]="!step1Valid() || !step2Valid()"
-      (click)="goToStep('review')"
-    >
-      3. Review
+    <button type="button" class="px-3 py-1 rounded-full transition-colors" [class.bg-primary-600]="step() === 'review'"
+      [class.text-white]="step() === 'review'" [class.bg-gray-200]="step() !== 'review'"
+      [class.dark:bg-gray-700]="step() !== 'review'" [disabled]="!step1Valid() || !step2Valid()"
+      (click)="goToStep('review')">
+      3. Review & Create
     </button>
   </div>
 
@@ -58,92 +41,73 @@
       <!-- Group Name -->
       <div>
         <label class="form-label" for="group-name">Group Name (base model name)</label>
-        <input
-          id="group-name"
-          type="text"
-          class="form-input"
-          placeholder="e.g. Llama-3.1, Mistral, Qwen2.5"
-          [ngModel]="groupName()"
-          (ngModelChange)="groupName.set($event)"
-        />
+        <input id="group-name" type="text" class="form-input" placeholder="e.g. Llama-3.1, Mistral, Qwen2.5"
+          [ngModel]="groupName()" (ngModelChange)="groupName.set($event)" />
         <p class="form-hint">This becomes the base of all model names in this group.</p>
       </div>
 
       <!-- Author -->
       <div>
         <label class="form-label" for="group-author">Author / Namespace</label>
-        <input
-          id="group-author"
-          type="text"
-          class="form-input"
-          placeholder="e.g. meta-llama, mistralai (optional)"
-          [ngModel]="author()"
-          (ngModelChange)="author.set($event)"
-        />
+        <input id="group-author" type="text" class="form-input" placeholder="e.g. meta-llama, mistralai (optional)"
+          [ngModel]="author()" (ngModelChange)="author.set($event)" />
         <p class="form-hint">If models use author/name format, enter the common author prefix.</p>
       </div>
 
       <!-- Separator -->
       <div>
         <label class="form-label" for="group-separator">Separator</label>
-        <select
-          id="group-separator"
-          class="form-select"
-          [ngModel]="separator()"
-          (ngModelChange)="separator.set($event)"
-        >
+        <select id="group-separator" class="form-select" [ngModel]="separator()"
+          (ngModelChange)="separator.set($event)">
           @for (sep of separatorOptions; track sep) {
-            <option [value]="sep">
-              {{ sep === '-' ? 'Hyphen (-)' : sep === '_' ? 'Underscore (_)' : 'Dot (.)' }}
-            </option>
+          <option [value]="sep">
+            {{ sep === '-' ? 'Hyphen (-)' : sep === '_' ? 'Underscore (_)' : 'Dot (.)' }}
+          </option>
           }
         </select>
       </div>
 
       <!-- Part Order -->
       <div>
-        <label class="form-label">Part Order</label>
+        <p class="form-label">Part Order</p>
         <p class="text-xs text-muted mb-2">Order of parts after the base name.</p>
         <div class="flex flex-wrap gap-2">
           @for (part of partOrder(); track part; let i = $index) {
-            <div class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-              <span class="font-mono text-sm">{{ part }}</span>
-              <div class="flex flex-col ml-1">
-                <button
-                  type="button"
-                  class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
-                  [disabled]="i === 0"
-                  (click)="movePartUp(i)"
-                  aria-label="Move part up"
-                >▲</button>
-                <button
-                  type="button"
-                  class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
-                  [disabled]="i === partOrder().length - 1"
-                  (click)="movePartDown(i)"
-                  aria-label="Move part down"
-                >▼</button>
-              </div>
+          <div
+            class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <span class="font-mono text-sm">{{ part }}</span>
+            <div class="flex flex-col ml-1">
+              <button type="button"
+                class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
+                [disabled]="i === 0" (click)="movePartUp(i)" aria-label="Move part up">▲</button>
+              <button type="button"
+                class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
+                [disabled]="i === partOrder().length - 1" (click)="movePartDown(i)"
+                aria-label="Move part down">▼</button>
             </div>
+          </div>
           }
         </div>
       </div>
 
       <!-- Preview -->
       <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-        <span class="text-xs text-muted">Name template:</span>
-        <span class="ml-2 font-mono text-sm text-gray-900 dark:text-gray-100">{{ previewTemplate() }}</span>
+        <div>
+          <span class="text-xs text-muted">Name template:</span>
+          <span class="ml-2 font-mono text-sm text-gray-900 dark:text-gray-100">{{ previewTemplate() }}</span>
+        </div>
+        <div class="mt-2">
+          <span class="text-xs text-muted">Rendered example:</span>
+          <span class="ml-2 font-mono text-sm font-semibold text-gray-900 dark:text-gray-100">
+            {{ previewExampleName() }}
+          </span>
+        </div>
       </div>
 
       <!-- Save Schema Toggle -->
       <div class="flex items-center gap-3">
-        <input
-          id="save-schema"
-          type="checkbox"
-          class="form-checkbox"
-          [ngModel]="saveSchema()"
-          (ngModelChange)="saveSchema.set($event)"
-        />
+        <input id="save-schema" type="checkbox" class="form-checkbox" [ngModel]="saveSchema()"
+          (ngModelChange)="saveSchema.set($event)" />
         <label class="checkbox-label" for="save-schema">Save as custom naming schema for this group</label>
       </div>
     </div>
@@ -167,72 +131,38 @@
         <!-- Size (required) -->
         <div>
           <label class="form-label" for="var-size">Size <span class="text-danger-500">*</span></label>
-          <input
-            id="var-size"
-            type="text"
-            class="form-input"
-            placeholder="e.g. 8B, 70B, 1.5B"
-            [ngModel]="size()"
-            (ngModelChange)="size.set($event); triggerCompose()"
-          />
+          <input id="var-size" type="text" class="form-input" placeholder="e.g. 8B, 70B, 1.5B" [ngModel]="size()"
+            (ngModelChange)="size.set($event); triggerCompose()" />
         </div>
 
         <!-- Variant -->
         <div>
           <label class="form-label" for="var-variant">Variant</label>
-          <input
-            id="var-variant"
-            type="text"
-            class="form-input"
-            placeholder="e.g. Instruct, Chat (optional)"
-            [ngModel]="variant()"
-            (ngModelChange)="variant.set($event); triggerCompose()"
-          />
+          <input id="var-variant" type="text" class="form-input" placeholder="e.g. Instruct, Chat (optional)"
+            [ngModel]="variant()" (ngModelChange)="variant.set($event); triggerCompose()" />
         </div>
 
         <!-- Version -->
         <div>
           <label class="form-label" for="var-version">Version</label>
-          <input
-            id="var-version"
-            type="text"
-            class="form-input"
-            placeholder="e.g. v2, turbo (optional)"
-            [ngModel]="version()"
-            (ngModelChange)="version.set($event); triggerCompose()"
-          />
+          <input id="var-version" type="text" class="form-input" placeholder="e.g. v2, turbo (optional)"
+            [ngModel]="version()" (ngModelChange)="version.set($event); triggerCompose()" />
         </div>
 
         <!-- Quant -->
         <div>
           <label class="form-label" for="var-quant">Quantization</label>
-          <input
-            id="var-quant"
-            type="text"
-            class="form-input"
-            placeholder="e.g. Q4_K_M, GPTQ (optional)"
-            [ngModel]="quant()"
-            (ngModelChange)="quant.set($event); triggerCompose()"
-          />
+          <input id="var-quant" type="text" class="form-input" placeholder="e.g. Q4_K_M, GPTQ (optional)"
+            [ngModel]="quant()" (ngModelChange)="quant.set($event); triggerCompose()" />
         </div>
 
         <!-- Parameters -->
         <div>
           <label class="form-label" for="var-params">Parameters <span class="text-danger-500">*</span></label>
           <div class="flex gap-2">
-            <input
-              id="var-params"
-              type="number"
-              class="form-input flex-1"
-              placeholder="e.g. 8"
-              [ngModel]="parameters()"
-              (ngModelChange)="parameters.set($event)"
-            />
-            <select
-              class="form-select w-20"
-              [ngModel]="parametersUnit()"
-              (ngModelChange)="parametersUnit.set($event)"
-            >
+            <input id="var-params" type="number" class="form-input flex-1" placeholder="e.g. 8" [ngModel]="parameters()"
+              (ngModelChange)="parameters.set($event)" />
+            <select class="form-select w-20" [ngModel]="parametersUnit()" (ngModelChange)="parametersUnit.set($event)">
               <option value="B">B</option>
               <option value="M">M</option>
             </select>
@@ -241,51 +171,30 @@
 
         <!-- Baseline -->
         <div>
-          <label class="form-label">Baseline</label>
-          <app-autocomplete-input
-            [value]="baseline()"
-            [suggestions]="baselineSuggestions()"
-            placeholder="e.g. llama-3"
-            (valueChange)="baseline.set($event ?? '')"
-          />
+          <p class="form-label">Baseline</p>
+          <app-autocomplete-input [value]="baseline()" [suggestions]="baselineSuggestions()" placeholder="e.g. llama-3"
+            (valueChange)="baseline.set($event ?? '')" />
         </div>
       </div>
 
       <!-- Description -->
       <div>
         <label class="form-label" for="var-description">Description</label>
-        <textarea
-          id="var-description"
-          class="form-textarea"
-          rows="3"
-          placeholder="Model description (optional)"
-          [ngModel]="description()"
-          (ngModelChange)="description.set($event)"
-        ></textarea>
+        <textarea id="var-description" class="form-textarea" rows="3" placeholder="Model description (optional)"
+          [ngModel]="description()" (ngModelChange)="description.set($event)"></textarea>
       </div>
 
       <!-- URL -->
       <div>
         <label class="form-label" for="var-url">Download URL</label>
-        <input
-          id="var-url"
-          type="url"
-          class="form-input"
-          placeholder="https://huggingface.co/... (optional)"
-          [ngModel]="url()"
-          (ngModelChange)="url.set($event)"
-        />
+        <input id="var-url" type="url" class="form-input" placeholder="https://huggingface.co/... (optional)"
+          [ngModel]="url()" (ngModelChange)="url.set($event)" />
       </div>
 
       <!-- NSFW -->
       <div class="flex items-center gap-3">
-        <input
-          id="var-nsfw"
-          type="checkbox"
-          class="form-checkbox"
-          [ngModel]="nsfw()"
-          (ngModelChange)="nsfw.set($event)"
-        />
+        <input id="var-nsfw" type="checkbox" class="form-checkbox" [ngModel]="nsfw()"
+          (ngModelChange)="nsfw.set($event)" />
         <label class="checkbox-label" for="var-nsfw">NSFW</label>
       </div>
 
@@ -336,6 +245,10 @@
           <div>
             <span class="field-label">Naming Schema</span>
             <span class="field-value block mt-0.5 font-mono">{{ previewTemplate() }}</span>
+          </div>
+          <div class="col-span-2">
+            <span class="field-label">Rendered Example</span>
+            <span class="field-value block mt-0.5 font-mono">{{ previewExampleName() }}</span>
           </div>
           <div>
             <span class="field-label">Save Schema</span>

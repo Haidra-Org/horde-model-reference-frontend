@@ -7,6 +7,7 @@ import {
   ChangeDetectionStrategy,
   DestroyRef,
   ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -75,6 +76,18 @@ import {
 } from '../text-model-group/text-create-choice.component';
 
 type ViewMode = 'table' | 'card';
+type SortColumn = 'name' | 'active' | 'index' | 'workers';
+
+interface ModelListDisplayPreferences {
+  viewMode?: ViewMode;
+  sortColumn?: SortColumn | null;
+  sortDirection?: 'asc' | 'desc';
+  showDetails?: boolean;
+  headerCollapsed?: boolean;
+  showAdvancedControls?: boolean;
+  filterByActive?: boolean;
+  filterByPending?: boolean;
+}
 
 @Component({
   selector: 'app-model-list',
@@ -114,6 +127,7 @@ export class ModelListComponent implements OnInit {
   readonly searchTermSubject = new Subject<string>();
   readonly debouncedSearchTerm = signal('');
   readonly filterByActive = signal(false);
+  readonly filterByPending = signal(false);
   readonly selectedTags = signal<string[]>([]);
   readonly tagSearchTerm = signal('');
   readonly tagFilterOpen = signal(false);
@@ -132,12 +146,14 @@ export class ModelListComponent implements OnInit {
   readonly showStyleModal = signal(false);
   readonly showNsfwModal = signal(false);
   readonly showTagsModal = signal(false);
-  readonly headerCollapsed = signal(false);
+  readonly headerCollapsed = signal(true);
+  readonly showAdvancedControls = signal(false);
   readonly viewMode = signal<ViewMode>(
     typeof window !== 'undefined' && window.innerWidth < 1024 ? 'card' : 'table',
   );
 
   @ViewChild(CdkVirtualScrollViewport) viewport?: CdkVirtualScrollViewport;
+  @ViewChild('modelSearchInput') modelSearchInput?: ElementRef<HTMLInputElement>;
 
   // Dynamic viewport height (minimum 400px)
   private readonly VIEWPORT_MIN_HEIGHT = 400;
@@ -148,9 +164,10 @@ export class ModelListComponent implements OnInit {
   );
 
   // Sorting
-  readonly sortColumn = signal<'name' | 'active' | 'index' | 'workers' | null>(null);
+  readonly sortColumn = signal<SortColumn | null>(null);
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
   private initialSortSet = false;
+  private readonly DISPLAY_PREFERENCES_KEY = 'hmr.model-list.display-preferences';
 
   private readonly pendingSummary = inject(PendingQueueSummaryService);
 
@@ -232,9 +249,32 @@ export class ModelListComponent implements OnInit {
     return (
       this.searchTerm() !== '' ||
       this.filterByActive() ||
+      this.filterByPending() ||
       this.selectedTags().length > 0 ||
       this.selectedParameterTags().length > 0
     );
+  });
+
+  readonly activeFilterGroupsCount = computed(() => {
+    let count = 0;
+    if (this.searchTerm().trim() !== '') count++;
+    if (this.filterByActive()) count++;
+    if (this.filterByPending()) count++;
+    if (this.selectedTags().length > 0) count++;
+    if (this.selectedParameterTags().length > 0) count++;
+    return count;
+  });
+
+  readonly advancedControlActiveCount = computed(() => {
+    let count = 0;
+    const sortColumn = this.sortColumn();
+    const sortDirection = this.sortDirection();
+    if (sortColumn !== null && !(sortColumn === 'active' && sortDirection === 'asc')) {
+      count++;
+    }
+    if (this.selectedTags().length > 0) count++;
+    if (this.selectedParameterTags().length > 0) count++;
+    return count;
   });
 
   /**
@@ -302,10 +342,15 @@ export class ModelListComponent implements OnInit {
     const selectedTags = this.selectedTags();
     const selectedParameterTags = this.selectedParameterTags();
     const activeFilter = this.filterByActive();
+    const pendingFilter = this.filterByPending();
     let filtered = this.modelsWithGhosts();
 
     if (activeFilter) {
       filtered = filtered.filter((model) => hasActiveWorkers(model));
+    }
+
+    if (pendingFilter) {
+      filtered = filtered.filter((model) => this.isGhostModel(model) || this.pendingOverlayMap().has(model.name));
     }
 
     if (selectedTags.length > 0) {
@@ -731,6 +776,7 @@ export class ModelListComponent implements OnInit {
       return;
     }
     this.viewMode.set(mode);
+    this.saveDisplayPreferences();
   }
 
   showBaselineDetails(): void {
@@ -836,6 +882,8 @@ export class ModelListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadDisplayPreferences();
+
     this.searchTermSubject
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe((term) => {
@@ -849,6 +897,28 @@ export class ModelListComponent implements OnInit {
         .subscribe(() => {
           this.windowHeight.set(window.innerHeight);
         });
+
+      fromEvent<KeyboardEvent>(window, 'keydown')
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((event) => {
+          if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) {
+            return;
+          }
+
+          const target = event.target;
+          const isEditableTarget =
+            target instanceof HTMLInputElement ||
+            target instanceof HTMLTextAreaElement ||
+            target instanceof HTMLSelectElement ||
+            (target instanceof HTMLElement && target.isContentEditable);
+
+          if (isEditableTarget) {
+            return;
+          }
+
+          event.preventDefault();
+          this.focusSearchInput();
+        });
     }
 
     this.route.params
@@ -860,6 +930,8 @@ export class ModelListComponent implements OnInit {
           this.category.set(category);
           this.loading.set(true);
           this.models.set([]);
+          this.expandedModels.set(new Set());
+          this.expandedShowcases.set(new Set());
           this.hordeApi.resetStatsState();
         }),
         switchMap((category) => this.loadModelsForCategory(category)),
@@ -985,8 +1057,20 @@ export class ModelListComponent implements OnInit {
     this.searchTermSubject.next('');
     this.debouncedSearchTerm.set('');
     this.filterByActive.set(false);
+    this.filterByPending.set(false);
     this.selectedTags.set([]);
     this.selectedParameterTags.set([]);
+    this.saveDisplayPreferences();
+  }
+
+  toggleFilterByActive(): void {
+    this.filterByActive.update((value) => !value);
+    this.saveDisplayPreferences();
+  }
+
+  toggleFilterByPending(): void {
+    this.filterByPending.update((value) => !value);
+    this.saveDisplayPreferences();
   }
 
   addTagToSearch(tag: string | number): void {
@@ -1062,7 +1146,7 @@ export class ModelListComponent implements OnInit {
     this.selectedParameterTags.set([]);
   }
 
-  toggleSort(column: 'name' | 'active' | 'index' | 'workers'): void {
+  toggleSort(column: SortColumn): void {
     const currentColumn = this.sortColumn();
     const currentDirection = this.sortDirection();
 
@@ -1077,9 +1161,17 @@ export class ModelListComponent implements OnInit {
     } else {
       this.sortDirection.set('asc');
     }
+
+    this.saveDisplayPreferences();
   }
 
-  getSortIcon(column: 'name' | 'active' | 'index' | 'workers'): string {
+  clearSort(): void {
+    this.sortColumn.set(null);
+    this.sortDirection.set('asc');
+    this.saveDisplayPreferences();
+  }
+
+  getSortIcon(column: SortColumn): string {
     if (this.sortColumn() !== column) return '↕';
     return this.sortDirection() === 'asc' ? '↑' : '↓';
   }
@@ -1172,16 +1264,105 @@ export class ModelListComponent implements OnInit {
     } else {
       this.expandedModels.set(new Set());
     }
+
+    this.saveDisplayPreferences();
+  }
+
+  toggleAdvancedControls(): void {
+    this.showAdvancedControls.update((value) => !value);
+    this.saveDisplayPreferences();
   }
 
   toggleHeaderCollapsed(): void {
     this.headerCollapsed.set(!this.headerCollapsed());
+    this.saveDisplayPreferences();
+  }
+
+  private focusSearchInput(): void {
+    this.modelSearchInput?.nativeElement.focus();
+    this.modelSearchInput?.nativeElement.select();
   }
 
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.src =
       'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23999%27 stroke-width=%272%27%3E%3Crect x=%273%27 y=%273%27 width=%2718%27 height=%2718%27 rx=%272%27/%3E%3Ccircle cx=%278.5%27 cy=%278.5%27 r=%271.5%27/%3E%3Cpath d=%27M21 15l-5-5L5 21%27/%3E%3C/svg%3E';
+  }
+
+  private isSortColumn(value: unknown): value is SortColumn {
+    return value === 'name' || value === 'active' || value === 'index' || value === 'workers';
+  }
+
+  private loadDisplayPreferences(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const raw = window.localStorage.getItem(this.DISPLAY_PREFERENCES_KEY);
+    if (!raw) {
+      return;
+    }
+
+    try {
+      const preferences = JSON.parse(raw) as ModelListDisplayPreferences;
+
+      if (preferences.viewMode === 'table' || preferences.viewMode === 'card') {
+        this.viewMode.set(preferences.viewMode);
+      }
+
+      if (preferences.sortColumn === null || this.isSortColumn(preferences.sortColumn)) {
+        this.sortColumn.set(preferences.sortColumn ?? null);
+      }
+
+      if (preferences.sortDirection === 'asc' || preferences.sortDirection === 'desc') {
+        this.sortDirection.set(preferences.sortDirection);
+      }
+
+      if (typeof preferences.showDetails === 'boolean') {
+        this.showDetails.set(preferences.showDetails);
+      }
+
+      if (typeof preferences.headerCollapsed === 'boolean') {
+        this.headerCollapsed.set(preferences.headerCollapsed);
+      }
+
+      if (typeof preferences.showAdvancedControls === 'boolean') {
+        this.showAdvancedControls.set(preferences.showAdvancedControls);
+      }
+
+      if (typeof preferences.filterByActive === 'boolean') {
+        this.filterByActive.set(preferences.filterByActive);
+      }
+
+      if (typeof preferences.filterByPending === 'boolean') {
+        this.filterByPending.set(preferences.filterByPending);
+      }
+
+      if (this.sortColumn() !== null) {
+        this.initialSortSet = true;
+      }
+    } catch {
+      window.localStorage.removeItem(this.DISPLAY_PREFERENCES_KEY);
+    }
+  }
+
+  private saveDisplayPreferences(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const preferences: ModelListDisplayPreferences = {
+      viewMode: this.viewMode(),
+      sortColumn: this.sortColumn(),
+      sortDirection: this.sortDirection(),
+      showDetails: this.showDetails(),
+      headerCollapsed: this.headerCollapsed(),
+      showAdvancedControls: this.showAdvancedControls(),
+      filterByActive: this.filterByActive(),
+      filterByPending: this.filterByPending(),
+    };
+
+    window.localStorage.setItem(this.DISPLAY_PREFERENCES_KEY, JSON.stringify(preferences));
   }
 
   private addFilterToSearch(term: string): void {
@@ -1315,6 +1496,9 @@ export class ModelListComponent implements OnInit {
     const models$ = this.getModelsForCategory$(category, hordeType, isTextGen).pipe(
       tap((models) => {
         this.models.set(models);
+        if (this.showDetails()) {
+          this.expandedModels.set(new Set(models.map((model) => model.name)));
+        }
         if (!this.initialSortSet) {
           this.sortColumn.set('active');
           this.initialSortSet = true;

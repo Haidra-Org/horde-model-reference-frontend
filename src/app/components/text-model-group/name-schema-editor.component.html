@@ -3,156 +3,131 @@
     <div class="flex items-center gap-3">
       <h2 class="heading-section">Naming Schema</h2>
       @if (isCustom()) {
-        <horde-badge variant="info">Custom</horde-badge>
+      <horde-badge variant="info">Custom</horde-badge>
       } @else {
-        <horde-badge variant="secondary">Inferred</horde-badge>
+      <horde-badge variant="secondary">Inferred</horde-badge>
       }
     </div>
     @if (writable() && !editing()) {
-      <div class="flex gap-2">
-        <horde-button variant="secondary" size="sm" (click)="startEditing()">
-          Edit Schema
-        </horde-button>
-        @if (isCustom()) {
-          <horde-button variant="danger" size="sm" [disabled]="saving()" (click)="revertToInferred()">
-            Revert to Inferred
-          </horde-button>
-        }
-      </div>
+    <div class="flex gap-2">
+      <horde-button variant="secondary" size="sm" (click)="startEditing()">
+        Edit Schema
+      </horde-button>
+      @if (isCustom()) {
+      <horde-button variant="danger" size="sm" [disabled]="saving()" (click)="revertToInferred()">
+        Revert to Inferred
+      </horde-button>
+      }
+    </div>
     }
   </div>
   <div class="card-body">
     @if (editing()) {
-      <!-- Edit Mode -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Separator -->
-        <div>
-          <label class="form-label" for="schema-separator">Separator</label>
-          <select
-            id="schema-separator"
-            class="form-select"
-            [ngModel]="editSeparator()"
-            (ngModelChange)="editSeparator.set($event)"
-          >
-            @for (sep of separatorOptions; track sep) {
-              <option [value]="sep">{{ sep === '-' ? 'Hyphen (-)' : sep === '_' ? 'Underscore (_)' : 'Dot (.)' }}</option>
-            }
-          </select>
-        </div>
+    <!-- Edit Mode -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Separator -->
+      <div>
+        <label class="form-label" for="schema-separator">Separator</label>
+        <select id="schema-separator" class="form-select" [ngModel]="editSeparator()"
+          (ngModelChange)="editSeparator.set($event)">
+          @for (sep of separatorOptions; track sep) {
+          <option [value]="sep">{{ sep === '-' ? 'Hyphen (-)' : sep === '_' ? 'Underscore (_)' : 'Dot (.)' }}</option>
+          }
+        </select>
+      </div>
 
-        <!-- Author Included -->
-        <div>
-          <label class="form-label">Author Prefix</label>
-          <div class="flex items-center gap-3 mt-1">
-            <input
-              id="schema-author-included"
-              type="checkbox"
-              class="form-checkbox"
-              [ngModel]="editAuthorIncluded()"
-              (ngModelChange)="editAuthorIncluded.set($event)"
-            />
-            <label class="checkbox-label" for="schema-author-included">Include author in name</label>
+      <!-- Author Included -->
+      <div>
+        <label class="form-label">Author Prefix</label>
+        <div class="flex items-center gap-3 mt-1">
+          <input id="schema-author-included" type="checkbox" class="form-checkbox" [ngModel]="editAuthorIncluded()"
+            (ngModelChange)="editAuthorIncluded.set($event)" />
+          <label class="checkbox-label" for="schema-author-included">Include author in name</label>
+        </div>
+        @if (editAuthorIncluded()) {
+        <input type="text" class="form-input mt-2" placeholder="Author name" [ngModel]="editCommonAuthor() ?? ''"
+          (ngModelChange)="editCommonAuthor.set($event || null)" />
+        }
+      </div>
+
+      <!-- Part Order -->
+      <div class="md:col-span-2">
+        <label class="form-label">Part Order</label>
+        <p class="text-xs text-muted mb-2">Drag or use arrows to reorder name parts after the base name.</p>
+        <div class="flex flex-wrap gap-2">
+          @for (part of editPartOrder(); track part; let i = $index) {
+          <div
+            class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <span class="font-mono text-sm">{{ part }}</span>
+            <div class="flex flex-col ml-1">
+              <button type="button"
+                class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
+                [disabled]="i === 0" (click)="movePartUp(i)" aria-label="Move part up">▲</button>
+              <button type="button"
+                class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
+                [disabled]="i === editPartOrder().length - 1" (click)="movePartDown(i)"
+                aria-label="Move part down">▼</button>
+            </div>
           </div>
-          @if (editAuthorIncluded()) {
-            <input
-              type="text"
-              class="form-input mt-2"
-              placeholder="Author name"
-              [ngModel]="editCommonAuthor() ?? ''"
-              (ngModelChange)="editCommonAuthor.set($event || null)"
-            />
           }
         </div>
-
-        <!-- Part Order -->
-        <div class="md:col-span-2">
-          <label class="form-label">Part Order</label>
-          <p class="text-xs text-muted mb-2">Drag or use arrows to reorder name parts after the base name.</p>
-          <div class="flex flex-wrap gap-2">
-            @for (part of editPartOrder(); track part; let i = $index) {
-              <div class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                <span class="font-mono text-sm">{{ part }}</span>
-                <div class="flex flex-col ml-1">
-                  <button
-                    type="button"
-                    class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
-                    [disabled]="i === 0"
-                    (click)="movePartUp(i)"
-                    aria-label="Move part up"
-                  >▲</button>
-                  <button
-                    type="button"
-                    class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
-                    [disabled]="i === editPartOrder().length - 1"
-                    (click)="movePartDown(i)"
-                    aria-label="Move part down"
-                  >▼</button>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Template Override -->
-        <div class="md:col-span-2">
-          <label class="form-label" for="schema-template">Template Override</label>
-          <p class="text-xs text-muted mb-1">Optional. Leave empty to use separator + part order.</p>
-          <input
-            id="schema-template"
-            type="text"
-            class="form-input font-mono"
-            placeholder="e.g. {author}/{base}-{size}-{variant}"
-            [ngModel]="editTemplate() ?? ''"
-            (ngModelChange)="editTemplate.set($event || null)"
-          />
-        </div>
       </div>
 
-      <!-- Preview -->
-      <div class="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-        <span class="text-xs text-muted">Preview:</span>
-        <span class="ml-2 font-mono text-sm text-gray-900 dark:text-gray-100">{{ previewTemplate() }}</span>
+      <!-- Template Override -->
+      <div class="md:col-span-2">
+        <label class="form-label" for="schema-template">Template Override</label>
+        <p class="text-xs text-muted mb-1">Optional. Leave empty to use separator + part order.</p>
+        <input id="schema-template" type="text" class="form-input font-mono"
+          placeholder="e.g. {author}/{base}-{size}-{variant}" [ngModel]="editTemplate() ?? ''"
+          (ngModelChange)="editTemplate.set($event || null)" />
       </div>
+    </div>
 
-      <!-- Actions -->
-      <div class="flex gap-2 mt-4">
-        <horde-button variant="primary" [disabled]="!isDirty() || saving()" (click)="saveSchema()">
-          {{ saving() ? 'Saving...' : 'Save Schema' }}
-        </horde-button>
-        <horde-button variant="secondary" (click)="cancelEditing()">Cancel</horde-button>
-      </div>
+    <!-- Preview -->
+    <div class="mt-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <span class="text-xs text-muted">Preview:</span>
+      <span class="ml-2 font-mono text-sm text-gray-900 dark:text-gray-100">{{ previewTemplate() }}</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-2 mt-4">
+      <horde-button variant="primary" [disabled]="!isDirty() || saving()" (click)="saveSchema()">
+        {{ saving() ? 'Saving...' : 'Save Schema' }}
+      </horde-button>
+      <horde-button variant="secondary" (click)="cancelEditing()">Cancel</horde-button>
+    </div>
     } @else {
-      <!-- Read-Only Mode -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-        <div>
-          <span class="field-label">Separator</span>
-          <span class="field-value block mt-0.5 font-mono">{{ nameFormat().separator }}</span>
-        </div>
-        <div>
-          <span class="field-label">Part Order</span>
-          <div class="flex flex-wrap gap-1 mt-0.5">
-            @for (part of nameFormat().part_order; track part) {
-              <span class="tag tag-secondary">{{ part }}</span>
-            }
-          </div>
-        </div>
-        <div>
-          <span class="field-label">Author</span>
-          <span class="field-value block mt-0.5">
-            @if (nameFormat().author_included && nameFormat().common_author) {
-              {{ nameFormat().common_author }}
-            } @else if (nameFormat().author_included) {
-              Included (varies)
-            } @else {
-              Not included
-            }
-          </span>
-        </div>
-        <div>
-          <span class="field-label">Template</span>
-          <span class="field-value block mt-0.5 font-mono">{{ nameFormat().template }}</span>
+    <!-- Read-Only Mode -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      <div>
+        <span class="field-label">Separator</span>
+        <span class="field-value block mt-0.5 font-mono">{{ nameFormat().separator }}</span>
+      </div>
+      <div>
+        <span class="field-label">Part Order</span>
+        <div class="flex flex-wrap gap-1 mt-0.5">
+          @for (part of nameFormat().part_order; track part) {
+          <span class="tag tag-secondary">{{ part }}</span>
+          }
         </div>
       </div>
+      <div>
+        <span class="field-label">Author</span>
+        <span class="field-value block mt-0.5">
+          @if (nameFormat().author_included && nameFormat().common_author) {
+          {{ nameFormat().common_author }}
+          } @else if (nameFormat().author_included) {
+          Included (varies)
+          } @else {
+          Not included
+          }
+        </span>
+      </div>
+      <div>
+        <span class="field-label">Template</span>
+        <span class="field-value block mt-0.5 font-mono">{{ nameFormat().template }}</span>
+      </div>
+    </div>
     }
   </div>
 </div>

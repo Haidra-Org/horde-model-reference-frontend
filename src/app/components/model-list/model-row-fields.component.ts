@@ -28,10 +28,16 @@ import { HordeApiService } from '../../services/horde-api.service';
   imports: [TooltipDirective, HordeBadgeComponent],
   template: `
     @if (mode() === 'grid') {
-      <div>
+      <div
+        class="model-detail-fields-shell"
+        [class.model-detail-fields-shell--text]="isTextModelContext()"
+        [class.model-detail-fields-shell--image]="isImageModel()"
+      >
         <!-- Technical Specifications -->
-        <section class="detail-panel">
-          <h4 class="detail-section-heading">Technical Specifications</h4>
+        <section class="detail-panel model-detail-panel model-detail-panel--specs">
+          <h4 class="detail-section-heading model-detail-section-heading-strong">
+            {{ technicalSectionTitle() }}
+          </h4>
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
             @for (field of technicalFields(); track field.label) {
               <div>
@@ -49,9 +55,9 @@ import { HordeApiService } from '../../services/horde-api.service';
 
         <!-- Horde Status -->
         @if (showHordeStatus() || isHordeLoading()) {
-          <section class="detail-panel">
-            <h4 class="detail-section-heading">
-              Horde Status
+          <section class="detail-panel model-detail-panel model-detail-panel--horde">
+            <h4 class="detail-section-heading model-detail-section-heading-strong">
+              {{ hordeSectionTitle() }}
               @if (isGroupedWithAggregatedStats()) {
                 <horde-badge
                   variant="info"
@@ -175,8 +181,10 @@ import { HordeApiService } from '../../services/horde-api.service';
 
         <!-- Links & Resources -->
         @if (linkFieldsWithValues().length > 0 || arrayFieldsWithValues().length > 0) {
-          <section class="detail-panel">
-            <h4 class="detail-section-heading">Links & Resources</h4>
+          <section class="detail-panel model-detail-panel model-detail-panel--links">
+            <h4 class="detail-section-heading model-detail-section-heading-strong">
+              {{ linksSectionTitle() }}
+            </h4>
             <div class="space-y-3">
               @for (field of linkFieldsWithValues(); track field.label) {
                 <div>
@@ -190,7 +198,7 @@ import { HordeApiService } from '../../services/horde-api.service';
                     >
                       {{ getValue(field) }}
                       <svg
-                        class="w-3.5 h-3.5 flex-shrink-0"
+                        class="w-3.5 h-3.5 shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -224,8 +232,10 @@ import { HordeApiService } from '../../services/horde-api.service';
 
         <!-- Requirements -->
         @if (showRequirements()) {
-          <section class="detail-panel">
-            <h4 class="detail-section-heading">Model Parameter Requirements</h4>
+          <section class="detail-panel model-detail-panel model-detail-panel--requirements">
+            <h4 class="detail-section-heading model-detail-section-heading-strong">
+              {{ requirementsSectionTitle() }}
+            </h4>
             <div class="code-block">
               <pre>{{ getRequirementsText() }}</pre>
             </div>
@@ -277,6 +287,12 @@ export class ModelRowFieldsComponent {
   readonly mode = input<'grid' | 'card'>('grid');
 
   readonly isGrouped = computed(() => isGroupedTextModel(this.model()));
+
+  readonly isTextModelContext = computed(() => {
+    const model = this.model() as LegacyRecordUnion;
+    return this.isGrouped() || isLegacyTextGenerationRecord(model);
+  });
+
   readonly groupedModel = computed(() => {
     return this.isGrouped() ? (this.model() as GroupedTextModel) : null;
   });
@@ -334,6 +350,46 @@ export class ModelRowFieldsComponent {
 
   readonly isImageModel = computed(() => {
     return isLegacyStableDiffusionRecord(this.model() as LegacyRecordUnion);
+  });
+
+  readonly technicalSectionTitle = computed(() => {
+    if (this.isGroupedWithAggregatedStats()) {
+      return 'Group Technical Profile';
+    }
+    if (this.isImageModel()) {
+      return 'Generation Profile';
+    }
+    if (this.isTextModelContext()) {
+      return 'Runtime Profile';
+    }
+    return 'Technical Specifications';
+  });
+
+  readonly hordeSectionTitle = computed(() => {
+    if (this.isGroupedWithAggregatedStats()) {
+      return 'Live Horde Coverage';
+    }
+    return 'Live Horde Status';
+  });
+
+  readonly linksSectionTitle = computed(() => {
+    if (this.isImageModel()) {
+      return 'Model Links & Assets';
+    }
+    if (this.isTextModelContext()) {
+      return 'Model Links & Runtime Artifacts';
+    }
+    return 'Links & Resources';
+  });
+
+  readonly requirementsSectionTitle = computed(() => {
+    if (this.isImageModel()) {
+      return 'Generation Constraints';
+    }
+    if (this.isTextModelContext()) {
+      return 'Runtime Requirements';
+    }
+    return 'Model Parameter Requirements';
   });
 
   readonly performanceDisplay = computed(() => {
