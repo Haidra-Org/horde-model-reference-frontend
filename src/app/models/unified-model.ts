@@ -329,15 +329,13 @@ export function mergeMultipleBackendStatistics<T extends { name: string }>(
 
         // Create a UnifiedModelData entry for each backend variation
         for (const variation of Object.values(stats.backend_variations)) {
-          // Determine the display name based on backend type
-          // For 'canonical' backend, keep the original name (no prefix)
-          // For other backends (aphrodite, koboldcpp), prefix with backend name
           const isKnownBackend =
             variation.backend === TextBackend.Aphrodite ||
             variation.backend === TextBackend.KoboldCpp;
-          const displayName = isKnownBackend
-            ? `${variation.backend}/${variation.variant_name}`
-            : variation.variant_name;
+
+          // variant_name from the backend already includes the backend prefix
+          // (e.g., "koboldcpp/TheDrummer/Cydonia-22B-v1"), so use it directly
+          const displayName = variation.variant_name;
 
           const backendVariation: UnifiedModelData = {
             ...model, // Copy reference data
@@ -356,7 +354,6 @@ export function mergeMultipleBackendStatistics<T extends { name: string }>(
             if (isKnownBackend) {
               parsed.backend = variation.backend as TextBackend;
             }
-            // Update fullName to include backend prefix for display consistency
             parsed.fullName = displayName;
             backendVariation.parsedName = parsed;
           }

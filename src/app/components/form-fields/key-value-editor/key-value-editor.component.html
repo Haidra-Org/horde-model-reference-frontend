@@ -12,7 +12,7 @@
         <!-- Key -->
         <div>
           <label class="form-label-sm" [attr.for]="'pair-key-' + pair.key"> Key </label>
-          <div class="font-mono text-sm text-gray-900 dark:text-gray-100 break-all" [attr.id]="'pair-key-' + pair.key">
+          <div class="font-mono text-sm break-all" [attr.id]="'pair-key-' + pair.key">
             {{ pair.key }}
           </div>
         </div>
@@ -46,7 +46,7 @@
 
   <!-- Add New Pair Section -->
   <div class="key-value-item-card">
-    <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    <div class="text-sm font-medium mb-2">
       Add Custom Requirement
     </div>
 
@@ -92,7 +92,7 @@
     </div>
 
     <!-- Help Text -->
-    <div class="text-xs text-gray-600 dark:text-gray-400">
+    <div class="text-xs text-muted">
       <strong>Examples:</strong> min_vram_gb: 8 (number) • gpu_required: true (boolean) •
       supported_features: ["fp16", "xformers"] (list)
     </div>

@@ -96,7 +96,7 @@ const COLLAPSE_THRESHOLD = 200;
           }
         </div>
       } @else if (diff()?.net_operation === 'unchanged') {
-        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+        <div class="text-center py-8 text-muted">
           <svg
             class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600"
             fill="none"
@@ -121,13 +121,13 @@ const COLLAPSE_THRESHOLD = 200;
       @if (showRawJson()) {
         <details class="mt-4">
           <summary
-            class="cursor-pointer text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            class="cursor-pointer text-sm text-muted hover:text-gray-700 dark:hover:text-gray-300"
           >
             View raw JSON
           </summary>
           <div class="mt-2 space-y-4">
             <div>
-              <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              <h4 class="text-xs font-medium text-muted mb-1">
                 Current State
               </h4>
               <pre
@@ -136,7 +136,7 @@ const COLLAPSE_THRESHOLD = 200;
               >
             </div>
             <div>
-              <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              <h4 class="text-xs font-medium text-muted mb-1">
                 Proposed State
               </h4>
               <pre

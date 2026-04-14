@@ -29,10 +29,10 @@
   <header class="mb-6">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+        <h1 class="heading-page tracking-tight">
           Pending Queue
         </h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <p class="text-sm text-muted mt-0.5">
           {{ netSummary().total }} change{{ netSummary().total === 1 ? '' : 's' }}
           @if (netSummary().statusCounts.pending > 0) {
           &middot;
@@ -115,7 +115,7 @@
         }
         }
       </div>
-      <div class="text-xs text-gray-500 dark:text-gray-400 text-center mt-3 italic">
+      <div class="text-xs text-muted text-center mt-3 italic">
         {{ workflowGuidance() }}
       </div>
     </div>
@@ -305,7 +305,7 @@
       You haven't submitted any changes yet.
     </div>
     } @else {
-    <div class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+    <div class="text-sm text-muted mb-3">
       {{ mySubmissions().length }} submission{{ mySubmissions().length === 1 ? '' : 's' }}
     </div>
     <div class="change-list">
@@ -351,7 +351,7 @@
                 class="text-xs font-medium px-1.5 py-0.5 rounded text-warning-700 bg-warning-100 dark:text-warning-300 dark:bg-warning-900/30">Awaiting
                 Review</span>
               }
-              <span class="text-sm text-gray-500 dark:text-gray-400">{{
+              <span class="text-sm text-muted">{{
                 group.items.length
                 }}</span>
               @if (group.approvedBy && group.approvedAt) {
@@ -408,7 +408,7 @@
               <div class="batch-progress-bar">
                 <div class="batch-progress-fill" [style.width.%]="getBatchProgress(group).percent"></div>
               </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <div class="text-xs text-muted mt-1">
                 {{ getBatchProgress(group).applied }} /
                 {{ getBatchProgress(group).total }} applied ({{
                 getBatchProgress(group).percent
@@ -498,7 +498,7 @@
       </div>
       @if (change.operation === 'update') {
       @if (loadingDiffs().has(change.change_id)) {
-      <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-3">
+      <div class="flex items-center gap-2 text-sm text-muted mt-3">
         <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -514,7 +514,7 @@
       @if (change.operation !== 'update') {
       <details class="mt-3">
         <summary
-          class="text-xs font-medium text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+          class="text-xs font-medium text-muted cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
           @if (change.operation === 'create') {
           Show model data to be created
           }
@@ -535,7 +535,7 @@
   <!-- Single change diff -->
   @if (state.action !== 'approveAll' && state.action !== 'applyBatch') {
   @if (loadingDiff()) {
-  <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-3">
+  <div class="flex items-center gap-2 text-sm text-muted mt-3">
     <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

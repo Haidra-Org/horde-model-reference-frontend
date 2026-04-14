@@ -1,11 +1,13 @@
-import { Component, input, ChangeDetectionStrategy, computed, signal } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, computed, inject, DestroyRef, TemplateRef, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HordeBadgeComponent } from '@haidra/design-system/badge';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import type { UnifiedModelData, GroupedTextModel } from '../../models/unified-model';
 
 interface VariationCoverageRow {
   trackKey: string;
   source: UnifiedModelData;
+  /** The full API model name — the exact string sent to the Horde API */
+  apiName: string;
   backend: string | null;
   author: string | null;
   parameters: string | null;
@@ -16,24 +18,38 @@ interface VariationCoverageRow {
 
 @Component({
   selector: 'app-model-row-variations',
-  imports: [RouterLink, HordeBadgeComponent],
+  imports: [RouterLink],
   template: `
     <section class="detail-panel model-detail-panel model-detail-panel--variations">
       <div class="model-variation-header">
         <div class="model-variation-header-content">
           <h4 class="detail-section-heading model-detail-section-heading-strong">
-            Variation Coverage Matrix
+            Available Variants
           </h4>
           <p class="model-variation-subtitle">
-            Decomposed variant identity for grouped text models.
+            {{ variationCount() }} variants across {{ backendList().length }} backends &mdash;
+            use the <strong>API Model Name</strong> when requesting generations
           </p>
         </div>
-        <a
-          class="btn btn-sm btn-primary"
-          [routerLink]="['/categories', 'text_generation', 'group', groupName()]"
-        >
-          Manage Group
-        </a>
+        <div class="model-variation-header-actions">
+          <button
+            type="button"
+            class="btn btn-sm btn-secondary"
+            (click)="openModal()"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+            Expand
+          </button>
+          <a
+            class="btn btn-sm btn-primary"
+            [routerLink]="['/categories', 'text_generation', 'group', groupName()]"
+          >
+            Manage Group
+          </a>
+        </div>
       </div>
 
       <div class="model-variation-metrics-grid">
@@ -42,15 +58,15 @@ interface VariationCoverageRow {
           <span class="model-variation-metric-value">{{ variationCount() }}</span>
         </article>
         <article class="model-variation-metric-card">
-          <span class="model-variation-metric-label">Active Variants</span>
+          <span class="model-variation-metric-label">Active</span>
           <span class="model-variation-metric-value">{{ activeVariationCount() }}</span>
         </article>
         <article class="model-variation-metric-card">
-          <span class="model-variation-metric-label">Total Workers</span>
+          <span class="model-variation-metric-label">Workers</span>
           <span class="model-variation-metric-value">{{ totalWorkers() }}</span>
         </article>
         <article class="model-variation-metric-card">
-          <span class="model-variation-metric-label">Queued Jobs</span>
+          <span class="model-variation-metric-label">Queued</span>
           <span class="model-variation-metric-value">{{ totalQueuedJobs() }}</span>
         </article>
         <article class="model-variation-metric-card">
@@ -88,121 +104,292 @@ interface VariationCoverageRow {
         </div>
       }
 
+      <!-- Inline preview: responsive card list on mobile, table on desktop -->
       <div class="model-variation-table-meta">
         <span class="model-variation-table-count">
-          Showing {{ visibleVariationRows().length }} of {{ variationRows().length }} variants
+          Showing {{ previewRows().length }} of {{ variationRows().length }} variants
         </span>
-        @if (variationRows().length > rowDisplayLimit()) {
+        @if (variationRows().length > inlinePreviewLimit) {
           <button
             type="button"
             class="btn btn-sm btn-secondary"
-            (click)="toggleShowAllRows()"
+            (click)="openModal()"
           >
-            {{ showAllRows() ? 'Show compact view' : 'Show all variants' }}
+            View all {{ variationRows().length }} variants
           </button>
         }
       </div>
 
-      <div class="model-variation-table-shell">
+      <!-- Mobile card view -->
+      <div class="model-variation-card-list">
+        @for (row of previewRows(); track row.trackKey) {
+          <article class="model-variation-card-item">
+            <div class="model-variation-card-item-header">
+              @if ((row.source.workerCount ?? 0) > 0) {
+                <span class="model-variation-state-pill model-variation-state-pill--serving">Serving</span>
+              } @else if ((row.source.queuedJobs ?? 0) > 0) {
+                <span class="model-variation-state-pill model-variation-state-pill--queued">Queued</span>
+              } @else {
+                <span class="model-variation-state-pill model-variation-state-pill--idle">Idle</span>
+              }
+              @if (row.parameters) {
+                <span class="model-variation-meta-pill">{{ row.parameters }}</span>
+              }
+            </div>
+            <div class="model-variation-card-item-body">
+              <button
+                type="button"
+                class="model-variation-api-name-btn"
+                [title]="'Copy: ' + row.apiName"
+                (click)="copyToClipboard(row.apiName)"
+              >
+                <code class="model-variation-api-name-code">{{ row.apiName }}</code>
+                <svg class="model-variation-copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
+            <div class="model-variation-card-item-stats">
+              <span>{{ row.source.workerCount ?? 0 }} workers</span>
+              <span>{{ row.source.queuedJobs ?? 0 }} queued</span>
+            </div>
+          </article>
+        }
+      </div>
+
+      <!-- Desktop table view -->
+      <div class="model-variation-table-shell model-variation-table-desktop">
         <table class="w-full text-sm model-variation-table model-variation-table--dense">
           <colgroup>
-            <col class="model-variation-col-backend" />
+            <col class="model-variation-col-state" />
+            <col class="model-variation-col-api-name" />
             <col class="model-variation-col-params" />
-            <col class="model-variation-col-version" />
-            <col class="model-variation-col-author" />
-            <col class="model-variation-col-variation" />
             <col class="model-variation-col-workers" />
             <col class="model-variation-col-queued" />
             <col class="model-variation-col-usage" />
-            <col class="model-variation-col-state" />
           </colgroup>
           <thead class="table-head-subtle">
             <tr class="border-b border-gray-200 dark:border-gray-700">
-              <th class="table-header-cell-xs-caps">Backend</th>
+              <th class="table-header-cell-xs-center-caps">State</th>
+              <th class="table-header-cell-xs-caps">API Model Name</th>
               <th class="table-header-cell-xs-center-caps">Params</th>
-              <th class="table-header-cell-xs-center-caps">Version</th>
-              <th class="table-header-cell-xs-caps">Author</th>
-              <th class="table-header-cell-xs-caps">Variation</th>
               <th class="table-header-cell-xs-center-caps">Workers</th>
               <th class="table-header-cell-xs-center-caps">Queued</th>
               <th class="table-header-cell-xs-right-caps">Usage</th>
-              <th class="table-header-cell-xs-center-caps">State</th>
             </tr>
           </thead>
           <tbody class="table-body-default">
-            @for (row of visibleVariationRows(); track row.trackKey) {
+            @for (row of previewRows(); track row.trackKey) {
               <tr class="table-row-hover-subtle">
-                <td class="table-cell-xs">
-                  @if (row.backend) {
-                    <horde-badge variant="info" class="text-xs">{{ row.backend }}</horde-badge>
+                <td class="table-cell-xs-center">
+                  @if ((row.source.workerCount ?? 0) > 0) {
+                    <span class="model-variation-state-pill model-variation-state-pill--serving">Serving</span>
+                  } @else if ((row.source.queuedJobs ?? 0) > 0) {
+                    <span class="model-variation-state-pill model-variation-state-pill--queued">Queued</span>
                   } @else {
-                    <span class="table-cell-muted-xs-inline">-</span>
+                    <span class="model-variation-state-pill model-variation-state-pill--idle">Idle</span>
                   }
+                </td>
+                <td class="table-cell-xs">
+                  <div class="model-variation-api-name-cell">
+                    <code class="model-variation-api-name-code" [title]="row.apiName">{{ row.apiName }}</code>
+                    <button
+                      type="button"
+                      class="model-variation-copy-btn"
+                      [title]="'Copy model name'"
+                      (click)="copyToClipboard(row.apiName); $event.stopPropagation()"
+                      aria-label="Copy model name to clipboard"
+                    >
+                      <svg class="model-variation-copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
                 </td>
                 <td class="table-cell-xs-center">
                   @if (row.parameters) {
-                    <span class="model-variation-meta-pill" [title]="row.modelCore">
-                      {{ row.parameters }}
-                    </span>
+                    <span class="model-variation-meta-pill">{{ row.parameters }}</span>
                   } @else {
                     <span class="model-variation-meta-pill model-variation-meta-pill--empty">-</span>
                   }
                 </td>
-                <td class="table-cell-xs-center">
-                  @if (row.version) {
-                    <span class="model-variation-meta-pill" [title]="row.modelCore">
-                      {{ row.version }}
-                    </span>
-                  } @else {
-                    <span class="model-variation-meta-pill model-variation-meta-pill--empty">-</span>
-                  }
-                </td>
-                <td class="table-cell-xs">
-                  @if (row.author) {
-                    <span class="model-variation-cell-truncate" [title]="row.author">{{ row.author }}</span>
-                  } @else {
-                    <span class="table-cell-muted-xs-inline">-</span>
-                  }
-                </td>
-                <td class="table-cell-xs">
-                  @if (row.variationLabel) {
-                    <span class="model-variation-cell-truncate" [title]="row.modelCore">
-                      {{ row.variationLabel }}
-                    </span>
-                  } @else {
-                    <span class="table-cell-muted-xs-inline">Base</span>
-                  }
-                </td>
-                <td class="table-cell-xs-center">
-                  {{ row.source.workerCount ?? 0 }}
-                </td>
-                <td class="table-cell-xs-center">
-                  {{ row.source.queuedJobs ?? 0 }}
-                </td>
-                <td class="table-cell-xs-right">
-                  {{ row.source.usageStats?.total ?? 0 }}
-                </td>
-                <td class="table-cell-xs-center">
-                  @if ((row.source.workerCount ?? 0) > 0) {
-                    <span class="model-variation-state-pill model-variation-state-pill--serving">
-                      Serving
-                    </span>
-                  } @else if ((row.source.queuedJobs ?? 0) > 0) {
-                    <span class="model-variation-state-pill model-variation-state-pill--queued">
-                      Queued
-                    </span>
-                  } @else {
-                    <span class="model-variation-state-pill model-variation-state-pill--idle">
-                      Idle
-                    </span>
-                  }
-                </td>
+                <td class="table-cell-xs-center">{{ row.source.workerCount ?? 0 }}</td>
+                <td class="table-cell-xs-center">{{ row.source.queuedJobs ?? 0 }}</td>
+                <td class="table-cell-xs-right">{{ row.source.usageStats?.total ?? 0 }}</td>
               </tr>
             }
           </tbody>
         </table>
       </div>
     </section>
+
+    <!-- Full-screen variations modal (rendered via CDK Dialog outside virtual scroll) -->
+    <ng-template #modalTpl>
+      <div
+        class="model-variation-modal"
+        [attr.aria-label]="'Variations for ' + groupName()"
+      >
+          <!-- Modal hero -->
+          <div class="model-variation-modal-hero">
+            <div class="model-variation-modal-hero-content">
+              <h2 class="modal-title">{{ groupName() }}</h2>
+              <p class="model-variation-modal-hero-subtitle">
+                {{ variationCount() }} variants &middot;
+                {{ activeVariationCount() }} active &middot;
+                {{ totalWorkers() }} workers &middot;
+                {{ backendList().length }} backends
+              </p>
+            </div>
+            <div class="model-variation-modal-hero-actions">
+              <a
+                class="btn btn-sm btn-primary"
+                [routerLink]="['/categories', 'text_generation', 'group', groupName()]"
+                (click)="closeModal()"
+              >
+                Manage Group
+              </a>
+              <button type="button" class="btn btn-sm btn-secondary" (click)="closeModal()">
+                Close
+              </button>
+            </div>
+          </div>
+
+          @if (availableSizes().length > 0 || availableQuants().length > 0) {
+            <div class="model-variation-taxonomy model-variation-modal-taxonomy">
+              @if (availableSizes().length > 0) {
+                <div class="model-variation-taxonomy-group">
+                  <span class="model-variation-taxonomy-label">Sizes</span>
+                  <div class="model-variation-taxonomy-chips">
+                    @for (size of availableSizes(); track size) {
+                      <span class="model-variation-chip model-variation-chip--size">{{ size }}</span>
+                    }
+                  </div>
+                </div>
+              }
+              @if (availableQuants().length > 0) {
+                <div class="model-variation-taxonomy-group">
+                  <span class="model-variation-taxonomy-label">Quantizations</span>
+                  <div class="model-variation-taxonomy-chips">
+                    @for (quant of availableQuants(); track quant) {
+                      <span class="model-variation-chip model-variation-chip--quant">{{ quant }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Modal body: card list on mobile, full table on desktop -->
+          <div class="modal-content model-variation-modal-body">
+            <!-- Mobile card view -->
+            <div class="model-variation-card-list">
+              @for (row of variationRows(); track row.trackKey) {
+                <article class="model-variation-card-item">
+                  <div class="model-variation-card-item-header">
+                    @if ((row.source.workerCount ?? 0) > 0) {
+                      <span class="model-variation-state-pill model-variation-state-pill--serving">Serving</span>
+                    } @else if ((row.source.queuedJobs ?? 0) > 0) {
+                      <span class="model-variation-state-pill model-variation-state-pill--queued">Queued</span>
+                    } @else {
+                      <span class="model-variation-state-pill model-variation-state-pill--idle">Idle</span>
+                    }
+                    @if (row.parameters) {
+                      <span class="model-variation-meta-pill">{{ row.parameters }}</span>
+                    }
+                  </div>
+                  <div class="model-variation-card-item-body">
+                    <button
+                      type="button"
+                      class="model-variation-api-name-btn"
+                      [title]="'Copy: ' + row.apiName"
+                      (click)="copyToClipboard(row.apiName)"
+                    >
+                      <code class="model-variation-api-name-code">{{ row.apiName }}</code>
+                      <svg class="model-variation-copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="model-variation-card-item-stats">
+                    <span>{{ row.source.workerCount ?? 0 }} workers</span>
+                    <span>{{ row.source.queuedJobs ?? 0 }} queued</span>
+                    <span>{{ row.source.usageStats?.total ?? 0 }} usage</span>
+                  </div>
+                </article>
+              }
+            </div>
+
+            <!-- Desktop table view -->
+            <div class="model-variation-table-shell model-variation-table-desktop model-variation-modal-table-shell">
+              <table class="w-full text-sm model-variation-table model-variation-table--dense">
+                <colgroup>
+                  <col class="model-variation-col-state" />
+                  <col class="model-variation-col-api-name" />
+                  <col class="model-variation-col-params" />
+                  <col class="model-variation-col-workers" />
+                  <col class="model-variation-col-queued" />
+                  <col class="model-variation-col-usage" />
+                </colgroup>
+                <thead class="table-head-subtle">
+                  <tr class="border-b border-gray-200 dark:border-gray-700">
+                    <th class="table-header-cell-xs-center-caps">State</th>
+                    <th class="table-header-cell-xs-caps">API Model Name</th>
+                    <th class="table-header-cell-xs-center-caps">Params</th>
+                    <th class="table-header-cell-xs-center-caps">Workers</th>
+                    <th class="table-header-cell-xs-center-caps">Queued</th>
+                    <th class="table-header-cell-xs-right-caps">Usage</th>
+                  </tr>
+                </thead>
+                <tbody class="table-body-default">
+                  @for (row of variationRows(); track row.trackKey) {
+                    <tr class="table-row-hover-subtle">
+                      <td class="table-cell-xs-center">
+                        @if ((row.source.workerCount ?? 0) > 0) {
+                          <span class="model-variation-state-pill model-variation-state-pill--serving">Serving</span>
+                        } @else if ((row.source.queuedJobs ?? 0) > 0) {
+                          <span class="model-variation-state-pill model-variation-state-pill--queued">Queued</span>
+                        } @else {
+                          <span class="model-variation-state-pill model-variation-state-pill--idle">Idle</span>
+                        }
+                      </td>
+                      <td class="table-cell-xs">
+                        <div class="model-variation-api-name-cell">
+                          <code class="model-variation-api-name-code" [title]="row.apiName">{{ row.apiName }}</code>
+                          <button
+                            type="button"
+                            class="model-variation-copy-btn"
+                            [title]="'Copy model name'"
+                            (click)="copyToClipboard(row.apiName); $event.stopPropagation()"
+                            aria-label="Copy model name to clipboard"
+                          >
+                            <svg class="model-variation-copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                      <td class="table-cell-xs-center">
+                        @if (row.parameters) {
+                          <span class="model-variation-meta-pill">{{ row.parameters }}</span>
+                        } @else {
+                          <span class="model-variation-meta-pill model-variation-meta-pill--empty">-</span>
+                        }
+                      </td>
+                      <td class="table-cell-xs-center">{{ row.source.workerCount ?? 0 }}</td>
+                      <td class="table-cell-xs-center">{{ row.source.queuedJobs ?? 0 }}</td>
+                      <td class="table-cell-xs-right">{{ row.source.usageStats?.total ?? 0 }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </ng-template>
   `,
   host: { style: 'display: contents' },
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -211,11 +398,21 @@ export class ModelRowVariationsComponent {
   readonly variations = input.required<UnifiedModelData[]>();
   readonly groupName = input.required<string>();
   readonly groupSummary = input<GroupedTextModel['groupSummary']>();
-  readonly showAllRows = signal(false);
+  readonly inlinePreviewLimit = 6;
+
+  readonly modalTpl = viewChild.required<TemplateRef<unknown>>('modalTpl');
+  private readonly dialog = inject(Dialog);
+  private readonly destroyRef = inject(DestroyRef);
+  private dialogRef: DialogRef | null = null;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.dialogRef?.close();
+      this.dialogRef = null;
+    });
+  }
 
   readonly variationCount = computed(() => this.variations().length);
-
-  readonly rowDisplayLimit = computed(() => 16);
 
   readonly totalWorkers = computed(() =>
     this.variations().reduce((total, variation) => total + (variation.workerCount ?? 0), 0),
@@ -260,16 +457,51 @@ export class ModelRowVariationsComponent {
     return this.variations().map((variation, index) => this.toCoverageRow(variation, baseName, index));
   });
 
-  readonly visibleVariationRows = computed(() => {
+  readonly previewRows = computed(() => {
     const rows = this.variationRows();
-    if (this.showAllRows() || rows.length <= this.rowDisplayLimit()) {
+    if (rows.length <= this.inlinePreviewLimit) {
       return rows;
     }
-    return rows.slice(0, this.rowDisplayLimit());
+    // Show the most relevant rows first: serving → queued → idle, then by usage
+    const sorted = [...rows].sort((a, b) => {
+      const aWorkers = a.source.workerCount ?? 0;
+      const bWorkers = b.source.workerCount ?? 0;
+      const aQueued = a.source.queuedJobs ?? 0;
+      const bQueued = b.source.queuedJobs ?? 0;
+      const aServing = aWorkers > 0 ? 1 : 0;
+      const bServing = bWorkers > 0 ? 1 : 0;
+      if (aServing !== bServing) return bServing - aServing;
+      const aActive = aQueued > 0 ? 1 : 0;
+      const bActive = bQueued > 0 ? 1 : 0;
+      if (aActive !== bActive) return bActive - aActive;
+      const aUsage = a.source.usageStats?.total ?? 0;
+      const bUsage = b.source.usageStats?.total ?? 0;
+      return bUsage - aUsage;
+    });
+    return sorted.slice(0, this.inlinePreviewLimit);
   });
 
-  toggleShowAllRows(): void {
-    this.showAllRows.update((current) => !current);
+  copyToClipboard(text: string): void {
+    navigator.clipboard.writeText(text).catch(() => {
+      // Fallback: no-op if clipboard unavailable (e.g., SSR or insecure context)
+    });
+  }
+
+  openModal(): void {
+    this.dialogRef = this.dialog.open(this.modalTpl(), {
+      hasBackdrop: true,
+      backdropClass: 'model-variation-modal-backdrop',
+      width: 'calc(100vw - 2rem)',
+      maxWidth: '90rem',
+      maxHeight: 'calc(100vh - 2rem)',
+      disableClose: false,
+      autoFocus: 'first-tabbable',
+    });
+  }
+
+  closeModal(): void {
+    this.dialogRef?.close();
+    this.dialogRef = null;
   }
 
   private toCoverageRow(
@@ -284,6 +516,7 @@ export class ModelRowVariationsComponent {
     return {
       trackKey: `${variation.name}-${index}`,
       source: variation,
+      apiName: variation.name,
       backend: identity.backend,
       author: identity.author,
       parameters,

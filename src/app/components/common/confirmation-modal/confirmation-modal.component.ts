@@ -125,7 +125,7 @@ export type OperationSeverity = 'create' | 'update' | 'delete' | 'info';
           <!-- Content -->
           <div class="modal-content">
             @if (message()) {
-              <p class="text-gray-700 dark:text-gray-300 mb-4">{{ message() }}</p>
+              <p class="mb-4">{{ message() }}</p>
             }
             <ng-content />
           </div>

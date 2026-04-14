@@ -71,7 +71,7 @@ import { HordeApiService } from '../../services/horde-api.service';
               }
             </h4>
             @if (isHordeLoading()) {
-              <div class="flex items-center py-4 text-gray-500 dark:text-gray-400">
+              <div class="flex items-center py-4 text-muted">
                 <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
                   <circle
                     class="opacity-25"
@@ -150,24 +150,24 @@ import { HordeApiService } from '../../services/horde-api.service';
               @if (model().usageStats) {
                 <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                   <div class="field-label mb-2">Usage Statistics</div>
-                  <div class="grid grid-cols-3 gap-4">
+                  <div class="usage-stats-grid">
                     <div>
                       <div class="text-xs text-muted">Last 24h</div>
-                      <div class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      <div class="usage-stat-value">
                         {{ usageStatsDay().toLocaleString() }}
                         <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
                       </div>
                     </div>
                     <div>
                       <div class="text-xs text-muted">Last 30d</div>
-                      <div class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      <div class="usage-stat-value">
                         {{ usageStatsMonth().toLocaleString() }}
                         <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
                       </div>
                     </div>
                     <div>
                       <div class="text-xs text-muted">All Time</div>
-                      <div class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      <div class="usage-stat-value">
                         {{ usageStatsTotal().toLocaleString() }}
                         <span class="text-xs text-muted">{{ usageStatsUnit() }}</span>
                       </div>
@@ -550,7 +550,15 @@ export class ModelRowFieldsComponent {
 
   readonly technicalFields = computed(() => {
     const allFields = this.fields();
-    return allFields.filter((f) => f.type !== 'link' && f.type !== 'array');
+    const nonLinkArray = allFields.filter((f) => f.type !== 'link' && f.type !== 'array');
+    // For grouped text models, hide fields with no meaningful value to reduce noise
+    if (this.isGrouped()) {
+      return nonLinkArray.filter((f) => {
+        const display = this.getDisplayValue(f);
+        return display !== '-' && display.trim() !== '';
+      });
+    }
+    return nonLinkArray;
   });
 
   readonly linkFields = computed(() => {
@@ -627,7 +635,7 @@ export class ModelRowFieldsComponent {
 
   getValueClass(field: ModelFieldConfig): string {
     if (field.type === 'link') {
-      return 'text-gray-600 dark:text-gray-400 break-all';
+      return 'text-muted break-all';
     }
     return 'field-value';
   }

@@ -15,19 +15,19 @@
     <span class="text-xs font-medium min-w-16 flex-shrink-0" [class]="statusBadgeClass(change().status)">
       {{ statusLabel(change().status) }}
     </span>
-    <span class="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
+    <span class="font-medium text-sm truncate">
       {{ change().model_name }}
     </span>
   </div>
 
   <div class="flex items-center gap-3 flex-shrink-0">
     @if (showCategory()) {
-    <span class="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">{{
+    <span class="text-xs text-muted hidden sm:inline">{{
       change().category
       }}</span>
     }
     @if (showRequestor()) {
-    <span class="text-xs text-gray-500 dark:text-gray-400 hidden md:inline">{{
+    <span class="text-xs text-muted hidden md:inline">{{
       change().requested_username
       }}</span>
     }
@@ -117,7 +117,7 @@
   <div class="mb-4">
     <h4 class="heading-card mb-2">Changes</h4>
     @if (loadingDiff()) {
-    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 py-4">
+    <div class="flex items-center gap-2 text-sm text-muted py-4">
       <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -132,7 +132,7 @@
     } @else if (diff()) {
     <app-delta-diff [diff]="diff()" [showRawJson]="true" />
     } @else {
-    <div class="text-sm text-gray-500 dark:text-gray-400 py-2">
+    <div class="text-sm text-muted py-2">
       @if (change().operation === 'create') {
       <span>New model will be created with the submitted payload.</span>
       } @else if (change().operation === 'delete') {

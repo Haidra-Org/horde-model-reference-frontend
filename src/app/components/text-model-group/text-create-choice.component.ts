@@ -49,12 +49,12 @@ export type CreateChoice =
             <!-- New Group -->
             <button
               type="button"
-              class="flex items-start gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 transition-colors text-left"
+              class="choice-card choice-card--primary"
               (click)="chosen.emit({ kind: 'new-group' })"
             >
               <span class="text-2xl mt-0.5">📦</span>
               <div>
-                <span class="font-semibold text-gray-900 dark:text-gray-100">New Group</span>
+                <span class="choice-card-title">New Group</span>
                 <p class="text-xs text-muted mt-0.5">
                   Start a new model family with a naming schema and first variation.
                 </p>
@@ -63,10 +63,8 @@ export type CreateChoice =
 
             <!-- Add to Existing Group -->
             <div
-              class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors"
-              [class.border-primary-500]="showGroupPicker()"
-              [class.bg-primary-50]="showGroupPicker()"
-              [class.dark:bg-primary-950]="showGroupPicker()"
+              class="choice-card"
+              [class.choice-card--active]="showGroupPicker()"
             >
               <button
                 type="button"
@@ -75,7 +73,7 @@ export type CreateChoice =
               >
                 <span class="text-2xl mt-0.5">➕</span>
                 <div class="flex-1">
-                  <span class="font-semibold text-gray-900 dark:text-gray-100">Add to Existing Group</span>
+                  <span class="choice-card-title">Add to Existing Group</span>
                   <p class="text-xs text-muted mt-0.5">
                     Add a new size, quant, or variant to an existing model group.
                   </p>
@@ -125,12 +123,12 @@ export type CreateChoice =
             <!-- Standalone -->
             <button
               type="button"
-              class="flex items-start gap-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+              class="choice-card choice-card--neutral"
               (click)="chosen.emit({ kind: 'standalone' })"
             >
               <span class="text-2xl mt-0.5">📄</span>
               <div>
-                <span class="font-semibold text-gray-900 dark:text-gray-100">Standalone Model</span>
+                <span class="choice-card-title">Standalone Model</span>
                 <p class="text-xs text-muted mt-0.5">
                   Create a single model without group association.
                 </p>

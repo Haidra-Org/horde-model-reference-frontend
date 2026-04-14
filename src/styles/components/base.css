@@ -219,4 +219,48 @@
     @apply bg-warning-100 border-warning-400 text-warning-700;
     @apply dark:bg-warning-900/30 dark:border-warning-600 dark:text-warning-300;
   }
+
+  /* Interactive choice card — used in create-choice modals */
+  .choice-card {
+    @apply flex items-start gap-3 p-4 rounded-lg border text-left transition-colors;
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  .choice-card--primary {
+    @apply hover:border-primary-400 hover:bg-primary-50;
+    @apply dark:hover:border-primary-500 dark:hover:bg-primary-950;
+  }
+
+  .choice-card--neutral {
+    @apply hover:border-gray-400 hover:bg-gray-50;
+    @apply dark:hover:border-gray-500 dark:hover:bg-gray-800;
+  }
+
+  .choice-card--active {
+    @apply border-primary-500 bg-primary-50;
+    @apply dark:border-primary-500 dark:bg-primary-950;
+  }
+
+  .choice-card-title {
+    @apply font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  /* Shared action footer for modals and panels */
+  .action-footer {
+    @apply flex items-center justify-end gap-3 pt-4;
+    @apply border-t border-gray-200 dark:border-gray-700;
+  }
+
+  .action-footer--between {
+    @apply justify-between;
+  }
+
+  /* Usage stats grid — responsive 1→2→3 column layout */
+  .usage-stats-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  .usage-stat-value {
+    @apply text-base font-semibold text-gray-900 dark:text-gray-100;
+  }
 }

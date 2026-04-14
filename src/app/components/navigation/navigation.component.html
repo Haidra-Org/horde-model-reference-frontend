@@ -1,7 +1,14 @@
 <nav class="nav-bar">
   <div class="nav-content">
     <div class="flex items-center gap-2">
-      <button class="sidebar-mobile-toggle" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      <button
+        type="button"
+        class="sidebar-mobile-toggle"
+        (click)="toggleSidebar()"
+        [attr.aria-expanded]="!isSidebarCollapsed()"
+        [attr.aria-label]="isSidebarCollapsed() ? 'Open sidebar' : 'Close sidebar'"
+        aria-controls="app-sidebar"
+      >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"

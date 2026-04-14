@@ -954,16 +954,21 @@
   }
 
   .sidebar-expanded {
-    @apply w-64;
+    @apply w-72;
   }
 
   /* Collapsed: just the toggle button visible on desktop, fully hidden on mobile */
   .sidebar-collapsed {
-    @apply w-0 lg:w-12;
+    @apply w-0 lg:w-14;
   }
 
   .sidebar-header {
-    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2;
+    @apply px-4 py-3 border-b border-gray-200 dark:border-gray-700;
+    @apply flex items-center justify-between gap-2;
+  }
+
+  .sidebar-header-content {
+    @apply min-w-0 flex-1 flex items-center gap-2;
   }
 
   /* Compact header when sidebar is collapsed */
@@ -982,17 +987,106 @@
     @apply text-lg font-bold transition-transform duration-300;
   }
 
+  .sidebar-nav {
+    @apply flex-1 overflow-y-auto px-2 py-2 space-y-2;
+  }
+
+  .sidebar-group {
+    @apply rounded-lg border border-gray-200/70 dark:border-gray-700/70 overflow-hidden;
+    background: var(--color-glass-surface-subtle);
+  }
+
+  .dark .sidebar-group {
+    background: var(--color-glass-surface-dark-subtle);
+  }
+
+  .sidebar-group-toggle {
+    @apply w-full flex items-center justify-between gap-2 px-3 py-2;
+    @apply text-xs font-semibold uppercase tracking-wide;
+    @apply text-gray-600 dark:text-gray-300;
+    @apply hover:bg-white/40 dark:hover:bg-gray-800/60 transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400;
+  }
+
+  .sidebar-group-title {
+    @apply truncate;
+  }
+
+  .sidebar-group-meta {
+    @apply flex items-center gap-1;
+  }
+
+  .sidebar-group-chevron {
+    @apply h-4 w-4 text-gray-500 dark:text-gray-400 transition-transform duration-200;
+  }
+
+  .sidebar-group-list {
+    @apply space-y-0.5 px-1.5 pb-1.5;
+  }
+
   /* Sidebar navigation item */
   .sidebar-nav-item {
-    @apply w-full flex justify-between items-center px-4 py-2.5 text-sm font-medium transition-colors border-l-3;
+    @apply w-full flex justify-between items-center gap-2 px-3 py-2.5 text-sm font-medium;
+    @apply transition-colors border-l-3 rounded-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400;
   }
 
   .sidebar-nav-item-active {
-    @apply bg-primary-50 dark:bg-primary-900/20 border-primary-600 text-primary-700 dark:text-primary-300;
+    @apply bg-primary-50/85 dark:bg-primary-900/30;
+    @apply border-primary-600 text-primary-700 dark:text-primary-300;
   }
 
   .sidebar-nav-item-inactive {
-    @apply border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50;
+    @apply border-transparent text-gray-700 dark:text-gray-300;
+    @apply hover:bg-gray-50/80 dark:hover:bg-gray-700/50;
+  }
+
+  .sidebar-context-panel {
+    @apply px-3 py-3 border-t border-gray-200 dark:border-gray-700 space-y-2;
+    background: var(--color-glass-surface-subtle);
+  }
+
+  .dark .sidebar-context-panel {
+    background: var(--color-glass-surface-dark-subtle);
+  }
+
+  .sidebar-context-heading {
+    @apply text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400;
+  }
+
+  .sidebar-context-title {
+    @apply text-sm font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .sidebar-context-actions {
+    @apply flex items-center gap-1.5;
+  }
+
+  .sidebar-action-btn {
+    @apply flex-1 px-2.5 py-1.5 rounded-md border text-xs font-medium;
+    @apply border-gray-300 dark:border-gray-600;
+    @apply text-gray-700 dark:text-gray-200;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+    @apply transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .sidebar-action-btn-active {
+    @apply border-primary-500 bg-primary-100 text-primary-700;
+    @apply dark:border-primary-500 dark:bg-primary-900/40 dark:text-primary-200;
+  }
+
+  .sidebar-context-note {
+    @apply text-xs text-gray-600 dark:text-gray-400;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-container,
+    .sidebar-toggle-icon,
+    .sidebar-group-chevron {
+      transition: none;
+    }
   }
 
   .sidebar-backdrop {
@@ -1037,7 +1131,7 @@
       top: 57px;
       bottom: 0;
       z-index: 45;
-      width: min(18rem, 86vw);
+      width: min(20rem, 90vw);
       transform: translateX(-100%);
       will-change: transform;
     }
@@ -1048,7 +1142,7 @@
 
     .sidebar-container.sidebar-collapsed,
     .sidebar-container.sidebar-expanded {
-      width: min(18rem, 86vw);
+      width: min(20rem, 90vw);
     }
 
     .nav-content {
@@ -1492,26 +1586,13 @@
     @apply text-danger-600 dark:text-danger-400 font-medium;
   }
 
-  /* Autocomplete dropdown for tag inputs */
+  /* Autocomplete dropdown — rendered inside CDK overlay portal */
   .autocomplete-dropdown {
-    @apply absolute left-0 top-full mt-1;
     @apply bg-white dark:bg-gray-800;
     @apply border border-gray-300 dark:border-gray-600;
     @apply rounded-lg shadow-lg;
     @apply overflow-y-auto;
     max-height: min(300px, 50vh);
-    /* Use z-[9999] to ensure it stays above all other content including modals and containers */
-    z-index: 9999;
-  }
-
-  /* Fixed positioning variant to avoid container clipping */
-  .autocomplete-dropdown-fixed {
-    @apply fixed;
-    /* Override relative positioning properties when using fixed */
-    /* Width is set dynamically via inline styles to match input width */
-    left: auto;
-    top: auto;
-    margin-top: 0;
   }
 
   /* Autocomplete dropdown with 6-item visible limit */

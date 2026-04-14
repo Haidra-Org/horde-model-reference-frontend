@@ -254,6 +254,11 @@
     @apply min-w-0;
   }
 
+  .model-detail-column--full {
+    @apply min-w-0;
+    grid-column: 1 / -1;
+  }
+
   .model-detail-column--media {
     @apply min-w-0;
   }
@@ -334,7 +339,7 @@
     @apply mb-3 flex flex-col gap-3;
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 640px) {
     .model-variation-header {
       @apply flex-row items-start justify-between;
     }
@@ -351,7 +356,7 @@
 
   .model-variation-metrics-grid {
     @apply mb-3 grid grid-cols-2 gap-2;
-    @apply lg:grid-cols-3;
+    @apply sm:grid-cols-3 lg:grid-cols-6;
   }
 
   .model-variation-metric-card {
@@ -429,21 +434,16 @@
     z-index: 1;
   }
 
-  .model-variation-col-backend {
-    width: 7.5rem;
+  .model-variation-col-state {
+    width: 5.5rem;
   }
 
-  .model-variation-col-params,
-  .model-variation-col-version {
-    width: 6rem;
+  .model-variation-col-api-name {
+    width: auto;
   }
 
-  .model-variation-col-author {
-    width: 7.5rem;
-  }
-
-  .model-variation-col-variation {
-    width: 12rem;
+  .model-variation-col-params {
+    width: 5.5rem;
   }
 
   .model-variation-col-workers,
@@ -455,8 +455,42 @@
     width: 6.5rem;
   }
 
-  .model-variation-col-state {
-    width: 5.5rem;
+  /* API name cell: monospace code + copy button */
+  .model-variation-api-name-cell {
+    @apply flex items-center gap-1.5;
+    min-width: 0;
+  }
+
+  .model-variation-api-name-code {
+    @apply block truncate text-[12px] leading-tight;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    @apply text-gray-900 dark:text-gray-100;
+  }
+
+  .model-variation-copy-btn {
+    @apply flex-shrink-0 rounded p-0.5 text-gray-400 transition-colors;
+    @apply hover:bg-gray-100 hover:text-gray-700;
+    @apply dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-200;
+  }
+
+  .model-variation-copy-icon {
+    @apply h-3.5 w-3.5;
+  }
+
+  /* Mobile card: API name button (tap to copy) */
+  .model-variation-api-name-btn {
+    @apply flex items-center gap-1.5 rounded px-1 py-0.5 text-left transition-colors;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .model-variation-api-name-btn .model-variation-api-name-code {
+    @apply min-w-0 flex-1 truncate;
+  }
+
+  .model-variation-api-name-btn .model-variation-copy-icon {
+    @apply h-3.5 w-3.5 flex-shrink-0 text-gray-400 dark:text-gray-500;
   }
 
   .model-variation-meta-pill {
@@ -491,6 +525,123 @@
   .model-variation-state-pill--idle {
     @apply border-gray-300 bg-gray-100/80 text-gray-700;
     @apply dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300;
+  }
+
+  /* ── Variation header actions ── */
+  .model-variation-header-actions {
+    @apply flex items-center gap-2;
+  }
+
+  /* ── Responsive: card list (mobile) vs table (desktop) ── */
+  .model-variation-card-list {
+    @apply flex flex-col gap-2;
+  }
+
+  .model-variation-table-desktop {
+    @apply hidden;
+  }
+
+  @media (min-width: 768px) {
+    .model-variation-card-list {
+      @apply hidden;
+    }
+    .model-variation-table-desktop {
+      @apply block;
+    }
+  }
+
+  .model-variation-card-item {
+    @apply rounded-lg border border-gray-200/80 bg-white/85 p-3;
+    @apply dark:border-gray-700/80 dark:bg-gray-900/55;
+  }
+
+  .model-variation-card-item-header {
+    @apply mb-1.5 flex flex-wrap items-center gap-1.5;
+  }
+
+  .model-variation-card-item-state {
+    @apply ml-auto;
+  }
+
+  .model-variation-card-item-body {
+    @apply mb-1 flex flex-wrap items-baseline gap-1.5;
+  }
+
+  .model-variation-card-item-name {
+    @apply text-sm font-semibold text-gray-900;
+    @apply dark:text-gray-100;
+  }
+
+  .model-variation-card-item-meta {
+    @apply text-xs text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  .model-variation-card-item-stats {
+    @apply flex gap-3 text-xs text-gray-600;
+    @apply dark:text-gray-400;
+  }
+
+  /* ── Variations modal ── */
+  .model-variation-modal {
+    @apply flex w-full flex-col overflow-hidden;
+    @apply rounded-xl border border-gray-200 bg-white shadow-2xl;
+    @apply dark:border-gray-700 dark:bg-gray-900;
+    max-height: inherit;
+  }
+
+  /* CDK Dialog overlay styles for variations modal */
+  .model-variation-modal-backdrop {
+    @apply bg-black/50 backdrop-blur-sm;
+  }
+
+  .model-variation-modal-hero {
+    @apply flex flex-col gap-3 border-b border-gray-200 px-5 py-4;
+    @apply dark:border-gray-700;
+  }
+
+  @media (min-width: 640px) {
+    .model-variation-modal-hero {
+      @apply flex-row items-start justify-between;
+    }
+  }
+
+  .model-variation-modal-hero-content {
+    @apply min-w-0;
+  }
+
+  .model-variation-modal-hero-subtitle {
+    @apply mt-0.5 text-sm text-gray-600;
+    @apply dark:text-gray-400;
+  }
+
+  .model-variation-modal-hero-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .model-variation-modal-taxonomy {
+    @apply border-b border-gray-200 px-5 py-3;
+    @apply dark:border-gray-700;
+  }
+
+  .model-variation-modal-body {
+    @apply flex-1 overflow-auto p-0;
+  }
+
+  .model-variation-modal-body .model-variation-card-list {
+    @apply p-3;
+  }
+
+  .model-variation-modal-table-shell {
+    max-height: none;
+    overflow: visible;
+    @apply border-0 rounded-none;
+  }
+
+  /* Sticky header cells so column labels stay visible during scroll */
+  .model-variation-modal-table-shell th {
+    @apply sticky top-0 z-10 bg-white;
+    @apply dark:bg-gray-900;
   }
 
   .model-showcase-header {
@@ -665,6 +816,20 @@
   .model-list-table {
     @apply min-w-full;
   }
+
+  /* Percentage-based column widths for the model list table.
+     Small fixed-content columns use a fixed width; the remaining
+     space is distributed proportionally via percentage widths. */
+  .model-col-expand  { width: 2.5rem; }
+  .model-col-index   { width: 3rem; }
+  .model-col-active  { width: 4.25rem; }
+  .model-col-name    { width: 32%; }
+  .model-col-baseline { width: 16%; }
+  .model-col-tags    { width: 16%; }
+  .model-col-variants,
+  .model-col-safety  { width: 7%; }
+  .model-col-workers { width: 6%; }
+  .model-col-actions { width: 12%; }
 
   .model-list-table-viewport {
     @apply bg-transparent;

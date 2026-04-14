@@ -52,7 +52,7 @@ export interface FieldDiff {
             @if (diffs().length === 0) {
               <p class="text-muted text-sm">No changes detected.</p>
             } @else {
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              <p class="text-sm text-muted mb-3">
                 {{ diffs().length }} field(s) modified
               </p>
               @for (diff of diffs(); track diff.field) {

@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   OnInit,
   signal,
@@ -15,6 +16,24 @@ import { NotificationService } from '../../services/notification.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { RECORD_DISPLAY_MAP } from '../../models/maps';
+
+const GENERATION_CATEGORY_ORDER = [
+  'text_generation',
+  'image_generation',
+  'video_generation',
+  'audio_generation',
+] as const;
+
+const GENERATION_CATEGORY_LOOKUP = new Set<string>(GENERATION_CATEGORY_ORDER);
+
+type SidebarCategoryGroupId = 'generation' | 'utility';
+type SidebarRouteView = 'list' | 'audit' | 'create' | 'other' | null;
+
+interface SidebarCategoryGroup {
+  id: SidebarCategoryGroupId;
+  title: string;
+  categories: string[];
+}
 
 @Component({
   selector: 'app-sidebar',
@@ -33,27 +52,72 @@ export class SidebarComponent implements OnInit {
   readonly categories = signal<string[]>([]);
   readonly loading = signal(true);
   readonly currentCategory = signal<string | null>(null);
+  readonly currentCategoryView = signal<SidebarRouteView>(null);
   readonly isCollapsed = this.sidebarService.isCollapsed;
   readonly isMobile = this.sidebarService.isMobile;
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
   readonly recordDisplayMap = RECORD_DISPLAY_MAP;
 
-  // Sorted categories with generation types first
-  readonly sortedCategories = computed(() => {
+  readonly groupedCategories = computed<SidebarCategoryGroup[]>(() => {
     const cats = this.categories();
-    const generationOrder = [
-      'text_generation',
-      'image_generation',
-      'video_generation',
-      'audio_generation',
-    ];
+    const generationCategories = GENERATION_CATEGORY_ORDER.filter((category) =>
+      cats.includes(category),
+    );
+    const utilityCategories = cats
+      .filter((category) => !GENERATION_CATEGORY_LOOKUP.has(category))
+      .sort((a, b) => this.getCategoryLabel(a).localeCompare(this.getCategoryLabel(b)));
 
-    const generationCats = generationOrder.filter((cat) => cats.includes(cat));
-    const otherCats = cats.filter((cat) => !generationOrder.includes(cat)).sort();
+    const groups: SidebarCategoryGroup[] = [];
+    if (generationCategories.length > 0) {
+      groups.push({
+        id: 'generation',
+        title: 'Generation Models',
+        categories: generationCategories,
+      });
+    }
 
-    return [...generationCats, ...otherCats];
+    if (utilityCategories.length > 0) {
+      groups.push({
+        id: 'utility',
+        title: 'Utility & Processing',
+        categories: utilityCategories,
+      });
+    }
+
+    return groups;
   });
+
+  readonly pendingCountByGroup = computed<Record<SidebarCategoryGroupId, number>>(() => {
+    const pendingCount = {
+      generation: 0,
+      utility: 0,
+    };
+
+    for (const group of this.groupedCategories()) {
+      pendingCount[group.id] = group.categories.reduce((total, category) => {
+        return total + this.pendingSummary.pendingCountFor(category);
+      }, 0);
+    }
+
+    return pendingCount;
+  });
+
+  readonly selectedCategoryLabel = computed(() => {
+    const category = this.currentCategory();
+    return category ? this.getCategoryLabel(category) : '';
+  });
+
+  constructor() {
+    effect(() => {
+      const defaults = this.groupedCategories().reduce<Record<string, boolean>>((acc, group) => {
+        acc[group.id] = true;
+        return acc;
+      }, {});
+
+      this.sidebarService.setGroupStateDefaults(defaults);
+    });
+  }
 
   ngOnInit(): void {
     this.loadCategories();
@@ -62,17 +126,76 @@ export class SidebarComponent implements OnInit {
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => this.updateCurrentCategory());
-    this.updateCurrentCategory();
+      .subscribe((event) => {
+        this.updateRouteState(event.urlAfterRedirects);
+
+        if (this.isMobile()) {
+          this.sidebarService.close();
+        }
+      });
+    this.updateRouteState(this.router.url);
   }
 
   toggle(): void {
     this.sidebarService.toggle();
   }
 
+  isGroupOpen(groupId: SidebarCategoryGroupId): boolean {
+    return this.sidebarService.isGroupOpen(groupId);
+  }
+
+  toggleGroup(groupId: SidebarCategoryGroupId): void {
+    this.sidebarService.toggleGroup(groupId);
+  }
+
   selectCategory(category: string): void {
     this.router.navigate(['/categories', category]);
+    this.closeSidebarOnMobile();
+  }
 
+  openSelectedCategoryList(): void {
+    const category = this.currentCategory();
+    if (!category) {
+      return;
+    }
+
+    this.router.navigate(['/categories', category]);
+    this.closeSidebarOnMobile();
+  }
+
+  openSelectedCategoryAudit(): void {
+    const category = this.currentCategory();
+    if (!category) {
+      return;
+    }
+
+    this.router.navigate(['/categories', category, 'audit']);
+    this.closeSidebarOnMobile();
+  }
+
+  openSelectedCategoryCreate(): void {
+    const category = this.currentCategory();
+    if (!category || !this.writable()) {
+      return;
+    }
+
+    this.router.navigate(['/categories', category, 'create']);
+    this.closeSidebarOnMobile();
+  }
+
+  isCurrentView(view: Exclude<SidebarRouteView, 'other' | null>): boolean {
+    return this.currentCategoryView() === view;
+  }
+
+  getCategoryLabel(category: string): string {
+    return this.recordDisplayMap[category] || category;
+  }
+
+  getGroupPendingCount(groupId: SidebarCategoryGroupId): number {
+    return this.pendingCountByGroup()[groupId] ?? 0;
+  }
+
+  private closeSidebarOnMobile(): void {
     if (this.isMobile()) {
       this.sidebarService.close();
     }
@@ -92,12 +215,35 @@ export class SidebarComponent implements OnInit {
     });
   }
 
-  private updateCurrentCategory(): void {
-    const urlSegments = this.router.url.split('/');
-    if (urlSegments[1] === 'categories' && urlSegments[2]) {
-      this.currentCategory.set(urlSegments[2]);
-    } else {
+  private updateRouteState(url: string): void {
+    const urlTree = this.router.parseUrl(url);
+    const primarySegments =
+      urlTree.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
+
+    if (primarySegments[0] !== 'categories' || !primarySegments[1]) {
       this.currentCategory.set(null);
+      this.currentCategoryView.set(null);
+      return;
     }
+
+    this.currentCategory.set(primarySegments[1]);
+
+    const routeSuffix = primarySegments[2];
+    if (!routeSuffix) {
+      this.currentCategoryView.set('list');
+      return;
+    }
+
+    if (routeSuffix === 'audit') {
+      this.currentCategoryView.set('audit');
+      return;
+    }
+
+    if (routeSuffix === 'create') {
+      this.currentCategoryView.set('create');
+      return;
+    }
+
+    this.currentCategoryView.set('other');
   }
 }

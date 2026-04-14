@@ -19,6 +19,7 @@ export class NavigationComponent {
   readonly auth = inject(AuthService);
   readonly pendingSummary = inject(PendingQueueSummaryService);
   private readonly sidebarService = inject(SidebarService);
+  readonly isSidebarCollapsed = this.sidebarService.isCollapsed;
 
   readonly showLoginModal = signal(false);
   readonly showHelpMenu = signal(false);

@@ -10,22 +10,21 @@ import {
   effect,
   inject,
   PLATFORM_ID,
-  DestroyRef,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { HordeButtonComponent } from '@haidra/design-system/button';
+import { CdkOverlayOrigin, CdkConnectedOverlay, ConnectedPosition } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-tag-input',
-  imports: [FormsModule, HordeBadgeComponent, HordeButtonComponent],
+  imports: [FormsModule, HordeBadgeComponent, HordeButtonComponent, CdkOverlayOrigin, CdkConnectedOverlay],
   templateUrl: './tag-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TagInputComponent {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   readonly label = input<string>('');
@@ -39,10 +38,14 @@ export class TagInputComponent {
   readonly selectedSuggestionIndex = signal(-1);
   readonly inputElement = viewChild<ElementRef<HTMLInputElement>>('inputElement');
 
-  // Position signals for fixed positioning
-  readonly dropdownTop = signal<number>(0);
-  readonly dropdownLeft = signal<number>(0);
-  readonly dropdownWidth = signal<number>(0);
+  // Width of the trigger element for the overlay to match
+  readonly triggerWidth = signal<number>(0);
+
+  // CDK Overlay positions: prefer below, fall back to above
+  readonly overlayPositions: ConnectedPosition[] = [
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
+    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
+  ];
 
   // unique id used to associate the label with the input for accessibility
   readonly inputId = `tag-input-${Math.random().toString(36).slice(2, 9)}`;
@@ -87,27 +90,12 @@ export class TagInputComponent {
   });
 
   constructor() {
-    // Update dropdown position when it becomes visible
+    // Update trigger width when suggestions are shown so CDK overlay matches input width
     effect(() => {
       if (this.showSuggestions() && this.isBrowser) {
-        this.updateDropdownPosition();
+        this.updateTriggerWidth();
       }
     });
-
-    // Setup scroll and resize listeners with proper cleanup
-    if (this.isBrowser) {
-      const scrollListener = () => this.updateDropdownPosition();
-      const resizeListener = () => this.updateDropdownPosition();
-
-      window.addEventListener('scroll', scrollListener, true);
-      window.addEventListener('resize', resizeListener);
-
-      // Cleanup listeners on component destroy
-      this.destroyRef.onDestroy(() => {
-        window.removeEventListener('scroll', scrollListener, true);
-        window.removeEventListener('resize', resizeListener);
-      });
-    }
   }
 
   addValue(valueToAdd?: string): void {
@@ -173,7 +161,7 @@ export class TagInputComponent {
     const filtered = this.filteredSuggestions();
     // Show suggestions on focus if there are any available
     if (this.suggestions().length > 0 && filtered.length > 0) {
-      this.updateDropdownPosition();
+      this.updateTriggerWidth();
       this.showSuggestions.set(true);
       this.selectedSuggestionIndex.set(-1);
     }
@@ -218,21 +206,14 @@ export class TagInputComponent {
   }
 
   /**
-   * Updates the dropdown position based on the input element's viewport coordinates.
-   * Uses fixed positioning to avoid container clipping.
-   * The dropdown width matches the input field width (excluding the Add button).
+   * Updates the trigger width so the CDK overlay panel matches the input width.
    */
-  private updateDropdownPosition(): void {
+  private updateTriggerWidth(): void {
     if (!this.isBrowser) return;
 
     const inputEl = this.inputElement()?.nativeElement;
     if (!inputEl) return;
 
-    const rect = inputEl.getBoundingClientRect();
-
-    // Position dropdown below input, matching the input's exact width
-    this.dropdownTop.set(rect.bottom + 4); // 4px gap (mt-1)
-    this.dropdownLeft.set(rect.left);
-    this.dropdownWidth.set(rect.width);
+    this.triggerWidth.set(inputEl.getBoundingClientRect().width);
   }
 }

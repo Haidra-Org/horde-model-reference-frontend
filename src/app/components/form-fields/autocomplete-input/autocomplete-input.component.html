@@ -3,7 +3,7 @@
     <label class="form-label" [attr.for]="inputId">{{ label() }}</label>
   }
 
-  <div class="relative">
+  <div class="relative" cdkOverlayOrigin #overlayOrigin="cdkOverlayOrigin">
     <input
       #inputElement
       type="text"
@@ -23,16 +23,20 @@
       role="combobox"
     />
 
-    <!-- Dropdown rendered with fixed positioning to avoid container clipping -->
-    @if (showSuggestions() && filteredSuggestions().length > 0) {
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="overlayOrigin"
+      [cdkConnectedOverlayOpen]="showSuggestions() && filteredSuggestions().length > 0"
+      [cdkConnectedOverlayPositions]="overlayPositions"
+      [cdkConnectedOverlayWidth]="triggerWidth()"
+      [cdkConnectedOverlayPush]="true"
+      [cdkConnectedOverlayHasBackdrop]="false"
+    >
       <div
         [id]="suggestionsId"
-        class="autocomplete-dropdown autocomplete-dropdown-fixed"
+        class="autocomplete-dropdown"
         role="listbox"
         [attr.aria-label]="(ariaLabel() || label() || placeholder()) + ' suggestions'"
-        [style.top.px]="dropdownTop()"
-        [style.left.px]="dropdownLeft()"
-        [style.width.px]="dropdownWidth()"
       >
         @for (suggestion of filteredSuggestions(); track suggestion; let idx = $index) {
           <button
@@ -43,7 +47,7 @@
               inputValue().trim() &&
               suggestion.toLowerCase().includes(inputValue().toLowerCase().trim())
             "
-            (click)="selectSuggestion(suggestion)"
+            (mousedown)="selectSuggestion(suggestion)"
             role="option"
             [attr.aria-selected]="idx === selectedSuggestionIndex()"
           >
@@ -56,6 +60,6 @@
           </button>
         }
       </div>
-    }
+    </ng-template>
   </div>
 </div>

@@ -401,20 +401,20 @@
     <div class="data-table-header model-list-table-head">
       <table class="table table-fixed model-list-table">
         <colgroup>
-          <col class="w-10" />
-          <col class="w-12" />
-          <col class="w-16" />
-          <col class="w-96" />
-          <col class="w-48" />
-          <col class="w-40" />
+          <col class="model-col-expand" />
+          <col class="model-col-index" />
+          <col class="model-col-active" />
+          <col class="model-col-name" />
+          <col class="model-col-baseline" />
+          <col class="model-col-tags" />
           @if (isTextGeneration()) {
-          <col class="w-28" />
+          <col class="model-col-variants" />
           }
           @if (!isTextGeneration()) {
-          <col class="w-28" />
+          <col class="model-col-safety" />
           }
-          <col class="w-24" />
-          <col class="w-44" />
+          <col class="model-col-workers" />
+          <col class="model-col-actions" />
         </colgroup>
         <thead>
           <tr>
@@ -465,20 +465,20 @@
       [style.height.px]="viewportHeight()" [minBufferPx]="400" [maxBufferPx]="800">
       <table class="table table-fixed model-list-table">
         <colgroup>
-          <col class="w-10" />
-          <col class="w-12" />
-          <col class="w-16" />
-          <col class="w-96" />
-          <col class="w-48" />
-          <col class="w-40" />
+          <col class="model-col-expand" />
+          <col class="model-col-index" />
+          <col class="model-col-active" />
+          <col class="model-col-name" />
+          <col class="model-col-baseline" />
+          <col class="model-col-tags" />
           @if (isTextGeneration()) {
-          <col class="w-28" />
+          <col class="model-col-variants" />
           }
           @if (!isTextGeneration()) {
-          <col class="w-28" />
+          <col class="model-col-safety" />
           }
-          <col class="w-24" />
-          <col class="w-44" />
+          <col class="model-col-workers" />
+          <col class="model-col-actions" />
         </colgroup>
         <tbody>
           @for (model of sortedFilteredModels(); track model.name; let isEven = $even) {

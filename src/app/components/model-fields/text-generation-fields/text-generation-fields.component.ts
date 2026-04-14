@@ -156,6 +156,7 @@ export class TextGenerationFieldsComponent {
           )
             .placeholder('Human-friendly name')
             .helpText('User-facing name shown in the interface')
+            .gridSpan(2)
             .build(),
 
           FormFieldBuilder.url('url', 'URL', currentData.url || null, (value) =>
@@ -163,6 +164,7 @@ export class TextGenerationFieldsComponent {
           )
             .placeholder('https://...')
             .helpText('Link to model card, documentation, or homepage')
+            .gridSpan(2)
             .build(),
 
           FormFieldBuilder.text(

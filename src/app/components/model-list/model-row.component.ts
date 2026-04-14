@@ -295,7 +295,7 @@ import { hasShowcases } from './model-row.utils';
 
             <div class="model-detail-layout" [class.model-detail-layout--text]="isGrouped()">
               @if (isGrouped() && groupedModel()) {
-                <div class="model-detail-column model-detail-column--primary">
+                <div class="model-detail-column model-detail-column--full">
                   @defer (on viewport; prefetch on hover) {
                     <app-model-row-variations
                       [variations]="groupedModel()!.variations"

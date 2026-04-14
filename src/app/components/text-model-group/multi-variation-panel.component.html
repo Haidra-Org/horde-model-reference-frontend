@@ -340,7 +340,7 @@
               "></div>
         </div>
 
-        <div class="text-sm text-gray-700 dark:text-gray-300">
+        <div class="text-sm text-muted">
           <p>
             Created: <strong>{{ createdCount() }}</strong> | Failed:
             <strong>{{ failedCount() }}</strong> | Remaining:
@@ -351,7 +351,7 @@
         @if (activityRows().length > 0) {
         <div class="mt-3 space-y-1">
           @for (row of activityRows(); track row.composedName) {
-          <p class="text-xs text-gray-600 dark:text-gray-400">
+          <p class="text-xs text-muted">
             @if (row.status === 'created') {
             Created: {{ row.composedName }}
             } @else if (row.status === 'creating') {

@@ -1,45 +1,158 @@
 @if (isMobile() && !isCollapsed()) {
-<button type="button" class="sidebar-backdrop" (click)="toggle()" aria-label="Close sidebar"></button>
+  <button
+    type="button"
+    class="sidebar-backdrop"
+    (click)="toggle()"
+    aria-label="Close sidebar"
+  ></button>
 }
 
-<aside class="sidebar-container" [class.sidebar-collapsed]="isCollapsed()" [class.sidebar-expanded]="!isCollapsed()"
-  [class.sidebar-mobile-overlay]="isMobile()" [class.sidebar-mobile-open]="isMobile() && !isCollapsed()">
+<aside
+  id="app-sidebar"
+  class="sidebar-container"
+  [class.sidebar-collapsed]="isCollapsed()"
+  [class.sidebar-expanded]="!isCollapsed()"
+  [class.sidebar-mobile-overlay]="isMobile()"
+  [class.sidebar-mobile-open]="isMobile() && !isCollapsed()"
+>
   <div class="sidebar-header" [class.sidebar-header-collapsed]="isCollapsed()">
     @if (!isCollapsed()) {
-    <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden flex-1">
-      Model Categories
-    </h2>
+      <div class="sidebar-header-content">
+        <h2 class="sidebar-section-header whitespace-nowrap overflow-hidden">Model Categories</h2>
+        @if (categories().length > 0) {
+          <span class="badge badge-info badge-sm">{{ categories().length }}</span>
+        }
+      </div>
     }
-    <button class="sidebar-toggle-btn hidden lg:flex" (click)="toggle()"
-      [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+
+    <button
+      type="button"
+      class="sidebar-toggle-btn hidden lg:flex"
+      (click)="toggle()"
+      [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.aria-expanded]="!isCollapsed()"
+      aria-controls="app-sidebar"
+    >
       <span class="sidebar-toggle-icon" [class.rotate-180]="isCollapsed()">‹</span>
     </button>
   </div>
 
   @if (!isCollapsed()) {
-  @if (loading()) {
-  <div class="sidebar-loading-text">Loading...</div>
-  } @else if (categories().length === 0) {
-  <div class="sidebar-loading-text">No categories available</div>
-  } @else {
-  <nav class="flex-1 overflow-y-auto">
-    @for (category of sortedCategories(); track category) {
-    <button [class]="
-              currentCategory() === category
-                ? 'sidebar-nav-item sidebar-nav-item-active'
-                : 'sidebar-nav-item sidebar-nav-item-inactive'
-            " (click)="selectCategory(category)">
-      <span class="capitalize wrap-break-word">
-        {{ recordDisplayMap[category] || category }}
-      </span>
-      @if (pendingSummary.pendingCountFor(category) > 0) {
-      <span class="badge-count-sidebar">{{
-        pendingSummary.pendingCountFor(category)
-        }}</span>
-      }
-    </button>
+    @if (loading()) {
+      <div class="sidebar-loading-text">Loading...</div>
+    } @else if (categories().length === 0) {
+      <div class="sidebar-loading-text">No categories available</div>
+    } @else {
+      <nav class="sidebar-nav" aria-label="Model category navigation">
+        @for (group of groupedCategories(); track group.id) {
+          <section class="sidebar-group">
+            <button
+              type="button"
+              class="sidebar-group-toggle"
+              (click)="toggleGroup(group.id)"
+              [attr.aria-expanded]="isGroupOpen(group.id)"
+              [attr.aria-controls]="'sidebar-group-' + group.id"
+            >
+              <span class="sidebar-group-title">{{ group.title }}</span>
+              <span class="sidebar-group-meta">
+                @if (getGroupPendingCount(group.id) > 0) {
+                  <span class="badge-count-sidebar">{{ getGroupPendingCount(group.id) }}</span>
+                }
+                <svg
+                  class="sidebar-group-chevron"
+                  [class.rotate-180]="isGroupOpen(group.id)"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </span>
+            </button>
+
+            @if (isGroupOpen(group.id)) {
+              <div class="sidebar-group-list" [attr.id]="'sidebar-group-' + group.id">
+                @for (category of group.categories; track category) {
+                  <button
+                    type="button"
+                    [class]="
+                      currentCategory() === category
+                        ? 'sidebar-nav-item sidebar-nav-item-active'
+                        : 'sidebar-nav-item sidebar-nav-item-inactive'
+                    "
+                    (click)="selectCategory(category)"
+                    [attr.aria-current]="currentCategory() === category ? 'page' : null"
+                  >
+                    <span class="capitalize wrap-break-word">
+                      {{ getCategoryLabel(category) }}
+                    </span>
+                    @if (pendingSummary.pendingCountFor(category) > 0) {
+                      <span class="badge-count-sidebar">{{ pendingSummary.pendingCountFor(category) }}</span>
+                    }
+                  </button>
+                }
+              </div>
+            }
+          </section>
+        }
+      </nav>
+
+      <section class="sidebar-context-panel" aria-label="Category quick actions">
+        <h3 class="sidebar-context-heading">Quick Actions</h3>
+
+        @if (currentCategory()) {
+          <p class="sidebar-context-title">{{ selectedCategoryLabel() }}</p>
+          <div class="sidebar-context-actions" role="group" aria-label="Selected category actions">
+            <button
+              type="button"
+              class="sidebar-action-btn"
+              [class.sidebar-action-btn-active]="isCurrentView('list')"
+              (click)="openSelectedCategoryList()"
+              [attr.aria-pressed]="isCurrentView('list')"
+            >
+              List
+            </button>
+            <button
+              type="button"
+              class="sidebar-action-btn"
+              [class.sidebar-action-btn-active]="isCurrentView('audit')"
+              (click)="openSelectedCategoryAudit()"
+              [attr.aria-pressed]="isCurrentView('audit')"
+            >
+              Audit
+            </button>
+            <button
+              type="button"
+              class="sidebar-action-btn"
+              [class.sidebar-action-btn-active]="isCurrentView('create')"
+              (click)="openSelectedCategoryCreate()"
+              [disabled]="!writable()"
+              [attr.aria-pressed]="isCurrentView('create')"
+              [attr.aria-label]="
+                writable()
+                  ? 'Create model in selected category'
+                  : 'Create model disabled because backend is read-only'
+              "
+            >
+              Create
+            </button>
+          </div>
+
+          @if (!writable()) {
+            <p class="sidebar-context-note">Create is unavailable while the backend is read-only.</p>
+          }
+        } @else {
+          <p class="sidebar-context-note">
+            Choose a category to unlock list, audit, and create shortcuts.
+          </p>
+        }
+      </section>
     }
-  </nav>
-  }
   }
 </aside>

@@ -668,6 +668,11 @@
     @apply dark:placeholder:text-gray-500;
   }
 
+  /* Preserve left padding when a search icon precedes the input */
+  .form-input-compact.model-list-search-input {
+    @apply pl-9;
+  }
+
   /* Compact badge for inline stats */
   .inline-stat-badge-compact {
     @apply inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium cursor-pointer;
