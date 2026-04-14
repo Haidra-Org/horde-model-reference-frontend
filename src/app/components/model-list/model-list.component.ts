@@ -172,7 +172,7 @@ export class ModelListComponent implements OnInit {
   private readonly pendingSummary = inject(PendingQueueSummaryService);
 
   readonly writable = computed(
-    () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
+    () => this.api.backendCapabilities().writable && this.auth.isRequestor(),
   );
   readonly deleteAllowed = computed(
     () => this.deleteConfirmationInput().trim() === this.modelToDelete(),

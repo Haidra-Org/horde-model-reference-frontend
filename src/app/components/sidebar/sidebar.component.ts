@@ -15,6 +15,7 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { SidebarService } from '../../services/sidebar.service';
+import { AuthService } from '../../services/auth.service';
 import { RECORD_DISPLAY_MAP } from '../../models/maps';
 
 const GENERATION_CATEGORY_ORDER = [
@@ -47,6 +48,7 @@ export class SidebarComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly sidebarService = inject(SidebarService);
+  readonly auth = inject(AuthService);
   readonly pendingSummary = inject(PendingQueueSummaryService);
 
   readonly categories = signal<string[]>([]);
@@ -57,6 +59,7 @@ export class SidebarComponent implements OnInit {
   readonly isMobile = this.sidebarService.isMobile;
 
   readonly writable = computed(() => this.api.backendCapabilities().writable);
+  readonly canCreate = computed(() => this.writable() && this.auth.isRequestor());
   readonly recordDisplayMap = RECORD_DISPLAY_MAP;
 
   readonly groupedCategories = computed<SidebarCategoryGroup[]>(() => {
@@ -175,7 +178,7 @@ export class SidebarComponent implements OnInit {
 
   openSelectedCategoryCreate(): void {
     const category = this.currentCategory();
-    if (!category || !this.writable()) {
+    if (!category || !this.canCreate()) {
       return;
     }
 

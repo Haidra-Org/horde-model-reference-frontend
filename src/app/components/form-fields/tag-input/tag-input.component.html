@@ -29,17 +29,12 @@
     </horde-button>
   </div>
 
-  <ng-template
-    cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="overlayOrigin"
+  <ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="overlayOrigin"
     [cdkConnectedOverlayOpen]="showSuggestions() && filteredSuggestions().length > 0"
-    [cdkConnectedOverlayPositions]="overlayPositions"
-    [cdkConnectedOverlayWidth]="triggerWidth()"
-    [cdkConnectedOverlayPush]="true"
-    [cdkConnectedOverlayHasBackdrop]="false"
-  >
-    <div [id]="suggestionsId" class="autocomplete-dropdown autocomplete-dropdown-6"
-      role="listbox" [attr.aria-label]="label() + ' suggestions'">
+    [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayWidth]="triggerWidth()"
+    [cdkConnectedOverlayPush]="true" [cdkConnectedOverlayHasBackdrop]="false">
+    <div [id]="suggestionsId" class="autocomplete-dropdown autocomplete-dropdown-6" role="listbox"
+      [attr.aria-label]="label() + ' suggestions'">
       @for (suggestion of filteredSuggestions(); track suggestion; let idx = $index) {
       <button type="button" class="autocomplete-item"
         [class.autocomplete-item-selected]="idx === selectedSuggestionIndex()" [class.autocomplete-item-matched]="

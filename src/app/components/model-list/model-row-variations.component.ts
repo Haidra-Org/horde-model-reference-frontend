@@ -1,6 +1,7 @@
 import { Component, input, ChangeDetectionStrategy, computed, inject, DestroyRef, TemplateRef, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { AuthService } from '../../services/auth.service';
 import type { UnifiedModelData, GroupedTextModel } from '../../models/unified-model';
 
 interface VariationCoverageRow {
@@ -47,7 +48,7 @@ interface VariationCoverageRow {
             class="btn btn-sm btn-primary"
             [routerLink]="['/categories', 'text_generation', 'group', groupName()]"
           >
-            Manage Group
+            {{ canManage() ? 'Manage Group' : 'View Group' }}
           </a>
         </div>
       </div>
@@ -248,7 +249,7 @@ interface VariationCoverageRow {
                 [routerLink]="['/categories', 'text_generation', 'group', groupName()]"
                 (click)="closeModal()"
               >
-                Manage Group
+                {{ canManage() ? 'Manage Group' : 'View Group' }}
               </a>
               <button type="button" class="btn btn-sm btn-secondary" (click)="closeModal()">
                 Close
@@ -403,6 +404,9 @@ export class ModelRowVariationsComponent {
   readonly modalTpl = viewChild.required<TemplateRef<unknown>>('modalTpl');
   private readonly dialog = inject(Dialog);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly auth = inject(AuthService);
+
+  readonly canManage = computed(() => this.auth.isRequestor());
   private dialogRef: DialogRef | null = null;
 
   constructor() {

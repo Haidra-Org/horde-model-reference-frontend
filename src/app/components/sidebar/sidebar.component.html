@@ -132,20 +132,28 @@
               class="sidebar-action-btn"
               [class.sidebar-action-btn-active]="isCurrentView('create')"
               (click)="openSelectedCategoryCreate()"
-              [disabled]="!writable()"
+              [disabled]="!canCreate()"
               [attr.aria-pressed]="isCurrentView('create')"
               [attr.aria-label]="
-                writable()
-                  ? 'Create model in selected category'
-                  : 'Create model disabled because backend is read-only'
+                !writable()
+                  ? 'Create model disabled because backend is read-only'
+                  : !auth.isRequestor()
+                    ? 'Create model requires requestor access'
+                    : 'Create model in selected category'
               "
             >
               Create
             </button>
           </div>
 
-          @if (!writable()) {
-            <p class="sidebar-context-note">Create is unavailable while the backend is read-only.</p>
+          @if (!canCreate()) {
+            <p class="sidebar-context-note">
+              @if (!writable()) {
+                Create is unavailable while the backend is read-only.
+              } @else {
+                Create requires requestor or approver access.
+              }
+            </p>
           }
         } @else {
           <p class="sidebar-context-note">
