@@ -718,8 +718,8 @@ export function createGroupedTextModels(
         // Pick the first variation that has a description
         description = summary.any_has_description
           ? (variations
-              .map((v) => (v as Record<string, unknown>)['description'] as string | undefined)
-              .find((d) => !!d) ?? undefined)
+            .map((v) => (v as Record<string, unknown>)['description'] as string | undefined)
+            .find((d) => !!d) ?? undefined)
           : undefined;
       } else {
         description = legacyPrimary['description'] as string | undefined;
