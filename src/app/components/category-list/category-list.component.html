@@ -6,32 +6,27 @@
   </div>
 
   @if (loading()) {
-    <div class="card">
-      <div class="text-center py-12 text-muted">Loading categories...</div>
-    </div>
+  <div class="card">
+    <div class="text-center py-12 text-muted">Loading categories...</div>
+  </div>
   } @else if (categories().length === 0) {
-    <div class="card">
-      <div class="text-center py-12 text-muted">No categories available</div>
-    </div>
+  <div class="card">
+    <div class="text-center py-12 text-muted">No categories available</div>
+  </div>
   } @else {
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      @for (category of categories(); track category) {
-        <button
-          class="card hover:shadow-lg transition-all duration-200 group"
-          (click)="selectCategory(category)"
-        >
-          <div class="card-body flex justify-between items-center">
-            <h2 class="heading-section capitalize">
-              {{ category }}
-            </h2>
-            <span
-              class="text-2xl text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform"
-            >
-              →
-            </span>
-          </div>
-        </button>
-      }
-    </div>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    @for (category of categories(); track category) {
+    <button class="card hover:shadow-lg transition-all duration-200 group" (click)="selectCategory(category)">
+      <div class="card-body flex justify-between items-center">
+        <h2 class="heading-section capitalize">
+          {{ category }}
+        </h2>
+        <span class="text-2xl text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform">
+          →
+        </span>
+      </div>
+    </button>
+    }
+  </div>
   }
 </div>
