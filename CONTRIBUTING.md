@@ -27,7 +27,7 @@ All styles are centralized in `src/styles/` and `src/shared/design-system/`. Com
 
 Key rules:
 
-- **Use semantic CSS classes** (`.alert-danger`, `.status-badge-success`) over inline Tailwind utility chains.
+- **Use semantic CSS classes** (`.alert--danger`, `.status-badge-success`) over inline Tailwind utility chains.
 - **Use theme color tokens** (`primary-*`, `success-*`, `danger-*`, `warning-*`, `info-*`, `gray-*`). Never use raw Tailwind color names (`red-*`, `blue-*`, `emerald-*`, `amber-*`, etc.) in templates.
 - **No inline `style=` attributes** in templates.
 - **No `styles:` or `styleUrl:`** in component decorators (except json-editor, json-display, delta-diff).

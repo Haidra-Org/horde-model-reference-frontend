@@ -311,7 +311,7 @@
   <!-- Content Area -->
   <div class="space-y-4">
     @if (error()) {
-      <div class="alert alert-danger">
+      <div class="alert alert--danger">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             stroke-linecap="round"
@@ -325,7 +325,7 @@
     }
 
     @if (serverErrors().length > 0) {
-      <div class="alert alert-danger">
+      <div class="alert alert--danger">
         <div class="flex items-start gap-3">
           <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -350,7 +350,7 @@
     }
 
     @if (!error() && loading()) {
-      <div class="alert alert-info">
+      <div class="alert alert--info">
         <svg
           class="w-5 h-5 mr-2 animate-spin"
           fill="none"
@@ -371,7 +371,7 @@
     <!-- ══════════════════ QUEUE TAB ══════════════════ -->
     @if (activeTab() === 'queue') {
       @if (!error() && !loading() && !records().length) {
-        <div class="alert alert-info">
+        <div class="alert alert--info">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -433,7 +433,7 @@
     <!-- ══════════════════ MY SUBMISSIONS TAB ══════════════════ -->
     @if (activeTab() === 'my-submissions') {
       @if (loadingMySubmissions()) {
-        <div class="alert alert-info">
+        <div class="alert alert--info">
           <svg
             class="w-5 h-5 mr-2 animate-spin"
             fill="none"
@@ -450,7 +450,7 @@
           Loading your submissions&hellip;
         </div>
       } @else if (!mySubmissions().length) {
-        <div class="alert alert-info">
+        <div class="alert alert--info">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -484,7 +484,7 @@
     <!-- ══════════════════ BATCHES TAB ══════════════════ -->
     @if (activeTab() === 'batches') {
       @if (!error() && !loading() && !records().length) {
-        <div class="alert alert-info">
+        <div class="alert alert--info">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"

@@ -3,10 +3,10 @@
     @for (notification of notificationService.notifications(); track notification.id) {
       <div
         class="notification-alert"
-        [class.alert-success]="notification.type === 'success'"
-        [class.alert-danger]="notification.type === 'error'"
-        [class.alert-warning]="notification.type === 'warning'"
-        [class.alert-info]="notification.type === 'info'"
+        [class.alert--success]="notification.type === 'success'"
+        [class.alert--danger]="notification.type === 'error'"
+        [class.alert--warning]="notification.type === 'warning'"
+        [class.alert--info]="notification.type === 'info'"
         [class.alert-persistent]="notification.persistent"
       >
         <div class="flex-between-start gap-3">

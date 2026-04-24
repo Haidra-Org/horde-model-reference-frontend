@@ -350,13 +350,13 @@
       </div>
 
       @if (previewing()) {
-        <div class="alert alert-info mb-3">Refreshing combinations preview...</div>
+        <div class="alert alert--info mb-3">Refreshing combinations preview...</div>
       }
 
       @if (!hasPreviewableSelection()) {
-        <div class="alert alert-info">Select one or more sizes to generate combinations.</div>
+        <div class="alert alert--info">Select one or more sizes to generate combinations.</div>
       } @else if (combos().length === 0 && !previewing()) {
-        <div class="alert alert-warning">
+        <div class="alert alert--warning">
           No new combinations are available for the current selection. Try different sizes, quants,
           or naming fields.
         </div>

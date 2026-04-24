@@ -7,7 +7,7 @@ Styling conventions for the Horde Model Reference frontend. This project consume
 ## Core Principles
 
 1. **Centralized Styles Only** — All styles live in `src/styles/*.css` and `src/shared/design-system/`. Component CSS files must remain empty except for documented exceptions (see below).
-2. **Semantic Classes Over Utility Soup** — Prefer `.card`, `.alert-danger`, `.status-badge-success` over long chains of inline Tailwind utilities. Semantic classes are readable, searchable, and refactorable.
+2. **Semantic Classes Over Utility Soup** — Prefer `.card`, `.alert--danger`, `.status-badge-success` over long chains of inline Tailwind utilities. Semantic classes are readable, searchable, and refactorable.
 3. **Theme Tokens, Not Raw Colors** — All color references must use theme tokens (`primary-*`, `success-*`, `danger-*`, `warning-*`, `info-*`, `gray-*`). Never use raw Tailwind color names (`red-*`, `blue-*`, `emerald-*`, `amber-*`, `rose-*`, `sky-*`, `purple-*`, etc.) in templates or component code.
 4. **Dark Mode by Default** — All components must support dark mode. Use `dark:` variants for every color/background declaration. The `DarkModeService` manages state.
 5. **Shared Foundations, Local Extensions** — Common tokens and primitives come from the shared design system (`src/shared/design-system/`). Project-specific classes live in `src/styles/components/`.
@@ -43,7 +43,7 @@ src/shared/design-system/     # Git submodule — shared with AiHordeFrontpage
 │   ├── spacing.css           # Spacing tokens
 │   └── glass.css             # Glass effect tokens
 └── primitives/
-    ├── alerts.css            # .alert, .alert-success, .alert-danger, etc.
+    ├── alerts.css            # .alert, .alert--success, .alert--danger, etc.
     ├── badges.css            # .badge, .badge-success, .badge-danger, etc.
     ├── buttons.css           # .btn, .btn-primary, .btn-danger, etc.
     ├── cards.css             # .card, .card-header, .card-body, etc.
@@ -181,7 +181,7 @@ All other components must have no `styles:` or `styleUrl:` properties.
 | Badge (generic)         | `.badge` + `.badge-success` / `.badge-danger` / etc.              |
 | Tag (outline)           | `.tag` + `.tag-primary` / `.tag-success` / `.tag-info`            |
 | Info box                | `.info-box` + `.info-box-warning` / etc.                          |
-| Alert (border-left)     | `.alert` + `.alert-danger` / `.alert-warning` / etc.              |
+| Alert (border-left)     | `.alert` + `.alert--danger` / `.alert--warning` / etc.              |
 | Alert (rounded banner)  | `.alert-banner` + `.alert-banner-danger` / `-warning`             |
 | Status badge (pill)     | `.status-badge` + `-success` / `-danger` / `-warning` / `-info`   |
 | Change badge (bordered) | `.change-badge` + `-added` / `-modified` / `-deleted`             |

@@ -91,7 +91,7 @@
 
     <!-- Health Warnings -->
     @if (healthWarnings().length > 0) {
-      <div class="alert alert-warning mb-6">
+      <div class="alert alert--warning mb-6">
         <strong>Group Health Check</strong>
         <ul class="mt-1 ml-4 list-disc text-sm">
           @for (warning of healthWarnings(); track warning) {
@@ -717,7 +717,7 @@
         >
           <h3 class="modal-title">Delete All Models in Group</h3>
           <div class="modal-content">
-            <div class="alert alert-danger mb-4">
+            <div class="alert alert--danger mb-4">
               <strong>Warning:</strong> This will delete all
               {{ canonicalMembers().length }} canonical model{{
                 canonicalMembers().length === 1 ? '' : 's'

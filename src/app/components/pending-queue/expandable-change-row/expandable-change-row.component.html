@@ -177,7 +177,7 @@
           Loading diff…
         </div>
       } @else if (diffError()) {
-        <div class="alert alert-danger text-sm">
+        <div class="alert alert--danger text-sm">
           {{ diffError() }}
           <button type="button" class="link ml-2" (click)="retryDiff()">Retry</button>
         </div>
