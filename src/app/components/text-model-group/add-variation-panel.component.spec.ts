@@ -72,9 +72,9 @@ describe('AddVariationPanelComponent', () => {
   let api: ApiSpy;
   let notification: NotificationSpy;
   let pendingSummary: PendingSummarySpy;
-  let createdSpy: ReturnType<typeof vi.fn>;
-  let cancelledSpy: ReturnType<typeof vi.fn>;
-  let dirtyChangeSpy: ReturnType<typeof vi.fn>;
+  let createdEventCount: number;
+  let cancelledEventCount: number;
+  let dirtyChangeEvents: boolean[];
 
   beforeEach(async () => {
     api = {
@@ -115,12 +115,18 @@ describe('AddVariationPanelComponent', () => {
     fixture.componentRef.setInput('groupData', buildGroupData());
 
     // Subscribe to outputs for spying
-    createdSpy = vi.fn();
-    cancelledSpy = vi.fn();
-    dirtyChangeSpy = vi.fn();
-    component.created.subscribe(createdSpy);
-    component.cancelled.subscribe(cancelledSpy);
-    component.dirtyChange.subscribe(dirtyChangeSpy);
+    createdEventCount = 0;
+    cancelledEventCount = 0;
+    dirtyChangeEvents = [];
+    component.created.subscribe(() => {
+      createdEventCount += 1;
+    });
+    component.cancelled.subscribe(() => {
+      cancelledEventCount += 1;
+    });
+    component.dirtyChange.subscribe((value) => {
+      dirtyChangeEvents.push(value);
+    });
 
     fixture.detectChanges();
   });
@@ -327,7 +333,7 @@ describe('AddVariationPanelComponent', () => {
 
     it('emits created event on success', () => {
       component.submit();
-      expect(createdSpy).toHaveBeenCalled();
+      expect(createdEventCount).toBe(1);
     });
 
     it('shows success notification', () => {
@@ -387,7 +393,7 @@ describe('AddVariationPanelComponent', () => {
   describe('cancel', () => {
     it('emits cancelled event', () => {
       component.cancel();
-      expect(cancelledSpy).toHaveBeenCalled();
+      expect(cancelledEventCount).toBe(1);
     });
   });
 

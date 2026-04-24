@@ -24,11 +24,17 @@ interface AuthSpy {
 }
 
 function buildIssue(
+  groupName: string,
   type: string,
   severity: 'warning' | 'info' = 'warning',
   message = '',
 ): GroupHealthIssue {
-  return { issue_type: type, severity, message: message || `${type} detected` };
+  return {
+    group_name: groupName,
+    issue_type: type,
+    severity,
+    message: message || `${type} detected`,
+  };
 }
 
 function buildGroupEntry(name: string, opts: Partial<GroupSummaryEntry> = {}): GroupSummaryEntry {
@@ -190,10 +196,10 @@ describe('GroupManagementComponent', () => {
     const groups = [
       buildGroupEntry('Healthy-Group'),
       buildGroupEntry('Warn-Group', {
-        health_issues: [buildIssue('singleton_group', 'warning')],
+        health_issues: [buildIssue('Warn-Group', 'singleton_group', 'warning')],
       }),
       buildGroupEntry('Info-Group', {
-        health_issues: [buildIssue('missing_description', 'info')],
+        health_issues: [buildIssue('Info-Group', 'missing_description', 'info')],
       }),
     ];
 
@@ -277,9 +283,9 @@ describe('GroupManagementComponent', () => {
     it('counts non-info issues as warnings', () => {
       const group = buildGroupEntry('Test', {
         health_issues: [
-          buildIssue('singleton_group', 'warning'),
-          buildIssue('inconsistent_baselines', 'warning'),
-          buildIssue('missing_description', 'info'),
+          buildIssue('Test', 'singleton_group', 'warning'),
+          buildIssue('Test', 'inconsistent_baselines', 'warning'),
+          buildIssue('Test', 'missing_description', 'info'),
         ],
       });
       initWith([group]);
@@ -289,8 +295,8 @@ describe('GroupManagementComponent', () => {
     it('counts info issues separately', () => {
       const group = buildGroupEntry('Test', {
         health_issues: [
-          buildIssue('singleton_group', 'warning'),
-          buildIssue('missing_description', 'info'),
+          buildIssue('Test', 'singleton_group', 'warning'),
+          buildIssue('Test', 'missing_description', 'info'),
         ],
       });
       initWith([group]);
@@ -309,11 +315,11 @@ describe('GroupManagementComponent', () => {
     it('applies both filters simultaneously', () => {
       const groups = [
         buildGroupEntry('Llama-3', {
-          health_issues: [buildIssue('singleton_group', 'warning')],
+          health_issues: [buildIssue('Llama-3', 'singleton_group', 'warning')],
         }),
         buildGroupEntry('Llama-2'),
         buildGroupEntry('Mistral', {
-          health_issues: [buildIssue('inconsistent_baselines', 'warning')],
+          health_issues: [buildIssue('Mistral', 'inconsistent_baselines', 'warning')],
         }),
       ];
       initWith(groups);
