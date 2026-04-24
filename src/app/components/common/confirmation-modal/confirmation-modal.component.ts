@@ -132,11 +132,7 @@ export type OperationSeverity = 'create' | 'update' | 'delete' | 'info';
 
           <!-- Actions -->
           <div class="modal-actions">
-            <horde-button
-              variant="secondary"
-              (click)="onCancel()"
-              [disabled]="loading()"
-            >
+            <horde-button variant="secondary" (click)="onCancel()" [disabled]="loading()">
               {{ cancelText() }}
             </horde-button>
             <horde-button

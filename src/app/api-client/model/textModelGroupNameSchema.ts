@@ -19,4 +19,5 @@ export interface TextModelGroupNameSchema {
   author_included?: boolean;
   common_author?: string | null;
   template?: string | null;
+  extra_parts?: Array<string>;
 }

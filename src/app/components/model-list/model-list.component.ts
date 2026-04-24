@@ -350,7 +350,9 @@ export class ModelListComponent implements OnInit {
     }
 
     if (pendingFilter) {
-      filtered = filtered.filter((model) => this.isGhostModel(model) || this.pendingOverlayMap().has(model.name));
+      filtered = filtered.filter(
+        (model) => this.isGhostModel(model) || this.pendingOverlayMap().has(model.name),
+      );
     }
 
     if (selectedTags.length > 0) {
@@ -1579,9 +1581,9 @@ export class ModelListComponent implements OnInit {
 
     const stats$: Observable<BackendStatisticsResponse | null> = hordeType
       ? this.hordeApi.getCombinedModelData(hordeType).pipe(
-        startWith<BackendStatisticsResponse | null>(null),
-        catchError(() => of(null)),
-      )
+          startWith<BackendStatisticsResponse | null>(null),
+          catchError(() => of(null)),
+        )
       : of(null);
 
     return combineLatest([reference$, stats$]).pipe(

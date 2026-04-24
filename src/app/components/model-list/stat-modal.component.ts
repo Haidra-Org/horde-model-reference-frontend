@@ -207,14 +207,14 @@ export class StatModalComponent {
       return this.countValueDetailData()!.map((item) => ({
         cells: item.isOtherRow
           ? [
-            { value: item.count, class: 'font-medium' } as StatCell,
-            { value: item.value, class: 'text-muted italic', colspan: 2 } as StatCell,
-          ]
+              { value: item.count, class: 'font-medium' } as StatCell,
+              { value: item.value, class: 'text-muted italic', colspan: 2 } as StatCell,
+            ]
           : [
-            { value: item.count, class: 'font-medium' } as StatCell,
-            { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
-            { value: item.detail, class: 'text-right text-muted font-mono text-xs' } as StatCell,
-          ],
+              { value: item.count, class: 'font-medium' } as StatCell,
+              { value: item.value, wrapperClass: item.wrapperClass } as StatCell,
+              { value: item.detail, class: 'text-right text-muted font-mono text-xs' } as StatCell,
+            ],
       }));
     }
 

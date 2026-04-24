@@ -17,4 +17,5 @@ export interface GroupNameSchemaUpdateRequest {
   author_included?: boolean | null;
   common_author?: string | null;
   template?: string | null;
+  extra_parts?: Array<string> | null;
 }

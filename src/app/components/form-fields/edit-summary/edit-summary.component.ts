@@ -52,9 +52,7 @@ export interface FieldDiff {
             @if (diffs().length === 0) {
               <p class="text-muted text-sm">No changes detected.</p>
             } @else {
-              <p class="text-sm text-muted mb-3">
-                {{ diffs().length }} field(s) modified
-              </p>
+              <p class="text-sm text-muted mb-3">{{ diffs().length }} field(s) modified</p>
               @for (diff of diffs(); track diff.field) {
                 <div class="edit-summary-row">
                   <span class="edit-summary-field-name">{{ diff.label }}</span>
@@ -75,9 +73,7 @@ export interface FieldDiff {
           <div
             class="flex justify-end gap-3 px-5 py-3 border-t border-gray-200 dark:border-gray-700"
           >
-            <horde-button variant="secondary" (click)="dismissed.emit()">
-              Cancel
-            </horde-button>
+            <horde-button variant="secondary" (click)="dismissed.emit()"> Cancel </horde-button>
             @if (diffs().length > 0) {
               <horde-button variant="primary" (click)="confirmed.emit()">
                 Confirm & Save

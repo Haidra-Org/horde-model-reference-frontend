@@ -1067,7 +1067,7 @@ describe('Unified Model Utilities', () => {
               },
               koboldcpp: {
                 backend: 'koboldcpp',
-                variant_name: 'Qwen/Qwen3-8B',
+                variant_name: 'koboldcpp/Qwen/Qwen3-8B',
                 worker_count: 1,
                 performance: 50.5,
                 queued: 0,

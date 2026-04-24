@@ -15,6 +15,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CdkOverlayOrigin, CdkConnectedOverlay, ConnectedPosition } from '@angular/cdk/overlay';
 
+export type AutocompleteInputWidthMode = 'full' | 'auto';
+export type AutocompleteSuggestionTextMode = 'wrap' | 'truncate';
+
 /**
  * Autocomplete input component that allows arbitrary text values with suggestions.
  * Supports keyboard navigation and filtering of suggestions.
@@ -33,6 +36,9 @@ export class AutocompleteInputComponent {
   readonly label = input<string>('');
   readonly ariaLabel = input<string>('');
   readonly placeholder = input<string>('Type or select...');
+  readonly inputWidthMode = input<AutocompleteInputWidthMode>('full');
+  readonly suggestionTextMode = input<AutocompleteSuggestionTextMode>('wrap');
+  readonly inputClass = input<string>('');
   readonly value = input<string | null>(null);
   readonly suggestions = input<readonly string[]>([]);
   readonly optionAnnotations = input<Record<string, string>>({});
@@ -86,6 +92,22 @@ export class AutocompleteInputComponent {
     // Return matching items first, then non-matching (limit total to 10)
     return [...matching, ...nonMatching].slice(0, 10);
   });
+
+  readonly inputClasses = computed(() => {
+    const classes = ['form-input'];
+    if (this.inputWidthMode() === 'full') {
+      classes.push('w-full');
+    }
+
+    const customClasses = this.inputClass().trim();
+    if (customClasses) {
+      classes.push(customClasses);
+    }
+
+    return classes.join(' ');
+  });
+
+  readonly shouldTruncateSuggestions = computed(() => this.suggestionTextMode() === 'truncate');
 
   constructor() {
     // Sync input value with external value signal

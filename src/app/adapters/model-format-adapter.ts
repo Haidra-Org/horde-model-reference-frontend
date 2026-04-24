@@ -348,7 +348,7 @@ export function legacyApiToForm(
   category: MODEL_REFERENCE_CATEGORY,
 ): FormModelData {
   const commonData: CommonFieldsData = {
-    nsfw: model.nsfw ?? false,
+    nsfw: model.nsfw ?? true,
     description: model.description,
     type: model.type,
     version: model.version,

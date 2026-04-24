@@ -9,6 +9,7 @@
  */
 import { NameFormatInfo } from './nameFormatInfo';
 import { NameExceptionInfo } from './nameExceptionInfo';
+import { GroupFamilyResponse } from './groupFamilyResponse';
 import { GroupMemberInfo } from './groupMemberInfo';
 
 /**
@@ -26,8 +27,9 @@ export interface GroupMembersResponse {
   variant_usage: { [key: string]: number };
   quant_usage: { [key: string]: number };
   name_format: NameFormatInfo;
-  name_schema_is_custom?: boolean;
-  exception_members?: Array<NameExceptionInfo>;
   canonical_count: number;
   backend_duplicate_count: number;
+  name_schema_is_custom?: boolean;
+  exception_members?: Array<NameExceptionInfo>;
+  related_family?: GroupFamilyResponse | null;
 }

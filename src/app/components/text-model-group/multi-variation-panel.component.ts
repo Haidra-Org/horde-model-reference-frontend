@@ -21,6 +21,7 @@ import {
 import { FormModelData } from '../../adapters/model-format-adapter';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
 import { FieldTooltipComponent } from '../form-fields/field-tooltip/field-tooltip.component';
 import { HordeButtonComponent } from '@haidra/design-system/button';
@@ -68,6 +69,7 @@ interface PreviewRequest {
 export class MultiVariationPanelComponent implements OnInit {
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
+  private readonly pendingSummary = inject(PendingQueueSummaryService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly groupName = input.required<string>();
@@ -240,6 +242,11 @@ export class MultiVariationPanelComponent implements OnInit {
                     composed_name: this.fallbackComposedName(requestEntry.size, requestEntry.quant),
                     already_exists: false,
                     suggested_group: this.groupName(),
+                    template: '',
+                    rendered_example: this.fallbackComposedName(
+                      requestEntry.size,
+                      requestEntry.quant,
+                    ),
                   } satisfies ComposeNameResponse),
                 ),
               ),
@@ -519,6 +526,7 @@ export class MultiVariationPanelComponent implements OnInit {
           this.initialSnapshot.set(this.snapshotState());
 
           if (created > 0) {
+            this.pendingSummary.refresh();
             this.notification.success(`Created ${created} variation(s).`);
             this.created.emit();
           }

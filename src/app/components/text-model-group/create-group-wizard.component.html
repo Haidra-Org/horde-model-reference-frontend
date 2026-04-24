@@ -9,309 +9,614 @@
 
   <!-- Step Indicator -->
   <div class="flex items-center gap-2 mb-6 text-sm">
-    <button type="button" class="px-3 py-1 rounded-full transition-colors"
-      [class.bg-primary-600]="step() === 'identity'" [class.text-white]="step() === 'identity'"
-      [class.bg-gray-200]="step() !== 'identity'" [class.dark:bg-gray-700]="step() !== 'identity'"
-      (click)="goToStep('identity')">
+    <button
+      type="button"
+      class="px-3 py-1 rounded-full transition-colors"
+      [class.bg-primary-600]="step() === 'identity'"
+      [class.text-white]="step() === 'identity'"
+      [class.bg-gray-200]="step() !== 'identity'"
+      [class.dark:bg-gray-700]="step() !== 'identity'"
+      (click)="goToStep('identity')"
+    >
       1. Group Identity
     </button>
     <span class="text-gray-400">→</span>
-    <button type="button" class="px-3 py-1 rounded-full transition-colors"
-      [class.bg-primary-600]="step() === 'variation'" [class.text-white]="step() === 'variation'"
-      [class.bg-gray-200]="step() !== 'variation'" [class.dark:bg-gray-700]="step() !== 'variation'"
-      [disabled]="!step1Valid()" (click)="goToStep('variation')">
+    <button
+      type="button"
+      class="px-3 py-1 rounded-full transition-colors"
+      [class.bg-primary-600]="step() === 'variation'"
+      [class.text-white]="step() === 'variation'"
+      [class.bg-gray-200]="step() !== 'variation'"
+      [class.dark:bg-gray-700]="step() !== 'variation'"
+      [disabled]="!step1Valid()"
+      (click)="goToStep('variation')"
+    >
       2. First Variation
     </button>
     <span class="text-gray-400">→</span>
-    <button type="button" class="px-3 py-1 rounded-full transition-colors" [class.bg-primary-600]="step() === 'review'"
-      [class.text-white]="step() === 'review'" [class.bg-gray-200]="step() !== 'review'"
-      [class.dark:bg-gray-700]="step() !== 'review'" [disabled]="!step1Valid() || !step2Valid()"
-      (click)="goToStep('review')">
+    <button
+      type="button"
+      class="px-3 py-1 rounded-full transition-colors"
+      [class.bg-primary-600]="step() === 'review'"
+      [class.text-white]="step() === 'review'"
+      [class.bg-gray-200]="step() !== 'review'"
+      [class.dark:bg-gray-700]="step() !== 'review'"
+      [disabled]="!step1Valid() || !step2Valid()"
+      (click)="goToStep('review')"
+    >
       3. Review & Create
     </button>
   </div>
 
   <!-- Step 1: Group Identity -->
   @if (step() === 'identity') {
-  <div class="card">
-    <div class="card-header">
-      <h2 class="heading-section">Group Identity</h2>
-    </div>
-    <div class="card-body space-y-4">
-      <!-- Group Name -->
-      <div>
-        <label class="form-label" for="group-name">Group Name (base model name)</label>
-        <input id="group-name" type="text" class="form-input" placeholder="e.g. Llama-3.1, Mistral, Qwen2.5"
-          [ngModel]="groupName()" (ngModelChange)="groupName.set($event)" />
-        <p class="form-hint">This becomes the base of all model names in this group.</p>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="heading-section">Group Identity</h2>
       </div>
-
-      <!-- Author -->
-      <div>
-        <label class="form-label" for="group-author">Author / Namespace</label>
-        <input id="group-author" type="text" class="form-input" placeholder="e.g. meta-llama, mistralai (optional)"
-          [ngModel]="author()" (ngModelChange)="author.set($event)" />
-        <p class="form-hint">If models use author/name format, enter the common author prefix.</p>
-      </div>
-
-      <!-- Separator -->
-      <div>
-        <label class="form-label" for="group-separator">Separator</label>
-        <select id="group-separator" class="form-select" [ngModel]="separator()"
-          (ngModelChange)="separator.set($event)">
-          @for (sep of separatorOptions; track sep) {
-          <option [value]="sep">
-            {{ sep === '-' ? 'Hyphen (-)' : sep === '_' ? 'Underscore (_)' : 'Dot (.)' }}
-          </option>
-          }
-        </select>
-      </div>
-
-      <!-- Part Order -->
-      <div>
-        <p class="form-label">Part Order</p>
-        <p class="text-xs text-muted mb-2">Order of parts after the base name.</p>
-        <div class="flex flex-wrap gap-2">
-          @for (part of partOrder(); track part; let i = $index) {
-          <div
-            class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-            <span class="font-mono text-sm">{{ part }}</span>
-            <div class="flex flex-col ml-1">
-              <button type="button"
-                class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
-                [disabled]="i === 0" (click)="movePartUp(i)" aria-label="Move part up">▲</button>
-              <button type="button"
-                class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
-                [disabled]="i === partOrder().length - 1" (click)="movePartDown(i)"
-                aria-label="Move part down">▼</button>
-            </div>
-          </div>
-          }
-        </div>
-      </div>
-
-      <!-- Preview -->
-      <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <div class="card-body space-y-4">
+        <!-- Group Name -->
         <div>
-          <span class="text-xs text-muted">Name template:</span>
-          <span class="ml-2 font-mono text-sm">{{ previewTemplate() }}</span>
-        </div>
-        <div class="mt-2">
-          <span class="text-xs text-muted">Rendered example:</span>
-          <span class="ml-2 font-mono text-sm font-semibold">
-            {{ previewExampleName() }}
-          </span>
-        </div>
-      </div>
+          <label class="form-label" for="group-name">Group Name (base model name)</label>
+          <input
+            id="group-name"
+            type="text"
+            class="form-input w-1/2"
+            placeholder="e.g. Llama-3.1, Mistral"
+            [ngModel]="groupName()"
+            (ngModelChange)="setGroupName($event)"
+          />
+          <p class="form-hint">This becomes the base of all model names in this group.</p>
 
-      <!-- Save Schema Toggle -->
-      <div class="flex items-center gap-3">
-        <input id="save-schema" type="checkbox" class="form-checkbox" [ngModel]="saveSchema()"
-          (ngModelChange)="saveSchema.set($event)" />
-        <label class="checkbox-label" for="save-schema">Save as custom naming schema for this group</label>
+          @if (suggestedFamily(); as suggestion) {
+            <div
+              class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-info-50 dark:bg-info-900/30 border border-info-200 dark:border-info-800 text-sm"
+            >
+              <span class="text-info-800 dark:text-info-200">
+                Suggested family: <strong>{{ suggestion }}</strong>
+              </span>
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                (click)="acceptFamilySuggestion()"
+              >
+                Accept
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-secondary"
+                (click)="dismissFamilySuggestion()"
+              >
+                Dismiss
+              </button>
+            </div>
+          }
+          @if (selectedFamily(); as family) {
+            <div
+              class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-success-50 dark:bg-success-900/30 border border-success-200 dark:border-success-800 text-sm"
+            >
+              <span class="text-success-800 dark:text-success-200">
+                Family: <strong>{{ family }}</strong>
+              </span>
+              <button
+                type="button"
+                class="text-success-700 dark:text-success-300"
+                (click)="selectedFamily.set(null)"
+                aria-label="Remove family assignment"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Author -->
+        <div>
+          <label class="form-label" for="group-author">Author / Namespace</label>
+          <input
+            id="group-author"
+            type="text"
+            class="form-input w-1/2"
+            placeholder="e.g. meta-llama, mistralai (optional)"
+            [ngModel]="author()"
+            (ngModelChange)="author.set($event)"
+          />
+          <p class="form-hint">If models use author/name format, enter the common author prefix.</p>
+        </div>
+
+        <!-- Separator -->
+        <div>
+          <label class="form-label" for="group-separator">Separator</label>
+          <select
+            id="group-separator"
+            class="form-select"
+            [ngModel]="separator()"
+            (ngModelChange)="separator.set($event)"
+          >
+            @for (sep of separatorOptions; track sep) {
+              <option [value]="sep">
+                {{ sep === '-' ? 'Hyphen (-)' : sep === '_' ? 'Underscore (_)' : 'Dot (.)' }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <!-- Part Order -->
+        <div>
+          <p class="form-label">Part Order</p>
+          <p class="text-xs text-muted mb-2">
+            Order of parts in the composed name. The base segment is locked to the first position.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            @for (part of partOrder(); track part; let i = $index) {
+              <div
+                class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+                [class.opacity-90]="isPartLocked(part)"
+              >
+                <span class="font-mono text-sm">{{ part }}</span>
+                @if (isPartLocked(part)) {
+                  <span
+                    class="text-xs text-muted ml-1"
+                    aria-label="locked"
+                    title="Base segment cannot be reordered"
+                    >🔒</span
+                  >
+                } @else {
+                  <div class="flex flex-col ml-1">
+                    <button
+                      type="button"
+                      class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
+                      [disabled]="i === 0 || partOrder()[i - 1] === 'base'"
+                      (click)="movePartUp(i)"
+                      aria-label="Move part up"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      class="text-xs leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-30"
+                      [disabled]="i === partOrder().length - 1"
+                      (click)="movePartDown(i)"
+                      aria-label="Move part down"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Extra Parts -->
+        <div>
+          <p class="form-label">Extra Parts</p>
+          <p class="text-xs text-muted mb-2">
+            Free-form name segments beyond the standard parts (e.g. a date stamp "2024-08" or a
+            descriptor like "chat"). Extras appear in the composed name at the end of the part order
+            unless repositioned on a per-schema basis.
+          </p>
+          @if (extraParts().length > 0) {
+            <div class="space-y-2 mb-2">
+              @for (entry of extraParts(); track $index; let i = $index) {
+                <div class="flex items-center gap-2">
+                  <input
+                    type="text"
+                    class="form-input flex-1"
+                    list="extra-part-label-list"
+                    placeholder="Label (e.g. date)"
+                    [ngModel]="entry.label"
+                    (ngModelChange)="updateExtraPartLabel(i, $event)"
+                  />
+                  <input
+                    type="text"
+                    class="form-input flex-1"
+                    placeholder="Value (e.g. 2024-08)"
+                    [ngModel]="entry.value"
+                    (ngModelChange)="updateExtraPartValue(i, $event)"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger"
+                    (click)="removeExtraPart(i)"
+                    aria-label="Remove extra part"
+                  >
+                    ✕
+                  </button>
+                </div>
+              }
+            </div>
+            <datalist id="extra-part-label-list">
+              @for (suggestion of extraPartLabelSuggestions; track suggestion) {
+                <option [value]="suggestion"></option>
+              }
+            </datalist>
+          }
+          <button type="button" class="btn btn-sm btn-secondary" (click)="addExtraPart()">
+            + Add extra part
+          </button>
+        </div>
+
+        <!-- Preview -->
+        <div
+          class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+        >
+          <div>
+            <span class="text-xs text-muted">Name template:</span>
+            <span class="ml-2 font-mono text-sm">{{ previewTemplate() }}</span>
+          </div>
+          <div class="mt-2">
+            <span class="text-xs text-muted">Rendered example:</span>
+            <span class="ml-2 font-mono text-sm font-semibold">
+              {{ previewExampleName() }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Save Schema Toggle -->
+        <div class="flex items-center gap-3">
+          <input
+            id="save-schema"
+            type="checkbox"
+            class="form-checkbox"
+            [ngModel]="saveSchema()"
+            (ngModelChange)="saveSchema.set($event)"
+          />
+          <label class="checkbox-label" for="save-schema"
+            >Save as custom naming schema for this group</label
+          >
+        </div>
+      </div>
+      <div class="card-footer flex justify-between">
+        <horde-button variant="secondary" (click)="cancel()">Cancel</horde-button>
+        <horde-button variant="primary" [disabled]="!step1Valid()" (click)="goToStep('variation')">
+          Next: First Variation →
+        </horde-button>
       </div>
     </div>
-    <div class="card-footer flex justify-between">
-      <horde-button variant="secondary" (click)="cancel()">Cancel</horde-button>
-      <horde-button variant="primary" [disabled]="!step1Valid()" (click)="goToStep('variation')">
-        Next: First Variation →
-      </horde-button>
-    </div>
-  </div>
   }
 
   <!-- Step 2: First Variation -->
   @if (step() === 'variation') {
-  <div class="card">
-    <div class="card-header">
-      <h2 class="heading-section">First Variation</h2>
-    </div>
-    <div class="card-body space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Size (required) -->
-        <div>
-          <label class="form-label" for="var-size">Size <span class="text-danger-500">*</span></label>
-          <input id="var-size" type="text" class="form-input" placeholder="e.g. 8B, 70B, 1.5B" [ngModel]="size()"
-            (ngModelChange)="size.set($event); triggerCompose()" />
-        </div>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="heading-section">First Variation</h2>
+      </div>
+      <div class="card-body space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Size (required) -->
+          <div>
+            <label class="form-label" for="var-size"
+              >Size <span class="text-danger-500">*</span></label
+            >
+            <input
+              id="var-size"
+              type="text"
+              class="form-input"
+              placeholder="e.g. 8B, 70B, 1.5B"
+              [ngModel]="size()"
+              (ngModelChange)="size.set($event); triggerCompose()"
+            />
+          </div>
 
-        <!-- Variant -->
-        <div>
-          <label class="form-label" for="var-variant">Variant</label>
-          <input id="var-variant" type="text" class="form-input" placeholder="e.g. Instruct, Chat (optional)"
-            [ngModel]="variant()" (ngModelChange)="variant.set($event); triggerCompose()" />
-        </div>
+          <!-- Variant -->
+          <div>
+            <label class="form-label" for="var-variant">Variant</label>
+            <input
+              id="var-variant"
+              type="text"
+              class="form-input"
+              placeholder="e.g. Instruct, Chat (optional)"
+              [ngModel]="variant()"
+              (ngModelChange)="variant.set($event); triggerCompose()"
+            />
+          </div>
 
-        <!-- Version -->
-        <div>
-          <label class="form-label" for="var-version">Version</label>
-          <input id="var-version" type="text" class="form-input" placeholder="e.g. v2, turbo (optional)"
-            [ngModel]="version()" (ngModelChange)="version.set($event); triggerCompose()" />
-        </div>
+          <!-- Version -->
+          <div>
+            <label class="form-label" for="var-version">Version</label>
+            <input
+              id="var-version"
+              type="text"
+              class="form-input"
+              placeholder="e.g. v2, turbo (optional)"
+              [ngModel]="version()"
+              (ngModelChange)="version.set($event); triggerCompose()"
+            />
+          </div>
 
-        <!-- Quant -->
-        <div>
-          <label class="form-label" for="var-quant">Quantization</label>
-          <input id="var-quant" type="text" class="form-input" placeholder="e.g. Q4_K_M, GPTQ (optional)"
-            [ngModel]="quant()" (ngModelChange)="quant.set($event); triggerCompose()" />
-        </div>
+          <!-- Quant -->
+          <div>
+            <label class="form-label" for="var-quant">Quantization</label>
+            <input
+              id="var-quant"
+              type="text"
+              class="form-input"
+              placeholder="e.g. Q4_K_M, GPTQ (optional)"
+              [ngModel]="quant()"
+              (ngModelChange)="quant.set($event); triggerCompose()"
+            />
+          </div>
 
-        <!-- Parameters -->
-        <div>
-          <label class="form-label" for="var-params">Parameters <span class="text-danger-500">*</span></label>
-          <div class="flex gap-2">
-            <input id="var-params" type="number" class="form-input flex-1" placeholder="e.g. 8" [ngModel]="parameters()"
-              (ngModelChange)="parameters.set($event)" />
-            <select class="form-select w-20" [ngModel]="parametersUnit()" (ngModelChange)="parametersUnit.set($event)">
-              <option value="B">B</option>
-              <option value="M">M</option>
-            </select>
+          <!-- Parameters -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="form-label m-0" for="var-params"
+                >Parameters <span class="text-danger-500">*</span></label
+              >
+              <button
+                type="button"
+                class="text-xs text-muted hover:text-primary-600"
+                (click)="toggleParametersLinked()"
+                [attr.aria-label]="parametersLinked() ? 'Unlink from size' : 'Link to size'"
+              >
+                {{ parametersLinked() ? '🔗 Linked to size' : '🔓 Manual' }}
+              </button>
+            </div>
+            <div class="flex gap-2">
+              <input
+                id="var-params"
+                type="number"
+                class="form-input flex-1"
+                placeholder="e.g. 8"
+                [disabled]="parametersLinked()"
+                [ngModel]="parameters()"
+                (ngModelChange)="parameters.set($event)"
+              />
+              <select
+                class="form-select w-20"
+                [disabled]="parametersLinked()"
+                [ngModel]="parametersUnit()"
+                (ngModelChange)="parametersUnit.set($event)"
+              >
+                <option value="B">B</option>
+                <option value="M">M</option>
+              </select>
+            </div>
+            @if (parametersLinked()) {
+              <p class="form-hint">Auto-filled from Size. Click "Linked" to override manually.</p>
+            }
+          </div>
+
+          <!-- Baseline -->
+          <div class="md:col-span-2">
+            <p class="form-label">Baseline</p>
+            <app-autocomplete-input
+              [value]="baseline()"
+              [suggestions]="baselineSuggestions()"
+              placeholder="e.g. llama-3"
+              (valueChange)="baseline.set($event ?? '')"
+            />
           </div>
         </div>
 
-        <!-- Baseline -->
+        <!-- Description -->
         <div>
-          <p class="form-label">Baseline</p>
-          <app-autocomplete-input [value]="baseline()" [suggestions]="baselineSuggestions()" placeholder="e.g. llama-3"
-            (valueChange)="baseline.set($event ?? '')" />
+          <label class="form-label" for="var-description">Description</label>
+          <textarea
+            id="var-description"
+            class="form-textarea min-w-full"
+            rows="3"
+            placeholder="Model description (optional)"
+            [ngModel]="description()"
+            (ngModelChange)="description.set($event)"
+          ></textarea>
         </div>
-      </div>
 
-      <!-- Description -->
-      <div>
-        <label class="form-label" for="var-description">Description</label>
-        <textarea id="var-description" class="form-textarea" rows="3" placeholder="Model description (optional)"
-          [ngModel]="description()" (ngModelChange)="description.set($event)"></textarea>
-      </div>
+        <!-- URL -->
+        <div>
+          <label class="form-label" for="var-url">Download URL</label>
+          <input
+            id="var-url"
+            type="url"
+            class="form-input min-w-full"
+            placeholder="https://huggingface.co/... (optional)"
+            [ngModel]="url()"
+            (ngModelChange)="url.set($event)"
+          />
+        </div>
 
-      <!-- URL -->
-      <div>
-        <label class="form-label" for="var-url">Download URL</label>
-        <input id="var-url" type="url" class="form-input" placeholder="https://huggingface.co/... (optional)"
-          [ngModel]="url()" (ngModelChange)="url.set($event)" />
-      </div>
+        <!-- NSFW -->
+        <div class="flex items-center gap-3">
+          <input
+            id="var-nsfw"
+            type="checkbox"
+            class="form-checkbox"
+            [ngModel]="nsfw()"
+            (ngModelChange)="nsfw.set($event)"
+          />
+          <label class="checkbox-label" for="var-nsfw">NSFW</label>
+        </div>
 
-      <!-- NSFW -->
-      <div class="flex items-center gap-3">
-        <input id="var-nsfw" type="checkbox" class="form-checkbox" [ngModel]="nsfw()"
-          (ngModelChange)="nsfw.set($event)" />
-        <label class="checkbox-label" for="var-nsfw">NSFW</label>
-      </div>
+        <!-- Model Metadata (style, tags, instruct_format) -->
+        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h3 class="heading-card mb-3">Model Metadata</h3>
 
-      <!-- Composed Name Preview -->
-      @if (composedName()) {
-      <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-        <span class="text-xs text-muted">Composed name:</span>
-        <span class="ml-2 font-mono font-semibold">{{ composedName() }}</span>
-        @if (alreadyExists()) {
-        <horde-badge variant="danger" class="ml-2">Already exists</horde-badge>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label" for="var-style">Style</label>
+              <input
+                id="var-style"
+                type="text"
+                class="form-input"
+                list="style-suggestions"
+                placeholder="e.g. alpaca, chatml"
+                [ngModel]="style()"
+                (ngModelChange)="style.set($event)"
+              />
+              <datalist id="style-suggestions">
+                @for (suggestion of styleSuggestions; track suggestion) {
+                  <option [value]="suggestion"></option>
+                }
+              </datalist>
+              <p class="form-hint">Prompt formatting style.</p>
+            </div>
+
+            <div>
+              <label class="form-label" for="var-instruct-format">Instruct Format</label>
+              <input
+                id="var-instruct-format"
+                type="text"
+                class="form-input"
+                list="instruct-format-suggestions"
+                placeholder="e.g. chatml, llama3"
+                [ngModel]="instructFormat()"
+                (ngModelChange)="instructFormat.set($event)"
+              />
+              <datalist id="instruct-format-suggestions">
+                @for (suggestion of instructFormatSuggestions; track suggestion) {
+                  <option [value]="suggestion"></option>
+                }
+              </datalist>
+              <p class="form-hint">Instruction template identifier.</p>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="form-label" for="var-tag-input">Tags</label>
+            <div class="flex flex-wrap gap-2 mb-2">
+              @for (tag of tags(); track tag) {
+                <span class="tag tag-info">
+                  {{ tag }}
+                  <button
+                    type="button"
+                    class="ml-1 text-xs"
+                    (click)="removeTag(tag)"
+                    [attr.aria-label]="'Remove ' + tag"
+                  >
+                    ✕
+                  </button>
+                </span>
+              }
+            </div>
+            <input
+              id="var-tag-input"
+              #tagInput
+              type="text"
+              class="form-input"
+              placeholder="Type a tag and press Enter"
+              (keydown.enter)="addTag(tagInput.value); tagInput.value = ''; $event.preventDefault()"
+            />
+            <p class="form-hint">Searchable metadata tags (e.g. coding, roleplay).</p>
+          </div>
+        </div>
+
+        <!-- Composed Name Preview -->
+        @if (composedName()) {
+          <div
+            class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+          >
+            <span class="text-xs text-muted">Composed name:</span>
+            <span class="ml-2 font-mono font-semibold">{{ composedName() }}</span>
+            @if (alreadyExists()) {
+              <horde-badge variant="danger" class="ml-2">Already exists</horde-badge>
+            }
+          </div>
+        }
+        @if (composing()) {
+          <p class="text-xs text-muted">Composing name...</p>
         }
       </div>
-      }
-      @if (composing()) {
-      <p class="text-xs text-muted">Composing name...</p>
-      }
+      <div class="card-footer flex justify-between">
+        <horde-button variant="secondary" (click)="goToStep('identity')">← Back</horde-button>
+        <horde-button variant="primary" [disabled]="!step2Valid()" (click)="goToStep('review')">
+          Next: Review →
+        </horde-button>
+      </div>
     </div>
-    <div class="card-footer flex justify-between">
-      <horde-button variant="secondary" (click)="goToStep('identity')">← Back</horde-button>
-      <horde-button variant="primary" [disabled]="!step2Valid()" (click)="goToStep('review')">
-        Next: Review →
-      </horde-button>
-    </div>
-  </div>
   }
 
   <!-- Step 3: Review -->
   @if (step() === 'review') {
-  <div class="card">
-    <div class="card-header">
-      <h2 class="heading-section">Review & Create</h2>
-    </div>
-    <div class="card-body space-y-4">
-      <!-- Group Summary -->
-      <div>
-        <h3 class="heading-card mb-2">Group</h3>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <span class="field-label">Name</span>
-            <span class="field-value block mt-0.5">{{ groupName() }}</span>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="heading-section">Review & Create</h2>
+      </div>
+      <div class="card-body space-y-4">
+        <!-- Group Summary -->
+        <div>
+          <h3 class="heading-card mb-2">Group</h3>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div>
+              <span class="field-label">Name</span>
+              <span class="field-value block mt-0.5">{{ groupName() }}</span>
+            </div>
+            @if (author()) {
+              <div>
+                <span class="field-label">Author</span>
+                <span class="field-value block mt-0.5">{{ author() }}</span>
+              </div>
+            }
+            <div>
+              <span class="field-label">Naming Schema</span>
+              <span class="field-value block mt-0.5 font-mono">{{ previewTemplate() }}</span>
+            </div>
+            <div class="col-span-2">
+              <span class="field-label">Rendered Example</span>
+              <span class="field-value block mt-0.5 font-mono">{{ previewExampleName() }}</span>
+            </div>
+            <div>
+              <span class="field-label">Save Schema</span>
+              <span class="field-value block mt-0.5">{{ saveSchema() ? 'Yes' : 'No' }}</span>
+            </div>
           </div>
-          @if (author()) {
-          <div>
-            <span class="field-label">Author</span>
-            <span class="field-value block mt-0.5">{{ author() }}</span>
+        </div>
+
+        <hr class="border-gray-200 dark:border-gray-700" />
+
+        <!-- First Variation Summary -->
+        <div>
+          <h3 class="heading-card mb-2">First Variation</h3>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div class="col-span-2">
+              <span class="field-label">Model Name</span>
+              <span class="field-value block mt-0.5 font-mono text-lg">{{ composedName() }}</span>
+            </div>
+            <div>
+              <span class="field-label">Size</span>
+              <span class="field-value block mt-0.5">{{ size() }}</span>
+            </div>
+            @if (variant()) {
+              <div>
+                <span class="field-label">Variant</span>
+                <span class="field-value block mt-0.5">{{ variant() }}</span>
+              </div>
+            }
+            @if (quant()) {
+              <div>
+                <span class="field-label">Quantization</span>
+                <span class="field-value block mt-0.5">{{ quant() }}</span>
+              </div>
+            }
+            <div>
+              <span class="field-label">Parameters</span>
+              <span class="field-value block mt-0.5">{{ parameters() }}{{ parametersUnit() }}</span>
+            </div>
+            @if (baseline()) {
+              <div>
+                <span class="field-label">Baseline</span>
+                <span class="field-value block mt-0.5">{{ baseline() }}</span>
+              </div>
+            }
+            <div>
+              <span class="field-label">NSFW</span>
+              <span class="field-value block mt-0.5">{{ nsfw() ? 'Yes' : 'No' }}</span>
+            </div>
           </div>
+          @if (description()) {
+            <div class="mt-2 text-sm">
+              <span class="field-label">Description</span>
+              <p class="field-value mt-0.5">{{ description() }}</p>
+            </div>
           }
-          <div>
-            <span class="field-label">Naming Schema</span>
-            <span class="field-value block mt-0.5 font-mono">{{ previewTemplate() }}</span>
-          </div>
-          <div class="col-span-2">
-            <span class="field-label">Rendered Example</span>
-            <span class="field-value block mt-0.5 font-mono">{{ previewExampleName() }}</span>
-          </div>
-          <div>
-            <span class="field-label">Save Schema</span>
-            <span class="field-value block mt-0.5">{{ saveSchema() ? 'Yes' : 'No' }}</span>
-          </div>
         </div>
       </div>
-
-      <hr class="border-gray-200 dark:border-gray-700" />
-
-      <!-- First Variation Summary -->
-      <div>
-        <h3 class="heading-card mb-2">First Variation</h3>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-          <div class="col-span-2">
-            <span class="field-label">Model Name</span>
-            <span class="field-value block mt-0.5 font-mono text-lg">{{ composedName() }}</span>
-          </div>
-          <div>
-            <span class="field-label">Size</span>
-            <span class="field-value block mt-0.5">{{ size() }}</span>
-          </div>
-          @if (variant()) {
-          <div>
-            <span class="field-label">Variant</span>
-            <span class="field-value block mt-0.5">{{ variant() }}</span>
-          </div>
-          }
-          @if (quant()) {
-          <div>
-            <span class="field-label">Quantization</span>
-            <span class="field-value block mt-0.5">{{ quant() }}</span>
-          </div>
-          }
-          <div>
-            <span class="field-label">Parameters</span>
-            <span class="field-value block mt-0.5">{{ parameters() }}{{ parametersUnit() }}</span>
-          </div>
-          @if (baseline()) {
-          <div>
-            <span class="field-label">Baseline</span>
-            <span class="field-value block mt-0.5">{{ baseline() }}</span>
-          </div>
-          }
-          <div>
-            <span class="field-label">NSFW</span>
-            <span class="field-value block mt-0.5">{{ nsfw() ? 'Yes' : 'No' }}</span>
-          </div>
-        </div>
-        @if (description()) {
-        <div class="mt-2 text-sm">
-          <span class="field-label">Description</span>
-          <p class="field-value mt-0.5">{{ description() }}</p>
-        </div>
-        }
+      <div class="card-footer flex justify-between">
+        <horde-button variant="secondary" (click)="goToStep('variation')">← Back</horde-button>
+        <horde-button variant="primary" [disabled]="submitting()" (click)="submit()">
+          {{ submitting() ? 'Creating...' : 'Create Group & Model' }}
+        </horde-button>
       </div>
     </div>
-    <div class="card-footer flex justify-between">
-      <horde-button variant="secondary" (click)="goToStep('variation')">← Back</horde-button>
-      <horde-button variant="primary" [disabled]="submitting()" (click)="submit()">
-        {{ submitting() ? 'Creating...' : 'Create Group & Model' }}
-      </horde-button>
-    </div>
-  </div>
   }
 </div>

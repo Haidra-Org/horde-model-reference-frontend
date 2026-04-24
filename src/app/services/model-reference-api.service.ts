@@ -37,6 +37,19 @@ import {
   GroupMembersResponse,
   GroupNameSchemaResponse,
   GroupNameSchemaUpdateRequest,
+  GroupsSummaryResponse,
+  GroupHealthResponse,
+  GroupAliasListResponse,
+  GroupAliasResponse,
+  SetAliasesRequest,
+  AddAliasRequest,
+  RemoveAliasRequest,
+  GroupFamilyListResponse,
+  GroupFamilyResponse,
+  SetFamilyRequest,
+  AddFamilyMemberRequest,
+  RemoveFamilyMemberRequest,
+  DetectFamiliesResponse,
   LegacyStableDiffusionRecordInput,
   LegacyTextGenerationRecordInput,
   LegacyControlnetRecordInput,
@@ -422,9 +435,7 @@ export class ModelReferenceApiService {
       );
     }
 
-    return throwError(
-      () => new Error(`V1 create not supported for category '${category}'`),
-    );
+    return throwError(() => new Error(`V1 create not supported for category '${category}'`));
   }
 
   /**
@@ -437,9 +448,7 @@ export class ModelReferenceApiService {
   ): Observable<PendingChangeRecord> {
     const categoryMethodMap: Record<string, () => Observable<unknown>> = {
       image_generation: () =>
-        this.v1CreateUpdateService.updateLegacyModel(
-          payload as LegacyStableDiffusionRecordInput,
-        ),
+        this.v1CreateUpdateService.updateLegacyModel(payload as LegacyStableDiffusionRecordInput),
       text_generation: () =>
         this.v1CreateUpdateService.updateLegacyTextGenerationModel(
           payload as LegacyTextGenerationRecordInput,
@@ -460,9 +469,7 @@ export class ModelReferenceApiService {
       );
     }
 
-    return throwError(
-      () => new Error(`V1 update not supported for category '${category}'`),
-    );
+    return throwError(() => new Error(`V1 update not supported for category '${category}'`));
   }
 
   /**
@@ -655,21 +662,121 @@ export class ModelReferenceApiService {
   setNameException(modelName: string, reason: string | null): Observable<object> {
     const request: NameExceptionRequest = { reason };
     return this.textUtilsService
-      .setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(
-        modelName,
-        request,
-      )
+      .setNameExceptionModelReferencesV2TextGenerationModelNameNameExceptionPut(modelName, request)
       .pipe(catchError(this.handleError));
   }
 
   getGroupNames(): Observable<string[]> {
     return this.http
-      .get<{ groups: string[] }>(
-        `${this.basePath}/model_references/v2/text_generation/groups`,
-      )
+      .get<{ groups: string[] }>(`${this.basePath}/model_references/v2/text_generation/groups`)
       .pipe(
         map((response) => response.groups ?? []),
         catchError(this.handleError),
       );
+  }
+
+  // --- Groups Summary & Health ---
+
+  getGroupsSummary(): Observable<GroupsSummaryResponse> {
+    return this.textUtilsService
+      .listGroupsSummaryModelReferencesV2TextGenerationGroupsSummaryGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  getGroupsHealth(): Observable<GroupHealthResponse> {
+    return this.textUtilsService
+      .checkGroupsHealthModelReferencesV2TextGenerationGroupsHealthGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  // --- Group Aliases ---
+
+  listAliases(): Observable<GroupAliasListResponse> {
+    return this.textUtilsService
+      .listAliasesModelReferencesV2TextGenerationAliasesGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  getAlias(canonical: string): Observable<GroupAliasResponse> {
+    return this.textUtilsService
+      .getAliasModelReferencesV2TextGenerationAliasesCanonicalGet(canonical)
+      .pipe(catchError(this.handleError));
+  }
+
+  setAliases(canonical: string, aliases: string[]): Observable<GroupAliasResponse> {
+    const request: SetAliasesRequest = { aliases };
+    return this.textUtilsService
+      .setAliasesModelReferencesV2TextGenerationAliasesCanonicalPut(canonical, request)
+      .pipe(catchError(this.handleError));
+  }
+
+  addAlias(canonical: string, alias: string): Observable<GroupAliasResponse> {
+    const request: AddAliasRequest = { alias };
+    return this.textUtilsService
+      .addAliasModelReferencesV2TextGenerationAliasesCanonicalAddPost(canonical, request)
+      .pipe(catchError(this.handleError));
+  }
+
+  removeAlias(canonical: string, alias: string): Observable<GroupAliasResponse> {
+    const request: RemoveAliasRequest = { alias };
+    return this.textUtilsService
+      .removeAliasModelReferencesV2TextGenerationAliasesCanonicalRemovePost(canonical, request)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteAliases(canonical: string): Observable<object> {
+    return this.textUtilsService
+      .deleteAliasesModelReferencesV2TextGenerationAliasesCanonicalDelete(canonical)
+      .pipe(catchError(this.handleError));
+  }
+
+  // --- Group Families ---
+
+  listFamilies(): Observable<GroupFamilyListResponse> {
+    return this.textUtilsService
+      .listFamiliesModelReferencesV2TextGenerationFamiliesGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  detectFamilySuggestions(): Observable<DetectFamiliesResponse> {
+    return this.textUtilsService
+      .detectFamilySuggestionsModelReferencesV2TextGenerationFamiliesDetectGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  getFamily(familyName: string): Observable<GroupFamilyResponse> {
+    return this.textUtilsService
+      .getFamilyModelReferencesV2TextGenerationFamiliesFamilyNameGet(familyName)
+      .pipe(catchError(this.handleError));
+  }
+
+  setFamily(familyName: string, members: string[]): Observable<GroupFamilyResponse> {
+    const request: SetFamilyRequest = { members };
+    return this.textUtilsService
+      .setFamilyModelReferencesV2TextGenerationFamiliesFamilyNamePut(familyName, request)
+      .pipe(catchError(this.handleError));
+  }
+
+  addFamilyMember(familyName: string, groupName: string): Observable<GroupFamilyResponse> {
+    const request: AddFamilyMemberRequest = { group_name: groupName };
+    return this.textUtilsService
+      .addFamilyMemberModelReferencesV2TextGenerationFamiliesFamilyNameAddPost(familyName, request)
+      .pipe(catchError(this.handleError));
+  }
+
+  removeFamilyMember(familyName: string, groupName: string): Observable<GroupFamilyResponse> {
+    const request: RemoveFamilyMemberRequest = { group_name: groupName };
+    return this.textUtilsService
+      .removeFamilyMemberModelReferencesV2TextGenerationFamiliesFamilyNameRemovePost(
+        familyName,
+        request,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteFamily(familyName: string): Observable<object> {
+    return this.textUtilsService
+      .deleteFamilyModelReferencesV2TextGenerationFamiliesFamilyNameDelete(familyName)
+      .pipe(catchError(this.handleError));
   }
 }

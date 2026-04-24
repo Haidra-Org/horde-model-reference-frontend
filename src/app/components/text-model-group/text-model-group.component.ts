@@ -13,10 +13,18 @@ import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { HordeButtonComponent } from '@haidra/design-system/button';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, of } from 'rxjs';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
-import { GroupMemberInfo, GroupMembersResponse, NameExceptionInfo } from '../../api-client';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
+import {
+  GroupFamilyResponse,
+  GroupMemberInfo,
+  GroupMembersResponse,
+  NameExceptionInfo,
+  PendingChangeRecord,
+} from '../../api-client';
 import { AddVariationPanelComponent } from './add-variation-panel.component';
 import { MultiVariationPanelComponent } from './multi-variation-panel.component';
 import { NameSchemaEditorComponent } from './name-schema-editor.component';
@@ -48,6 +56,7 @@ export class TextModelGroupComponent implements OnInit {
   private readonly notification = inject(NotificationService);
   private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly pendingSummary = inject(PendingQueueSummaryService);
 
   readonly category = signal('text_generation');
   readonly groupName = signal('');
@@ -97,11 +106,48 @@ export class TextModelGroupComponent implements OnInit {
     return data.members.filter((m) => m.is_backend_duplicate);
   });
 
+  /** Pending changes for text_generation that relate to this group */
+  readonly pendingGroupChanges = computed<PendingChangeRecord[]>(() => {
+    const group = this.groupName();
+    if (!group) return [];
+    const memberNames = new Set(this.groupData()?.members.map((m) => m.name) ?? []);
+
+    return this.pendingSummary.records().filter((r) => {
+      if (r.category !== 'text_generation' || r.status !== 'pending') return false;
+      // Match existing members (update/delete)
+      if (memberNames.has(r.model_name)) return true;
+      // Match creates by group name in payload or name prefix
+      if (r.operation === 'create') {
+        const payload = r.payload ?? {};
+        if (payload['text_model_group'] === group) return true;
+      }
+      return false;
+    });
+  });
+
+  readonly pendingCreates = computed(() =>
+    this.pendingGroupChanges().filter((r) => r.operation === 'create'),
+  );
+
+  readonly pendingUpdates = computed(() =>
+    this.pendingGroupChanges().filter((r) => r.operation === 'update'),
+  );
+
+  readonly pendingDeletes = computed(() =>
+    this.pendingGroupChanges().filter((r) => r.operation === 'delete'),
+  );
+
   readonly commonFields = computed(() => {
     return this.groupData()?.common_fields ?? {};
   });
 
   readonly nameSchemaIsCustom = computed(() => this.groupData()?.name_schema_is_custom ?? false);
+
+  readonly relatedFamily = computed<GroupFamilyResponse | null>(
+    () => this.groupData()?.related_family ?? null,
+  );
+
+  readonly groupAliases = signal<string[]>([]);
 
   readonly exceptionMembers = computed<NameExceptionInfo[]>(
     () => this.groupData()?.exception_members ?? [],
@@ -121,6 +167,16 @@ export class TextModelGroupComponent implements OnInit {
     return Object.entries(edits).some(
       ([key, value]) => JSON.stringify(value) !== JSON.stringify(baseline[key]),
     );
+  });
+
+  /** Preview of what common-field edits will change across group members */
+  readonly commonFieldsPreview = computed<{ field: string; from: unknown; to: unknown }[]>(() => {
+    if (!this.commonFieldsDirty()) return [];
+    const baseline = this.commonFields();
+    const edits = this.commonFieldEdits();
+    return Object.entries(edits)
+      .filter(([key, value]) => JSON.stringify(value) !== JSON.stringify(baseline[key]))
+      .map(([key, value]) => ({ field: key, from: baseline[key], to: value }));
   });
 
   readonly parameterSummary = computed(() => {
@@ -188,20 +244,17 @@ export class TextModelGroupComponent implements OnInit {
           this.groupName.set(groupName);
           this.loading.set(true);
         }),
-        switchMap(({ groupName }) => this.api.getGroupMembers(groupName)),
+        switchMap(({ groupName }) =>
+          this.api.getGroupMembers(groupName).pipe(catchError(() => of(null))),
+        ),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: (response) => {
-          this.groupData.set(response);
-          this.loading.set(false);
-
-          if (response.members.length === 0) {
-            this.notification.error(`No models found in group "${this.groupName()}"`);
+          if (response) {
+            this.groupData.set(response);
+            this.loadAliases(response.group_name);
           }
-        },
-        error: (error: Error) => {
-          this.notification.error(error.message);
           this.loading.set(false);
         },
       });
@@ -374,7 +427,9 @@ export class TextModelGroupComponent implements OnInit {
       .subscribe({
         next: () => {
           this.notification.success(
-            reason ? `Marked "${memberName}" as exception` : `Cleared exception for "${memberName}"`,
+            reason
+              ? `Marked "${memberName}" as exception`
+              : `Cleared exception for "${memberName}"`,
           );
           this.reloadGroup();
         },
@@ -438,21 +493,35 @@ export class TextModelGroupComponent implements OnInit {
     this.loading.set(true);
     this.api
       .getGroupMembers(this.groupName())
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        catchError(() => of(null)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => {
-          this.groupData.set(response);
-          this.loading.set(false);
+          if (response) {
+            this.groupData.set(response);
+            this.loadAliases(response.group_name);
 
-          if (response.members.length === 0) {
-            this.notification.success('All models in this group have been deleted');
-            this.goBackToList();
+            if (response.members.length === 0) {
+              this.notification.success('All models in this group have been deleted');
+              this.goBackToList();
+            }
+          } else {
+            this.groupData.set(null);
           }
-        },
-        error: (error: Error) => {
-          this.notification.error(error.message);
           this.loading.set(false);
         },
+      });
+  }
+
+  private loadAliases(groupName: string): void {
+    this.api
+      .getAlias(groupName)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => this.groupAliases.set(response.aliases),
+        error: () => this.groupAliases.set([]),
       });
   }
 }

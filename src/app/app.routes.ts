@@ -4,6 +4,7 @@ import { ModelListComponent } from './components/model-list/model-list.component
 import { ModelFormComponent } from './components/model-form/model-form.component';
 import { ModelAuditComponent } from './components/model-audit/model-audit.component';
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
+import { GroupManagementComponent } from './components/text-model-group/group-management.component';
 import { CreateGroupWizardComponent } from './components/text-model-group/create-group-wizard.component';
 import { PendingQueueComponent } from './components/pending-queue/pending-queue.component';
 import { authenticatedGuard } from './guards/role.guard';
@@ -13,6 +14,10 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'categories/:category', component: ModelListComponent },
   { path: 'categories/:category/audit', component: ModelAuditComponent },
+  {
+    path: 'categories/:category/group-management',
+    component: GroupManagementComponent,
+  },
   {
     path: 'categories/:category/group/:groupName',
     component: TextModelGroupComponent,

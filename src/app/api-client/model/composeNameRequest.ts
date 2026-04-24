@@ -20,4 +20,5 @@ export interface ComposeNameRequest {
   quant?: string | null;
   separator?: string | null;
   part_order?: Array<string> | null;
+  extra_parts?: { [key: string]: string } | null;
 }

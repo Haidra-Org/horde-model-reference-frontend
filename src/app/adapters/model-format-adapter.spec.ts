@@ -5,7 +5,6 @@ import {
   v2ApiToForm,
   formToV2Api,
   legacyApiToV2Api,
-  FormModelData,
 } from './model-format-adapter';
 import {
   MODEL_REFERENCE_CATEGORY,
@@ -552,7 +551,8 @@ describe('model-format-adapter', () => {
 
       const formData = legacyApiToForm(model, MODEL_REFERENCE_CATEGORY.ImageGeneration);
       expect(formData.commonData.description).toBeNull();
-      expect(formData.commonData.nsfw).toBe(false);
+      // nsfw defaults to true for safety when not specified in legacy records
+      expect(formData.commonData.nsfw).toBe(true);
     });
 
     it('should produce valid V2 output even when v2Fields is null (legacy source)', () => {

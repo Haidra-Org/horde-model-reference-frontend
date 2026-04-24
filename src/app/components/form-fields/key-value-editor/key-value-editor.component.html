@@ -1,54 +1,61 @@
 <fieldset class="form-section">
   @if (label()) {
-  <legend class="form-label">{{ label() }}</legend>
+    <legend class="form-label">{{ label() }}</legend>
   }
 
   <!-- Existing Pairs -->
   @if (pairs().length > 0) {
-  <div class="form-grid-3 mb-4">
-    @for (pair of pairs(); track pair.key) {
-    <div class="key-value-item-card">
-      <div class="space-y-2">
-        <!-- Key -->
-        <div>
-          <label class="form-label-sm" [attr.for]="'pair-key-' + pair.key"> Key </label>
-          <div class="font-mono text-sm break-all" [attr.id]="'pair-key-' + pair.key">
-            {{ pair.key }}
+    <div class="form-grid-3 mb-4">
+      @for (pair of pairs(); track pair.key) {
+        <div class="key-value-item-card">
+          <div class="space-y-2">
+            <!-- Key -->
+            <div>
+              <label class="form-label-sm" [attr.for]="'pair-key-' + pair.key"> Key </label>
+              <div class="font-mono text-sm break-all" [attr.id]="'pair-key-' + pair.key">
+                {{ pair.key }}
+              </div>
+            </div>
+
+            <!-- Value -->
+            <div>
+              <label class="form-label-sm" [attr.for]="'pair-value-' + pair.key">
+                Value
+                <span class="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700">
+                  {{ pair.valueType }}
+                </span>
+              </label>
+              <input
+                type="text"
+                class="form-input text-sm"
+                [value]="getValueAsString(pair.value)"
+                [attr.id]="'pair-value-' + pair.key"
+                (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
+                placeholder="Enter value"
+              />
+            </div>
+
+            <!-- Remove Button -->
+            <div class="flex justify-end">
+              <horde-button
+                variant="danger"
+                size="sm"
+                (click)="removePair(pair.key)"
+                [attr.aria-label]="'Remove ' + pair.key"
+                title="Remove this requirement"
+              >
+                <span class="text-lg leading-none">×</span>
+              </horde-button>
+            </div>
           </div>
         </div>
-
-        <!-- Value -->
-        <div>
-          <label class="form-label-sm" [attr.for]="'pair-value-' + pair.key">
-            Value
-            <span class="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700">
-              {{ pair.valueType }}
-            </span>
-          </label>
-          <input type="text" class="form-input text-sm" [value]="getValueAsString(pair.value)"
-            [attr.id]="'pair-value-' + pair.key"
-            (blur)="updatePair(pair.key, pair.key, $any($event.target).value, pair.valueType)"
-            placeholder="Enter value" />
-        </div>
-
-        <!-- Remove Button -->
-        <div class="flex justify-end">
-          <horde-button variant="danger" size="sm" (click)="removePair(pair.key)"
-            [attr.aria-label]="'Remove ' + pair.key" title="Remove this requirement">
-            <span class="text-lg leading-none">×</span>
-          </horde-button>
-        </div>
-      </div>
+      }
     </div>
-    }
-  </div>
   }
 
   <!-- Add New Pair Section -->
   <div class="key-value-item-card">
-    <div class="text-sm font-medium mb-2">
-      Add Custom Requirement
-    </div>
+    <div class="text-sm font-medium mb-2">Add Custom Requirement</div>
 
     <!-- All inputs in a single row for compact layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-2">
@@ -57,8 +64,15 @@
         <label for="new-key" class="form-label-sm">
           Key <span class="text-danger-500">*</span>
         </label>
-        <input id="new-key" type="text" class="form-input text-sm" placeholder="e.g., min_vram_gb" [(ngModel)]="newKey"
-          (ngModelChange)="newKey.set($event)" (keydown.enter)="addPair()" />
+        <input
+          id="new-key"
+          type="text"
+          class="form-input text-sm"
+          placeholder="e.g., min_vram_gb"
+          [(ngModel)]="newKey"
+          (ngModelChange)="newKey.set($event)"
+          (keydown.enter)="addPair()"
+        />
       </div>
 
       <!-- Value Input -->
@@ -66,15 +80,26 @@
         <label for="new-value" class="form-label-sm">
           Value <span class="text-danger-500">*</span>
         </label>
-        <input id="new-value" type="text" class="form-input text-sm" [placeholder]="getPlaceholderForType()"
-          [(ngModel)]="newValue" (ngModelChange)="newValue.set($event)" (keydown.enter)="addPair()" />
+        <input
+          id="new-value"
+          type="text"
+          class="form-input text-sm"
+          [placeholder]="getPlaceholderForType()"
+          [(ngModel)]="newValue"
+          (ngModelChange)="newValue.set($event)"
+          (keydown.enter)="addPair()"
+        />
       </div>
 
       <!-- Type Select -->
       <div class="lg:col-span-3">
         <label for="new-type" class="form-label-sm"> Type </label>
-        <select id="new-type" class="form-select text-sm" [(ngModel)]="newValueType"
-          (ngModelChange)="newValueType.set($event)">
+        <select
+          id="new-type"
+          class="form-select text-sm"
+          [(ngModel)]="newValueType"
+          (ngModelChange)="newValueType.set($event)"
+        >
           <option value="string">Text</option>
           <option value="number">Number</option>
           <option value="boolean">True/False</option>
@@ -84,8 +109,12 @@
 
       <!-- Add Button -->
       <div class="lg:col-span-2 lg:pt-6">
-        <horde-button variant="primary" class="w-full" (click)="addPair()"
-          [disabled]="!newKey().trim() || !newValue().trim()">
+        <horde-button
+          variant="primary"
+          class="w-full"
+          (click)="addPair()"
+          [disabled]="!newKey().trim() || !newValue().trim()"
+        >
           <span class="text-lg mr-1">+</span> Add
         </horde-button>
       </div>

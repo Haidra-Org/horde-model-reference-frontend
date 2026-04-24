@@ -7,11 +7,7 @@
   "paths": {
     "/model_references/v2/text_generation/parse_name": {
       "get": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Parse a text model name into structured components",
         "description": "Parse a text model name into base name, size, variant, and quantization components.",
         "operationId": "parse_name_model_references_v2_text_generation_parse_name_get",
@@ -54,11 +50,7 @@
     },
     "/model_references/v2/text_generation/group/{group_name}": {
       "get": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Get all members of a text model group",
         "description": "Get all models in a text model group with parsed name info and common fields.",
         "operationId": "get_group_model_references_v2_text_generation_group__group_name__get",
@@ -99,11 +91,7 @@
     },
     "/model_references/v2/text_generation/distinct_baselines": {
       "get": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Get unique baseline values for text generation models",
         "description": "Return sorted unique non-empty baselines from text_generation models.",
         "operationId": "get_distinct_baselines_model_references_v2_text_generation_distinct_baselines_get",
@@ -123,11 +111,7 @@
     },
     "/model_references/v2/text_generation/compose_name": {
       "post": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Compose a model name from structured parts and check for collisions",
         "description": "Compose a model name from base name, size, variant, and quant parts.\n\nChecks whether the composed name already exists in the text_generation category.",
         "operationId": "compose_name_model_references_v2_text_generation_compose_name_post",
@@ -167,11 +151,7 @@
     },
     "/model_references/v2/text_generation/group/{group_name}/common_fields": {
       "put": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Batch-update common fields across all canonical members of a group",
         "description": "Update shared fields across all canonical members of a text model group.\n\nCreates one PendingChangeRecord per canonical member with a shared batch_id.",
         "operationId": "update_group_common_fields_model_references_v2_text_generation_group__group_name__common_fields_put",
@@ -227,11 +207,7 @@
     },
     "/model_references/v2/text_generation/groups": {
       "get": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "List all text model group names",
         "description": "Return sorted distinct ``text_model_group`` values across all text models.",
         "operationId": "list_groups_model_references_v2_text_generation_groups_get",
@@ -249,13 +225,49 @@
         }
       }
     },
+    "/model_references/v2/text_generation/groups/summary": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Enriched overview of all text model groups",
+        "description": "Return per-group metadata including member counts, family/alias info, and health flags.\n\nDesigned to power a group management overview UI in a single request.",
+        "operationId": "list_groups_summary_model_references_v2_text_generation_groups_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupsSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/groups/health": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Health check across all text model groups",
+        "description": "Scan all text model groups for common problems.\n\nReturns an aggregate list of issues sorted by severity, useful for\nadmin triage dashboards.",
+        "operationId": "check_groups_health_model_references_v2_text_generation_groups_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupHealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/model_references/v2/text_generation/group/{group_name}/name_schema": {
       "get": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Get the naming schema for a text model group",
         "description": "Return the persisted naming schema if one exists, otherwise infer from member names.",
         "operationId": "get_group_name_schema_model_references_v2_text_generation_group__group_name__name_schema_get",
@@ -294,11 +306,7 @@
         }
       },
       "put": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Save a custom naming schema for a text model group",
         "description": "Persist a custom naming schema for a text model group.",
         "operationId": "update_group_name_schema_model_references_v2_text_generation_group__group_name__name_schema_put",
@@ -352,11 +360,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Delete a custom naming schema (revert to inferred)",
         "description": "Remove the persisted naming schema so the group reverts to inference.",
         "operationId": "delete_group_name_schema_model_references_v2_text_generation_group__group_name__name_schema_delete",
@@ -395,11 +399,7 @@
     },
     "/model_references/v2/text_generation/{model_name}/name_exception": {
       "put": {
-        "tags": [
-          "v2",
-          "text_utils",
-          "text_utils"
-        ],
+        "tags": ["v2", "text_utils", "text_utils"],
         "summary": "Set or clear the naming schema exception flag on a model",
         "description": "Set or clear the ``name_schema_exception`` field on a text model.\n\nPass ``{\"reason\": \"some reason\"}`` to flag the model or ``{\"reason\": null}`` to clear.\nChanges go through the pending queue.",
         "operationId": "set_name_exception_model_references_v2_text_generation__model_name__name_exception_put",
@@ -451,12 +451,593 @@
         }
       }
     },
+    "/model_references/v2/text_generation/aliases": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "List all group alias entries",
+        "description": "Return all configured group alias entries.",
+        "operationId": "list_aliases_model_references_v2_text_generation_aliases_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupAliasListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/aliases/{canonical}": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Get aliases for a canonical group",
+        "description": "Return the alias entry for a specific canonical group name.",
+        "operationId": "get_alias_model_references_v2_text_generation_aliases__canonical__get",
+        "parameters": [
+          {
+            "name": "canonical",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Canonical"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupAliasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Set the full alias list for a canonical group",
+        "description": "Replace all aliases for a canonical group name.\n\nRaises 409 if any alias is already claimed by a different canonical group.",
+        "operationId": "set_aliases_model_references_v2_text_generation_aliases__canonical__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "canonical",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Canonical"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetAliasesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupAliasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Delete all aliases for a canonical group",
+        "description": "Remove the entire alias entry for a canonical group.",
+        "operationId": "delete_aliases_model_references_v2_text_generation_aliases__canonical__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "canonical",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Canonical"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/aliases/{canonical}/add": {
+      "post": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Add a single alias to a canonical group",
+        "description": "Add one alias to a canonical group. Creates the entry if needed.\n\nRaises 409 if the alias is already claimed by a different canonical group.",
+        "operationId": "add_alias_model_references_v2_text_generation_aliases__canonical__add_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "canonical",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Canonical"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAliasRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupAliasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/aliases/{canonical}/remove": {
+      "post": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Remove a single alias from a canonical group",
+        "description": "Remove one alias from a canonical group.\n\nReturns the updated entry. Raises 404 if the alias was not found.",
+        "operationId": "remove_alias_model_references_v2_text_generation_aliases__canonical__remove_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "canonical",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Canonical"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveAliasRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupAliasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/families": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "List all related-group families",
+        "description": "Return all configured related-group families.",
+        "operationId": "list_families_model_references_v2_text_generation_families_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupFamilyListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/families/detect": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Auto-detect family suggestions from current model groups",
+        "description": "Run prefix-based heuristics over current group names to suggest families.\n\nResults are suggestions only — they are not persisted automatically.",
+        "operationId": "detect_family_suggestions_model_references_v2_text_generation_families_detect_get",
+        "parameters": [
+          {
+            "name": "min_prefix_length",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 2,
+              "default": 3,
+              "title": "Min Prefix Length"
+            }
+          },
+          {
+            "name": "min_family_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 2,
+              "default": 2,
+              "title": "Min Family Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetectFamiliesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/families/{family_name}": {
+      "get": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Get a specific related-group family",
+        "description": "Return the family with the given name.",
+        "operationId": "get_family_model_references_v2_text_generation_families__family_name__get",
+        "parameters": [
+          {
+            "name": "family_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Family Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupFamilyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Create or replace a related-group family",
+        "description": "Create or replace a family with the given members.\n\nRaises 409 if any member already belongs to a different family.",
+        "operationId": "set_family_model_references_v2_text_generation_families__family_name__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "family_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Family Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetFamilyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupFamilyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Delete a related-group family",
+        "description": "Delete an entire family, releasing all its members.",
+        "operationId": "delete_family_model_references_v2_text_generation_families__family_name__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "family_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Family Name"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/families/{family_name}/add": {
+      "post": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Add a group to a family",
+        "description": "Add a single group to an existing family.\n\nRaises 404 if the family does not exist, 409 if the group belongs to another family.",
+        "operationId": "add_family_member_model_references_v2_text_generation_families__family_name__add_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "family_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Family Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFamilyMemberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupFamilyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model_references/v2/text_generation/families/{family_name}/remove": {
+      "post": {
+        "tags": ["v2", "text_utils", "text_utils"],
+        "summary": "Remove a group from a family",
+        "description": "Remove a single group from a family.\n\nIf the family becomes empty, it is deleted entirely.\nRaises 404 if the group was not found in the family.",
+        "operationId": "remove_family_member_model_references_v2_text_generation_families__family_name__remove_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "family_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Family Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveFamilyMemberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupFamilyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/model_references/v2/{model_category_name}/search": {
       "get": {
-        "tags": [
-          "v2",
-          "search"
-        ],
+        "tags": ["v2", "search"],
         "summary": "Search models in a category",
         "description": "Search models within a specific category with filtering, sorting, and pagination.",
         "operationId": "search_category_model_references_v2__model_category_name__search_get",
@@ -737,10 +1318,7 @@
     },
     "/model_references/v2/search": {
       "get": {
-        "tags": [
-          "v2",
-          "search"
-        ],
+        "tags": ["v2", "search"],
         "summary": "Search models across all categories",
         "description": "Search models across all categories with generic filters only.",
         "operationId": "search_all_model_references_v2_search_get",
@@ -928,10 +1506,7 @@
     },
     "/model_references/v2/{model_category_name}/popular": {
       "get": {
-        "tags": [
-          "v2",
-          "search"
-        ],
+        "tags": ["v2", "search"],
         "summary": "Get popular models ranked by live Horde usage",
         "description": "Return models ranked by live Horde popularity metrics.\n\nOnly ``image_generation`` and ``text_generation`` have Horde API data.\nOther categories return an empty list.",
         "operationId": "popular_models_model_references_v2__model_category_name__popular_get",
@@ -964,12 +1539,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "enum": [
-                "worker_count",
-                "usage_day",
-                "usage_month",
-                "usage_total"
-              ],
+              "enum": ["worker_count", "usage_day", "usage_month", "usage_total"],
               "type": "string",
               "description": "Metric to rank by",
               "default": "worker_count",
@@ -1021,12 +1591,7 @@
     },
     "/model_references/v2/pending_queue/changes": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "List pending queue entries",
         "description": "Return a filtered, paginated list of pending queue entries.",
         "operationId": "list_pending_changes_model_references_v2_pending_queue_changes_get",
@@ -1198,12 +1763,7 @@
     },
     "/model_references/v2/pending_queue/purge": {
       "post": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Purge pending changes matching filters",
         "description": "Delete queued changes in bulk, optionally as a dry run.",
         "operationId": "purge_pending_changes_model_references_v2_pending_queue_purge_post",
@@ -1268,12 +1828,7 @@
     },
     "/model_references/v2/pending_queue/changes/{change_id}": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Get a single pending change",
         "description": "Return details for a single pending change.",
         "operationId": "read_pending_change_model_references_v2_pending_queue_changes__change_id__get",
@@ -1339,12 +1894,7 @@
     },
     "/model_references/v2/pending_queue/changes/{change_id}/diff": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Get diff for a pending change",
         "description": "Return a detailed diff for a pending change.\n\nCompares the pending change payload against the current model state\nin the backend to show exactly what would change if applied.\n\nFor UPDATE operations, returns field-level diffs showing added,\nremoved, and modified fields. For CREATE/DELETE operations, shows\nthe full proposed/current state respectively.",
         "operationId": "get_pending_change_diff_model_references_v2_pending_queue_changes__change_id__diff_get",
@@ -1410,12 +1960,7 @@
     },
     "/model_references/v2/pending_queue/changes/diff": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Get diffs for multiple pending changes",
         "description": "Return diffs for multiple pending changes in bulk.\n\nAccepts a list of change IDs and returns diffs for each. Changes\nthat cannot be found or diffed are reported in the errors array.",
         "operationId": "get_pending_changes_diffs_model_references_v2_pending_queue_changes_diff_get",
@@ -1486,12 +2031,7 @@
     },
     "/model_references/v2/pending_queue/batches": {
       "post": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Approve or reject queued changes",
         "description": "Approve and/or reject a set of pending changes in one batch.",
         "operationId": "process_pending_batch_model_references_v2_pending_queue_batches_post",
@@ -1556,12 +2096,7 @@
     },
     "/model_references/v2/pending_queue/changes/{change_id}/apply": {
       "post": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Apply an approved change to the backend",
         "description": "Apply an approved pending change and mark it as applied.",
         "operationId": "apply_pending_change_endpoint_model_references_v2_pending_queue_changes__change_id__apply_post",
@@ -1657,12 +2192,7 @@
     },
     "/model_references/v2/pending_queue/apply": {
       "post": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Apply multiple approved changes",
         "description": "Apply a batch of approved pending changes sequentially.",
         "operationId": "apply_pending_changes_endpoint_model_references_v2_pending_queue_apply_post",
@@ -1726,12 +2256,7 @@
     },
     "/model_references/v2/pending_queue/apply_batch/{batch_id}": {
       "post": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "v2",
-          "pending_queue"
-        ],
+        "tags": ["v2", "pending_queue", "v2", "pending_queue"],
         "summary": "Apply all approved changes in a specific batch",
         "description": "Apply all APPROVED changes in a batch, skipping already-applied changes.",
         "operationId": "apply_batch_endpoint_model_references_v2_pending_queue_apply_batch__batch_id__post",
@@ -1813,14 +2338,7 @@
     },
     "/model_references/v2/pending_queue/audit/current": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "audit",
-          "v2",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v2", "pending_queue", "audit", "v2", "pending_queue", "audit"],
         "summary": "List currently pending (unapproved) changes",
         "operationId": "get_current_pending_changes_model_references_v2_pending_queue_audit_current_get",
         "security": [
@@ -1884,14 +2402,7 @@
     },
     "/model_references/v2/pending_queue/audit/batches": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "audit",
-          "v2",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v2", "pending_queue", "audit", "v2", "pending_queue", "audit"],
         "summary": "List historical pending queue batches",
         "operationId": "list_pending_queue_batches_model_references_v2_pending_queue_audit_batches_get",
         "security": [
@@ -1988,14 +2499,7 @@
     },
     "/model_references/v2/pending_queue/audit/batches/{batch_id}": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "audit",
-          "v2",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v2", "pending_queue", "audit", "v2", "pending_queue", "audit"],
         "summary": "Get details for a specific batch",
         "operationId": "get_pending_queue_batch_detail_model_references_v2_pending_queue_audit_batches__batch_id__get",
         "security": [
@@ -2078,14 +2582,7 @@
     },
     "/model_references/v2/pending_queue/audit/batches/{batch_id}/net_changes": {
       "get": {
-        "tags": [
-          "v2",
-          "pending_queue",
-          "audit",
-          "v2",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v2", "pending_queue", "audit", "v2", "pending_queue", "audit"],
         "summary": "Get net changes for a specific batch",
         "description": "Compute the net effect of all changes in a batch.\n\nAnalyzes all operations (add, update, delete) applied in the batch and\ncomputes the net change for each affected model. Models that are deleted\nand re-added with identical content show net_operation=UNCHANGED.\n\nResults are cached for 5 minutes to match existing audit caching patterns.",
         "operationId": "get_batch_net_changes_model_references_v2_pending_queue_audit_batches__batch_id__net_changes_get",
@@ -2169,10 +2666,7 @@
     },
     "/model_references/v2/me/roles": {
       "get": {
-        "tags": [
-          "v2",
-          "user"
-        ],
+        "tags": ["v2", "user"],
         "summary": "Get current user roles",
         "description": "Returns the authenticated user's roles and permissions for the horde-model-reference service. This endpoint validates the provided API key against the AI Horde API and checks which roles (approver, requestor) the user has been granted.",
         "operationId": "get_current_user_roles_model_references_v2_me_roles_get",
@@ -2200,9 +2694,7 @@
     },
     "/model_references/v2/info": {
       "get": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Get info about the v2 model reference API",
         "description": "Get information about the v2 model reference API.\n\nThis is the v2 model reference API, which uses the new format established by horde_model_reference.",
         "operationId": "read_v2_reference_api_info",
@@ -2231,9 +2723,7 @@
     },
     "/model_references/v2/model_categories": {
       "get": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Get all v2 model reference names",
         "description": "Get all available v2 model reference category names.\n\nReturns a list of all model categories that have v2 format references available.",
         "operationId": "read_v2_references_names",
@@ -2269,9 +2759,7 @@
     },
     "/model_references/v2/{model_category_name}": {
       "get": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Get a specific v2 model reference by category name",
         "description": "Get all models in a specific v2 model reference category.\n\nReturns the complete v2 format JSON for the requested category.",
         "operationId": "read_v2_reference",
@@ -2368,9 +2856,7 @@
     },
     "/model_references/v2/{model_category_name}/{model_name}": {
       "get": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Get a specific model by category and name",
         "description": "Get a specific model by category and name.\n\nArgs:\n    model_category_name: The model reference category (e.g., image_generation).\n    model_name: The name of the model within the category.\n    manager: The model reference manager dependency.\n\nReturns:\n    JSONResponse: The model record data.\n\nRaises:\n    HTTPException: 404 if category or model not found.",
         "operationId": "read_v2_single_model",
@@ -2454,9 +2940,7 @@
         }
       },
       "put": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Update an existing model in v2 format",
         "description": "Update an existing model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the specified category. Use POST to create new models.\n\n- Preserves original `created_at` and `created_by` metadata\n- Updates `updated_at` timestamp",
         "operationId": "update_v2_model",
@@ -2625,9 +3109,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Delete a v2 model entry",
         "description": "Queue deletion of a model from a v2 model reference category.",
         "operationId": "delete_v2_model",
@@ -2717,9 +3199,7 @@
     },
     "/model_references/v2/image_generation/create_model": {
       "post": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Create a new image generation model in v2 format",
         "description": "Create a new image generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the image generation category.",
         "operationId": "create_v2_image_generation_model",
@@ -2822,9 +3302,7 @@
     },
     "/model_references/v2/text_generation/create_model": {
       "post": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Create a new text generation model in v2 format",
         "description": "Create a new text generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the text generation category.",
         "operationId": "create_v2_text_generation_model",
@@ -2927,9 +3405,7 @@
     },
     "/model_references/v2/controlnet/create_model": {
       "post": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Create a new ControlNet model in v2 format",
         "description": "Create a new ControlNet model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the ControlNet category.",
         "operationId": "create_v2_controlnet_model",
@@ -3032,9 +3508,7 @@
     },
     "/model_references/v2/{model_category_name}/add": {
       "post": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Create a new model in v2 format",
         "description": "Create a new model in the specified category.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model name in the request body must not already exist in the specified category.",
         "operationId": "create_v2_model",
@@ -3197,9 +3671,7 @@
     },
     "/model_references/v2/image_generation/update_model/{model_name}": {
       "put": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Update an existing image generation model in v2 format",
         "description": "Update an existing image generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the image generation category. Use POST to create new models.",
         "operationId": "update_v2_image_generation_model",
@@ -3295,9 +3767,7 @@
     },
     "/model_references/v2/text_generation/update_model/{model_name}": {
       "put": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Update an existing text generation model in v2 format",
         "description": "Update an existing text generation model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the text generation category. Use POST to create new models.",
         "operationId": "update_v2_text_generation_model",
@@ -3393,9 +3863,7 @@
     },
     "/model_references/v2/controlnet/update_model/{model_name}": {
       "put": {
-        "tags": [
-          "v2"
-        ],
+        "tags": ["v2"],
         "summary": "Update an existing ControlNet model in v2 format",
         "description": "Update an existing ControlNet model in v2 format.\n\n⚠️ **This endpoint is only available when `canonical_format='v2'` in PRIMARY mode.**\n\nThe model must already exist in the ControlNet category. Use POST to create new models.",
         "operationId": "update_v2_controlnet_model",
@@ -3491,10 +3959,7 @@
     },
     "/model_references/statistics/{model_category_name}": {
       "get": {
-        "tags": [
-          "v2",
-          "statistics"
-        ],
+        "tags": ["v2", "statistics"],
         "summary": "Get statistics for a model category",
         "description": "Get comprehensive statistics for a model reference category.\n\nReturns aggregate metrics including:\n- Total model counts (overall, NSFW, SFW)\n- Baseline distribution\n- Download statistics\n- Tag and style distributions\n- Category-specific metrics (trigger words, inpainting, etc.)\n\nStatistics are cached with TTL (default 300s) and automatically\ninvalidated when model data changes. Caching is skipped when\ngrouping is enabled.\n\nArgs:\n    model_category_name: The model reference category to get statistics for.\n    manager: The model reference manager (injected).\n    stats_cache: The statistics cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    limit: Maximum number of models to return (for pagination).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryStatistics containing all computed metrics.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if computation fails.",
         "operationId": "read_v2_category_statistics",
@@ -3584,10 +4049,7 @@
     },
     "/model_references/statistics/{model_category_name}/with-stats": {
       "get": {
-        "tags": [
-          "v2",
-          "statistics"
-        ],
+        "tags": ["v2", "statistics"],
         "summary": "Get models merged with AI Horde runtime statistics",
         "description": "Get AI Horde statistics data for models in a given category.\n\nCombines live runtime statistics from the AI Horde API:\n- Worker count, queued jobs, performance metrics, ETA\n- Usage statistics (day, month, total)\n- Optional worker details\n- Optional per-backend variations (for text generation models)\n\n**Caching:**\n- Model reference data: cached by ModelReferenceManager (60s TTL)\n- Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available)\n- Merged results: computed on-demand (no caching)\n\nArgs:\n    model_category_name: The model category (image_generation or text_generation).\n    manager: Model reference manager dependency.\n    horde_api: Horde API integration dependency.\n    include_workers: Include detailed worker information for each model.\n    include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.\n    min_worker_count: Filter to models with at least this many workers.\n    sort_by: Sort by field (worker_count, usage_total, usage_month, name).\n    sort_desc: Sort in descending order (default: True).\n\nReturns:\n    JSONResponse: Dict of model_name -> enriched_model_data.\n\nRaises:\n    HTTPException: 404 if category not found, 500 if Horde API fails.",
         "operationId": "read_models_with_stats",
@@ -3720,10 +4182,7 @@
     },
     "/model_references/statistics/{model_category_name}/deletion-risk": {
       "get": {
-        "tags": [
-          "v2",
-          "deletion-risk"
-        ],
+        "tags": ["v2", "deletion-risk"],
         "summary": "Get deletion risk analysis for a model category",
         "description": "Get comprehensive deletion risk analysis for a model reference category.\n\nAnalyzes all models in the category to identify deletion risks including:\n- Missing or invalid download URLs\n- Non-preferred file hosts\n- Missing required fields (description, baseline)\n- Zero active workers\n- Low or no recent usage\n\nReturns both per-model risk information and aggregate summary statistics.\nResults are cached (default 300s TTL) and automatically invalidated\nwhen model data changes.\n\nArgs:\n    model_category_name: The model reference category to analyze.\n    manager: The model reference manager (injected).\n    horde_api: The Horde API integration (injected).\n    risk_cache: The deletion risk cache (injected).\n    group_text_models: Group text models by base name (strips quantization info).\n    include_backend_variations: Include per-backend breakdown for text models (ungrouped view).\n    preset: Optional preset filter to apply (deletion_candidates, zero_usage, etc.).\n    limit: Maximum number of models to return (None = all).\n    offset: Number of models to skip (for pagination).\n\nReturns:\n    CategoryDeletionRiskResponse with per-model risk info and summary.\n\nRaises:\n    HTTPException: 400 for unsupported categories or invalid preset, 404 if not found, 500 for errors.",
         "operationId": "read_v2_category_deletion_risk",
@@ -3846,12 +4305,7 @@
     },
     "/model_references/v2/metadata/last_updated": {
       "get": {
-        "tags": [
-          "v2",
-          "metadata",
-          "v2",
-          "metadata"
-        ],
+        "tags": ["v2", "metadata", "v2", "metadata"],
         "summary": "Get last update timestamp for canonical format (v2)",
         "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor v2 format operations. Only available when canonical_format='v2'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'v2'.",
         "operationId": "read_v2_last_updated",
@@ -3883,12 +4337,7 @@
     },
     "/model_references/v2/metadata/{model_category_name}/last_updated": {
       "get": {
-        "tags": [
-          "v2",
-          "metadata",
-          "v2",
-          "metadata"
-        ],
+        "tags": ["v2", "metadata", "v2", "metadata"],
         "summary": "Get last update timestamp for a specific category (v2)",
         "description": "Get the last update timestamp for a specific category (v2 format).\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryLastUpdatedResponse with the timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_v2_category_last_updated",
@@ -3943,12 +4392,7 @@
     },
     "/model_references/v2/metadata/metadata": {
       "get": {
-        "tags": [
-          "v2",
-          "metadata",
-          "v2",
-          "metadata"
-        ],
+        "tags": ["v2", "metadata", "v2", "metadata"],
         "summary": "Get all v2 format metadata",
         "description": "Get all v2 format metadata.\n\nReturns a dictionary mapping each category to its v2 format metadata.\n\nArgs:\n    manager: The model reference manager dependency.\n\nReturns:\n    Dict of category to CategoryMetadata.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.",
         "operationId": "read_all_v2_metadata",
@@ -3991,12 +4435,7 @@
     },
     "/model_references/v2/metadata/{model_category_name}": {
       "get": {
-        "tags": [
-          "v2",
-          "metadata",
-          "v2",
-          "metadata"
-        ],
+        "tags": ["v2", "metadata", "v2", "metadata"],
         "summary": "Get v2 format metadata for a specific category",
         "description": "Get v2 format metadata for a specific category.\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryMetadata for the category.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_v2_category_metadata",
@@ -4055,12 +4494,7 @@
     },
     "/model_references/v1/pending_queue/changes": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "List pending queue entries",
         "description": "Return a filtered, paginated list of pending queue entries.",
         "operationId": "list_pending_changes_model_references_v1_pending_queue_changes_get",
@@ -4232,12 +4666,7 @@
     },
     "/model_references/v1/pending_queue/purge": {
       "post": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Purge pending changes matching filters",
         "description": "Delete queued changes in bulk, optionally as a dry run.",
         "operationId": "purge_pending_changes_model_references_v1_pending_queue_purge_post",
@@ -4302,12 +4731,7 @@
     },
     "/model_references/v1/pending_queue/changes/{change_id}": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Get a single pending change",
         "description": "Return details for a single pending change.",
         "operationId": "read_pending_change_model_references_v1_pending_queue_changes__change_id__get",
@@ -4373,12 +4797,7 @@
     },
     "/model_references/v1/pending_queue/changes/{change_id}/diff": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Get diff for a pending change",
         "description": "Return a detailed diff for a pending change.\n\nCompares the pending change payload against the current model state\nin the backend to show exactly what would change if applied.\n\nFor UPDATE operations, returns field-level diffs showing added,\nremoved, and modified fields. For CREATE/DELETE operations, shows\nthe full proposed/current state respectively.",
         "operationId": "get_pending_change_diff_model_references_v1_pending_queue_changes__change_id__diff_get",
@@ -4444,12 +4863,7 @@
     },
     "/model_references/v1/pending_queue/changes/diff": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Get diffs for multiple pending changes",
         "description": "Return diffs for multiple pending changes in bulk.\n\nAccepts a list of change IDs and returns diffs for each. Changes\nthat cannot be found or diffed are reported in the errors array.",
         "operationId": "get_pending_changes_diffs_model_references_v1_pending_queue_changes_diff_get",
@@ -4520,12 +4934,7 @@
     },
     "/model_references/v1/pending_queue/batches": {
       "post": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Approve or reject queued changes",
         "description": "Approve and/or reject a set of pending changes in one batch.",
         "operationId": "process_pending_batch_model_references_v1_pending_queue_batches_post",
@@ -4590,12 +4999,7 @@
     },
     "/model_references/v1/pending_queue/changes/{change_id}/apply": {
       "post": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Apply an approved change to the backend",
         "description": "Apply an approved pending change and mark it as applied.",
         "operationId": "apply_pending_change_endpoint_model_references_v1_pending_queue_changes__change_id__apply_post",
@@ -4691,12 +5095,7 @@
     },
     "/model_references/v1/pending_queue/apply": {
       "post": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Apply multiple approved changes",
         "description": "Apply a batch of approved pending changes sequentially.",
         "operationId": "apply_pending_changes_endpoint_model_references_v1_pending_queue_apply_post",
@@ -4760,12 +5159,7 @@
     },
     "/model_references/v1/pending_queue/apply_batch/{batch_id}": {
       "post": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "v1",
-          "pending_queue"
-        ],
+        "tags": ["v1", "pending_queue", "v1", "pending_queue"],
         "summary": "Apply all approved changes in a specific batch",
         "description": "Apply all APPROVED changes in a batch, skipping already-applied changes.",
         "operationId": "apply_batch_endpoint_model_references_v1_pending_queue_apply_batch__batch_id__post",
@@ -4847,14 +5241,7 @@
     },
     "/model_references/v1/pending_queue/audit/current": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "audit",
-          "v1",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v1", "pending_queue", "audit", "v1", "pending_queue", "audit"],
         "summary": "List currently pending (unapproved) changes",
         "operationId": "get_current_pending_changes_model_references_v1_pending_queue_audit_current_get",
         "security": [
@@ -4918,14 +5305,7 @@
     },
     "/model_references/v1/pending_queue/audit/batches": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "audit",
-          "v1",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v1", "pending_queue", "audit", "v1", "pending_queue", "audit"],
         "summary": "List historical pending queue batches",
         "operationId": "list_pending_queue_batches_model_references_v1_pending_queue_audit_batches_get",
         "security": [
@@ -5022,14 +5402,7 @@
     },
     "/model_references/v1/pending_queue/audit/batches/{batch_id}": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "audit",
-          "v1",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v1", "pending_queue", "audit", "v1", "pending_queue", "audit"],
         "summary": "Get details for a specific batch",
         "operationId": "get_pending_queue_batch_detail_model_references_v1_pending_queue_audit_batches__batch_id__get",
         "security": [
@@ -5112,14 +5485,7 @@
     },
     "/model_references/v1/pending_queue/audit/batches/{batch_id}/net_changes": {
       "get": {
-        "tags": [
-          "v1",
-          "pending_queue",
-          "audit",
-          "v1",
-          "pending_queue",
-          "audit"
-        ],
+        "tags": ["v1", "pending_queue", "audit", "v1", "pending_queue", "audit"],
         "summary": "Get net changes for a specific batch",
         "description": "Compute the net effect of all changes in a batch.\n\nAnalyzes all operations (add, update, delete) applied in the batch and\ncomputes the net change for each affected model. Models that are deleted\nand re-added with identical content show net_operation=UNCHANGED.\n\nResults are cached for 5 minutes to match existing audit caching patterns.",
         "operationId": "get_batch_net_changes_model_references_v1_pending_queue_audit_batches__batch_id__net_changes_get",
@@ -5203,9 +5569,7 @@
     },
     "/model_references/v1/info": {
       "get": {
-        "tags": [
-          "v1"
-        ],
+        "tags": ["v1"],
         "summary": "Get info about the legacy model reference API",
         "description": "Get information about the legacy model reference API.\n\nThis is the legacy model reference API, which uses the format originally found at the\ngithub repositories:\n- https://github.com/Haidra-Org/AI-Horde-image-model-reference\n- https://github.com/Haidra-Org/AI-Horde-text-model-reference",
         "operationId": "read_legacy_reference_api_info",
@@ -5228,9 +5592,7 @@
     },
     "/model_references/v1/model_categories": {
       "get": {
-        "tags": [
-          "v1"
-        ],
+        "tags": ["v1"],
         "summary": "Get all legacy model reference names",
         "description": "Get all available legacy model reference category names.\n\nReturns a list of all model categories that have legacy format references available.",
         "operationId": "read_legacy_references_names",
@@ -5257,9 +5619,7 @@
     },
     "/model_references/v1/text_generation": {
       "get": {
-        "tags": [
-          "v1"
-        ],
+        "tags": ["v1"],
         "summary": "Get text generation models with optional grouping field",
         "description": "Get all text generation models with optional text_model_group field.\n\nReturns the complete legacy format JSON for text generation models.\n\nBy default, the text_model_group field is not included (legacy format).\nSet include_group=true to dynamically compute and include the text_model_group\nfield, which contains the base model group name for grouping model variants\ntogether (e.g., models with different quantization levels).",
         "operationId": "read_legacy_text_generation_reference",
@@ -5302,9 +5662,7 @@
         }
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new text generation model in legacy format",
         "description": "Create a new text generation model in legacy format.\n\nThe model name in the request body must not already exist in the text generation category.",
         "operationId": "create_legacy_text_generation_model",
@@ -5359,9 +5717,7 @@
         }
       },
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_text_generation_model",
@@ -5418,9 +5774,7 @@
     },
     "/model_references/v1/{model_category_name}": {
       "get": {
-        "tags": [
-          "v1"
-        ],
+        "tags": ["v1"],
         "summary": "Get a specific legacy model reference by category name",
         "description": "Get all models in a specific legacy model reference category.\n\nReturns the complete legacy format JSON for the requested category.\n\n**Note:** `stable_diffusion` is an alias for `image_generation`.",
         "operationId": "read_legacy_reference",
@@ -5466,9 +5820,7 @@
     },
     "/model_references/v1/{model_category_name}/{model_name}": {
       "delete": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Delete a legacy model entry.",
         "description": "Delete a model from a legacy model reference category.\n\nWhen pending queue is enabled, this enqueues the deletion and returns HTTP 202.\nWhen pending queue is disabled, this deletes the model immediately and returns HTTP 204.",
         "operationId": "delete_legacy_model",
@@ -5539,9 +5891,7 @@
     },
     "/model_references/v1/image_generation": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_model",
@@ -5596,9 +5946,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new image generation model in legacy format",
         "description": "Create a new image generation model in legacy format.\n\nThe model name in the request body must not already exist in the image generation category.",
         "operationId": "create_legacy_image_generation_model",
@@ -5655,9 +6003,7 @@
     },
     "/model_references/v1/clip": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing CLIP model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_clip_model",
@@ -5712,9 +6058,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new clip model in legacy format",
         "description": "Create a new CLIP model in legacy format.\n\nThe model name in the request body must not already exist in the clip category.",
         "operationId": "create_legacy_clip_model",
@@ -5771,9 +6115,7 @@
     },
     "/model_references/v1/blip": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing BLIP model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_blip_model",
@@ -5828,9 +6170,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new BLIP model in legacy format",
         "description": "Create a new BLIP model in legacy format.\n\nThe model name in the request body must not already exist in the blip category.",
         "operationId": "create_legacy_blip_model",
@@ -5887,9 +6227,7 @@
     },
     "/model_references/v1/codeformer": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing Codeformer model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_codeformer_model",
@@ -5944,9 +6282,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new Codeformer model in legacy format",
         "description": "Create a new Codeformer model in legacy format.\n\nThe model name in the request body must not already exist in the codeformer category.",
         "operationId": "create_legacy_codeformer_model",
@@ -6003,9 +6339,7 @@
     },
     "/model_references/v1/controlnet": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing ControlNet model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_controlnet_model",
@@ -6060,9 +6394,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new ControlNet model in legacy format",
         "description": "Create a new ControlNet model in legacy format.\n\nThe model name in the request body must not already exist in the controlnet category.",
         "operationId": "create_legacy_controlnet_model",
@@ -6119,9 +6451,7 @@
     },
     "/model_references/v1/esrgan": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing ESRGAN model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_esrgan_model",
@@ -6176,9 +6506,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new ESRGAN model in legacy format",
         "description": "Create a new ESRGAN model in legacy format.\n\nThe model name in the request body must not already exist in the esrgan category.",
         "operationId": "create_legacy_esrgan_model",
@@ -6235,9 +6563,7 @@
     },
     "/model_references/v1/gfpgan": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing GFPGAN model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_gfpgan_model",
@@ -6292,9 +6618,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new GFPGAN model in legacy format",
         "description": "Create a new GFPGAN model in legacy format.\n\nThe model name in the request body must not already exist in the gfpgan category.",
         "operationId": "create_legacy_gfpgan_model",
@@ -6351,9 +6675,7 @@
     },
     "/model_references/v1/safety_checker": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing safety checker model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_safety_checker_model",
@@ -6408,9 +6730,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new safety checker model in legacy format",
         "description": "Create a new safety checker model in legacy format.\n\nThe model name in the request body must not already exist in the safety_checker category.",
         "operationId": "create_legacy_safety_checker_model",
@@ -6467,9 +6787,7 @@
     },
     "/model_references/v1/miscellaneous": {
       "put": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Update an existing miscellaneous model in legacy format",
         "description": "Update an existing model or create if it doesn't exist (upsert) in legacy format.\n\nThis endpoint is only available when canonical_format='LEGACY' in PRIMARY mode.",
         "operationId": "update_legacy_miscellaneous_model",
@@ -6524,9 +6842,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "v1_create_update"
-        ],
+        "tags": ["v1_create_update"],
         "summary": "Create a new miscellaneous model in legacy format",
         "description": "Create a new miscellaneous model in legacy format.\n\nThe model name in the request body must not already exist in the miscellaneous category.",
         "operationId": "create_legacy_miscellaneous_model",
@@ -6583,12 +6899,7 @@
     },
     "/model_references/v1/metadata/last_updated": {
       "get": {
-        "tags": [
-          "v1",
-          "metadata",
-          "v1",
-          "metadata"
-        ],
+        "tags": ["v1", "metadata", "v1", "metadata"],
         "summary": "Get last update timestamp for canonical format (legacy)",
         "description": "Get the last update timestamp for the canonical format.\n\nThis endpoint returns the maximum last_updated timestamp across all categories\nfor legacy format operations. Only available when canonical_format='LEGACY'.\n\nReturns:\n    LastUpdatedResponse with the maximum timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported or canonical_format != 'LEGACY'.",
         "operationId": "read_legacy_last_updated",
@@ -6620,12 +6931,7 @@
     },
     "/model_references/v1/metadata/{model_category_name}/last_updated": {
       "get": {
-        "tags": [
-          "v1",
-          "metadata",
-          "v1",
-          "metadata"
-        ],
+        "tags": ["v1", "metadata", "v1", "metadata"],
         "summary": "Get last update timestamp for a specific category (legacy)",
         "description": "Get the last update timestamp for a specific category (legacy format).\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryLastUpdatedResponse with the timestamp, or None if no metadata exists.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_legacy_category_last_updated",
@@ -6680,12 +6986,7 @@
     },
     "/model_references/v1/metadata/metadata": {
       "get": {
-        "tags": [
-          "v1",
-          "metadata",
-          "v1",
-          "metadata"
-        ],
+        "tags": ["v1", "metadata", "v1", "metadata"],
         "summary": "Get all legacy format metadata",
         "description": "Get all legacy format metadata.\n\nReturns a dictionary mapping each category to its legacy format metadata.\n\nArgs:\n    manager: The model reference manager dependency.\n\nReturns:\n    Dict of category to CategoryMetadata.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.",
         "operationId": "read_all_legacy_metadata",
@@ -6728,12 +7029,7 @@
     },
     "/model_references/v1/metadata/{model_category_name}": {
       "get": {
-        "tags": [
-          "v1",
-          "metadata",
-          "v1",
-          "metadata"
-        ],
+        "tags": ["v1", "metadata", "v1", "metadata"],
         "summary": "Get legacy format metadata for a specific category",
         "description": "Get legacy format metadata for a specific category.\n\nArgs:\n    model_category_name: The model reference category to get metadata for.\n    manager: The model reference manager dependency.\n\nReturns:\n    CategoryMetadata for the category.\n\nRaises:\n    HTTPException: 503 if metadata is not supported.\n    HTTPException: 404 if category has no metadata.",
         "operationId": "read_legacy_category_metadata",
@@ -6873,13 +7169,33 @@
           }
         },
         "type": "object",
-        "required": [
-          "degraded",
-          "consecutive_failures",
-          "seconds_until_retry"
-        ],
+        "required": ["degraded", "consecutive_failures", "seconds_until_retry"],
         "title": "AIHordeStatus",
         "description": "Status of the external AI Horde API connection."
+      },
+      "AddAliasRequest": {
+        "properties": {
+          "alias": {
+            "type": "string",
+            "title": "Alias"
+          }
+        },
+        "type": "object",
+        "required": ["alias"],
+        "title": "AddAliasRequest",
+        "description": "Request body for adding a single alias to a canonical group."
+      },
+      "AddFamilyMemberRequest": {
+        "properties": {
+          "group_name": {
+            "type": "string",
+            "title": "Group Name"
+          }
+        },
+        "type": "object",
+        "required": ["group_name"],
+        "title": "AddFamilyMemberRequest",
+        "description": "Request body for adding a single group to a family."
       },
       "ApplyPendingChangeRequest": {
         "properties": {
@@ -6930,9 +7246,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "change_ids"
-        ],
+        "required": ["change_ids"],
         "title": "ApplyPendingChangesRequest",
         "description": "Request payload for applying multiple approved changes."
       },
@@ -7075,9 +7389,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "record"
-        ],
+        "required": ["record"],
         "title": "ApplySingleChangeResponse",
         "description": "Response payload for applying a single pending change.\n\nIncludes the updated record and batch split information when applicable."
       },
@@ -7164,9 +7476,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "AudioGenerationModelRecord",
         "description": "An audio generation model entry in the model reference."
       },
@@ -7253,19 +7563,13 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "AudioGenerationModelRecord",
         "description": "An audio generation model entry in the model reference."
       },
       "AuditOperation": {
         "type": "string",
-        "enum": [
-          "create",
-          "update",
-          "delete"
-        ],
+        "enum": ["create", "update", "delete"],
         "title": "AuditOperation",
         "description": "CRUD operations captured by the audit log."
       },
@@ -7283,11 +7587,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "replicate_mode",
-          "canonical_format",
-          "writable"
-        ],
+        "required": ["replicate_mode", "canonical_format", "writable"],
         "title": "BackendInfo",
         "description": "Information about the backend configuration and capabilities.\n\nThis is returned by the /replicate_mode endpoint to provide clients\nwith the information they need to correctly interact with the API."
       },
@@ -7345,10 +7645,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "backend",
-          "variant_name"
-        ],
+        "required": ["backend", "variant_name"],
         "title": "BackendVariationStats",
         "description": "Per-backend statistics for a text generation model in deletion risk context.\n\nProvides breakdown of workers and usage by backend (aphrodite, koboldcpp, canonical).\nUsed in ungrouped deletion risk view to show backend-specific details for each model."
       },
@@ -7374,11 +7671,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "baseline",
-          "count",
-          "percentage"
-        ],
+        "required": ["baseline", "count", "percentage"],
         "title": "BaselineStats",
         "description": "Statistics about model baselines in a category."
       },
@@ -7445,11 +7738,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "batch_id",
-          "domain",
-          "generated_at"
-        ],
+        "required": ["batch_id", "domain", "generated_at"],
         "title": "BatchNetChangeResponse",
         "description": "Response containing net changes for all models in a batch."
       },
@@ -7472,11 +7761,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "updated_count",
-          "batch_id",
-          "pending_change_ids"
-        ],
+        "required": ["updated_count", "batch_id", "pending_change_ids"],
         "title": "BatchUpdateResponse",
         "description": "Response from batch group common field update."
       },
@@ -7533,9 +7818,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "BlipModelRecord",
         "description": "A BLIP model entry in the model reference."
       },
@@ -7592,9 +7875,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "BlipModelRecord",
         "description": "A BLIP model entry in the model reference."
       },
@@ -7619,10 +7900,7 @@
       },
       "CanonicalFormat": {
         "type": "string",
-        "enum": [
-          "LEGACY",
-          "v2"
-        ],
+        "enum": ["LEGACY", "v2"],
         "title": "CanonicalFormat",
         "description": "Which format is the canonical source of truth for model data.\n\nThis controls which API version has write access:\n- 'LEGACY': v1 API has CRUD operations, v2 API is read-only\n- 'v2': v2 API has CRUD operations, v1 API is read-only"
       },
@@ -7685,12 +7963,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "category",
-          "category_total_month_usage",
-          "models",
-          "summary"
-        ],
+        "required": ["category", "category_total_month_usage", "models", "summary"],
         "title": "CategoryDeletionRiskResponse",
         "description": "Complete deletion risk response for a category.\n\nContains both per-model deletion risk information and aggregate summary."
       },
@@ -7820,10 +8093,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "category",
-          "last_updated"
-        ],
+        "required": ["category", "last_updated"],
         "title": "CategoryLastUpdatedResponse",
         "description": "Response for /{category}/last_updated endpoint."
       },
@@ -8058,11 +8328,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "category",
-          "total_models",
-          "computed_at"
-        ],
+        "required": ["category", "total_models", "computed_at"],
         "title": "CategoryStatistics",
         "description": "Comprehensive statistics for a model reference category.\n\nContains aggregate metrics, distributions, and metadata about all models in a category."
       },
@@ -8130,9 +8396,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "ClipModelRecord",
         "description": "A CLIP model entry in the model reference."
       },
@@ -8200,9 +8464,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "ClipModelRecord",
         "description": "A CLIP model entry in the model reference."
       },
@@ -8259,9 +8521,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "CodeformerModelRecord",
         "description": "A Codeformer model entry in the model reference."
       },
@@ -8318,9 +8578,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "CodeformerModelRecord",
         "description": "A Codeformer model entry in the model reference."
       },
@@ -8489,13 +8747,24 @@
               }
             ],
             "title": "Part Order"
+          },
+          "extra_parts": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra Parts"
           }
         },
         "type": "object",
-        "required": [
-          "base_name",
-          "size"
-        ],
+        "required": ["base_name", "size"],
         "title": "ComposeNameRequest",
         "description": "Request body for composing a model name from parts."
       },
@@ -8512,13 +8781,23 @@
           "suggested_group": {
             "type": "string",
             "title": "Suggested Group"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          },
+          "rendered_example": {
+            "type": "string",
+            "title": "Rendered Example"
           }
         },
         "type": "object",
         "required": [
           "composed_name",
           "already_exists",
-          "suggested_group"
+          "suggested_group",
+          "template",
+          "rendered_example"
         ],
         "title": "ComposeNameResponse",
         "description": "Response from the name composition endpoint."
@@ -8531,9 +8810,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "title": "ContainsMessage",
         "description": "A model that contains a message field."
       },
@@ -8601,9 +8878,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
       },
@@ -8671,9 +8946,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "ControlNetModelRecord",
         "description": "A ControlNet model entry in the model reference."
       },
@@ -8750,6 +9023,38 @@
         "title": "DeletionRiskFlags",
         "description": "Flags indicating potential reasons for model deletion.\n\nEach flag represents a specific issue that might warrant model removal.\nAligned with frontend expectations for consistent presentation."
       },
+      "DetectFamiliesResponse": {
+        "properties": {
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/GroupFamilyResponse"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
+          "total_groups_analyzed": {
+            "type": "integer",
+            "title": "Total Groups Analyzed"
+          },
+          "groups_in_families": {
+            "type": "integer",
+            "title": "Groups In Families"
+          },
+          "standalone_groups": {
+            "type": "integer",
+            "title": "Standalone Groups"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suggestions",
+          "total_groups_analyzed",
+          "groups_in_families",
+          "standalone_groups"
+        ],
+        "title": "DetectFamiliesResponse",
+        "description": "Response from auto-detection of family suggestions."
+      },
       "DistinctBaselinesResponse": {
         "properties": {
           "baselines": {
@@ -8761,9 +9066,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "baselines"
-        ],
+        "required": ["baselines"],
         "title": "DistinctBaselinesResponse",
         "description": "Response containing sorted unique baseline values for text models."
       },
@@ -8806,10 +9109,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "file_name",
-          "file_url"
-        ],
+        "required": ["file_name", "file_url"],
         "title": "DownloadRecord",
         "description": "A record of a file to download for a model. Typically a ckpt file."
       },
@@ -8905,9 +9205,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "msg"
-        ],
+        "required": ["msg"],
         "title": "ErrorDetail",
         "description": "Detail about a specific error."
       },
@@ -8929,9 +9227,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "detail"
-        ],
+        "required": ["detail"],
         "title": "ErrorResponse",
         "description": "Standardized error response."
       },
@@ -8988,9 +9284,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "EsrganModelRecord",
         "description": "An ESRGAN model entry in the model reference."
       },
@@ -9047,19 +9341,33 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "EsrganModelRecord",
         "description": "An ESRGAN model entry in the model reference."
       },
+      "ExtraPartInfo": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "inferred_type": {
+            "type": "string",
+            "title": "Inferred Type"
+          }
+        },
+        "type": "object",
+        "required": ["value", "position", "inferred_type"],
+        "title": "ExtraPartInfo",
+        "description": "A name segment that didn't match any primary part category."
+      },
       "FieldChangeType": {
         "type": "string",
-        "enum": [
-          "added",
-          "removed",
-          "modified"
-        ],
+        "enum": ["added", "removed", "modified"],
         "title": "FieldChangeType",
         "description": "Type of field-level change."
       },
@@ -9092,10 +9400,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "field_path",
-          "change_type"
-        ],
+        "required": ["field_path", "change_type"],
         "title": "FieldDiff",
         "description": "Field-level difference between before and after states."
       },
@@ -9151,9 +9456,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "FineTuneSeriesInfo",
         "description": "Information about a fine-tuning series."
       },
@@ -9210,11 +9513,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "record_type",
-          "name",
-          "model_classification"
-        ],
+        "required": ["record_type", "name", "model_classification"],
         "title": "GenericModelRecord",
         "description": "A generic model reference record."
       },
@@ -9271,11 +9570,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "record_type",
-          "name",
-          "model_classification"
-        ],
+        "required": ["record_type", "name", "model_classification"],
         "title": "GenericModelRecord",
         "description": "A generic model reference record."
       },
@@ -9402,9 +9697,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "GfpganModelRecord",
         "description": "A GFPGAN model entry in the model reference."
       },
@@ -9461,11 +9754,137 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "GfpganModelRecord",
         "description": "A GFPGAN model entry in the model reference."
+      },
+      "GroupAliasListResponse": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/GroupAliasResponse"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": ["entries"],
+        "title": "GroupAliasListResponse",
+        "description": "Response listing all group alias entries."
+      },
+      "GroupAliasResponse": {
+        "properties": {
+          "canonical": {
+            "type": "string",
+            "title": "Canonical"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          }
+        },
+        "type": "object",
+        "required": ["canonical", "aliases"],
+        "title": "GroupAliasResponse",
+        "description": "A single group alias entry."
+      },
+      "GroupFamilyListResponse": {
+        "properties": {
+          "families": {
+            "items": {
+              "$ref": "#/components/schemas/GroupFamilyResponse"
+            },
+            "type": "array",
+            "title": "Families"
+          }
+        },
+        "type": "object",
+        "required": ["families"],
+        "title": "GroupFamilyListResponse",
+        "description": "Response listing all related-group families."
+      },
+      "GroupFamilyResponse": {
+        "properties": {
+          "family_name": {
+            "type": "string",
+            "title": "Family Name"
+          },
+          "members": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Members"
+          }
+        },
+        "type": "object",
+        "required": ["family_name", "members"],
+        "title": "GroupFamilyResponse",
+        "description": "A single related-group family."
+      },
+      "GroupHealthIssue": {
+        "properties": {
+          "group_name": {
+            "type": "string",
+            "title": "Group Name"
+          },
+          "issue_type": {
+            "type": "string",
+            "title": "Issue Type"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity",
+            "default": "warning"
+          }
+        },
+        "type": "object",
+        "required": ["group_name", "issue_type", "message"],
+        "title": "GroupHealthIssue",
+        "description": "A single health problem detected for a group."
+      },
+      "GroupHealthResponse": {
+        "properties": {
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/GroupHealthIssue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "total_groups_checked": {
+            "type": "integer",
+            "title": "Total Groups Checked"
+          },
+          "groups_with_issues": {
+            "type": "integer",
+            "title": "Groups With Issues"
+          },
+          "issue_counts_by_type": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Issue Counts By Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "issues",
+          "total_groups_checked",
+          "groups_with_issues",
+          "issue_counts_by_type"
+        ],
+        "title": "GroupHealthResponse",
+        "description": "Aggregate health check across all text model groups."
       },
       "GroupListResponse": {
         "properties": {
@@ -9478,9 +9897,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "groups"
-        ],
+        "required": ["groups"],
         "title": "GroupListResponse",
         "description": "Response listing all text model group names."
       },
@@ -9613,10 +10030,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "parsed"
-        ],
+        "required": ["name", "parsed"],
         "title": "GroupMemberInfo",
         "description": "A single member of a text model group with parsed name info."
       },
@@ -9711,6 +10125,14 @@
           "name_format": {
             "$ref": "#/components/schemas/NameFormatInfo"
           },
+          "canonical_count": {
+            "type": "integer",
+            "title": "Canonical Count"
+          },
+          "backend_duplicate_count": {
+            "type": "integer",
+            "title": "Backend Duplicate Count"
+          },
           "name_schema_is_custom": {
             "type": "boolean",
             "title": "Name Schema Is Custom",
@@ -9724,13 +10146,15 @@
             "title": "Exception Members",
             "default": []
           },
-          "canonical_count": {
-            "type": "integer",
-            "title": "Canonical Count"
-          },
-          "backend_duplicate_count": {
-            "type": "integer",
-            "title": "Backend Duplicate Count"
+          "related_family": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GroupFamilyResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -9767,11 +10191,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "group_name",
-          "name_schema",
-          "is_custom"
-        ],
+        "required": ["group_name", "name_schema", "is_custom"],
         "title": "GroupNameSchemaResponse",
         "description": "Response for a group's naming schema."
       },
@@ -9834,11 +10254,138 @@
               }
             ],
             "title": "Template"
+          },
+          "extra_parts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra Parts"
           }
         },
         "type": "object",
         "title": "GroupNameSchemaUpdateRequest",
         "description": "Partial update for a group's naming schema."
+      },
+      "GroupSummaryEntry": {
+        "properties": {
+          "group_name": {
+            "type": "string",
+            "title": "Group Name"
+          },
+          "canonical_count": {
+            "type": "integer",
+            "title": "Canonical Count"
+          },
+          "backend_duplicate_count": {
+            "type": "integer",
+            "title": "Backend Duplicate Count"
+          },
+          "has_custom_schema": {
+            "type": "boolean",
+            "title": "Has Custom Schema",
+            "default": false
+          },
+          "family_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family Name"
+          },
+          "alias_canonical": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alias Canonical"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases",
+            "default": []
+          },
+          "available_sizes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Sizes",
+            "default": []
+          },
+          "health_issues": {
+            "items": {
+              "$ref": "#/components/schemas/GroupHealthIssue"
+            },
+            "type": "array",
+            "title": "Health Issues",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": ["group_name", "canonical_count", "backend_duplicate_count"],
+        "title": "GroupSummaryEntry",
+        "description": "Enriched metadata for a single text model group."
+      },
+      "GroupsSummaryResponse": {
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/GroupSummaryEntry"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "total_groups": {
+            "type": "integer",
+            "title": "Total Groups"
+          },
+          "total_models": {
+            "type": "integer",
+            "title": "Total Models"
+          },
+          "groups_with_families": {
+            "type": "integer",
+            "title": "Groups With Families"
+          },
+          "groups_with_aliases": {
+            "type": "integer",
+            "title": "Groups With Aliases"
+          },
+          "groups_with_issues": {
+            "type": "integer",
+            "title": "Groups With Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "groups",
+          "total_groups",
+          "total_models",
+          "groups_with_families",
+          "groups_with_aliases",
+          "groups_with_issues"
+        ],
+        "title": "GroupsSummaryResponse",
+        "description": "Enriched overview of all text model groups."
       },
       "HTTPValidationError": {
         "properties": {
@@ -9864,10 +10411,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "status",
-          "ai_horde"
-        ],
+        "required": ["status", "ai_horde"],
         "title": "HeartbeatResponse",
         "description": "Enhanced heartbeat response with external service status."
       },
@@ -10086,11 +10630,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "baseline",
-          "nsfw"
-        ],
+        "required": ["name", "baseline", "nsfw"],
         "title": "ImageGenerationModelRecord",
         "description": "A model entry in the model reference."
       },
@@ -10309,11 +10849,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "baseline",
-          "nsfw"
-        ],
+        "required": ["name", "baseline", "nsfw"],
         "title": "ImageGenerationModelRecord",
         "description": "A model entry in the model reference."
       },
@@ -10350,9 +10886,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "last_updated"
-        ],
+        "required": ["last_updated"],
         "title": "LastUpdatedResponse",
         "description": "Response for /last_updated endpoint."
       },
@@ -10454,9 +10988,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyBlipRecord",
         "description": "BLIP legacy record with category-specific normalization."
       },
@@ -10558,9 +11090,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyBlipRecord",
         "description": "BLIP legacy record with category-specific normalization."
       },
@@ -10572,10 +11102,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "clip",
-              "coca"
-            ],
+            "enum": ["clip", "coca"],
             "title": "Type",
             "default": "clip"
           },
@@ -10676,9 +11203,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyClipRecord",
         "description": "CLIP legacy record with category-specific normalization."
       },
@@ -10690,10 +11215,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "clip",
-              "coca"
-            ],
+            "enum": ["clip", "coca"],
             "title": "Type",
             "default": "clip"
           },
@@ -10794,9 +11316,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyClipRecord",
         "description": "CLIP legacy record with category-specific normalization."
       },
@@ -10898,9 +11418,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyCodeformerRecord",
         "description": "Codeformers legacy record with category-specific normalization."
       },
@@ -11002,9 +11520,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyCodeformerRecord",
         "description": "Codeformers legacy record with category-specific normalization."
       },
@@ -11113,9 +11629,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "title": "LegacyConfigFile",
         "description": "A single legacy config file entry."
       },
@@ -11228,10 +11742,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
+        "required": ["name", "type"],
         "title": "LegacyControlnetRecord",
         "description": "ControlNet legacy record with category-specific normalization."
       },
@@ -11344,10 +11855,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
+        "required": ["name", "type"],
         "title": "LegacyControlnetRecord",
         "description": "ControlNet legacy record with category-specific normalization."
       },
@@ -11449,9 +11957,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyEsrganRecord",
         "description": "ESRGAN legacy record with category-specific normalization."
       },
@@ -11553,9 +12059,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyEsrganRecord",
         "description": "ESRGAN legacy record with category-specific normalization."
       },
@@ -11657,9 +12161,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyGfpganRecord",
         "description": "GFPGAN legacy record with category-specific normalization."
       },
@@ -11761,9 +12263,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyGfpganRecord",
         "description": "GFPGAN legacy record with category-specific normalization."
       },
@@ -11864,10 +12364,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
+        "required": ["name", "type"],
         "title": "LegacyMiscellaneousRecord",
         "description": "Miscellaneous legacy record with category-specific normalization."
       },
@@ -11968,10 +12465,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name",
-          "type"
-        ],
+        "required": ["name", "type"],
         "title": "LegacyMiscellaneousRecord",
         "description": "Miscellaneous legacy record with category-specific normalization."
       },
@@ -12073,9 +12567,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacySafetyCheckerRecord",
         "description": "Safety Checker legacy record with category-specific normalization."
       },
@@ -12177,9 +12669,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacySafetyCheckerRecord",
         "description": "Safety Checker legacy record with category-specific normalization."
       },
@@ -12421,10 +12911,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name",
-          "baseline"
-        ],
+        "required": ["name", "baseline"],
         "title": "LegacyStableDiffusionRecord",
         "description": "Stable Diffusion legacy record with category-specific validation."
       },
@@ -12660,9 +13147,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyTextGenerationRecord",
         "description": "Text generation legacy record with category-specific validation."
       },
@@ -12894,21 +13379,13 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "LegacyTextGenerationRecord",
         "description": "Text generation legacy record with category-specific validation."
       },
       "MODEL_DOMAIN": {
         "type": "string",
-        "enum": [
-          "image",
-          "text",
-          "video",
-          "audio",
-          "rendered_3d"
-        ],
+        "enum": ["image", "text", "video", "audio", "rendered_3d"],
         "title": "MODEL_DOMAIN",
         "description": "The domain of a model, i.e., what it pertains to (image, text, video, etc.)."
       },
@@ -12948,14 +13425,7 @@
       },
       "MODEL_STYLE": {
         "type": "string",
-        "enum": [
-          "generalist",
-          "anime",
-          "furry",
-          "artistic",
-          "other",
-          "realistic"
-        ],
+        "enum": ["generalist", "anime", "furry", "artistic", "other", "realistic"],
         "title": "MODEL_STYLE",
         "description": "An enum of all the model styles."
       },
@@ -13012,9 +13482,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "MiscellaneousModelRecord",
         "description": "A miscellaneous model entry in the model reference."
       },
@@ -13071,9 +13539,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "MiscellaneousModelRecord",
         "description": "A miscellaneous model entry in the model reference."
       },
@@ -13087,10 +13553,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "purpose"
-        ],
+        "required": ["domain", "purpose"],
         "title": "ModelClassification",
         "description": "Contains specific information about how to categorize a model.\n\nThis includes the model's `MODEL_DOMAIN` and `MODEL_PURPOSE`."
       },
@@ -13345,11 +13808,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "model_name",
-          "category",
-          "net_operation"
-        ],
+        "required": ["model_name", "category", "net_operation"],
         "title": "ModelNetChange",
         "description": "Net change for a single model across a batch."
       },
@@ -13365,10 +13824,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "reason"
-        ],
+        "required": ["name", "reason"],
         "title": "NameExceptionInfo",
         "description": "A member that does not follow the group naming schema."
       },
@@ -13387,9 +13843,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "reason"
-        ],
+        "required": ["reason"],
         "title": "NameExceptionRequest",
         "description": "Set or clear a name schema exception on a model."
       },
@@ -13424,36 +13878,30 @@
           "template": {
             "type": "string",
             "title": "Template"
+          },
+          "extra_parts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Extra Parts",
+            "default": []
           }
         },
         "type": "object",
-        "required": [
-          "separator",
-          "part_order",
-          "author_included",
-          "template"
-        ],
+        "required": ["separator", "part_order", "author_included", "template"],
         "title": "NameFormatInfo",
         "description": "Serializable representation of an inferred name format schema."
       },
       "NetChangeType": {
         "type": "string",
-        "enum": [
-          "added",
-          "modified",
-          "deleted",
-          "unchanged"
-        ],
+        "enum": ["added", "modified", "deleted", "unchanged"],
         "title": "NetChangeType",
         "description": "Type of net change for a model across a batch or pending change."
       },
       "OperationType": {
         "type": "string",
-        "enum": [
-          "create",
-          "update",
-          "delete"
-        ],
+        "enum": ["create", "update", "delete"],
         "title": "OperationType",
         "description": "Type of CRUD operation performed on model references."
       },
@@ -13503,11 +13951,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "bucket_label",
-          "count",
-          "percentage"
-        ],
+        "required": ["bucket_label", "count", "percentage"],
         "title": "ParameterBucketStats",
         "description": "Statistics about parameter count buckets for text generation models.\n\nUsed to group models by parameter size ranges for analysis."
       },
@@ -13560,12 +14004,18 @@
               }
             ],
             "title": "Version"
+          },
+          "extras": {
+            "items": {
+              "$ref": "#/components/schemas/ExtraPartInfo"
+            },
+            "type": "array",
+            "title": "Extras",
+            "default": []
           }
         },
         "type": "object",
-        "required": [
-          "base_name"
-        ],
+        "required": ["base_name"],
         "title": "ParsedNameInfo",
         "description": "Parsed name components for a single group member."
       },
@@ -13626,14 +14076,18 @@
           "suggested_group": {
             "type": "string",
             "title": "Suggested Group"
+          },
+          "extras": {
+            "items": {
+              "$ref": "#/components/schemas/ExtraPartInfo"
+            },
+            "type": "array",
+            "title": "Extras",
+            "default": []
           }
         },
         "type": "object",
-        "required": [
-          "original_name",
-          "base_name",
-          "suggested_group"
-        ],
+        "required": ["original_name", "base_name", "suggested_group"],
         "title": "ParsedNameResponse",
         "description": "Structured result of parsing a text model name."
       },
@@ -13687,9 +14141,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "batch_title"
-        ],
+        "required": ["batch_title"],
         "title": "PendingBatchRequest",
         "description": "Request payload used to approve/reject queued changes."
       },
@@ -13726,12 +14178,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "batch_id",
-          "batch_title",
-          "approved",
-          "rejected"
-        ],
+        "required": ["batch_id", "batch_title", "approved", "rejected"],
         "title": "PendingBatchResult",
         "description": "Result of processing a batch of pending changes."
       },
@@ -13823,13 +14270,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "change_id",
-          "category",
-          "model_name",
-          "operation",
-          "net_operation"
-        ],
+        "required": ["change_id", "category", "model_name", "operation", "net_operation"],
         "title": "PendingChangeDiff",
         "description": "Diff between current model state and proposed pending change.\n\nThis model provides a detailed view of what would change if the pending\nchange were applied, including field-level diffs for update operations."
       },
@@ -14108,13 +14549,7 @@
       },
       "PendingChangeStatus": {
         "type": "string",
-        "enum": [
-          "pending",
-          "approved",
-          "applying",
-          "applied",
-          "rejected"
-        ],
+        "enum": ["pending", "approved", "applying", "applied", "rejected"],
         "title": "PendingChangeStatus",
         "description": "Lifecycle states for queued changes.\n\nState transitions::\n\n    PENDING → APPROVED → APPLYING → APPLIED\n    PENDING → REJECTED\n\nThe ``APPLYING`` state is a transient lock held while the backend write is\nin progress.  If the process crashes during this window, records stuck in\n``APPLYING`` are detected on restart and logged as warnings."
       },
@@ -14208,9 +14643,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "batch_id"
-        ],
+        "required": ["batch_id"],
         "title": "PendingQueueAuditBatchDetail",
         "description": "Detailed view combining batch summary with per-change timelines."
       },
@@ -14239,10 +14672,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "batches"
-        ],
+        "required": ["domain", "batches"],
         "title": "PendingQueueAuditBatchPage",
         "description": "Cursor-based page of batch summaries."
       },
@@ -14329,9 +14759,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "batch_id"
-        ],
+        "required": ["batch_id"],
         "title": "PendingQueueAuditBatchSummary",
         "description": "High-level aggregate for a processed pending queue batch."
       },
@@ -14516,10 +14944,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "change_id",
-          "status"
-        ],
+        "required": ["change_id", "status"],
         "title": "PendingQueueAuditChange",
         "description": "Lifecycle view of a pending change reconstructed from audit events."
       },
@@ -14545,12 +14970,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "pending_changes",
-          "total_pending",
-          "generated_at"
-        ],
+        "required": ["domain", "pending_changes", "total_pending", "generated_at"],
         "title": "PendingQueueAuditCurrentResponse",
         "description": "Snapshot of currently pending (unapproved) changes."
       },
@@ -14586,11 +15006,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "event_id",
-          "timestamp",
-          "action"
-        ],
+        "required": ["event_id", "timestamp", "action"],
         "title": "PendingQueueAuditEvent",
         "description": "Single audit log entry tied to a pending change."
       },
@@ -14624,12 +15040,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "items",
-          "total",
-          "offset",
-          "limit"
-        ],
+        "required": ["items", "total", "offset", "limit"],
         "title": "PendingQueuePage",
         "description": "Paginated list of pending change records."
       },
@@ -14725,18 +15136,37 @@
           }
         },
         "type": "object",
-        "required": [
-          "removed_count"
-        ],
+        "required": ["removed_count"],
         "title": "PurgePendingChangesResponse",
         "description": "Response payload for a purge operation."
       },
+      "RemoveAliasRequest": {
+        "properties": {
+          "alias": {
+            "type": "string",
+            "title": "Alias"
+          }
+        },
+        "type": "object",
+        "required": ["alias"],
+        "title": "RemoveAliasRequest",
+        "description": "Request body for removing a single alias from a canonical group."
+      },
+      "RemoveFamilyMemberRequest": {
+        "properties": {
+          "group_name": {
+            "type": "string",
+            "title": "Group Name"
+          }
+        },
+        "type": "object",
+        "required": ["group_name"],
+        "title": "RemoveFamilyMemberRequest",
+        "description": "Request body for removing a single group from a family."
+      },
       "ReplicateMode": {
         "type": "string",
-        "enum": [
-          "PRIMARY",
-          "REPLICA"
-        ],
+        "enum": ["PRIMARY", "REPLICA"],
         "title": "ReplicateMode",
         "description": "Indicates if copies of the model reference are canonical or replicated."
       },
@@ -14793,9 +15223,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "SafetyCheckerModelRecord",
         "description": "A safety checker model entry in the model reference."
       },
@@ -14852,9 +15280,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "SafetyCheckerModelRecord",
         "description": "A safety checker model entry in the model reference."
       },
@@ -14886,15 +15312,39 @@
           }
         },
         "type": "object",
-        "required": [
-          "results",
-          "total",
-          "offset",
-          "limit",
-          "has_more"
-        ],
+        "required": ["results", "total", "offset", "limit", "has_more"],
         "title": "SearchResponse",
         "description": "Paginated search response."
+      },
+      "SetAliasesRequest": {
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Aliases"
+          }
+        },
+        "type": "object",
+        "required": ["aliases"],
+        "title": "SetAliasesRequest",
+        "description": "Request body for setting the full alias list for a canonical group."
+      },
+      "SetFamilyRequest": {
+        "properties": {
+          "members": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Members"
+          }
+        },
+        "type": "object",
+        "required": ["members"],
+        "title": "SetFamilyRequest",
+        "description": "Request body for creating or replacing a family."
       },
       "TagStats": {
         "properties": {
@@ -14918,11 +15368,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tag",
-          "count",
-          "percentage"
-        ],
+        "required": ["tag", "count", "percentage"],
         "title": "TagStats",
         "description": "Statistics about model tags or styles."
       },
@@ -15124,10 +15570,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "parameters"
-        ],
+        "required": ["name", "parameters"],
         "title": "TextGenerationModelRecord",
         "description": "A text generation model entry in the model reference."
       },
@@ -15329,10 +15772,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "parameters"
-        ],
+        "required": ["name", "parameters"],
         "title": "TextGenerationModelRecord",
         "description": "A text generation model entry in the model reference."
       },
@@ -15376,6 +15816,13 @@
               }
             ],
             "title": "Template"
+          },
+          "extra_parts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Extra Parts"
           }
         },
         "additionalProperties": false,
@@ -15441,13 +15888,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "user_id",
-          "username",
-          "roles",
-          "is_approver",
-          "is_requestor"
-        ],
+        "required": ["user_id", "username", "roles", "is_approver", "is_requestor"],
         "title": "UserRolesResponse",
         "description": "Response model for the user roles endpoint."
       },
@@ -15484,11 +15925,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       },
       "VideoGenerationModelRecord-Input": {
@@ -15574,9 +16011,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "VideoGenerationModelRecord",
         "description": "A video generation model entry in the model reference."
       },
@@ -15663,9 +16098,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "VideoGenerationModelRecord",
         "description": "A video generation model entry in the model reference."
       }

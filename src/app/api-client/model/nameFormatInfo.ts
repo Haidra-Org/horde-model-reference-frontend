@@ -17,4 +17,5 @@ export interface NameFormatInfo {
   author_included: boolean;
   common_author?: string | null;
   template: string;
+  extra_parts?: Array<string>;
 }

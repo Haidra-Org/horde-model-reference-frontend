@@ -148,16 +148,18 @@ export class UrlVerificationService {
 
           const extraction = this.extractSha256FromHeaders(response.headers, isHuggingFaceUrl);
 
-          let sha256sum =
-            redirectLinkedEtagSha ??
-            extraction.sha256sum;
+          let sha256sum = redirectLinkedEtagSha ?? extraction.sha256sum;
           let sha256Source: UrlVerificationShaSource = redirectLinkedEtagSha
             ? 'redirect-x-linked-etag'
             : extraction.source;
 
           if (!sha256sum && isHuggingFaceUrl) {
             log('hf-tree-fallback:start');
-            const treeFallback = await this.tryResolveHfSha256ViaTreeApi(url, controller.signal, log);
+            const treeFallback = await this.tryResolveHfSha256ViaTreeApi(
+              url,
+              controller.signal,
+              log,
+            );
             if (treeFallback?.sha256sum) {
               sha256sum = treeFallback.sha256sum;
               sha256Source = treeFallback.source;
@@ -568,17 +570,15 @@ export class UrlVerificationService {
       if (Array.isArray(entries)) {
         const normalizedTargetPath = resolveInfo.filePath.replace(/^\/+/, '');
         const targetFileName = normalizedTargetPath.split('/').at(-1) ?? normalizedTargetPath;
-        const target = (entries as HuggingFaceTreeEntry[]).find(
-          (entry) => {
-            const candidates = [entry.path, entry.rfilename, entry.name]
-              .filter((value): value is string => typeof value === 'string')
-              .map((value) => value.replace(/^\/+/, ''));
+        const target = (entries as HuggingFaceTreeEntry[]).find((entry) => {
+          const candidates = [entry.path, entry.rfilename, entry.name]
+            .filter((value): value is string => typeof value === 'string')
+            .map((value) => value.replace(/^\/+/, ''));
 
-            return candidates.some(
-              (candidate) => candidate === normalizedTargetPath || candidate === targetFileName,
-            );
-          },
-        );
+          return candidates.some(
+            (candidate) => candidate === normalizedTargetPath || candidate === targetFileName,
+          );
+        });
 
         if (target?.lfs?.oid) {
           const normalized = this.normalizeSha256(target.lfs.oid);

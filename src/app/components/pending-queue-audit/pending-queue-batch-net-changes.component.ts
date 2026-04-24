@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
 import type {
   BatchNetChangeResponse,
   NetChangeType,

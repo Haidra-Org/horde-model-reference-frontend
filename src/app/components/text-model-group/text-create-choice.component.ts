@@ -32,7 +32,10 @@ export type CreateChoice =
       (click)="dismiss.emit()"
       (keydown)="$event.key === 'Escape' && dismiss.emit()"
     >
-      <div class="modal-backdrop modal-backdrop--blur text-create-choice-backdrop" aria-hidden="true"></div>
+      <div
+        class="modal-backdrop modal-backdrop--blur text-create-choice-backdrop"
+        aria-hidden="true"
+      ></div>
 
       <div
         class="modal-dialog modal-dialog--xl text-create-choice-dialog"
@@ -62,10 +65,7 @@ export type CreateChoice =
             </button>
 
             <!-- Add to Existing Group -->
-            <div
-              class="choice-card"
-              [class.choice-card--active]="showGroupPicker()"
-            >
+            <div class="choice-card" [class.choice-card--active]="showGroupPicker()">
               <button
                 type="button"
                 class="flex w-full items-start gap-3 text-left"

@@ -463,7 +463,8 @@
 
   .model-variation-api-name-code {
     @apply block truncate text-[12px] leading-tight;
-    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    font-family:
+      ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
     @apply text-gray-900 dark:text-gray-100;
   }
 
@@ -820,16 +821,34 @@
   /* Percentage-based column widths for the model list table.
      Small fixed-content columns use a fixed width; the remaining
      space is distributed proportionally via percentage widths. */
-  .model-col-expand  { width: 2.5rem; }
-  .model-col-index   { width: 3rem; }
-  .model-col-active  { width: 4.25rem; }
-  .model-col-name    { width: 32%; }
-  .model-col-baseline { width: 16%; }
-  .model-col-tags    { width: 16%; }
+  .model-col-expand {
+    width: 2.5rem;
+  }
+  .model-col-index {
+    width: 3rem;
+  }
+  .model-col-active {
+    width: 4.25rem;
+  }
+  .model-col-name {
+    width: 32%;
+  }
+  .model-col-baseline {
+    width: 16%;
+  }
+  .model-col-tags {
+    width: 16%;
+  }
   .model-col-variants,
-  .model-col-safety  { width: 7%; }
-  .model-col-workers { width: 6%; }
-  .model-col-actions { width: 12%; }
+  .model-col-safety {
+    width: 7%;
+  }
+  .model-col-workers {
+    width: 6%;
+  }
+  .model-col-actions {
+    width: 12%;
+  }
 
   .model-list-table-viewport {
     @apply bg-transparent;
@@ -1005,7 +1024,7 @@
   }
 
   .model-row-baseline-pill {
-    @apply inline-flex w-full max-w-full items-center rounded-full border border-primary-200 bg-primary-50/80 px-2.5 py-1;
+    @apply inline-flex w-fit max-w-full items-center rounded-full border border-primary-200 bg-primary-50/80 px-2.5 py-1;
     @apply text-xs font-semibold uppercase tracking-wide text-primary-800;
     @apply dark:border-primary-800/80 dark:bg-primary-950/50 dark:text-primary-300;
   }

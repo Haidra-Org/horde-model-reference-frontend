@@ -1,0 +1,310 @@
+<!-- Breadcrumb -->
+<div class="mb-6">
+  <nav class="flex items-center gap-2 text-sm text-muted">
+    <a routerLink="/" class="link">Home</a>
+    <span>/</span>
+    <a [routerLink]="['/categories', category()]" class="link">{{ category() }}</a>
+    <span>/</span>
+    <span class="font-medium">Group Management</span>
+  </nav>
+</div>
+
+@if (loading()) {
+  <div class="flex items-center justify-center py-16">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+      <p class="mt-4 text-muted">Loading groups summary...</p>
+    </div>
+  </div>
+} @else if (summary(); as data) {
+  <!-- Summary Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="text-2xl font-bold">{{ data.total_groups }}</div>
+        <div class="text-xs text-muted uppercase tracking-wider">Groups</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="text-2xl font-bold">{{ data.total_models }}</div>
+        <div class="text-xs text-muted uppercase tracking-wider">Total Models</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="text-2xl font-bold">{{ data.groups_with_families }}</div>
+        <div class="text-xs text-muted uppercase tracking-wider">In Families</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="text-2xl font-bold">{{ data.groups_with_aliases }}</div>
+        <div class="text-xs text-muted uppercase tracking-wider">With Aliases</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="text-2xl font-bold" [class.text-warning-600]="data.groups_with_issues > 0">
+          {{ data.groups_with_issues }}
+        </div>
+        <div class="text-xs text-muted uppercase tracking-wider">With Issues</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-6">
+    <div class="card-body">
+      <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+        <div class="flex-1">
+          <input
+            type="text"
+            class="form-input w-full"
+            placeholder="Search groups, families, or aliases..."
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+        </div>
+        <div class="flex gap-2">
+          <horde-button
+            [variant]="healthFilter() === 'all' ? 'primary' : 'secondary'"
+            (click)="healthFilter.set('all')"
+          >
+            All
+          </horde-button>
+          <horde-button
+            [variant]="healthFilter() === 'healthy' ? 'primary' : 'secondary'"
+            (click)="healthFilter.set('healthy')"
+          >
+            Healthy
+          </horde-button>
+          <horde-button
+            [variant]="healthFilter() === 'issues' ? 'primary' : 'secondary'"
+            (click)="healthFilter.set('issues')"
+          >
+            Issues
+          </horde-button>
+        </div>
+        <span class="text-sm text-muted">{{ filteredGroups().length }} groups</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions Toolbar -->
+  @if (selectedCount() > 0 && auth.isAuthenticated()) {
+    <div
+      class="card mb-4 border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/20"
+    >
+      <div class="card-body">
+        <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+          <span class="text-sm font-medium">{{ selectedCount() }} group(s) selected</span>
+          <div class="flex items-center gap-2 flex-1">
+            <label class="form-label mb-0 whitespace-nowrap" for="bulk-family"
+              >Assign to family:</label
+            >
+            <input
+              id="bulk-family"
+              type="text"
+              class="form-input text-sm"
+              style="max-width: 200px"
+              placeholder="Family name"
+              [ngModel]="bulkFamilyName()"
+              (ngModelChange)="bulkFamilyName.set($event)"
+              (keydown.enter)="bulkSetFamily()"
+            />
+            <horde-button
+              variant="primary"
+              size="sm"
+              [disabled]="bulkOperationRunning() || !bulkFamilyName().trim()"
+              (click)="bulkSetFamily()"
+            >
+              {{ bulkOperationRunning() ? 'Applying...' : 'Apply' }}
+            </horde-button>
+          </div>
+          <horde-button variant="secondary" size="sm" (click)="clearSelection()">
+            Clear Selection
+          </horde-button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Groups Table -->
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr
+            class="bg-gray-50 dark:bg-gray-900 text-left text-xs font-semibold uppercase tracking-wider"
+          >
+            @if (auth.isAuthenticated()) {
+              <th class="px-4 py-3 w-10">
+                <input
+                  type="checkbox"
+                  class="form-checkbox"
+                  [checked]="allVisibleSelected()"
+                  (change)="toggleSelectAll()"
+                  aria-label="Select all visible groups"
+                />
+              </th>
+            }
+            <th class="px-4 py-3 cursor-pointer select-none" (click)="toggleSort('group_name')">
+              <span class="flex items-center gap-1">
+                Group Name
+                <span class="text-muted">{{ sortIcon('group_name') }}</span>
+              </span>
+            </th>
+            <th
+              class="px-4 py-3 cursor-pointer select-none text-center"
+              (click)="toggleSort('canonical_count')"
+            >
+              <span class="inline-flex items-center gap-1">
+                Models
+                <span class="text-muted">{{ sortIcon('canonical_count') }}</span>
+              </span>
+            </th>
+            <th class="px-4 py-3">Sizes</th>
+            <th class="px-4 py-3 cursor-pointer select-none" (click)="toggleSort('family_name')">
+              <span class="flex items-center gap-1">
+                Family
+                <span class="text-muted">{{ sortIcon('family_name') }}</span>
+              </span>
+            </th>
+            <th class="px-4 py-3">Aliases</th>
+            <th
+              class="px-4 py-3 cursor-pointer select-none text-center"
+              (click)="toggleSort('has_custom_schema')"
+            >
+              <span class="inline-flex items-center gap-1">
+                Schema
+                <span class="text-muted">{{ sortIcon('has_custom_schema') }}</span>
+              </span>
+            </th>
+            <th
+              class="px-4 py-3 cursor-pointer select-none text-center"
+              (click)="toggleSort('health_issues')"
+            >
+              <span class="inline-flex items-center gap-1">
+                Health
+                <span class="text-muted">{{ sortIcon('health_issues') }}</span>
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          @for (group of filteredGroups(); track group.group_name) {
+            <tr
+              class="transition-colors even:bg-gray-50 hover:bg-gray-100 dark:even:bg-gray-700/30 dark:hover:bg-gray-700"
+            >
+              <!-- Selection Checkbox -->
+              @if (auth.isAuthenticated()) {
+                <td class="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    class="form-checkbox"
+                    [checked]="isSelected(group.group_name)"
+                    (change)="toggleGroupSelection(group.group_name)"
+                    [attr.aria-label]="'Select ' + group.group_name"
+                  />
+                </td>
+              }
+              <!-- Group Name -->
+              <td class="px-4 py-3">
+                <a
+                  [routerLink]="['/categories', category(), 'group', group.group_name]"
+                  class="link font-medium"
+                >
+                  {{ group.group_name }}
+                </a>
+                @if (group.alias_canonical) {
+                  <div class="text-xs text-muted mt-0.5">
+                    → alias of
+                    <a
+                      [routerLink]="['/categories', category(), 'group', group.alias_canonical]"
+                      class="link"
+                    >
+                      {{ group.alias_canonical }}
+                    </a>
+                  </div>
+                }
+              </td>
+
+              <!-- Model Count -->
+              <td class="px-4 py-3 text-center">
+                <span class="font-medium">{{ group.canonical_count }}</span>
+                @if (group.backend_duplicate_count > 0) {
+                  <span class="text-xs text-muted ml-1"
+                    >(+{{ group.backend_duplicate_count }})</span
+                  >
+                }
+              </td>
+
+              <!-- Sizes -->
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-1">
+                  @for (size of group.available_sizes ?? []; track size) {
+                    <span class="tag tag-info text-xs">{{ size }}</span>
+                  }
+                </div>
+              </td>
+
+              <!-- Family -->
+              <td class="px-4 py-3">
+                @if (group.family_name) {
+                  <span class="badge badge-info">{{ group.family_name }}</span>
+                } @else {
+                  <span class="text-muted text-xs">—</span>
+                }
+              </td>
+
+              <!-- Aliases -->
+              <td class="px-4 py-3">
+                @if ((group.aliases?.length ?? 0) > 0) {
+                  <div class="flex flex-wrap gap-1">
+                    @for (alias of group.aliases ?? []; track alias) {
+                      <span class="badge badge-secondary text-xs">{{ alias }}</span>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-muted text-xs">—</span>
+                }
+              </td>
+
+              <!-- Schema -->
+              <td class="px-4 py-3 text-center">
+                @if (group.has_custom_schema) {
+                  <horde-badge variant="success">Custom</horde-badge>
+                } @else {
+                  <span class="text-muted text-xs">Inferred</span>
+                }
+              </td>
+
+              <!-- Health -->
+              <td class="px-4 py-3 text-center">
+                @if (issueCount(group) === 0 && infoCount(group) === 0) {
+                  <horde-badge variant="success">OK</horde-badge>
+                } @else if (issueCount(group) > 0) {
+                  <horde-badge variant="warning">
+                    {{ issueCount(group) }} warning{{ issueCount(group) === 1 ? '' : 's' }}
+                  </horde-badge>
+                } @else {
+                  <horde-badge variant="info"> {{ infoCount(group) }} info </horde-badge>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td
+                [attr.colspan]="auth.isAuthenticated() ? 8 : 7"
+                class="px-4 py-8 text-center text-muted"
+              >
+                No groups match your search criteria.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

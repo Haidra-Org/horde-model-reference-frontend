@@ -45,7 +45,9 @@ import { hasShowcases } from './model-row.utils';
           [attr.aria-label]="expanded() ? 'Collapse row details' : 'Expand row details'"
           (click)="
             $event.stopPropagation();
-            isGhost() ? viewPendingChange.emit(pendingOverlay()!.pendingChangeId) : toggleExpansion()
+            isGhost()
+              ? viewPendingChange.emit(pendingOverlay()!.pendingChangeId)
+              : toggleExpansion()
           "
         >
           <svg
@@ -76,19 +78,23 @@ import { hasShowcases } from './model-row.utils';
       <td class="model-row-model-cell">
         <div class="model-row-model-stack">
           <div class="model-row-model-head">
-          @if (isGrouped()) {
-            <a
-              [routerLink]="['/categories', 'text_generation', 'group', model().name]"
-              class="model-row-group-link"
-              title="View group"
-              (click)="$event.stopPropagation()"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </a>
-          }
+            @if (isGrouped()) {
+              <a
+                [routerLink]="['/categories', 'text_generation', 'group', model().name]"
+                class="model-row-group-link"
+                title="View group"
+                (click)="$event.stopPropagation()"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+              </a>
+            }
 
             <span class="model-row-model-name">{{ model().name }}</span>
 
@@ -96,19 +102,20 @@ import { hasShowcases } from './model-row.utils';
               <span class="model-row-version-pill">v{{ version }}</span>
             }
 
-          @if (pendingOverlay()) {
-            <button
-              type="button"
-              [class]="pendingBadgeClass()"
-              (click)="
-                $event.stopPropagation(); viewPendingChange.emit(pendingOverlay()!.pendingChangeId)
-              "
-              [title]="'View pending change #' + pendingOverlay()!.pendingChangeId"
-            >
-              {{ pendingBadgeText() }}
-            </button>
-          }
-        </div>
+            @if (pendingOverlay()) {
+              <button
+                type="button"
+                [class]="pendingBadgeClass()"
+                (click)="
+                  $event.stopPropagation();
+                  viewPendingChange.emit(pendingOverlay()!.pendingChangeId)
+                "
+                [title]="'View pending change #' + pendingOverlay()!.pendingChangeId"
+              >
+                {{ pendingBadgeText() }}
+              </button>
+            }
+          </div>
 
           <p class="model-row-model-description">{{ modelDescription() }}</p>
         </div>
@@ -140,7 +147,9 @@ import { hasShowcases } from './model-row.utils';
         <td class="model-row-variations-cell">
           @if (isGrouped() && groupedModel()) {
             <div class="model-row-variation-stack">
-              <span class="model-row-variation-count">{{ groupedModel()!.variations.length }} vars</span>
+              <span class="model-row-variation-count"
+                >{{ groupedModel()!.variations.length }} vars</span
+              >
               @if (groupSizes().length > 0) {
                 <span class="model-row-variation-meta">
                   {{ groupSizes().slice(0, 2).join(' · ') }}
@@ -195,7 +204,9 @@ import { hasShowcases } from './model-row.utils';
 
     <!-- Expanded Details Row -->
     @if (expanded() && !isGhost()) {
-      <tr [class]="(isEven() ? 'table-row-even' : 'table-row-odd') + ' detail-row model-detail-row'">
+      <tr
+        [class]="(isEven() ? 'table-row-even' : 'table-row-odd') + ' detail-row model-detail-row'"
+      >
         <td [attr.colspan]="detailColspan()">
           <div class="detail-section model-detail-section">
             <div
@@ -226,9 +237,7 @@ import { hasShowcases } from './model-row.utils';
                   <span class="model-detail-kpi-pill">{{ model().workerCount ?? 0 }} workers</span>
 
                   @if (model().queuedJobs !== null && model().queuedJobs !== undefined) {
-                    <span class="model-detail-kpi-pill">
-                      {{ model().queuedJobs }} queued
-                    </span>
+                    <span class="model-detail-kpi-pill"> {{ model().queuedJobs }} queued </span>
                   }
 
                   @if (isGrouped() && groupedModel()) {
@@ -238,9 +247,7 @@ import { hasShowcases } from './model-row.utils';
                     <span class="model-detail-kpi-pill">
                       {{ groupedBackendCount() }} backends
                     </span>
-                    <span class="model-detail-kpi-pill">
-                      {{ groupedAuthorCount() }} authors
-                    </span>
+                    <span class="model-detail-kpi-pill"> {{ groupedAuthorCount() }} authors </span>
                     @if (groupSizes().length > 0) {
                       <span class="model-detail-kpi-pill model-detail-kpi-pill--subtle">
                         {{ groupSizes().slice(0, 3).join(' · ') }}
@@ -285,8 +292,19 @@ import { hasShowcases } from './model-row.utils';
                   [queryParams]="{ search: model().name }"
                   class="btn btn-sm btn-secondary model-row-audit-link"
                 >
-                  <svg class="model-row-audit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m6 6V7m6 10V4M3 20h18" />
+                  <svg
+                    class="model-row-audit-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 17v-6m6 6V7m6 10V4M3 20h18"
+                    />
                   </svg>
                   <span>Audit</span>
                 </a>

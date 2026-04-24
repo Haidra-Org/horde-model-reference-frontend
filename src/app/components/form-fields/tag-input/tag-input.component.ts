@@ -19,7 +19,13 @@ import { CdkOverlayOrigin, CdkConnectedOverlay, ConnectedPosition } from '@angul
 
 @Component({
   selector: 'app-tag-input',
-  imports: [FormsModule, HordeBadgeComponent, HordeButtonComponent, CdkOverlayOrigin, CdkConnectedOverlay],
+  imports: [
+    FormsModule,
+    HordeBadgeComponent,
+    HordeButtonComponent,
+    CdkOverlayOrigin,
+    CdkConnectedOverlay,
+  ],
   templateUrl: './tag-input.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ExtraPartInfo } from './extraPartInfo';
 
 /**
  * Structured result of parsing a text model name.
@@ -19,4 +20,5 @@ export interface ParsedNameResponse {
   quant?: string | null;
   version?: string | null;
   suggested_group: string;
+  extras?: Array<ExtraPartInfo>;
 }

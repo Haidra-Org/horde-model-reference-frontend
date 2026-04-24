@@ -35,29 +35,47 @@
 
           <div class="flex flex-wrap gap-2 mb-2">
             @for (size of availableSizes(); track size) {
-            <label [class]="
+              <label
+                [class]="
                   selectedSizes().has(size)
                     ? 'group-choice-chip group-choice-chip--info'
                     : 'group-choice-chip group-choice-chip--neutral'
-                ">
-              <input type="checkbox" class="checkbox-input" [checked]="selectedSizes().has(size)"
-                [disabled]="submitting()" (change)="toggleSize(size)" />
-              <span>{{ size }}</span>
-              @if (sizeUsageCount(size) > 0) {
-              <span class="autocomplete-annotation">
-                {{ sizeUsageCount(size) }} variation{{ sizeUsageCount(size) === 1 ? '' : 's' }}
-              </span>
-              }
-            </label>
+                "
+              >
+                <input
+                  type="checkbox"
+                  class="checkbox-input"
+                  [checked]="selectedSizes().has(size)"
+                  [disabled]="submitting()"
+                  (change)="toggleSize(size)"
+                />
+                <span>{{ size }}</span>
+                @if (sizeUsageCount(size) > 0) {
+                  <span class="autocomplete-annotation">
+                    {{ sizeUsageCount(size) }} variation{{ sizeUsageCount(size) === 1 ? '' : 's' }}
+                  </span>
+                }
+              </label>
             }
           </div>
 
           <div class="flex gap-2 mt-1">
-            <input id="multi-var-custom-size" type="text" class="form-input text-sm" placeholder="Custom size..."
-              [disabled]="submitting()" [ngModel]="customSize()" (ngModelChange)="customSize.set($event)"
-              (keydown.enter)="addCustomSize(); $event.preventDefault()" />
-            <horde-button variant="secondary" size="sm" [disabled]="!customSize().trim() || submitting()"
-              (click)="addCustomSize()">
+            <input
+              id="multi-var-custom-size"
+              type="text"
+              class="form-input text-sm"
+              placeholder="Custom size..."
+              [disabled]="submitting()"
+              [ngModel]="customSize()"
+              (ngModelChange)="customSize.set($event)"
+              (keydown.enter)="addCustomSize(); $event.preventDefault()"
+            />
+            <horde-button
+              variant="secondary"
+              size="sm"
+              [disabled]="!customSize().trim() || submitting()"
+              (click)="addCustomSize()"
+            >
               Add
             </horde-button>
           </div>
@@ -75,31 +93,49 @@
 
           <div class="flex flex-wrap gap-2 mb-2">
             @for (quant of availableQuants(); track quant) {
-            <label [class]="
+              <label
+                [class]="
                   selectedQuants().has(quant)
                     ? 'group-choice-chip group-choice-chip--warning'
                     : 'group-choice-chip group-choice-chip--neutral'
-                ">
-              <input type="checkbox" class="checkbox-input" [checked]="selectedQuants().has(quant)"
-                [disabled]="submitting()" (change)="toggleQuant(quant)" />
-              <span>{{ quant }}</span>
-              @if (quantUsageCount(quant) > 0) {
-              <span class="autocomplete-annotation">
-                {{ quantUsageCount(quant) }} variation{{
-                quantUsageCount(quant) === 1 ? '' : 's'
-                }}
-              </span>
-              }
-            </label>
+                "
+              >
+                <input
+                  type="checkbox"
+                  class="checkbox-input"
+                  [checked]="selectedQuants().has(quant)"
+                  [disabled]="submitting()"
+                  (change)="toggleQuant(quant)"
+                />
+                <span>{{ quant }}</span>
+                @if (quantUsageCount(quant) > 0) {
+                  <span class="autocomplete-annotation">
+                    {{ quantUsageCount(quant) }} variation{{
+                      quantUsageCount(quant) === 1 ? '' : 's'
+                    }}
+                  </span>
+                }
+              </label>
             }
           </div>
 
           <div class="flex gap-2 mt-1">
-            <input id="multi-var-custom-quant" type="text" class="form-input text-sm" placeholder="Custom quant..."
-              [disabled]="submitting()" [ngModel]="customQuant()" (ngModelChange)="customQuant.set($event)"
-              (keydown.enter)="addCustomQuant(); $event.preventDefault()" />
-            <horde-button variant="secondary" size="sm" [disabled]="!customQuant().trim() || submitting()"
-              (click)="addCustomQuant()">
+            <input
+              id="multi-var-custom-quant"
+              type="text"
+              class="form-input text-sm"
+              placeholder="Custom quant..."
+              [disabled]="submitting()"
+              [ngModel]="customQuant()"
+              (ngModelChange)="customQuant.set($event)"
+              (keydown.enter)="addCustomQuant(); $event.preventDefault()"
+            />
+            <horde-button
+              variant="secondary"
+              size="sm"
+              [disabled]="!customQuant().trim() || submitting()"
+              (click)="addCustomQuant()"
+            >
               Add
             </horde-button>
           </div>
@@ -122,8 +158,15 @@
           <div class="form-grid-2 mb-4">
             <div>
               <label class="form-label" for="multi-var-author">Author</label>
-              <input id="multi-var-author" type="text" class="form-input" placeholder="Optional"
-                [disabled]="submitting()" [ngModel]="author()" (ngModelChange)="setAuthor($event)" />
+              <input
+                id="multi-var-author"
+                type="text"
+                class="form-input"
+                placeholder="Optional"
+                [disabled]="submitting()"
+                [ngModel]="author()"
+                (ngModelChange)="setAuthor($event)"
+              />
             </div>
 
             <div>
@@ -131,9 +174,14 @@
                 <span class="form-label">Variant</span>
                 <app-field-tooltip fieldId="variant" />
               </div>
-              <app-autocomplete-input [value]="variant()" [suggestions]="availableVariants()"
-                [optionAnnotations]="variantAnnotations()" ariaLabel="Batch variation variant"
-                placeholder="e.g. Instruct" (valueChange)="setVariant($event)" />
+              <app-autocomplete-input
+                [value]="variant()"
+                [suggestions]="availableVariants()"
+                [optionAnnotations]="variantAnnotations()"
+                ariaLabel="Batch variation variant"
+                placeholder="e.g. Instruct"
+                (valueChange)="setVariant($event)"
+              />
             </div>
 
             <div>
@@ -141,40 +189,62 @@
                 <span class="form-label">Version</span>
                 <app-field-tooltip fieldId="version" />
               </div>
-              <app-autocomplete-input [value]="version()" [suggestions]="availableVersions()"
-                [optionAnnotations]="versionAnnotations()" ariaLabel="Batch variation version" placeholder="e.g. v2.1"
-                (valueChange)="setVersion($event)" />
+              <app-autocomplete-input
+                [value]="version()"
+                [suggestions]="availableVersions()"
+                [optionAnnotations]="versionAnnotations()"
+                ariaLabel="Batch variation version"
+                placeholder="e.g. v2.1"
+                (valueChange)="setVersion($event)"
+              />
             </div>
 
             <div>
               <div class="flex items-center gap-2">
                 <label class="form-label" for="multi-var-params">Parameters</label>
-                <horde-button variant="secondary" size="sm" [disabled]="submitting()" (click)="toggleParameterSync()"
+                <horde-button
+                  variant="secondary"
+                  size="sm"
+                  [disabled]="submitting()"
+                  (click)="toggleParameterSync()"
                   [attr.aria-label]="
                     parametersLinked() ? 'Unlink size and parameters' : 'Link size and parameters'
-                  ">
+                  "
+                >
                   {{ parametersLinked() ? 'Linked' : 'Manual' }}
                 </horde-button>
               </div>
 
               <div class="flex gap-1">
-                <input id="multi-var-params" type="number" class="form-input" placeholder="e.g. 8" min="0" step="0.1"
-                  [disabled]="parametersLinked() || submitting()" [ngModel]="parameters()"
-                  (ngModelChange)="parameters.set($event)" />
-                <select id="multi-var-params-unit" class="form-select w-16"
-                  [disabled]="parametersLinked() || submitting()" [ngModel]="parametersUnit()"
-                  (ngModelChange)="parametersUnit.set($event)">
+                <input
+                  id="multi-var-params"
+                  type="number"
+                  class="form-input"
+                  placeholder="e.g. 8"
+                  min="0"
+                  step="0.1"
+                  [disabled]="parametersLinked() || submitting()"
+                  [ngModel]="parameters()"
+                  (ngModelChange)="parameters.set($event)"
+                />
+                <select
+                  id="multi-var-params-unit"
+                  class="form-select w-16"
+                  [disabled]="parametersLinked() || submitting()"
+                  [ngModel]="parametersUnit()"
+                  (ngModelChange)="parametersUnit.set($event)"
+                >
                   <option value="B">B</option>
                   <option value="M">M</option>
                 </select>
               </div>
 
               @if (parametersLinked()) {
-              <p class="form-hint">Each variation uses its size as parameter count.</p>
+                <p class="form-hint">Each variation uses its size as parameter count.</p>
               } @else {
-              <p class="form-hint">
-                Manual mode applies one parameter value to all selected rows.
-              </p>
+                <p class="form-hint">
+                  Manual mode applies one parameter value to all selected rows.
+                </p>
               }
             </div>
           </div>
@@ -182,28 +252,49 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <span class="form-label">Baseline</span>
-              <app-autocomplete-input [value]="baseline()" [suggestions]="baselineSuggestions()"
-                ariaLabel="Batch variation baseline" placeholder="Type or select baseline"
-                (valueChange)="setBaseline($event)" />
+              <app-autocomplete-input
+                [value]="baseline()"
+                [suggestions]="baselineSuggestions()"
+                ariaLabel="Batch variation baseline"
+                placeholder="Type or select baseline"
+                (valueChange)="setBaseline($event)"
+              />
             </div>
 
             <div>
               <label class="form-label" for="multi-var-url">URL</label>
-              <input id="multi-var-url" type="url" class="form-input" [disabled]="submitting()" [ngModel]="url()"
-                (ngModelChange)="url.set($event)" />
+              <input
+                id="multi-var-url"
+                type="url"
+                class="form-input"
+                [disabled]="submitting()"
+                [ngModel]="url()"
+                (ngModelChange)="url.set($event)"
+              />
             </div>
 
             <div class="md:col-span-2">
               <label class="form-label" for="multi-var-description">Description</label>
-              <textarea id="multi-var-description" class="form-textarea" rows="2" [disabled]="submitting()"
-                [ngModel]="description()" (ngModelChange)="description.set($event)"></textarea>
+              <textarea
+                id="multi-var-description"
+                class="form-textarea"
+                rows="2"
+                [disabled]="submitting()"
+                [ngModel]="description()"
+                (ngModelChange)="description.set($event)"
+              ></textarea>
             </div>
 
             <div>
               <div class="flex items-center">
                 <label class="checkbox-label">
-                  <input type="checkbox" class="checkbox-input" [disabled]="submitting()" [ngModel]="nsfw()"
-                    (ngModelChange)="nsfw.set($event)" />
+                  <input
+                    type="checkbox"
+                    class="checkbox-input"
+                    [disabled]="submitting()"
+                    [ngModel]="nsfw()"
+                    (ngModelChange)="nsfw.set($event)"
+                  />
                   NSFW
                 </label>
                 <app-field-tooltip fieldId="nsfw" />
@@ -227,158 +318,187 @@
             </div>
 
             @if (combos().length > 0) {
-            <div class="flex gap-2">
-              <horde-button variant="secondary" size="sm" [disabled]="submitting()" (click)="selectAllAvailable()">
-                Select All
-              </horde-button>
-              <horde-button variant="secondary" size="sm" [disabled]="submitting()" (click)="deselectAll()">
-                Deselect All
-              </horde-button>
-            </div>
+              <div class="flex gap-2">
+                <horde-button
+                  variant="secondary"
+                  size="sm"
+                  [disabled]="submitting()"
+                  (click)="selectAllAvailable()"
+                >
+                  Select All
+                </horde-button>
+                <horde-button
+                  variant="secondary"
+                  size="sm"
+                  [disabled]="submitting()"
+                  (click)="deselectAll()"
+                >
+                  Deselect All
+                </horde-button>
+              </div>
             }
           </div>
 
           @if (combos().length > 0) {
-          <div class="flex flex-wrap gap-2 mt-3">
-            <span class="badge badge-info">Previewed {{ previewTotalCount() }}</span>
-            <span class="badge badge-secondary">Existing {{ existingComboCount() }}</span>
-            <span class="badge badge-success">Ready {{ selectedCount() }}</span>
-          </div>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="badge badge-info">Previewed {{ previewTotalCount() }}</span>
+              <span class="badge badge-secondary">Existing {{ existingComboCount() }}</span>
+              <span class="badge badge-success">Ready {{ selectedCount() }}</span>
+            </div>
           }
         </div>
       </div>
 
       @if (previewing()) {
-      <div class="alert alert-info mb-3">Refreshing combinations preview...</div>
+        <div class="alert alert-info mb-3">Refreshing combinations preview...</div>
       }
 
       @if (!hasPreviewableSelection()) {
-      <div class="alert alert-info">Select one or more sizes to generate combinations.</div>
+        <div class="alert alert-info">Select one or more sizes to generate combinations.</div>
       } @else if (combos().length === 0 && !previewing()) {
-      <div class="alert alert-warning">
-        No new combinations are available for the current selection. Try different sizes, quants,
-        or naming fields.
-      </div>
-      } @else {
-      <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm min-w-[760px]">
-            <thead>
-              <tr class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                <th class="px-3 py-2 text-left w-8"></th>
-                <th class="px-3 py-2 text-left">Composed Name</th>
-                <th class="px-3 py-2 text-left">Size</th>
-                <th class="px-3 py-2 text-left">Quant</th>
-                <th class="px-3 py-2 text-left">Status</th>
-                <th class="px-3 py-2 text-center w-14">Remove</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-              @for (combo of combos(); track combo.composedName; let i = $index) {
-              <tr [class]="
-                      combo.alreadyExists ? 'opacity-60' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                    ">
-                <td class="px-3 py-2">
-                  <input type="checkbox" class="checkbox-input" [checked]="combo.selected" [disabled]="
-                          combo.alreadyExists || combo.status !== 'pending' || submitting()
-                        " (change)="toggleCombo(i)" />
-                </td>
-                <td class="px-3 py-2 font-mono text-xs">{{ combo.composedName }}</td>
-                <td class="px-3 py-2">{{ combo.size }}</td>
-                <td class="px-3 py-2">{{ combo.quant ?? '-' }}</td>
-                <td class="px-3 py-2">
-                  @switch (combo.status) {
-                  @case ('pending') {
-                  @if (combo.alreadyExists) {
-                  <span class="badge badge-secondary">Exists</span>
-                  } @else {
-                  <span class="badge badge-info">Ready</span>
-                  }
-                  }
-                  @case ('creating') {
-                  <span class="badge badge-warning">Creating...</span>
-                  }
-                  @case ('created') {
-                  <span class="badge badge-success">Created</span>
-                  }
-                  @case ('failed') {
-                  <span class="badge badge-danger">Failed</span>
-                  }
-                  }
-                  @if (combo.errorMessage) {
-                  <p class="text-xs text-danger-600 dark:text-danger-400 mt-1">
-                    {{ combo.errorMessage }}
-                  </p>
-                  }
-                </td>
-                <td class="px-3 py-2 text-center">
-                  <horde-button variant="secondary" size="sm" [disabled]="submitting()" (click)="removeCombo(combo)"
-                    aria-label="Remove combination">
-                    ×
-                  </horde-button>
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
+        <div class="alert alert-warning">
+          No new combinations are available for the current selection. Try different sizes, quants,
+          or naming fields.
         </div>
-      </div>
+      } @else {
+        <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[760px]">
+              <thead>
+                <tr
+                  class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+                >
+                  <th class="px-3 py-2 text-left w-8"></th>
+                  <th class="px-3 py-2 text-left">Composed Name</th>
+                  <th class="px-3 py-2 text-left">Size</th>
+                  <th class="px-3 py-2 text-left">Quant</th>
+                  <th class="px-3 py-2 text-left">Status</th>
+                  <th class="px-3 py-2 text-center w-14">Remove</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                @for (combo of combos(); track combo.composedName; let i = $index) {
+                  <tr
+                    [class]="
+                      combo.alreadyExists ? 'opacity-60' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                    "
+                  >
+                    <td class="px-3 py-2">
+                      <input
+                        type="checkbox"
+                        class="checkbox-input"
+                        [checked]="combo.selected"
+                        [disabled]="
+                          combo.alreadyExists || combo.status !== 'pending' || submitting()
+                        "
+                        (change)="toggleCombo(i)"
+                      />
+                    </td>
+                    <td class="px-3 py-2 font-mono text-xs">{{ combo.composedName }}</td>
+                    <td class="px-3 py-2">{{ combo.size }}</td>
+                    <td class="px-3 py-2">{{ combo.quant ?? '-' }}</td>
+                    <td class="px-3 py-2">
+                      @switch (combo.status) {
+                        @case ('pending') {
+                          @if (combo.alreadyExists) {
+                            <span class="badge badge-secondary">Exists</span>
+                          } @else {
+                            <span class="badge badge-info">Ready</span>
+                          }
+                        }
+                        @case ('creating') {
+                          <span class="badge badge-warning">Creating...</span>
+                        }
+                        @case ('created') {
+                          <span class="badge badge-success">Created</span>
+                        }
+                        @case ('failed') {
+                          <span class="badge badge-danger">Failed</span>
+                        }
+                      }
+                      @if (combo.errorMessage) {
+                        <p class="text-xs text-danger-600 dark:text-danger-400 mt-1">
+                          {{ combo.errorMessage }}
+                        </p>
+                      }
+                    </td>
+                    <td class="px-3 py-2 text-center">
+                      <horde-button
+                        variant="secondary"
+                        size="sm"
+                        [disabled]="submitting()"
+                        (click)="removeCombo(combo)"
+                        aria-label="Remove combination"
+                      >
+                        ×
+                      </horde-button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
       }
     </section>
 
     @if (submitting() || progress().total > 0) {
-    <div class="card border-gray-200 dark:border-gray-700 mt-6">
-      <div class="card-body">
-        <div class="flex items-center justify-between text-sm text-muted mb-2">
-          <span>Batch creation progress</span>
-          <span>{{ progress().done }} of {{ progress().total }}</span>
-        </div>
+      <div class="card border-gray-200 dark:border-gray-700 mt-6">
+        <div class="card-body">
+          <div class="flex items-center justify-between text-sm text-muted mb-2">
+            <span>Batch creation progress</span>
+            <span>{{ progress().done }} of {{ progress().total }}</span>
+          </div>
 
-        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3">
-          <div class="bg-primary-500 h-2 rounded-full transition-all" [style.width.%]="
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3">
+            <div
+              class="bg-primary-500 h-2 rounded-full transition-all"
+              [style.width.%]="
                 progress().total > 0 ? (progress().done / progress().total) * 100 : 0
-              "></div>
-        </div>
+              "
+            ></div>
+          </div>
 
-        <div class="text-sm text-muted">
-          <p>
-            Created: <strong>{{ createdCount() }}</strong> | Failed:
-            <strong>{{ failedCount() }}</strong> | Remaining:
-            <strong>{{ selectedCount() }}</strong>
-          </p>
-        </div>
+          <div class="text-sm text-muted">
+            <p>
+              Created: <strong>{{ createdCount() }}</strong> | Failed:
+              <strong>{{ failedCount() }}</strong> | Remaining:
+              <strong>{{ selectedCount() }}</strong>
+            </p>
+          </div>
 
-        @if (activityRows().length > 0) {
-        <div class="mt-3 space-y-1">
-          @for (row of activityRows(); track row.composedName) {
-          <p class="text-xs text-muted">
-            @if (row.status === 'created') {
-            Created: {{ row.composedName }}
-            } @else if (row.status === 'creating') {
-            Creating: {{ row.composedName }}
-            } @else if (row.status === 'failed') {
-            Failed: {{ row.composedName
-            }}{{ row.errorMessage ? ' (' + row.errorMessage + ')' : '' }}
-            } @else {
-            Exists: {{ row.composedName }}
-            }
-          </p>
+          @if (activityRows().length > 0) {
+            <div class="mt-3 space-y-1">
+              @for (row of activityRows(); track row.composedName) {
+                <p class="text-xs text-muted">
+                  @if (row.status === 'created') {
+                    Created: {{ row.composedName }}
+                  } @else if (row.status === 'creating') {
+                    Creating: {{ row.composedName }}
+                  } @else if (row.status === 'failed') {
+                    Failed: {{ row.composedName
+                    }}{{ row.errorMessage ? ' (' + row.errorMessage + ')' : '' }}
+                  } @else {
+                    Exists: {{ row.composedName }}
+                  }
+                </p>
+              }
+            </div>
           }
         </div>
-        }
       </div>
-    </div>
     }
 
     <div
-      class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
       <p class="text-sm text-muted">
         Queue creation for {{ selectedCount() }} selected variation(s).
       </p>
 
       <div class="flex flex-wrap gap-2">
         @if (!submitting() && hasFailedCombos()) {
-        <horde-button variant="secondary" (click)="retryFailed()">Retry Failed</horde-button>
+          <horde-button variant="secondary" (click)="retryFailed()">Retry Failed</horde-button>
         }
         <horde-button variant="primary" [disabled]="!canSubmit()" (click)="submit()">
           {{ submitting() ? 'Creating...' : 'Create ' + selectedCount() + ' Variation(s)' }}

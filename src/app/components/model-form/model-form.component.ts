@@ -435,10 +435,10 @@ export class ModelFormComponent implements OnInit {
     // Sync model_classification and finetune_series back from common fields if they were edited
     const resolvedV2Fields = v2Fields
       ? {
-        ...v2Fields,
-        modelClassification: commonData.modelClassification ?? v2Fields.modelClassification,
-        finetuneSeries: commonData.finetuneSeries ?? v2Fields.finetuneSeries,
-      }
+          ...v2Fields,
+          modelClassification: commonData.modelClassification ?? v2Fields.modelClassification,
+          finetuneSeries: commonData.finetuneSeries ?? v2Fields.finetuneSeries,
+        }
       : null;
 
     // Ensure record_type is set for V2 round-trip

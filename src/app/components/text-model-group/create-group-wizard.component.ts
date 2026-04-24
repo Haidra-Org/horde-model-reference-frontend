@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -12,19 +13,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, catchError, debounceTime, of, switchMap } from 'rxjs';
 import {
   ComposeNameResponse,
+  GroupFamilyResponse,
   GroupNameSchemaUpdateRequest,
 } from '../../api-client';
 import { FormModelData } from '../../adapters/model-format-adapter';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
 import { HordeButtonComponent } from '@haidra/design-system/button';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
+import { syncParametersFromSize } from '../../utils/size-parser';
 
 type WizardStep = 'identity' | 'variation' | 'review';
 
 const DEFAULT_SEPARATOR = '-';
-const DEFAULT_PART_ORDER = ['size', 'variant', 'version', 'quant'];
+const DEFAULT_PART_ORDER = ['base', 'size', 'variant', 'version', 'quant'];
 const TEMPLATE_PREVIEW_PART_EXAMPLES: Record<string, string> = {
   size: '8B',
   variant: 'Instruct',
@@ -32,20 +36,29 @@ const TEMPLATE_PREVIEW_PART_EXAMPLES: Record<string, string> = {
   quant: 'Q4_K_M',
 };
 
+export const CREATE_GROUP_DEFAULT_PART_ORDER: readonly string[] = DEFAULT_PART_ORDER;
+
+export const EXTRA_PART_LABEL_SUGGESTIONS: readonly string[] = [
+  'date',
+  'descriptor',
+  'leading_version',
+];
+
+export interface ExtraPartEntry {
+  label: string;
+  value: string;
+}
+
 @Component({
   selector: 'app-create-group-wizard',
-  imports: [
-    FormsModule,
-    AutocompleteInputComponent,
-    HordeButtonComponent,
-    HordeBadgeComponent,
-  ],
+  imports: [FormsModule, AutocompleteInputComponent, HordeButtonComponent, HordeBadgeComponent],
   templateUrl: './create-group-wizard.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateGroupWizardComponent {
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
+  private readonly pendingSummary = inject(PendingQueueSummaryService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -59,6 +72,8 @@ export class CreateGroupWizardComponent {
   readonly separator = signal(DEFAULT_SEPARATOR);
   readonly partOrder = signal<string[]>([...DEFAULT_PART_ORDER]);
   readonly saveSchema = signal(true);
+  readonly extraParts = signal<ExtraPartEntry[]>([]);
+  readonly extraPartLabelSuggestions = EXTRA_PART_LABEL_SUGGESTIONS;
 
   // Step 2: First variation
   readonly size = signal('');
@@ -67,24 +82,45 @@ export class CreateGroupWizardComponent {
   readonly quant = signal('');
   readonly parameters = signal<number | null>(null);
   readonly parametersUnit = signal<'B' | 'M'>('B');
+  readonly parametersLinked = signal(true);
   readonly baseline = signal('');
   readonly description = signal('');
   readonly url = signal('');
   readonly nsfw = signal(false);
+  readonly style = signal('');
+  readonly tags = signal<string[]>([]);
+  readonly instructFormat = signal('');
+  readonly styleSuggestions = ['alpaca', 'chatml', 'llama2', 'vicuna', 'mistral', 'zephyr'];
+  readonly instructFormatSuggestions = [
+    'alpaca',
+    'chatml',
+    'llama2',
+    'llama3',
+    'mistral',
+    'vicuna',
+    'zephyr',
+    'command-r',
+  ];
 
   readonly composedName = signal('');
   readonly alreadyExists = signal(false);
+  readonly apiTemplate = signal('');
+  readonly apiRenderedExample = signal('');
   readonly composing = signal(false);
   readonly submitting = signal(false);
+
+  // Family suggestion
+  readonly knownFamilies = signal<readonly GroupFamilyResponse[]>([]);
+  readonly selectedFamily = signal<string | null>(null);
+  readonly dismissedSuggestion = signal(false);
+  private submitted = false;
 
   readonly baselineSuggestions = signal<readonly string[]>([]);
   readonly separatorOptions = ['-', '_', '.'];
 
   private readonly composeSubject = new Subject<void>();
 
-  readonly step1Valid = computed(
-    () => this.groupName().trim().length > 0,
-  );
+  readonly step1Valid = computed(() => this.groupName().trim().length > 0);
 
   readonly step2Valid = computed(() => {
     const params = this.parameters();
@@ -97,6 +133,22 @@ export class CreateGroupWizardComponent {
     );
   });
 
+  readonly suggestedFamily = computed<string | null>(() => {
+    if (this.dismissedSuggestion()) return null;
+    const rawName = this.groupName().trim();
+    if (!rawName) return null;
+    const name = rawName.toLowerCase();
+    const families = this.knownFamilies();
+    for (const family of families) {
+      const famName = family.family_name.toLowerCase();
+      if (!famName) continue;
+      if (name === famName || name.includes(famName) || famName.includes(name)) {
+        return family.family_name;
+      }
+    }
+    return null;
+  });
+
   readonly effectiveParameters = computed(() => {
     const raw = this.parameters();
     if (raw == null) return null;
@@ -104,20 +156,25 @@ export class CreateGroupWizardComponent {
   });
 
   readonly previewTemplate = computed(() => {
+    const apiValue = this.apiTemplate();
+    if (apiValue) return apiValue;
     const parts = this.partOrder();
     const sep = this.separator();
-    return `{base}${parts.map((p) => `${sep}{${p}}`).join('')}`;
+    const body = parts.map((p) => `{${p}}`).join(sep);
+    return this.author().trim() ? `{author}/${body}` : body;
   });
 
   readonly previewExampleName = computed(() => {
+    const apiValue = this.apiRenderedExample();
+    if (apiValue) return apiValue;
     const base = this.groupName().trim() || 'Llama-3.1';
     const sep = this.separator();
-    const renderedParts = this.partOrder().map(
-      (part) => TEMPLATE_PREVIEW_PART_EXAMPLES[part] ?? `{${part}}`,
-    );
-    const renderedName = [base, ...renderedParts].join(sep);
+    const renderedParts = this.partOrder().map((part) => {
+      if (part === 'base') return base;
+      return TEMPLATE_PREVIEW_PART_EXAMPLES[part] ?? `{${part}}`;
+    });
+    const renderedName = renderedParts.join(sep);
     const author = this.author().trim();
-
     return author ? `${author}/${renderedName}` : renderedName;
   });
 
@@ -125,6 +182,18 @@ export class CreateGroupWizardComponent {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const cat = params.get('category');
       if (cat) this.category.set(cat);
+    });
+
+    effect(() => {
+      const sizeValue = this.size();
+      if (!this.parametersLinked()) return;
+      const result = syncParametersFromSize(sizeValue, true);
+      if (result.value !== null) {
+        this.parameters.set(result.value);
+        this.parametersUnit.set(result.unit);
+      } else if (sizeValue.trim().length === 0) {
+        this.parameters.set(null);
+      }
     });
 
     this.api
@@ -135,6 +204,16 @@ export class CreateGroupWizardComponent {
         error: () => this.baselineSuggestions.set([]),
       });
 
+    this.api
+      .listFamilies()
+      .pipe(
+        catchError(() => of({ families: [] as GroupFamilyResponse[] })),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((response) => {
+        this.knownFamilies.set(response.families ?? []);
+      });
+
     this.composeSubject
       .pipe(
         debounceTime(300),
@@ -143,6 +222,8 @@ export class CreateGroupWizardComponent {
           if (!sizeValue || !this.groupName().trim()) {
             this.composedName.set('');
             this.alreadyExists.set(false);
+            this.apiTemplate.set('');
+            this.apiRenderedExample.set('');
             return of(null);
           }
 
@@ -151,6 +232,7 @@ export class CreateGroupWizardComponent {
           const version = this.version().trim() || null;
           const quant = this.quant().trim() || null;
           const partOrder = this.buildEffectivePartOrder({ variant, version, quant });
+          const extraParts = this.buildExtraPartsDict();
           return this.api
             .composeModelName({
               author: this.author().trim() || null,
@@ -161,6 +243,7 @@ export class CreateGroupWizardComponent {
               quant,
               separator: this.separator(),
               part_order: partOrder,
+              extra_parts: extraParts,
             })
             .pipe(
               catchError(() => {
@@ -176,6 +259,8 @@ export class CreateGroupWizardComponent {
         if (result) {
           this.composedName.set(result.composed_name);
           this.alreadyExists.set(result.already_exists);
+          this.apiTemplate.set(result.template ?? '');
+          this.apiRenderedExample.set(result.rendered_example ?? '');
         }
       });
   }
@@ -192,17 +277,84 @@ export class CreateGroupWizardComponent {
   }
 
   movePartUp(index: number): void {
-    if (index <= 0) return;
     const order = [...this.partOrder()];
+    if (index <= 0 || order[index] === 'base' || order[index - 1] === 'base') return;
     [order[index - 1], order[index]] = [order[index], order[index - 1]];
     this.partOrder.set(order);
   }
 
   movePartDown(index: number): void {
     const order = [...this.partOrder()];
-    if (index >= order.length - 1) return;
+    if (index >= order.length - 1 || order[index] === 'base') return;
     [order[index], order[index + 1]] = [order[index + 1], order[index]];
     this.partOrder.set(order);
+  }
+
+  isPartLocked(part: string): boolean {
+    return part === 'base';
+  }
+
+  acceptFamilySuggestion(): void {
+    const name = this.suggestedFamily();
+    if (name) {
+      this.selectedFamily.set(name);
+    }
+  }
+
+  dismissFamilySuggestion(): void {
+    this.dismissedSuggestion.set(true);
+    this.selectedFamily.set(null);
+  }
+
+  setGroupName(value: string): void {
+    this.groupName.set(value);
+    // Reset suggestion dismissal when name changes so fresh matches surface again
+    this.dismissedSuggestion.set(false);
+  }
+
+  addTag(tag: string): void {
+    const trimmed = tag.trim();
+    if (!trimmed) return;
+    this.tags.update((list) => (list.includes(trimmed) ? list : [...list, trimmed]));
+  }
+
+  removeTag(tag: string): void {
+    this.tags.update((list) => list.filter((t) => t !== tag));
+  }
+
+  toggleParametersLinked(): void {
+    const next = !this.parametersLinked();
+    this.parametersLinked.set(next);
+    if (next) {
+      const result = syncParametersFromSize(this.size(), true);
+      if (result.value !== null) {
+        this.parameters.set(result.value);
+        this.parametersUnit.set(result.unit);
+      }
+    }
+  }
+
+  addExtraPart(): void {
+    this.extraParts.update((list) => [...list, { label: '', value: '' }]);
+  }
+
+  removeExtraPart(index: number): void {
+    this.extraParts.update((list) => list.filter((_, i) => i !== index));
+    this.triggerCompose();
+  }
+
+  updateExtraPartLabel(index: number, label: string): void {
+    this.extraParts.update((list) =>
+      list.map((entry, i) => (i === index ? { ...entry, label } : entry)),
+    );
+    this.triggerCompose();
+  }
+
+  updateExtraPartValue(index: number, value: string): void {
+    this.extraParts.update((list) =>
+      list.map((entry, i) => (i === index ? { ...entry, value } : entry)),
+    );
+    this.triggerCompose();
   }
 
   submit(): void {
@@ -217,30 +369,51 @@ export class CreateGroupWizardComponent {
       .pipe(
         switchMap(() => {
           if (this.saveSchema()) {
+            const extraLabels = this.extraParts()
+              .map((p) => p.label.trim())
+              .filter((label) => label.length > 0);
+            const extraKeys = extraLabels.map((label) => `extra:${label}`);
+            const schemaPartOrder = [...this.partOrder()];
+            for (const key of extraKeys) {
+              if (!schemaPartOrder.includes(key)) {
+                schemaPartOrder.push(key);
+              }
+            }
             const schema: GroupNameSchemaUpdateRequest = {
               separator: this.separator(),
-              part_order: this.partOrder(),
+              part_order: schemaPartOrder,
               author_included: this.author().trim().length > 0,
               common_author: this.author().trim() || undefined,
+              template: this.apiTemplate() || undefined,
+              extra_parts: extraLabels.length > 0 ? extraLabels : undefined,
             };
             return this.api.updateGroupNameSchema(this.groupName().trim(), schema);
           }
           return of(void 0);
+        }),
+        switchMap(() => {
+          const family = this.selectedFamily();
+          if (!family) return of(void 0);
+          return this.api.addFamilyMember(family, this.groupName().trim()).pipe(
+            catchError((err: Error) => {
+              this.notification.warning(
+                `Group created, but family assignment failed: ${err.message}`,
+              );
+              return of(void 0);
+            }),
+          );
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: () => {
           this.submitting.set(false);
+          this.submitted = true;
+          this.pendingSummary.refresh();
           this.notification.success(
-            `Created "${modelName}" and group "${this.groupName().trim()}"`,
+            `Created "${modelName}" and group "${this.groupName().trim()}" (pending approval)`,
           );
-          this.router.navigate([
-            '/categories',
-            this.category(),
-            'group',
-            this.groupName().trim(),
-          ]);
+          this.router.navigate(['/categories', this.category(), 'group', this.groupName().trim()]);
         },
         error: (error: Error) => {
           this.submitting.set(false);
@@ -254,15 +427,18 @@ export class CreateGroupWizardComponent {
   }
 
   hasUnsavedChanges(): boolean {
+    if (this.submitted) return false;
     return this.groupName().trim().length > 0 || this.size().trim().length > 0;
   }
 
   private buildFormModelData(): FormModelData {
+    const tagList = this.tags();
     return {
       commonData: {
         description: this.description().trim() || null,
         nsfw: this.nsfw(),
         version: this.version().trim() || null,
+        style: this.style().trim() || null,
       },
       categoryData: {
         kind: 'text_generation',
@@ -271,6 +447,8 @@ export class CreateGroupWizardComponent {
           baseline: this.baseline().trim() || null,
           url: this.url().trim() || null,
           text_model_group: this.groupName().trim(),
+          tags: tagList.length > 0 ? tagList : null,
+          instruct_format: this.instructFormat().trim() || null,
         },
       },
       downloads: [],
@@ -284,11 +462,30 @@ export class CreateGroupWizardComponent {
     version: string | null;
     quant: string | null;
   }): string[] {
-    return this.partOrder().filter((part) => {
+    const filtered = this.partOrder().filter((part) => {
+      if (part === 'base') return true;
       if (part === 'variant' && !parts.variant) return false;
       if (part === 'version' && !parts.version) return false;
       if (part === 'quant' && !parts.quant) return false;
       return true;
     });
+    if (!filtered.includes('base')) {
+      filtered.unshift('base');
+    }
+    const extraKeys = this.extraParts()
+      .filter((p) => p.label.trim() && p.value.trim())
+      .map((p) => `extra:${p.label.trim()}`);
+    for (const key of extraKeys) {
+      if (!filtered.includes(key)) {
+        filtered.push(key);
+      }
+    }
+    return filtered;
+  }
+
+  private buildExtraPartsDict(): Record<string, string> | null {
+    const parts = this.extraParts().filter((p) => p.label.trim() && p.value.trim());
+    if (parts.length === 0) return null;
+    return Object.fromEntries(parts.map((p) => [`extra:${p.label.trim()}`, p.value.trim()]));
   }
 }

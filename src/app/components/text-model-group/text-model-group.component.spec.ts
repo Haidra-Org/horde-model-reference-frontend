@@ -1,18 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { computed, provideZonelessChangeDetection, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TextModelGroupComponent } from './text-model-group.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
-import { GroupMembersResponse, GroupMemberInfo } from '../../api-client';
+import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
+import { GroupMembersResponse, GroupMemberInfo, PendingChangeRecord } from '../../api-client';
 
 interface ApiServiceSpy {
   backendCapabilities: ReturnType<typeof signal>;
   getGroupMembers: ReturnType<typeof vi.fn>;
+  getAlias: ReturnType<typeof vi.fn>;
   deleteModel: ReturnType<typeof vi.fn>;
+  updateGroupCommonFields: ReturnType<typeof vi.fn>;
 }
 
 interface NotificationSpy {
@@ -23,6 +26,24 @@ interface NotificationSpy {
 
 interface AuthSpy {
   isAuthenticated: ReturnType<typeof computed>;
+}
+
+interface PendingSummarySpy {
+  records: WritableSignal<PendingChangeRecord[]>;
+  refresh: ReturnType<typeof vi.fn>;
+}
+
+function buildPendingRecord(
+  overrides: Partial<PendingChangeRecord> & Pick<PendingChangeRecord, 'model_name' | 'operation'>,
+): PendingChangeRecord {
+  return {
+    change_id: 1,
+    category: 'text_generation' as PendingChangeRecord['category'],
+    requested_by: 'user-123',
+    requested_username: 'TestUser',
+    status: 'pending' as PendingChangeRecord['status'],
+    ...overrides,
+  };
 }
 
 function buildMember(
@@ -57,13 +78,13 @@ function buildMember(
 function buildGroupResponse(
   groupName: string,
   members: GroupMemberInfo[],
-  available_sizes: string[] = [],
+  overrides: Partial<GroupMembersResponse> = {},
 ): GroupMembersResponse {
   return {
     group_name: groupName,
     members,
     common_fields: {},
-    available_sizes,
+    available_sizes: [],
     available_variants: [],
     available_quants: [],
     available_versions: [],
@@ -78,6 +99,7 @@ function buildGroupResponse(
     size_usage: {},
     variant_usage: {},
     quant_usage: {},
+    ...overrides,
   };
 }
 
@@ -87,6 +109,7 @@ describe('TextModelGroupComponent', () => {
   let api: ApiServiceSpy;
   let notification: NotificationSpy;
   let auth: AuthSpy;
+  let pendingSummary: PendingSummarySpy;
   let isAuthenticatedSource: WritableSignal<boolean>;
   let router: Router;
   let rawParams: BehaviorSubject<Record<string, string>>;
@@ -102,7 +125,9 @@ describe('TextModelGroupComponent', () => {
     api = {
       backendCapabilities: signal({ writable: true, mode: 'PRIMARY', canonicalFormat: 'legacy' }),
       getGroupMembers: vi.fn().mockReturnValue(of(buildGroupResponse('Llama-3', []))),
+      getAlias: vi.fn().mockReturnValue(of({ canonical: 'Llama-3', aliases: [] })),
       deleteModel: vi.fn(),
+      updateGroupCommonFields: vi.fn(),
     };
 
     notification = {
@@ -115,6 +140,11 @@ describe('TextModelGroupComponent', () => {
       isAuthenticated: computed(() => isAuthenticatedSource()),
     };
 
+    pendingSummary = {
+      records: signal([]),
+      refresh: vi.fn(),
+    };
+
     const paramMap$ = rawParams.pipe(map((p) => convertToParamMap(p)));
 
     await TestBed.configureTestingModule({
@@ -125,6 +155,7 @@ describe('TextModelGroupComponent', () => {
         { provide: ModelReferenceApiService, useValue: api },
         { provide: NotificationService, useValue: notification },
         { provide: AuthService, useValue: auth },
+        { provide: PendingQueueSummaryService, useValue: pendingSummary },
         { provide: ActivatedRoute, useValue: { paramMap: paramMap$ } },
       ],
     }).compileComponents();
@@ -135,6 +166,13 @@ describe('TextModelGroupComponent', () => {
 
   function initWithGroupResponse(response: GroupMembersResponse): void {
     api.getGroupMembers.mockReturnValue(of(response));
+    fixture = TestBed.createComponent(TextModelGroupComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  function initWithError(): void {
+    api.getGroupMembers.mockReturnValue(throwError(() => new Error('Not found')));
     fixture = TestBed.createComponent(TextModelGroupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -202,12 +240,361 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('returns empty members when response has no members', () => {
-      const response = buildGroupResponse('Llama-3', []);
-
-      initWithGroupResponse(response);
-
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
       expect(component.canonicalMembers().length).toBe(0);
-      expect(notification.error).toHaveBeenCalledWith(expect.stringContaining('No models found'));
+    });
+  });
+
+  describe('API error handling', () => {
+    it('does not throw when backend returns 404 for empty group', () => {
+      expect(() => initWithError()).not.toThrow();
+      expect(component.groupData()).toBeNull();
+      expect(component.loading()).toBe(false);
+    });
+
+    it('leaves groupData null so pending-only view can render', () => {
+      initWithError();
+      expect(component.groupData()).toBeNull();
+      expect(component.canonicalMembers()).toEqual([]);
+    });
+
+    it('does not show error notification on 404', () => {
+      initWithError();
+      expect(notification.error).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('pending queue integration', () => {
+    it('returns empty when no pending records exist', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      expect(component.pendingGroupChanges()).toEqual([]);
+      expect(component.pendingCreates()).toEqual([]);
+      expect(component.pendingUpdates()).toEqual([]);
+      expect(component.pendingDeletes()).toEqual([]);
+    });
+
+    it('matches pending creates by text_model_group in payload', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Llama-3-8B',
+          operation: 'create' as PendingChangeRecord['operation'],
+          payload: { text_model_group: 'Llama-3' },
+        }),
+      ]);
+
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+
+      expect(component.pendingCreates().length).toBe(1);
+      expect(component.pendingCreates()[0].model_name).toBe('Llama-3-8B');
+    });
+
+    it('does not match creates for a different group', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Mistral-7B',
+          operation: 'create' as PendingChangeRecord['operation'],
+          payload: { text_model_group: 'Mistral' },
+        }),
+      ]);
+
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+
+      expect(component.pendingGroupChanges()).toEqual([]);
+    });
+
+    it('matches pending updates/deletes by existing member name', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Llama-3-8B-Instruct',
+          operation: 'update' as PendingChangeRecord['operation'],
+        }),
+        buildPendingRecord({
+          change_id: 2,
+          model_name: 'Llama-3-70B-Instruct',
+          operation: 'delete' as PendingChangeRecord['operation'],
+        }),
+      ]);
+
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B-Instruct'),
+          buildMember('Llama-3-70B-Instruct'),
+        ]),
+      );
+
+      expect(component.pendingUpdates().length).toBe(1);
+      expect(component.pendingDeletes().length).toBe(1);
+    });
+
+    it('ignores records from other categories', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Llama-3-8B',
+          operation: 'create' as PendingChangeRecord['operation'],
+          category: 'image_generation' as PendingChangeRecord['category'],
+          payload: { text_model_group: 'Llama-3' },
+        }),
+      ]);
+
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+
+      expect(component.pendingGroupChanges()).toEqual([]);
+    });
+
+    it('ignores non-pending status records', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Llama-3-8B',
+          operation: 'create' as PendingChangeRecord['operation'],
+          payload: { text_model_group: 'Llama-3' },
+          status: 'applied' as PendingChangeRecord['status'],
+        }),
+      ]);
+
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+
+      expect(component.pendingGroupChanges()).toEqual([]);
+    });
+
+    it('works with null groupData (404 scenario) for create matching', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Llama-3-8B',
+          operation: 'create' as PendingChangeRecord['operation'],
+          payload: { text_model_group: 'Llama-3' },
+        }),
+      ]);
+
+      initWithError();
+
+      expect(component.pendingCreates().length).toBe(1);
+    });
+
+    it('handles create records with null payload gracefully', () => {
+      pendingSummary.records.set([
+        buildPendingRecord({
+          model_name: 'Llama-3-8B',
+          operation: 'create' as PendingChangeRecord['operation'],
+          payload: null,
+        }),
+      ]);
+
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+
+      expect(component.pendingGroupChanges()).toEqual([]);
+    });
+  });
+
+  describe('health warnings', () => {
+    it('detects inconsistent baselines across members', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B', { baseline: 'llama3' }),
+          buildMember('Llama-3-1B', { baseline: 'llama2' }),
+        ]),
+      );
+
+      expect(component.healthWarnings().length).toBeGreaterThan(0);
+      expect(component.healthWarnings()[0]).toContain('Inconsistent baselines');
+    });
+
+    it('detects mixed NSFW flags', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B', { nsfw: true }),
+          buildMember('Llama-3-1B', { nsfw: false }),
+        ]),
+      );
+
+      expect(component.healthWarnings()).toEqual(
+        expect.arrayContaining([expect.stringContaining('NSFW')]),
+      );
+    });
+
+    it('detects missing descriptions', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B', { description: 'Has one' }),
+          buildMember('Llama-3-1B'),
+        ]),
+      );
+
+      expect(component.healthWarnings()).toEqual(
+        expect.arrayContaining([expect.stringContaining('missing descriptions')]),
+      );
+    });
+
+    it('returns no warnings for a consistent single-member group', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B', {
+            baseline: 'llama3',
+            nsfw: false,
+            description: 'A model',
+          }),
+        ]),
+      );
+
+      expect(component.healthWarnings()).toEqual([]);
+    });
+
+    it('returns no warnings when all members are consistent', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B', { baseline: 'llama3', nsfw: false, description: 'Desc' }),
+          buildMember('Llama-3-1B', { baseline: 'llama3', nsfw: false, description: 'Desc' }),
+        ]),
+      );
+
+      expect(component.healthWarnings()).toEqual([]);
+    });
+  });
+
+  describe('size sub-groups', () => {
+    it('does not sub-group when 10 or fewer canonical members', () => {
+      const members = Array.from({ length: 10 }, (_, i) => buildMember(`Model-${i}`));
+      initWithGroupResponse(buildGroupResponse('TestGroup', members));
+
+      expect(component.useSizeSubGroups()).toBe(false);
+      expect(component.sizeSubGroups()).toEqual([]);
+    });
+
+    it('creates sub-groups when more than 10 canonical members', () => {
+      const members = [
+        ...Array.from({ length: 6 }, (_, i) =>
+          buildMember(`Model-8B-v${i}`, { parameters: 8_000_000_000 }),
+        ),
+        ...Array.from({ length: 6 }, (_, i) =>
+          buildMember(`Model-70B-v${i}`, { parameters: 70_000_000_000 }),
+        ),
+      ];
+      // Give parsed.size so sub-grouping works
+      members.forEach((m, i) => {
+        m.parsed = { base_name: m.name, size: i < 6 ? '8B' : '70B' };
+      });
+
+      initWithGroupResponse(buildGroupResponse('TestGroup', members));
+
+      expect(component.useSizeSubGroups()).toBe(true);
+      expect(component.sizeSubGroups().length).toBe(2);
+      expect(component.sizeSubGroups().every((sg) => sg.expanded)).toBe(true);
+    });
+  });
+
+  describe('common fields editing', () => {
+    it('starts with editing disabled and no dirty state', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      expect(component.editingCommonFields()).toBe(false);
+      expect(component.commonFieldsDirty()).toBe(false);
+    });
+
+    it('populates edits from current common fields on startEditingCommonFields', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [], {
+          common_fields: { baseline: 'llama3', nsfw: false },
+        }),
+      );
+
+      component.startEditingCommonFields();
+
+      expect(component.editingCommonFields()).toBe(true);
+      expect(component.commonFieldEdits()).toEqual({ baseline: 'llama3', nsfw: false });
+    });
+
+    it('detects dirty state when edit differs from baseline', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [], {
+          common_fields: { baseline: 'llama3' },
+        }),
+      );
+
+      component.startEditingCommonFields();
+      component.updateCommonFieldEdit('baseline', 'llama4');
+
+      expect(component.commonFieldsDirty()).toBe(true);
+    });
+
+    it('is not dirty when edits match baseline', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [], {
+          common_fields: { baseline: 'llama3' },
+        }),
+      );
+
+      component.startEditingCommonFields();
+      component.updateCommonFieldEdit('baseline', 'llama3');
+
+      expect(component.commonFieldsDirty()).toBe(false);
+    });
+
+    it('cancelEditingCommonFields resets state', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [], {
+          common_fields: { baseline: 'llama3' },
+        }),
+      );
+
+      component.startEditingCommonFields();
+      component.updateCommonFieldEdit('baseline', 'changed');
+      component.cancelEditingCommonFields();
+
+      expect(component.editingCommonFields()).toBe(false);
+      expect(component.commonFieldEdits()).toEqual({});
+      expect(component.commonFieldsDirty()).toBe(false);
+    });
+
+    it('generates preview of changed fields', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [], {
+          common_fields: { baseline: 'llama3', nsfw: false },
+        }),
+      );
+
+      component.startEditingCommonFields();
+      component.updateCommonFieldEdit('baseline', 'llama4');
+
+      const preview = component.commonFieldsPreview();
+      expect(preview.length).toBe(1);
+      expect(preview[0]).toEqual({ field: 'baseline', from: 'llama3', to: 'llama4' });
+    });
+  });
+
+  describe('unsaved changes guard', () => {
+    it('returns false when no panels are open', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      expect(component.hasUnsavedChanges()).toBe(false);
+    });
+
+    it('returns true when add variation panel is dirty', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.showAddVariation.set(true);
+      component.addVariationDirty.set(true);
+      expect(component.hasUnsavedChanges()).toBe(true);
+    });
+
+    it('returns false when add variation panel is open but clean', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.showAddVariation.set(true);
+      component.addVariationDirty.set(false);
+      expect(component.hasUnsavedChanges()).toBe(false);
+    });
+
+    it('returns true when multi variation panel is dirty', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.showMultiVariation.set(true);
+      component.multiVariationDirty.set(true);
+      expect(component.hasUnsavedChanges()).toBe(true);
+    });
+
+    it('returns true when common fields are being edited with changes', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [], {
+          common_fields: { baseline: 'llama3' },
+        }),
+      );
+      component.startEditingCommonFields();
+      component.updateCommonFieldEdit('baseline', 'changed');
+      expect(component.hasUnsavedChanges()).toBe(true);
     });
   });
 
@@ -220,7 +607,7 @@ describe('TextModelGroupComponent', () => {
           buildMember('Llama-3-1B-Instruct', { parameters: 1_000_000_000 }),
           buildMember('Llama-3-70B-Instruct', { parameters: 70_000_000_000 }),
         ],
-        ['1B', '8B', '70B'],
+        { available_sizes: ['1B', '8B', '70B'] },
       );
 
       initWithGroupResponse(response);
@@ -230,9 +617,7 @@ describe('TextModelGroupComponent', () => {
     });
 
     it('returns null when no sizes are available', () => {
-      const response = buildGroupResponse('Llama-3', [buildMember('Llama-3-Instruct')]);
-
-      initWithGroupResponse(response);
+      initWithGroupResponse(buildGroupResponse('Llama-3', [buildMember('Llama-3-Instruct')]));
 
       expect(component.parameterSummary()).toBeNull();
     });
@@ -318,6 +703,42 @@ describe('TextModelGroupComponent', () => {
 
       expect(component.deleteAllowed()).toBe(false);
     });
+
+    it('calls deleteModel and reloads on success', () => {
+      api.deleteModel.mockReturnValue(of(undefined));
+      const response = buildGroupResponse('Llama-3', [buildMember('Llama-3-8B')]);
+      initWithGroupResponse(response);
+
+      component.confirmDeleteMember(component.canonicalMembers()[0]);
+      component.deleteConfirmationInput.set('Llama-3-8B');
+      component.deleteMember('Llama-3-8B');
+
+      expect(api.deleteModel).toHaveBeenCalledWith('text_generation', 'Llama-3-8B');
+      expect(notification.success).toHaveBeenCalled();
+    });
+
+    it('does not call deleteModel when confirmation does not match', () => {
+      const response = buildGroupResponse('Llama-3', [buildMember('Llama-3-8B')]);
+      initWithGroupResponse(response);
+
+      component.confirmDeleteMember(component.canonicalMembers()[0]);
+      component.deleteConfirmationInput.set('wrong');
+      component.deleteMember('Llama-3-8B');
+
+      expect(api.deleteModel).not.toHaveBeenCalled();
+    });
+
+    it('shows error notification on delete failure', () => {
+      api.deleteModel.mockReturnValue(throwError(() => new Error('Server error')));
+      initWithGroupResponse(buildGroupResponse('Llama-3', [buildMember('Llama-3-8B')]));
+
+      component.confirmDeleteMember(component.canonicalMembers()[0]);
+      component.deleteConfirmationInput.set('Llama-3-8B');
+      component.deleteMember('Llama-3-8B');
+
+      expect(notification.error).toHaveBeenCalledWith('Server error');
+      expect(component.modelToDelete()).toBeNull();
+    });
   });
 
   describe('delete all members', () => {
@@ -352,6 +773,78 @@ describe('TextModelGroupComponent', () => {
 
       expect(component.deletingAll()).toBe(false);
       expect(component.deleteAllVariantsConfirmation()).toBe('');
+    });
+
+    it('does nothing when canonical members list is empty', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.groupName.set('Llama-3');
+      component.deleteAllVariantsConfirmation.set('Llama-3');
+
+      component.deleteAllMembers();
+
+      expect(api.deleteModel).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('exception members', () => {
+    it('returns exception members from groupData', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [buildMember('Llama-3-Special')], {
+          exception_members: [{ name: 'Llama-3-Special', reason: 'Legacy naming' }],
+        }),
+      );
+
+      expect(component.exceptionMembers().length).toBe(1);
+      expect(component.exceptionMemberNames().has('Llama-3-Special')).toBe(true);
+    });
+
+    it('getExceptionReason returns reason for known exception', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [buildMember('Llama-3-Special')], {
+          exception_members: [{ name: 'Llama-3-Special', reason: 'Legacy naming' }],
+        }),
+      );
+
+      expect(component.getExceptionReason('Llama-3-Special')).toBe('Legacy naming');
+    });
+
+    it('getExceptionReason returns null for non-exception member', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', [buildMember('Llama-3-8B')]));
+
+      expect(component.getExceptionReason('Llama-3-8B')).toBeNull();
+    });
+  });
+
+  describe('variation panel toggles', () => {
+    it('openAddVariation closes multi variation', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.showMultiVariation.set(true);
+
+      component.openAddVariation();
+
+      expect(component.showAddVariation()).toBe(true);
+      expect(component.showMultiVariation()).toBe(false);
+    });
+
+    it('openMultiVariation closes single variation', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.showAddVariation.set(true);
+
+      component.openMultiVariation();
+
+      expect(component.showMultiVariation()).toBe(true);
+      expect(component.showAddVariation()).toBe(false);
+    });
+
+    it('closeAddVariation resets dirty flag', () => {
+      initWithGroupResponse(buildGroupResponse('Llama-3', []));
+      component.showAddVariation.set(true);
+      component.addVariationDirty.set(true);
+
+      component.closeAddVariation();
+
+      expect(component.showAddVariation()).toBe(false);
+      expect(component.addVariationDirty()).toBe(false);
     });
   });
 });

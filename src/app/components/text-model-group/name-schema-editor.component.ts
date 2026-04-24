@@ -12,10 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { HordeButtonComponent } from '@haidra/design-system/button';
-import {
-  GroupNameSchemaUpdateRequest,
-  NameFormatInfo,
-} from '../../api-client';
+import { GroupNameSchemaUpdateRequest, NameFormatInfo } from '../../api-client';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { NotificationService } from '../../services/notification.service';
 
@@ -48,6 +45,8 @@ export class NameSchemaEditorComponent {
   readonly editAuthorIncluded = signal(false);
   readonly editCommonAuthor = signal<string | null>(null);
   readonly editTemplate = signal<string | null>(null);
+  readonly editExtraParts = signal<string[]>([]);
+  readonly newExtraPart = signal('');
 
   readonly separatorOptions = SEPARATOR_OPTIONS;
   readonly availableParts = AVAILABLE_PARTS;
@@ -60,7 +59,8 @@ export class NameSchemaEditorComponent {
       JSON.stringify(this.editPartOrder()) !== JSON.stringify(current.part_order) ||
       this.editAuthorIncluded() !== current.author_included ||
       (this.editCommonAuthor() ?? null) !== (current.common_author ?? null) ||
-      (this.editTemplate() ?? null) !== (current.template ?? null)
+      (this.editTemplate() ?? null) !== (current.template ?? null) ||
+      JSON.stringify(this.editExtraParts()) !== JSON.stringify(current.extra_parts ?? [])
     );
   });
 
@@ -81,6 +81,8 @@ export class NameSchemaEditorComponent {
     this.editAuthorIncluded.set(current.author_included);
     this.editCommonAuthor.set(current.common_author ?? null);
     this.editTemplate.set(current.template ?? null);
+    this.editExtraParts.set([...(current.extra_parts ?? [])]);
+    this.newExtraPart.set('');
     this.editing.set(true);
   }
 
@@ -116,6 +118,7 @@ export class NameSchemaEditorComponent {
       author_included: this.editAuthorIncluded(),
       common_author: this.editCommonAuthor(),
       template: this.editTemplate(),
+      extra_parts: this.editExtraParts(),
     };
 
     this.api
@@ -154,5 +157,19 @@ export class NameSchemaEditorComponent {
           this.saving.set(false);
         },
       });
+  }
+
+  addExtraPart(): void {
+    const part = this.newExtraPart().trim().toLowerCase();
+    if (!part) return;
+    this.editExtraParts.update((parts) => {
+      if (parts.includes(part)) return parts;
+      return [...parts, part];
+    });
+    this.newExtraPart.set('');
+  }
+
+  removeExtraPart(index: number): void {
+    this.editExtraParts.update((parts) => parts.filter((_, i) => i !== index));
   }
 }

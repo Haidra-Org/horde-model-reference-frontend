@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ExtraPartInfo } from './extraPartInfo';
 
 /**
  * Parsed name components for a single group member.
@@ -17,4 +18,5 @@ export interface ParsedNameInfo {
   variant?: string | null;
   quant?: string | null;
   version?: string | null;
+  extras?: Array<ExtraPartInfo>;
 }

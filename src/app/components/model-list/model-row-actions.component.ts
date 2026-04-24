@@ -7,7 +7,9 @@ import { LegacyRecordUnion } from '../../models';
   imports: [HordeButtonComponent],
   template: `
     <div [class]="containerClass()">
-      <horde-button variant="secondary" [size]="buttonSize()" (click)="onShowJson()">JSON</horde-button>
+      <horde-button variant="secondary" [size]="buttonSize()" (click)="onShowJson()"
+        >JSON</horde-button
+      >
       @if (writable()) {
         <horde-button variant="primary" [size]="buttonSize()" (click)="onEdit()">Edit</horde-button>
         <horde-button variant="danger" [size]="buttonSize()" (click)="onDelete()">

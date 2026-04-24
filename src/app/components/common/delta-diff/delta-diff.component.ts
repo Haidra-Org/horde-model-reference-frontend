@@ -127,18 +127,14 @@ const COLLAPSE_THRESHOLD = 200;
           </summary>
           <div class="mt-2 space-y-4">
             <div>
-              <h4 class="text-xs font-medium text-muted mb-1">
-                Current State
-              </h4>
+              <h4 class="text-xs font-medium text-muted mb-1">Current State</h4>
               <pre
                 class="text-xs bg-gray-50 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto max-h-64 overflow-y-auto"
                 >{{ diff()?.current_state | json }}</pre
               >
             </div>
             <div>
-              <h4 class="text-xs font-medium text-muted mb-1">
-                Proposed State
-              </h4>
+              <h4 class="text-xs font-medium text-muted mb-1">Proposed State</h4>
               <pre
                 class="text-xs bg-gray-50 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto max-h-64 overflow-y-auto"
                 >{{ diff()?.proposed_state | json }}</pre
@@ -306,7 +302,7 @@ export class DeltaDiffComponent {
     const d = this.diff();
     if (!d?.field_diffs) return [];
     return d.field_diffs
-      .filter((f): f is { [key: string]: unknown } => f != null)
+      .filter((f): f is Record<string, unknown> => f != null)
       .map((f) => ({
         field_path: f['field_path'] as string,
         old_value: f['old_value'],
