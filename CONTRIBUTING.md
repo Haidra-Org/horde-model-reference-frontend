@@ -5,6 +5,8 @@
 ```bash
 # Prerequisites: Node.js (v18+)
 npm install
+git submodule sync --recursive
+git submodule update --init --recursive
 
 # Start dev server (http://localhost:4200)
 npm start

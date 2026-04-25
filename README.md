@@ -33,6 +33,8 @@ The official version of this frontend is deployed at [models.aihorde.net](https:
 
 ```bash
 npm install
+git submodule sync --recursive
+git submodule update --init --recursive
 ```
 
 ### Configuration
