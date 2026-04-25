@@ -22,6 +22,7 @@ permissions:
 
 env:
   HMR_BASE_URL: http://localhost:19800
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # Dependency review for security scanning on PRs
