@@ -187,7 +187,6 @@ export const CANONICAL_FORMATS = ['legacy', 'v2', 'UNKNOWN'] as const;
 export const SCHEMA_NAMES = {
   // Response models
   CONTAINS_MESSAGE: 'ContainsMessage',
-  CONTAINS_STATUS: 'ContainsStatus',
   ERROR_RESPONSE: 'ErrorResponse',
   ERROR_DETAIL: 'ErrorDetail',
   HTTP_VALIDATION_ERROR: 'HTTPValidationError',

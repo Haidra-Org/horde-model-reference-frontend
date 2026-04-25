@@ -181,7 +181,7 @@ All other components must have no `styles:` or `styleUrl:` properties.
 | Badge (generic)         | `.badge` + `.badge-success` / `.badge-danger` / etc.              |
 | Tag (outline)           | `.tag` + `.tag-primary` / `.tag-success` / `.tag-info`            |
 | Info box                | `.info-box` + `.info-box-warning` / etc.                          |
-| Alert (border-left)     | `.alert` + `.alert--danger` / `.alert--warning` / etc.              |
+| Alert (border-left)     | `.alert` + `.alert--danger` / `.alert--warning` / etc.            |
 | Alert (rounded banner)  | `.alert-banner` + `.alert-banner-danger` / `-warning`             |
 | Status badge (pill)     | `.status-badge` + `-success` / `-danger` / `-warning` / `-info`   |
 | Change badge (bordered) | `.change-badge` + `-added` / `-modified` / `-deleted`             |

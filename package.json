@@ -5,13 +5,28 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:ci": "npm run build -- --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false",
+    "test:ci": "npm test -- --watch=false --coverage",
     "test:e2e": "playwright test",
+    "type-check": "npx tsc --noEmit",
+    "ci:local": "npm run lint && npm run type-check && npm run test:ci && npm run build:ci",
+    "ci:openapi": "npm run generate-client -- --url http://localhost:19800/api/openapi.json && git diff --exit-code -- src/app/api-client src/assets/openapi-schema.json",
+    "precommit:quick": "lint-staged",
+    "precommit:verify": "npm run precommit:quick && npm run type-check",
     "generate-client": "node scripts/generate-api-client.js",
     "generate-client:local": "node scripts/generate-api-client.js --local",
     "lint": "ng lint && prettier --check .",
-    "lint:fix": "ng lint --fix && prettier --write ."
+    "lint:fix": "ng lint --fix && prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,html}": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
+    "*.{scss,css,js,mjs,cjs,json,md,yml,yaml}": "prettier --write"
   },
   "prettier": {
     "printWidth": 100,
@@ -55,7 +70,9 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "flatted": "^3.4.2",
+    "husky": "^9.1.7",
     "jsdom": "^29.0.1",
+    "lint-staged": "^16.4.0",
     "playwright": "^1.58.2",
     "postcss-import": "^16.1.1",
     "prettier": "3.8.1",

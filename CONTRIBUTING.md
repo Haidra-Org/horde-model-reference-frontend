@@ -52,19 +52,45 @@ npm run lint
 
 ## Pre-Commit Checks
 
-Before committing, verify:
+This repository uses Husky pre-commit hooks (`.husky/pre-commit`) with lint-staged for fast staged-file checks.
+
+The hook runs:
+
+- `npm run precommit:quick` (lint-staged: ESLint/Prettier on staged files)
+- `npm run type-check`
+
+Husky is installed automatically on `npm install` via the `prepare` script.
+
+You can run the same checks manually:
 
 ```bash
-# TypeScript compilation
-npx tsc --noEmit
+npm run precommit:verify
+```
 
-# Lint
-npm run lint
+## CI Parity (Local)
 
-# Tests
-npm test
+Use the same gates CI uses for lint, types, unit tests, and production build:
 
-# Styling compliance (see STYLING.md for full list)
+```bash
+npm run ci:local
+```
+
+To reproduce the OpenAPI contract checks locally (same backend service used in CI):
+
+```bash
+docker run -d --rm --name hmr-service -p 19800:19800 \
+  -e HORDE_MODEL_REFERENCE_REPLICATE_MODE=PRIMARY \
+  -e HORDE_MODEL_REFERENCE_CANONICAL_FORMAT=LEGACY \
+  -e HORDE_MODEL_REFERENCE_MAKE_FOLDERS=true \
+  -e HORDE_MODEL_REFERENCE_GITHUB_SEED_ENABLED=false \
+  ghcr.io/haidra-org/horde-model-reference:main
+
+VITE_USE_REMOTE_SCHEMA=true VITE_REMOTE_API_URL=http://localhost:19800 \
+  npm test -- --watch=false --include='**/api.models.spec.ts'
+
+npm run ci:openapi
+
+docker rm -f hmr-service
 ```
 
 ## API Client Generation

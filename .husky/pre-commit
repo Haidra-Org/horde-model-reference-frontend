@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -eu
+
+echo "Running pre-commit checks (lint-staged + type-check)..."
+npm run precommit:verify

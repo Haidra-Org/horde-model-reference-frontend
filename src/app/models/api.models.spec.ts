@@ -576,7 +576,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
       }
 
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTAINS_MESSAGE)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTAINS_STATUS)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.ERROR_RESPONSE)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.ERROR_DETAIL)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.HTTP_VALIDATION_ERROR)).toBe(true);

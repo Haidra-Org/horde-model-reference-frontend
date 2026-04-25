@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 # Cancel in-progress runs for the same workflow and branch
 concurrency:
@@ -19,6 +20,9 @@ permissions:
   pull-requests: read
   checks: write
 
+env:
+  HMR_BASE_URL: http://localhost:19800
+
 jobs:
   # Dependency review for security scanning on PRs
   dependency-review:
@@ -30,7 +34,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
@@ -40,37 +44,38 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
+      - name: Run lint checks
         run: npm run lint
-
-      - name: Check formatting (Prettier)
-        run: npx prettier --check .
 
   type-check:
     name: Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -79,30 +84,32 @@ jobs:
         run: npx tsc --noEmit
 
   test:
-    name: Test (Node ${{ matrix.node-version }})
+    name: Unit Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     strategy:
       matrix:
-        node-version: ['20.x', '22.x', '24.x', '25.x']
+        node-version: ['20.x', '22.x', '24.x']
       fail-fast: false
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run tests
-        run: npm test -- --watch=false --browsers=chromium --code-coverage
+        run: npm test -- --watch=false --coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         if: matrix.node-version == '20.x'
         with:
           files: ./coverage/lcov.info
@@ -110,35 +117,89 @@ jobs:
           fail_ci_if_error: false
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results-${{ matrix.node-version }}
           path: coverage/
           retention-days: 7
 
-  build:
-    name: Build (Node ${{ matrix.node-version }})
+  api-contract:
+    name: API Contract (OpenAPI)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ['20.x']
-        build-config: ['production']
+    timeout-minutes: 25
+    services:
+      hmr-service:
+        image: ghcr.io/haidra-org/horde-model-reference:main
+        env:
+          HORDE_MODEL_REFERENCE_REPLICATE_MODE: PRIMARY
+          HORDE_MODEL_REFERENCE_CANONICAL_FORMAT: LEGACY
+          HORDE_MODEL_REFERENCE_MAKE_FOLDERS: 'true'
+          HORDE_MODEL_REFERENCE_GITHUB_SEED_ENABLED: 'false'
+        ports:
+          - 19800:19800
+        options: >-
+          --health-cmd "curl -fsS http://localhost:19800/api/heartbeat || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build ${{ matrix.build-config }}
-        run: npm run build -- --configuration=${{ matrix.build-config }}
+      - name: Wait for backend service
+        run: |
+          for i in {1..30}; do
+            if curl -fsS "$HMR_BASE_URL/api/heartbeat" >/dev/null; then
+              echo "Backend is healthy"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "Backend did not become healthy in time"
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: Verify OpenAPI endpoint
+        run: curl -fsS "$HMR_BASE_URL/api/openapi.json" > /tmp/openapi.json
+
+      - name: Run schema validation tests against live backend
+        env:
+          VITE_USE_REMOTE_SCHEMA: 'true'
+          VITE_REMOTE_API_URL: ${{ env.HMR_BASE_URL }}
+        run: npm test -- --watch=false --include='**/api.models.spec.ts'
+
+  build:
+    name: Build (Production)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build -- --configuration=production
 
       - name: Validate build output
         run: |
@@ -150,9 +211,9 @@ jobs:
           ls -lah dist/
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: dist-${{ matrix.build-config }}-node-${{ matrix.node-version }}
+          name: dist-production
           path: dist/
           retention-days: 7
 
@@ -160,7 +221,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [lint, type-check, test, build]
+    needs: [lint, type-check, test, api-contract, build]
     if: always()
     steps:
       - name: Check job results
@@ -168,6 +229,7 @@ jobs:
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.type-check.result }}" != "success" ] || \
              [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.api-contract.result }}" != "success" ] || \
              [ "${{ needs.build.result }}" != "success" ]; then
             echo "One or more required jobs failed"
             exit 1
