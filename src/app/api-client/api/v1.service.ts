@@ -1,5 +1,5 @@
 /**
- * FastAPI
+ * Horde Model Reference API
  *
  *
  *
@@ -1385,7 +1385,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet(
     changeIds: Array<number>,
     observe?: 'body',
     reportProgress?: boolean,
@@ -1395,7 +1395,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeDiffPage>;
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet(
     changeIds: Array<number>,
     observe?: 'response',
     reportProgress?: boolean,
@@ -1405,7 +1405,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeDiffPage>>;
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet(
     changeIds: Array<number>,
     observe?: 'events',
     reportProgress?: boolean,
@@ -1415,7 +1415,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeDiffPage>>;
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet(
     changeIds: Array<number>,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1427,7 +1427,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (changeIds === null || changeIds === undefined) {
       throw new Error(
-        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet.',
+        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet.',
       );
     }
 
@@ -1472,7 +1472,7 @@ export class V1Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v1/pending_queue/changes/diff`;
+    let localVarPath = `/model_references/v1/pending_queue/diffs`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<PendingChangeDiffPage>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
@@ -1493,7 +1493,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet_7(
     changeIds: Array<number>,
     observe?: 'body',
     reportProgress?: boolean,
@@ -1503,7 +1503,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeDiffPage>;
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet_7(
     changeIds: Array<number>,
     observe?: 'response',
     reportProgress?: boolean,
@@ -1513,7 +1513,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeDiffPage>>;
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet_7(
     changeIds: Array<number>,
     observe?: 'events',
     reportProgress?: boolean,
@@ -1523,7 +1523,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeDiffPage>>;
-  public getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7(
+  public getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet_7(
     changeIds: Array<number>,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1535,7 +1535,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (changeIds === null || changeIds === undefined) {
       throw new Error(
-        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV1PendingQueueChangesDiffGet_7.',
+        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV1PendingQueueDiffsGet_7.',
       );
     }
 
@@ -1580,7 +1580,7 @@ export class V1Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v1/pending_queue/changes/diff`;
+    let localVarPath = `/model_references/v1/pending_queue/diffs`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<PendingChangeDiffPage>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
@@ -1819,6 +1819,262 @@ export class V1Service extends BaseService {
   }
 
   /**
+   * List your own submitted pending changes
+   * Return the caller\&#39;s own queued changes so a requestor can track a proposal\&#39;s fate.  Unlike &#x60;&#x60;/changes&#x60;&#x60; this requires only the *requestor* role; visibility is hard-scoped to the calling key\&#39;s user id and cannot be widened to other users\&#39; changes.
+   * @param statuses
+   * @param categories
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueuePage>;
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueuePage>>;
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueuePage>>;
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (statuses) {
+      statuses.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'statuses',
+        );
+      });
+    }
+    if (categories) {
+      categories.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'categories',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/my_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueuePage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List your own submitted pending changes
+   * Return the caller\&#39;s own queued changes so a requestor can track a proposal\&#39;s fate.  Unlike &#x60;&#x60;/changes&#x60;&#x60; this requires only the *requestor* role; visibility is hard-scoped to the calling key\&#39;s user id and cannot be widened to other users\&#39; changes.
+   * @param statuses
+   * @param categories
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingQueuePage>;
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingQueuePage>>;
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingQueuePage>>;
+  public listMyPendingChangesModelReferencesV1PendingQueueMyChangesGet_9(
+    statuses?: Array<PendingChangeStatus>,
+    categories?: Array<MODEL_REFERENCE_CATEGORY>,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    if (statuses) {
+      statuses.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'statuses',
+        );
+      });
+    }
+    if (categories) {
+      categories.forEach((element) => {
+        localVarQueryParameters = this.addToHttpParams(
+          localVarQueryParameters,
+          <any>element,
+          'categories',
+        );
+      });
+    }
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v1/pending_queue/my_changes`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingQueuePage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * List pending queue entries
    * Return a filtered, paginated list of pending queue entries.
    * @param statuses
@@ -1993,7 +2249,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_10(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -2009,7 +2265,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueuePage>;
-  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_10(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -2025,7 +2281,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueuePage>>;
-  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_10(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -2041,7 +2297,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueuePage>>;
-  public listPendingChangesModelReferencesV1PendingQueueChangesGet_9(
+  public listPendingChangesModelReferencesV1PendingQueueChangesGet_10(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -2263,7 +2519,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_11(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -2275,7 +2531,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueueAuditBatchPage>;
-  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_11(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -2287,7 +2543,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
-  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_11(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -2299,7 +2555,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
-  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_10(
+  public listPendingQueueBatchesModelReferencesV1PendingQueueAuditBatchesGet_11(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -2480,7 +2736,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_12(
     pendingBatchRequest: PendingBatchRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2490,7 +2746,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingBatchResult>;
-  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_12(
     pendingBatchRequest: PendingBatchRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2500,7 +2756,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingBatchResult>>;
-  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_12(
     pendingBatchRequest: PendingBatchRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2510,7 +2766,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingBatchResult>>;
-  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_11(
+  public processPendingBatchModelReferencesV1PendingQueueBatchesPost_12(
     pendingBatchRequest: PendingBatchRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2522,7 +2778,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (pendingBatchRequest === null || pendingBatchRequest === undefined) {
       throw new Error(
-        'Required parameter pendingBatchRequest was null or undefined when calling processPendingBatchModelReferencesV1PendingQueueBatchesPost_11.',
+        'Required parameter pendingBatchRequest was null or undefined when calling processPendingBatchModelReferencesV1PendingQueueBatchesPost_12.',
       );
     }
 
@@ -2694,7 +2950,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_13(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2704,7 +2960,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PurgePendingChangesResponse>;
-  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_13(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2714,7 +2970,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PurgePendingChangesResponse>>;
-  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_13(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2724,7 +2980,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PurgePendingChangesResponse>>;
-  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_12(
+  public purgePendingChangesModelReferencesV1PendingQueuePurgePost_13(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2736,7 +2992,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (purgePendingChangesRequest === null || purgePendingChangesRequest === undefined) {
       throw new Error(
-        'Required parameter purgePendingChangesRequest was null or undefined when calling purgePendingChangesModelReferencesV1PendingQueuePurgePost_12.',
+        'Required parameter purgePendingChangesRequest was null or undefined when calling purgePendingChangesModelReferencesV1PendingQueuePurgePost_13.',
       );
     }
 
@@ -2884,7 +3140,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readAllLegacyMetadata_13(
+  public readAllLegacyMetadata_14(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2893,7 +3149,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: CategoryMetadata }>;
-  public readAllLegacyMetadata_13(
+  public readAllLegacyMetadata_14(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2902,7 +3158,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: CategoryMetadata }>>;
-  public readAllLegacyMetadata_13(
+  public readAllLegacyMetadata_14(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2911,7 +3167,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: CategoryMetadata }>>;
-  public readAllLegacyMetadata_13(
+  public readAllLegacyMetadata_14(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -3060,7 +3316,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readLegacyCategoryLastUpdated_14(
+  public readLegacyCategoryLastUpdated_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3070,7 +3326,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<CategoryLastUpdatedResponse>;
-  public readLegacyCategoryLastUpdated_14(
+  public readLegacyCategoryLastUpdated_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3080,7 +3336,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
-  public readLegacyCategoryLastUpdated_14(
+  public readLegacyCategoryLastUpdated_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3090,7 +3346,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
-  public readLegacyCategoryLastUpdated_14(
+  public readLegacyCategoryLastUpdated_15(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3102,7 +3358,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryLastUpdated_14.',
+        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryLastUpdated_15.',
       );
     }
 
@@ -3242,7 +3498,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readLegacyCategoryMetadata_15(
+  public readLegacyCategoryMetadata_16(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3252,7 +3508,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<CategoryMetadata>;
-  public readLegacyCategoryMetadata_15(
+  public readLegacyCategoryMetadata_16(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3262,7 +3518,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<CategoryMetadata>>;
-  public readLegacyCategoryMetadata_15(
+  public readLegacyCategoryMetadata_16(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3272,7 +3528,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<CategoryMetadata>>;
-  public readLegacyCategoryMetadata_15(
+  public readLegacyCategoryMetadata_16(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3284,7 +3540,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryMetadata_15.',
+        'Required parameter modelCategoryName was null or undefined when calling readLegacyCategoryMetadata_16.',
       );
     }
 
@@ -3408,7 +3664,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readLegacyLastUpdated_16(
+  public readLegacyLastUpdated_17(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -3417,7 +3673,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<LastUpdatedResponse>;
-  public readLegacyLastUpdated_16(
+  public readLegacyLastUpdated_17(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -3426,7 +3682,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<LastUpdatedResponse>>;
-  public readLegacyLastUpdated_16(
+  public readLegacyLastUpdated_17(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -3435,7 +3691,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<LastUpdatedResponse>>;
-  public readLegacyLastUpdated_16(
+  public readLegacyLastUpdated_17(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -3923,7 +4179,7 @@ export class V1Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_18(
     changeId: number,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3933,7 +4189,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_18(
     changeId: number,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3943,7 +4199,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_18(
     changeId: number,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3953,7 +4209,7 @@ export class V1Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17(
+  public readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_18(
     changeId: number,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3965,7 +4221,7 @@ export class V1Service extends BaseService {
   ): Observable<any> {
     if (changeId === null || changeId === undefined) {
       throw new Error(
-        'Required parameter changeId was null or undefined when calling readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_17.',
+        'Required parameter changeId was null or undefined when calling readPendingChangeModelReferencesV1PendingQueueChangesChangeIdGet_18.',
       );
     }
 

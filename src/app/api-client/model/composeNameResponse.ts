@@ -1,5 +1,5 @@
 /**
- * FastAPI
+ * Horde Model Reference API
  *
  *
  *
@@ -15,6 +15,4 @@ export interface ComposeNameResponse {
   composed_name: string;
   already_exists: boolean;
   suggested_group: string;
-  template: string;
-  rendered_example: string;
 }

@@ -1,5 +1,5 @@
 /**
- * FastAPI
+ * Horde Model Reference API
  *
  *
  *
@@ -1480,7 +1480,7 @@ export class TextUtilsService extends BaseService {
 
   /**
    * Auto-detect family suggestions from current model groups
-   * Run prefix-based heuristics over current group names to suggest families.  Results are suggestions only — they are not persisted automatically.
+   * Run prefix-based heuristics over current group names to suggest families.  Results are suggestions only - they are not persisted automatically.
    * @param minPrefixLength
    * @param minFamilySize
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -1581,7 +1581,7 @@ export class TextUtilsService extends BaseService {
 
   /**
    * Auto-detect family suggestions from current model groups
-   * Run prefix-based heuristics over current group names to suggest families.  Results are suggestions only — they are not persisted automatically.
+   * Run prefix-based heuristics over current group names to suggest families.  Results are suggestions only - they are not persisted automatically.
    * @param minPrefixLength
    * @param minFamilySize
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

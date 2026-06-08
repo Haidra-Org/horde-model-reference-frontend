@@ -1,5 +1,5 @@
 /**
- * FastAPI
+ * Horde Model Reference API
  *
  *
  *
@@ -47,7 +47,7 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Heartbeat
+   * Service health check
    * Heartbeat endpoint to check the service status.  Returns overall service status and the state of the external AI Horde API connection. When the AI Horde API is unreachable, &#x60;&#x60;ai_horde.degraded&#x60;&#x60; is &#x60;&#x60;True&#x60;&#x60; and &#x60;&#x60;ai_horde.seconds_until_retry&#x60;&#x60; indicates when the next probe request will be attempted.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -125,8 +125,8 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Read Root
-   * Root endpoint for the Horde Model Reference API1.
+   * API landing message
+   * Return a welcome message pointing to the interactive documentation.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -203,7 +203,7 @@ export class DefaultService extends BaseService {
   }
 
   /**
-   * Replicate Mode
+   * Backend capabilities probe
    * Get backend configuration and capabilities.  Returns information about the backend\&#39;s replication mode, canonical format, and whether write operations are supported.  Clients should use this endpoint on startup to determine: - Whether the backend supports write operations (writable&#x3D;True) - Which API version to use for CRUD operations (based on canonical_format)  Note: For backward compatibility, this endpoint path is retained but now returns a richer BackendInfo response instead of just the ReplicateMode.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.

@@ -1,5 +1,5 @@
 /**
- * FastAPI
+ * Horde Model Reference API
  *
  *
  *
@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ImageGenerationModelRecordInputRequirementsValue } from './imageGenerationModelRecordInputRequirementsValue';
+import { ImageGenerationModelRecordRequirementsValue } from './imageGenerationModelRecordRequirementsValue';
 import { LegacyConfig } from './legacyConfig';
 
 /**
@@ -35,7 +35,7 @@ export interface LegacyStableDiffusionRecordInput {
   homepage?: string | null;
   size_on_disk_bytes?: number | null;
   optimization?: string | null;
-  requirements?: { [key: string]: ImageGenerationModelRecordInputRequirementsValue } | null;
+  requirements?: { [key: string]: ImageGenerationModelRecordRequirementsValue } | null;
 }
 export namespace LegacyStableDiffusionRecordInput {
   export const TypeEnum = {

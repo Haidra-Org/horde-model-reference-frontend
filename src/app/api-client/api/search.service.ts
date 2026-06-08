@@ -1,5 +1,5 @@
 /**
- * FastAPI
+ * Horde Model Reference API
  *
  *
  *
@@ -347,6 +347,7 @@ export class SearchService extends BaseService {
    * @param backend Text model backend filter
    * @param excludeBackendVariations Exclude text model backend variations
    * @param quantized Filter by quantization (text only)
+   * @param source Model source: \&#39;horde\&#39; (canonical), \&#39;any\&#39;, or a registered provider source id
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -366,6 +367,7 @@ export class SearchService extends BaseService {
     backend?: string,
     excludeBackendVariations?: boolean,
     quantized?: boolean,
+    source?: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -390,6 +392,7 @@ export class SearchService extends BaseService {
     backend?: string,
     excludeBackendVariations?: boolean,
     quantized?: boolean,
+    source?: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -414,6 +417,7 @@ export class SearchService extends BaseService {
     backend?: string,
     excludeBackendVariations?: boolean,
     quantized?: boolean,
+    source?: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -438,6 +442,7 @@ export class SearchService extends BaseService {
     backend?: string,
     excludeBackendVariations?: boolean,
     quantized?: boolean,
+    source?: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -519,6 +524,7 @@ export class SearchService extends BaseService {
       <any>quantized,
       'quantized',
     );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>source, 'source');
 
     let localVarHeaders = this.defaultHeaders;
 
