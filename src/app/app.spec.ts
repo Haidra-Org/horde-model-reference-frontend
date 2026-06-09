@@ -30,7 +30,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('div.flex')).toBeTruthy();
-    expect(compiled.querySelector('main')).toBeTruthy();
+    expect(compiled.querySelector('div.app-shell')).toBeTruthy();
+    expect(compiled.querySelector('main.app-content')).toBeTruthy();
   });
 });

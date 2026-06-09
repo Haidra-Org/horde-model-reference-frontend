@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavigationComponent } from './components/navigation/navigation.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { TopbarComponent } from './components/topbar/topbar.component';
 import { NotificationDisplayComponent } from './components/notification-display/notification-display.component';
 import { ModelReferenceApiService } from './services/model-reference-api.service';
 import { AuthService } from './services/auth.service';
@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationComponent, SidebarComponent, NotificationDisplayComponent],
+  imports: [RouterOutlet, SidebarComponent, TopbarComponent, NotificationDisplayComponent],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

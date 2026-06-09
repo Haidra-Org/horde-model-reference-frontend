@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home.component';
+import { DEFAULT_CATEGORY } from './shared/constants';
 import { ModelListComponent } from './components/model-list/model-list.component';
 import { ModelFormComponent } from './components/model-form/model-form.component';
-import { ModelAuditComponent } from './components/model-audit/model-audit.component';
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
 import { GroupManagementComponent } from './components/text-model-group/group-management.component';
 import { CreateGroupWizardComponent } from './components/text-model-group/create-group-wizard.component';
@@ -11,9 +10,13 @@ import { authenticatedGuard } from './guards/role.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', redirectTo: `/categories/${DEFAULT_CATEGORY}`, pathMatch: 'full' },
   { path: 'categories/:category', component: ModelListComponent },
-  { path: 'categories/:category/audit', component: ModelAuditComponent },
+  {
+    path: 'categories/:category/audit',
+    redirectTo: '/analytics?category=:category&tab=risk',
+    pathMatch: 'full',
+  },
   {
     path: 'categories/:category/group-management',
     component: GroupManagementComponent,
@@ -45,4 +48,45 @@ export const routes: Routes = [
   },
   // Redirect old audit trail route to the unified pending queue with history tab
   { path: 'pending-queue/audit', redirectTo: '/pending-queue?tab=history', pathMatch: 'full' },
+  // New feature routes (lazy-loaded; full implementations land in later phases)
+  {
+    path: 'text-groups',
+    loadComponent: () =>
+      import('./components/placeholder-page/placeholder-page.component').then(
+        (m) => m.PlaceholderPageComponent,
+      ),
+    data: { title: 'Text Groups' },
+  },
+  {
+    path: 'analytics',
+    loadComponent: () =>
+      import('./components/placeholder-page/placeholder-page.component').then(
+        (m) => m.PlaceholderPageComponent,
+      ),
+    data: { title: 'Analytics' },
+  },
+  {
+    path: 'propose',
+    loadComponent: () =>
+      import('./components/placeholder-page/placeholder-page.component').then(
+        (m) => m.PlaceholderPageComponent,
+      ),
+    data: { title: 'Propose a Change' },
+  },
+  {
+    path: 'deployment',
+    loadComponent: () =>
+      import('./components/placeholder-page/placeholder-page.component').then(
+        (m) => m.PlaceholderPageComponent,
+      ),
+    data: { title: 'Deployment' },
+  },
+  {
+    path: 'api-docs',
+    loadComponent: () =>
+      import('./components/placeholder-page/placeholder-page.component').then(
+        (m) => m.PlaceholderPageComponent,
+      ),
+    data: { title: 'API & Docs' },
+  },
 ];

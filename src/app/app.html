@@ -1,8 +1,10 @@
-<app-navigation></app-navigation>
-<div class="flex h-[calc(100dvh-57px)]">
-  <app-sidebar></app-sidebar>
-  <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900">
-    <router-outlet />
-  </main>
+<div class="app-shell">
+  <app-sidebar />
+  <div class="app-main-col">
+    <app-topbar />
+    <main class="app-content">
+      <router-outlet />
+    </main>
+  </div>
 </div>
-<app-notification-display></app-notification-display>
+<app-notification-display />

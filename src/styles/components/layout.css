@@ -1,5 +1,23 @@
 @layer components {
   /* =================================================================
+     APP SHELL LAYOUT
+     Sidebar + topbar + scrolling main content area.
+     ================================================================= */
+
+  .app-shell {
+    @apply flex min-h-screen;
+  }
+
+  .app-main-col {
+    @apply flex flex-col flex-1 min-w-0;
+  }
+
+  .app-content {
+    @apply flex-1 overflow-y-auto;
+    /* main scrolls — use .glass-inflow (no blur) inside */
+  }
+
+  /* =================================================================
      FORM LAYOUT EXTENSIONS
      Base form layout utilities (.form-field, .form-grid-*, .grid-col-span-*)
      are provided by the shared design system at
@@ -1792,5 +1810,293 @@
   .dark .category-rail__item--active .category-rail__count {
     background: var(--chip-accent, var(--color-primary-900) / 0.5);
     color: var(--chip-accent, var(--color-primary-200));
+  }
+
+  /* =================================================================
+     PHASE 1 — TOPBAR
+     Sticky header with breadcrumb, title, identity, and theme toggle.
+     Uses .glass-overlay (blur) because it's sticky.
+     ================================================================= */
+
+  .topbar {
+    @apply sticky top-0 z-50;
+  }
+
+  .topbar-inner {
+    @apply flex items-center gap-3.5 px-6 py-3;
+    min-height: 62px;
+  }
+
+  .topbar-mobile-toggle {
+    @apply lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors;
+  }
+
+  .topbar-back-btn {
+    @apply flex items-center justify-center p-2 rounded-lg;
+    @apply text-gray-600 dark:text-gray-300;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
+    margin-left: -6px;
+  }
+
+  .topbar-icon {
+    @apply w-5 h-5;
+  }
+
+  .topbar-title-area {
+    @apply flex-1 min-w-0;
+  }
+
+  .topbar-breadcrumb {
+    @apply flex items-center gap-1.5 text-xs font-semibold mb-0.5;
+    color: var(--color-content-tertiary, #9ca3af);
+  }
+
+  .topbar-breadcrumb-link {
+    @apply hover:text-primary-600 dark:hover:text-primary-400 transition-colors;
+  }
+
+  .topbar-breadcrumb-text {
+    /* non-link breadcrumb segment */
+  }
+
+  .topbar-breadcrumb-sep {
+    @apply text-gray-400 dark:text-gray-500;
+  }
+
+  .topbar-breadcrumb-current {
+    @apply text-gray-700 dark:text-gray-200;
+  }
+
+  .topbar-title {
+    @apply m-0 text-xl font-bold whitespace-nowrap overflow-hidden text-ellipsis;
+    letter-spacing: -0.015em;
+    color: var(--color-content-primary, #111827);
+  }
+
+  .dark .topbar-title {
+    color: var(--color-content-primary, #f9fafb);
+  }
+
+  .topbar-sub {
+    @apply text-sm;
+    color: var(--color-content-secondary, #6b7280);
+  }
+
+  .dark .topbar-sub {
+    color: var(--color-content-secondary, #9ca3af);
+  }
+
+  .topbar-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .topbar-identity {
+    @apply flex items-center gap-2;
+  }
+
+  .topbar-username {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-200;
+  }
+
+  .topbar-role-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold;
+  }
+
+  .topbar-role-badge--approver {
+    @apply bg-success-100 text-success-800 border border-success-300;
+    @apply dark:bg-success-900/30 dark:text-success-300 dark:border-success-700;
+  }
+
+  .topbar-role-badge--requestor {
+    @apply bg-primary-100 text-primary-800 border border-primary-300;
+    @apply dark:bg-primary-900/30 dark:text-primary-300 dark:border-primary-700;
+  }
+
+  .topbar-logout-btn {
+    @apply text-xs text-gray-500 dark:text-gray-400;
+    @apply hover:text-gray-700 dark:hover:text-gray-200 transition-colors;
+  }
+
+  .topbar-theme-btn {
+    @apply flex items-center justify-center p-2 rounded-lg;
+    @apply text-gray-600 dark:text-gray-300;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  /* =================================================================
+     PHASE 1 — BACKEND STATUS CHIP (sidebar footer)
+     ================================================================= */
+
+  .backend-chip {
+    @apply flex items-center gap-2.5 w-full text-left p-2.5 cursor-pointer;
+    @apply rounded-lg transition-colors;
+    border: 1px solid var(--color-border-hairline);
+    background: var(--color-glass-surface-nested);
+  }
+
+  .dark .backend-chip {
+    border-color: var(--color-border-hairline-dark);
+    background: var(--color-glass-surface-dark-nested);
+  }
+
+  .backend-chip:hover {
+    background: var(--color-glass-surface-panel);
+  }
+
+  .dark .backend-chip:hover {
+    background: var(--color-glass-surface-dark);
+  }
+
+  .backend-chip-dot {
+    @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
+  }
+
+  .backend-chip-dot--writable {
+    background: var(--color-success-500, #22c55e);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success-500, #22c55e) 22%, transparent);
+  }
+
+  .backend-chip-dot--readonly {
+    background: var(--color-gray-400, #9ca3af);
+  }
+
+  .backend-chip-info {
+    @apply flex-1 min-w-0 flex items-center gap-1.5 text-xs font-bold;
+  }
+
+  .backend-chip-mode {
+    @apply text-gray-700 dark:text-gray-200;
+  }
+
+  .backend-chip-sep {
+    @apply text-gray-400 dark:text-gray-500;
+  }
+
+  .backend-chip-format {
+    /* Format color set by modifier classes below */
+  }
+
+  .backend-chip-format--v2 {
+    color: var(--color-accent-text, #9333ea);
+  }
+
+  .backend-chip-format--legacy {
+    color: var(--color-accent-pending, #b45309);
+  }
+
+  .backend-chip-pill {
+    @apply text-[10px] font-bold px-2 py-0.5 rounded-full;
+  }
+
+  .backend-chip-pill--writable {
+    @apply bg-success-100 text-success-700;
+    @apply dark:bg-success-900/30 dark:text-success-300;
+  }
+
+  .backend-chip-pill--readonly {
+    @apply bg-gray-100 text-gray-600;
+    @apply dark:bg-gray-800 dark:text-gray-400;
+  }
+
+  /* =================================================================
+     PHASE 1 — SIDEBAR FEATURE NAVIGATION
+     Replaces category groups with Catalog/Contribute/System.
+     ================================================================= */
+
+  .sidebar-logo-img {
+    @apply flex-shrink-0;
+  }
+
+  .sidebar-brand {
+    @apply leading-tight;
+  }
+
+  .sidebar-brand-title {
+    @apply text-[15px] font-extrabold text-gray-900 dark:text-gray-100;
+    letter-spacing: -0.02em;
+  }
+
+  .sidebar-brand-sub {
+    @apply text-[11px] font-semibold text-gray-500 dark:text-gray-400;
+  }
+
+  .sidebar-divider {
+    margin: 0 14px;
+    border-top: 1px solid var(--color-border-hairline);
+  }
+
+  .dark .sidebar-divider {
+    border-top-color: var(--color-border-hairline-dark);
+  }
+
+  .sidebar-feature-group {
+    @apply mb-4;
+  }
+
+  .sidebar-feature-group-title {
+    @apply text-[10.5px] uppercase font-bold px-2.5 pb-1.5;
+    letter-spacing: 0.08em;
+    color: var(--color-content-tertiary, #9ca3af);
+  }
+
+  .sidebar-feature-group-items {
+    @apply flex flex-col gap-0.5;
+  }
+
+  .sidebar-feature-item {
+    @apply flex items-center gap-2.5 text-left border-0 cursor-pointer;
+    @apply text-[13px] font-medium py-2 px-2.5 rounded-lg;
+    @apply transition-colors no-underline;
+    background: transparent;
+    color: var(--color-content-primary, #111827);
+    position: relative;
+  }
+
+  .dark .sidebar-feature-item {
+    color: var(--color-content-primary, #f9fafb);
+  }
+
+  .sidebar-feature-item:hover {
+    background: var(--color-row-hover, rgb(29 78 216 / 0.05));
+  }
+
+  .sidebar-feature-item--active {
+    font-weight: 600;
+    background: color-mix(in srgb, var(--color-primary-600, #2563eb) 13%, transparent);
+    color: var(--color-primary-600, #2563eb);
+  }
+
+  .dark .sidebar-feature-item--active {
+    color: var(--color-primary-400, #60a5fa);
+  }
+
+  .sidebar-feature-item--disabled {
+    @apply opacity-55 cursor-not-allowed;
+    color: var(--color-content-tertiary, #9ca3af);
+  }
+
+  .sidebar-feature-item-icon {
+    @apply flex-shrink-0 inline-flex items-center;
+    color: inherit;
+  }
+
+  .sidebar-feature-item-label {
+    @apply flex-1;
+  }
+
+  .sidebar-feature-badge {
+    @apply inline-flex items-center justify-center;
+    @apply text-[10.5px] font-bold min-w-[18px] h-[18px] px-1.5 rounded-full;
+    background: var(--color-pending-strip, #f59e0b);
+    color: #3b2503;
+  }
+
+  .sidebar-footer {
+    @apply p-3.5;
+    border-top: 1px solid var(--color-border-hairline);
+  }
+
+  .dark .sidebar-footer {
+    border-top-color: var(--color-border-hairline-dark);
   }
 }
