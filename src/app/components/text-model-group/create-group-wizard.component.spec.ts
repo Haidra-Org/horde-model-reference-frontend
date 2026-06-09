@@ -254,16 +254,6 @@ describe('CreateGroupWizardComponent', () => {
       );
     });
 
-    it('prefers API template over fallback', () => {
-      component.apiTemplate.set('{author}/{base}-{size}');
-      expect(component.previewTemplate()).toBe('{author}/{base}-{size}');
-    });
-
-    it('prefers API rendered example over fallback', () => {
-      component.apiRenderedExample.set('Meta/Llama-8B');
-      expect(component.previewExampleName()).toBe('Meta/Llama-8B');
-    });
-
     it('fallback preview example uses group name or default', () => {
       component.groupName.set('');
       const preview = component.previewExampleName();
@@ -399,26 +389,16 @@ describe('CreateGroupWizardComponent', () => {
       expect(component.submitting()).toBe(false);
     });
 
-    it('includes template from API response in schema save', () => {
+    it('includes the client-side composed template in schema save', () => {
       component.saveSchema.set(true);
-      component.apiTemplate.set('{author}/{base}-{size}');
       component.submit();
 
       expect(api.updateGroupNameSchema).toHaveBeenCalledWith(
         'Llama-3',
         expect.objectContaining({
-          template: '{author}/{base}-{size}',
+          template: component.previewTemplate(),
         }),
       );
-    });
-
-    it('omits template when no API response yet', () => {
-      component.saveSchema.set(true);
-      component.apiTemplate.set('');
-      component.submit();
-
-      const call = api.updateGroupNameSchema.mock.calls[0];
-      expect(call[1].template).toBeUndefined();
     });
   });
 

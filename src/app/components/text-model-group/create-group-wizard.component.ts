@@ -104,8 +104,6 @@ export class CreateGroupWizardComponent {
 
   readonly composedName = signal('');
   readonly alreadyExists = signal(false);
-  readonly apiTemplate = signal('');
-  readonly apiRenderedExample = signal('');
   readonly composing = signal(false);
   readonly submitting = signal(false);
 
@@ -156,8 +154,6 @@ export class CreateGroupWizardComponent {
   });
 
   readonly previewTemplate = computed(() => {
-    const apiValue = this.apiTemplate();
-    if (apiValue) return apiValue;
     const parts = this.partOrder();
     const sep = this.separator();
     const body = parts.map((p) => `{${p}}`).join(sep);
@@ -165,8 +161,6 @@ export class CreateGroupWizardComponent {
   });
 
   readonly previewExampleName = computed(() => {
-    const apiValue = this.apiRenderedExample();
-    if (apiValue) return apiValue;
     const base = this.groupName().trim() || 'Llama-3.1';
     const sep = this.separator();
     const renderedParts = this.partOrder().map((part) => {
@@ -222,8 +216,6 @@ export class CreateGroupWizardComponent {
           if (!sizeValue || !this.groupName().trim()) {
             this.composedName.set('');
             this.alreadyExists.set(false);
-            this.apiTemplate.set('');
-            this.apiRenderedExample.set('');
             return of(null);
           }
 
@@ -232,7 +224,6 @@ export class CreateGroupWizardComponent {
           const version = this.version().trim() || null;
           const quant = this.quant().trim() || null;
           const partOrder = this.buildEffectivePartOrder({ variant, version, quant });
-          const extraParts = this.buildExtraPartsDict();
           return this.api
             .composeModelName({
               author: this.author().trim() || null,
@@ -243,7 +234,6 @@ export class CreateGroupWizardComponent {
               quant,
               separator: this.separator(),
               part_order: partOrder,
-              extra_parts: extraParts,
             })
             .pipe(
               catchError(() => {
@@ -259,8 +249,6 @@ export class CreateGroupWizardComponent {
         if (result) {
           this.composedName.set(result.composed_name);
           this.alreadyExists.set(result.already_exists);
-          this.apiTemplate.set(result.template ?? '');
-          this.apiRenderedExample.set(result.rendered_example ?? '');
         }
       });
   }
@@ -384,7 +372,7 @@ export class CreateGroupWizardComponent {
               part_order: schemaPartOrder,
               author_included: this.author().trim().length > 0,
               common_author: this.author().trim() || undefined,
-              template: this.apiTemplate() || undefined,
+              template: this.previewTemplate() || undefined,
               extra_parts: extraLabels.length > 0 ? extraLabels : undefined,
             };
             return this.api.updateGroupNameSchema(this.groupName().trim(), schema);
@@ -481,11 +469,5 @@ export class CreateGroupWizardComponent {
       }
     }
     return filtered;
-  }
-
-  private buildExtraPartsDict(): Record<string, string> | null {
-    const parts = this.extraParts().filter((p) => p.label.trim() && p.value.trim());
-    if (parts.length === 0) return null;
-    return Object.fromEntries(parts.map((p) => [`extra:${p.label.trim()}`, p.value.trim()]));
   }
 }

@@ -124,30 +124,6 @@
               />
             </div>
           </div>
-
-          @if (extraPartLabels().length > 0) {
-            <div class="mt-4">
-              <p class="form-label">Extra Parts</p>
-              <p class="text-xs text-muted mb-2">
-                Values for extra name segments defined in the group schema.
-              </p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                @for (label of extraPartLabels(); track label) {
-                  <div>
-                    <label class="form-label" [attr.for]="'extra-part-' + label">{{ label }}</label>
-                    <input
-                      [id]="'extra-part-' + label"
-                      type="text"
-                      class="form-input"
-                      [placeholder]="'Value for ' + label"
-                      [ngModel]="getExtraPartValue(label)"
-                      (ngModelChange)="setExtraPartValue(label, $event)"
-                    />
-                  </div>
-                }
-              </div>
-            </div>
-          }
         </section>
 
         <section class="group-panel-section">

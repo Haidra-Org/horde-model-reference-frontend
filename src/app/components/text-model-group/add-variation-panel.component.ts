@@ -75,12 +75,8 @@ export class AddVariationPanelComponent implements OnInit {
 
   readonly composedName = signal('');
   readonly alreadyExists = signal(false);
-  readonly apiTemplate = signal('');
-  readonly apiRenderedExample = signal('');
   readonly composing = signal(false);
   readonly submitting = signal(false);
-
-  readonly extraPartValues = signal<Record<string, string>>({});
 
   readonly baselineSuggestions = signal<readonly string[]>([]);
 
@@ -176,8 +172,6 @@ export class AddVariationPanelComponent implements OnInit {
 
   readonly nameFormat = computed(() => this.groupData().name_format);
 
-  readonly extraPartLabels = computed(() => this.nameFormat().extra_parts ?? []);
-
   readonly isDirty = computed(() => {
     if (!this.initialized()) {
       return false;
@@ -198,8 +192,6 @@ export class AddVariationPanelComponent implements OnInit {
           if (!sizeValue) {
             this.composedName.set('');
             this.alreadyExists.set(false);
-            this.apiTemplate.set('');
-            this.apiRenderedExample.set('');
             return of(null);
           }
 
@@ -208,12 +200,10 @@ export class AddVariationPanelComponent implements OnInit {
           const variant = this.variant().trim() || null;
           const version = this.version().trim() || null;
           const quant = this.quant().trim() || null;
-          const extraPartsDict = this.buildExtraPartsDict();
           const partOrder = this.buildEffectivePartOrder(format.part_order, {
             variant,
             version,
             quant,
-            extraPartsDict,
           });
           return this.api
             .composeModelName({
@@ -225,7 +215,6 @@ export class AddVariationPanelComponent implements OnInit {
               quant,
               separator: format.separator,
               part_order: partOrder,
-              extra_parts: extraPartsDict,
             })
             .pipe(
               catchError(() => {
@@ -241,8 +230,6 @@ export class AddVariationPanelComponent implements OnInit {
         if (result) {
           this.composedName.set(result.composed_name);
           this.alreadyExists.set(result.already_exists);
-          this.apiTemplate.set(result.template ?? '');
-          this.apiRenderedExample.set(result.rendered_example ?? '');
         }
       });
   }
@@ -253,15 +240,6 @@ export class AddVariationPanelComponent implements OnInit {
     this.description.set((common['description'] as string) ?? '');
     this.url.set((common['url'] as string) ?? '');
     this.nsfw.set((common['nsfw'] as boolean) ?? false);
-
-    const labels = this.groupData().name_format.extra_parts ?? [];
-    if (labels.length > 0) {
-      const initial: Record<string, string> = {};
-      for (const label of labels) {
-        initial[label] = '';
-      }
-      this.extraPartValues.set(initial);
-    }
 
     const format = this.groupData().name_format;
     if (format.common_author) {
@@ -437,7 +415,6 @@ export class AddVariationPanelComponent implements OnInit {
       variant: string | null;
       version: string | null;
       quant: string | null;
-      extraPartsDict: Record<string, string> | null;
     },
   ): string[] | null {
     if (!partOrder || partOrder.length === 0) {
@@ -454,31 +431,8 @@ export class AddVariationPanelComponent implements OnInit {
     if (parts.quant && !effectiveOrder.includes('quant')) {
       effectiveOrder.push('quant');
     }
-    if (parts.extraPartsDict) {
-      for (const key of Object.keys(parts.extraPartsDict)) {
-        if (!effectiveOrder.includes(key)) {
-          effectiveOrder.push(key);
-        }
-      }
-    }
 
     return effectiveOrder;
-  }
-
-  private buildExtraPartsDict(): Record<string, string> | null {
-    const values = this.extraPartValues();
-    const entries = Object.entries(values).filter(([, value]) => value.trim().length > 0);
-    if (entries.length === 0) return null;
-    return Object.fromEntries(entries.map(([label, value]) => [`extra:${label}`, value.trim()]));
-  }
-
-  setExtraPartValue(label: string, value: string): void {
-    this.extraPartValues.update((values) => ({ ...values, [label]: value }));
-    this.onFieldChange();
-  }
-
-  getExtraPartValue(label: string): string {
-    return this.extraPartValues()[label] ?? '';
   }
 
   private snapshotState(): string {
@@ -495,7 +449,6 @@ export class AddVariationPanelComponent implements OnInit {
       description: this.description(),
       url: this.url(),
       nsfw: this.nsfw(),
-      extraPartValues: this.extraPartValues(),
     });
   }
 }

@@ -242,11 +242,6 @@ export class MultiVariationPanelComponent implements OnInit {
                     composed_name: this.fallbackComposedName(requestEntry.size, requestEntry.quant),
                     already_exists: false,
                     suggested_group: this.groupName(),
-                    template: '',
-                    rendered_example: this.fallbackComposedName(
-                      requestEntry.size,
-                      requestEntry.quant,
-                    ),
                   } satisfies ComposeNameResponse),
                 ),
               ),
