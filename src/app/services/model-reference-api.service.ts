@@ -66,6 +66,18 @@ import {
 import { ModelValidationService } from './model-validation.service';
 import { NotificationService } from './notification.service';
 
+/**
+ * Proposal payload submitted by the Propose-a-Change wizard.
+ * Mirrors the contribution contract: operation, category, model_name, payload, diff[].
+ */
+export interface ProposalPayload {
+  operation: 'create' | 'update' | 'delete';
+  category: MODEL_REFERENCE_CATEGORY;
+  model_name: string;
+  payload: Record<string, unknown>;
+  diff: { field: string; before: string | null; after: string | null; kind: string }[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -360,6 +372,32 @@ export class ModelReferenceApiService {
       map(() => undefined),
       catchError(this.handleError),
     );
+  }
+
+  /**
+   * Submit a proposal from the Propose-a-Change wizard.
+   * Wraps the existing createModel / updateModel / deleteModel methods under a single seam.
+   *
+   * The wizard produces a raw-record payload; this method converts it through the
+   * format adapter pipeline and dispatches to the correct API version.
+   */
+  submitProposal(proposal: ProposalPayload): Observable<PendingChangeRecord> {
+    const { operation, category, model_name, payload } = proposal;
+
+    if (operation === 'delete') {
+      return this.deleteModel(category, model_name).pipe(
+        map(() => ({ change_id: 0, status: 'pending' }) as PendingChangeRecord),
+      );
+    }
+
+    // Convert the raw record to FormModelData for the adapter pipeline
+    const formData = legacyApiToForm(payload as LegacyRecordUnion, category);
+
+    if (operation === 'create') {
+      return this.createModel(category, model_name, formData);
+    }
+
+    return this.updateModel(category, model_name, formData);
   }
 
   /**

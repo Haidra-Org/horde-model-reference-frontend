@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { DEFAULT_CATEGORY } from './shared/constants';
 import { BrowseViewComponent } from './components/browse/browse-view.component';
-import { ModelFormComponent } from './components/model-form/model-form.component';
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
 import { GroupManagementComponent } from './components/text-model-group/group-management.component';
 import { CreateGroupWizardComponent } from './components/text-model-group/create-group-wizard.component';
@@ -12,6 +11,13 @@ import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 export const routes: Routes = [
   { path: '', redirectTo: `/categories/${DEFAULT_CATEGORY}`, pathMatch: 'full' },
   { path: 'categories/:category', component: BrowseViewComponent },
+  {
+    path: 'categories/:category/model/:modelName',
+    loadComponent: () =>
+      import('./components/model-detail/model-detail.component').then(
+        (m) => m.ModelDetailComponent,
+      ),
+  },
   {
     path: 'categories/:category/audit',
     redirectTo: '/analytics?category=:category&tab=risk',
@@ -28,7 +34,10 @@ export const routes: Routes = [
   },
   {
     path: 'categories/:category/create',
-    component: ModelFormComponent,
+    loadComponent: () =>
+      import('./components/write-wizard/write-wizard.component').then(
+        (m) => m.WriteWizardComponent,
+      ),
     canDeactivate: [unsavedChangesGuard],
   },
   {
@@ -38,7 +47,10 @@ export const routes: Routes = [
   },
   {
     path: 'categories/:category/edit/:modelName',
-    component: ModelFormComponent,
+    loadComponent: () =>
+      import('./components/write-wizard/write-wizard.component').then(
+        (m) => m.WriteWizardComponent,
+      ),
     canDeactivate: [unsavedChangesGuard],
   },
   {
@@ -68,8 +80,8 @@ export const routes: Routes = [
   {
     path: 'propose',
     loadComponent: () =>
-      import('./components/placeholder-page/placeholder-page.component').then(
-        (m) => m.PlaceholderPageComponent,
+      import('./components/write-wizard/propose-entry.component').then(
+        (m) => m.ProposeEntryComponent,
       ),
     data: { title: 'Propose a Change' },
   },

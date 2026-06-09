@@ -52,7 +52,7 @@ export interface Facets {
 // ---------------------------------------------------------------------------
 
 /** Normalize a legacy record or v2 response value into a flat BrowseModel. */
-function toBrowseModel(record: Record<string, unknown>, category: string): BrowseModel {
+export function toBrowseModel(record: Record<string, unknown>, category: string): BrowseModel {
   return {
     name: String(record['name'] ?? ''),
     display_name: (record['display_name'] as string | null | undefined) ?? null,

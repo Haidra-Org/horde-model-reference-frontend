@@ -1,0 +1,249 @@
+<div class="write-workspace">
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="glass-inflow" style="padding: 40px; text-align: center; margin: 26px">
+      <p style="color: var(--color-content-muted)">Loading…</p>
+    </div>
+  }
+
+  <!-- Gating (not writable) -->
+  @if (!loading() && !canWrite()) {
+    <app-write-gating />
+  }
+
+  <!-- Write workspace -->
+  @if (!loading() && canWrite()) {
+    <!-- Category + endpoint banner -->
+    <app-endpoint-banner
+      [category]="category()"
+      [isEdit]="isEditMode()"
+      [endpoint]="endpointStr()"
+      (categoryChange)="onCategorySwitch($event)"
+    />
+
+    <!-- Two-column: wizard/JSON + live preview -->
+    <div class="write-two-col">
+      <!-- LEFT: wizard or JSON editor -->
+      @if (mode() === 'wizard') {
+        <div class="write-left">
+          <!-- Stepper -->
+          <nav class="write-stepper" aria-label="Proposal steps">
+            @for (s of steps(); track s; let i = $index) {
+              <button
+                type="button"
+                class="write-stepper-step"
+                [class.write-stepper-step--active]="i === currentStep()"
+                [class.write-stepper-step--done]="i < currentStep()"
+                [attr.aria-current]="i === currentStep() ? 'step' : undefined"
+                (click)="setStep(i)"
+              >
+                <span class="write-stepper-bar"></span>
+                <span class="write-stepper-label">{{ i + 1 }}. {{ s }}</span>
+              </button>
+            }
+          </nav>
+
+          <!-- Active step panel -->
+          <div class="glass-inflow write-step-panel">
+            @switch (currentStep()) {
+              @case (0) {
+                <app-wizard-step-identity
+                  [form]="form()"
+                  [isEdit]="isEditMode()"
+                  [isText]="isTextGeneration()"
+                  (formChange)="patchForm($event)"
+                />
+              }
+              @case (1) {
+                @if (isImageGeneration()) {
+                  <app-wizard-step-image [form]="form()" (formChange)="patchForm($event)" />
+                } @else if (isTextGeneration()) {
+                  <app-wizard-step-model [form]="form()" (formChange)="patchForm($event)" />
+                } @else {
+                  <app-wizard-step-generic
+                    [form]="form()"
+                    [category]="category()"
+                    (formChange)="patchForm($event)"
+                  />
+                }
+              }
+              @case (2) {
+                <app-wizard-step-files
+                  [downloads]="form().download"
+                  (downloadsChange)="patchForm({ download: $event })"
+                />
+              }
+              @case (3) {
+                <app-wizard-step-review
+                  [form]="form()"
+                  [category]="category()"
+                  [isEdit]="isEditMode()"
+                  [endpoint]="endpointStr()"
+                  [diffEntries]="diffEntries()"
+                  [isImage]="isImageGeneration()"
+                  [isText]="isTextGeneration()"
+                />
+              }
+            }
+          </div>
+
+          <!-- Step navigation -->
+          <div class="write-step-nav">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              [disabled]="currentStep() === 0"
+              (click)="setStep(currentStep() - 1)"
+            >
+              <svg
+                class="write-step-nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style="width: 15px; height: 15px; transform: rotate(180deg)"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              Back
+            </button>
+
+            @if (currentStep() < steps().length - 1) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="!canAdvance()"
+                (click)="setStep(currentStep() + 1)"
+              >
+                Next
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="!canSubmit() || submitting() || submitSuccess()"
+                (click)="submit()"
+              >
+                @if (submitting()) {
+                  Submitting…
+                } @else {
+                  Submit for review
+                }
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <!-- JSON editor mode -->
+        <div class="write-left">
+          <div class="glass-inflow write-json-panel">
+            <div class="write-json-header">
+              <span class="write-json-header-text">Request body · two-way sync</span>
+              <app-copy-button [text]="jsonText()" />
+            </div>
+            <textarea
+              class="form-textarea write-json-editor"
+              [value]="jsonText()"
+              (input)="onJsonEdit($event)"
+              [class.write-json-editor--error]="jsonError() !== null"
+              aria-label="Request body JSON editor"
+              spellcheck="false"
+            ></textarea>
+            @if (jsonError()) {
+              <div class="write-json-error" role="alert">
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  style="width: 14px; height: 14px; flex-shrink: 0"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+                {{ jsonError() }}
+              </div>
+            }
+            @if (!jsonError() && jsonText().trim()) {
+              <div class="write-json-valid">
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  style="width: 14px; height: 14px; flex-shrink: 0"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                Valid JSON · synced
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- RIGHT: live preview -->
+      <div class="write-right">
+        <div class="glass-inflow write-preview-panel">
+          <div class="write-preview-header">
+            {{ mode() === 'wizard' ? 'Live request body · two-way sync' : 'Parsed key fields' }}
+          </div>
+          @if (mode() === 'wizard') {
+            <pre class="write-preview-json"><code>{{ jsonText() }}</code></pre>
+          } @else {
+            <!-- KV preview in JSON mode -->
+            <div class="write-preview-kv">
+              @for (kv of previewKv(); track kv.key) {
+                <div class="write-preview-kv-row">
+                  <span class="write-preview-kv-key">{{ kv.key }}</span>
+                  <span class="write-preview-kv-val">{{ kv.value }}</span>
+                </div>
+              }
+              @if (previewKv().length === 0) {
+                <span style="color: var(--color-content-muted); font-size: 13px"
+                  >No fields to preview</span
+                >
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-submit success -->
+    @if (submitSuccess()) {
+      <div class="glass-inflow write-success" role="status">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          style="width: 24px; height: 24px; color: var(--color-success-600)"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <div>
+          <div style="font-weight: 700; font-size: 14px">{{ submitResultMessage() }}</div>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="navigateToQueue()">
+            View in queue
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
