@@ -2,19 +2,15 @@
  * Builder pattern utilities for creating test model data
  */
 
-import {
-  ImageGenerationModelRecordOutput,
-  TextGenerationModelRecordOutput,
-  KNOWN_IMAGE_GENERATION_BASELINE,
-  ModelClassification,
-} from '../../api-client';
+import { KNOWN_IMAGE_GENERATION_BASELINE, ModelClassification } from '../../api-client';
+import { ImageGenerationModelRecord, TextGenerationModelRecord } from '../api.models';
 import { TEST_MODEL_NAMES, TEST_PARAMETERS } from './test-constants';
 
 /**
- * Builder pattern for creating ImageGenerationModelRecordOutput test data
+ * Builder pattern for creating ImageGenerationModelRecord test data
  */
 export class ImageModelBuilder {
-  private model: ImageGenerationModelRecordOutput = {
+  private model: ImageGenerationModelRecord = {
     name: TEST_MODEL_NAMES.DEFAULT,
     baseline: 'stable_diffusion_1' as KNOWN_IMAGE_GENERATION_BASELINE,
     nsfw: false,
@@ -50,16 +46,16 @@ export class ImageModelBuilder {
     return this;
   }
 
-  build(): ImageGenerationModelRecordOutput {
+  build(): ImageGenerationModelRecord {
     return this.model;
   }
 }
 
 /**
- * Builder pattern for creating TextGenerationModelRecordOutput test data
+ * Builder pattern for creating TextGenerationModelRecord test data
  */
 export class TextModelBuilder {
-  private model: TextGenerationModelRecordOutput = {
+  private model: TextGenerationModelRecord = {
     name: TEST_MODEL_NAMES.DEFAULT,
     parameters: TEST_PARAMETERS.LLAMA_7B,
   };
@@ -89,7 +85,7 @@ export class TextModelBuilder {
     return this;
   }
 
-  build(): TextGenerationModelRecordOutput {
+  build(): TextGenerationModelRecord {
     return this.model;
   }
 }

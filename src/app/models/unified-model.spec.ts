@@ -23,15 +23,12 @@ import {
   findModelByNameVariation,
   aggregateModelVariations,
 } from './unified-model';
-import {
-  ImageGenerationModelRecordOutput,
-  KNOWN_IMAGE_GENERATION_BASELINE,
-  TextGenerationModelRecordOutput,
-} from '../api-client';
+import { KNOWN_IMAGE_GENERATION_BASELINE } from '../api-client';
+import { ImageGenerationModelRecord, TextGenerationModelRecord } from './api.models';
 import { TextBackend } from './text-model-name';
 
 describe('Unified Model Utilities', () => {
-  const mockReferenceModel: ImageGenerationModelRecordOutput = {
+  const mockReferenceModel: ImageGenerationModelRecord = {
     name: 'AlbedoBase XL (SDXL)',
     baseline: 'stable_diffusion_xl' as KNOWN_IMAGE_GENERATION_BASELINE,
     nsfw: false,
@@ -81,7 +78,7 @@ describe('Unified Model Utilities', () => {
     });
 
     it('should handle case-insensitive name matching for stats', () => {
-      const lowerCaseModel: ImageGenerationModelRecordOutput = {
+      const lowerCaseModel: ImageGenerationModelRecord = {
         ...mockReferenceModel,
         name: 'albedobase xl (sdxl)',
       };
@@ -96,7 +93,7 @@ describe('Unified Model Utilities', () => {
     });
 
     it('should handle missing stats for a model', () => {
-      const unknownModel: ImageGenerationModelRecordOutput = {
+      const unknownModel: ImageGenerationModelRecord = {
         name: 'Unknown Model',
         baseline: 'stable_diffusion_1' as KNOWN_IMAGE_GENERATION_BASELINE,
         nsfw: false,
@@ -111,7 +108,7 @@ describe('Unified Model Utilities', () => {
 
   describe('mergeMultipleModels', () => {
     it('should merge multiple models', () => {
-      const models: ImageGenerationModelRecordOutput[] = [
+      const models: ImageGenerationModelRecord[] = [
         mockReferenceModel,
         {
           name: 'CyberRealistic Pony',
@@ -425,7 +422,7 @@ describe('Unified Model Utilities', () => {
     });
 
     it('should not add workers field if no workers serve the model', () => {
-      const unknownModel: ImageGenerationModelRecordOutput = {
+      const unknownModel: ImageGenerationModelRecord = {
         name: 'Unknown Model',
         baseline: 'stable_diffusion_1' as KNOWN_IMAGE_GENERATION_BASELINE,
         nsfw: false,
@@ -438,7 +435,7 @@ describe('Unified Model Utilities', () => {
     });
 
     it('should handle multiple models with different workers', () => {
-      const ponyModel: ImageGenerationModelRecordOutput = {
+      const ponyModel: ImageGenerationModelRecord = {
         name: 'Pony Diffusion XL',
         baseline: 'stable_diffusion_xl' as KNOWN_IMAGE_GENERATION_BASELINE,
         nsfw: false,
@@ -547,22 +544,22 @@ describe('Unified Model Utilities', () => {
   });
 
   describe('Text Model Name Support', () => {
-    const textModel1: TextGenerationModelRecordOutput = {
+    const textModel1: TextGenerationModelRecord = {
       name: 'L3-Super-Nova-RP-8B',
       parameters: 8000000000,
     };
 
-    const textModel2: TextGenerationModelRecordOutput = {
+    const textModel2: TextGenerationModelRecord = {
       name: 'Casual-Autopsy/L3-Super-Nova-RP-8B',
       parameters: 8000000000,
     };
 
-    const textModel3: TextGenerationModelRecordOutput = {
+    const textModel3: TextGenerationModelRecord = {
       name: 'aphrodite/Casual-Autopsy/L3-Super-Nova-RP-8B',
       parameters: 8000000000,
     };
 
-    const textModel4: TextGenerationModelRecordOutput = {
+    const textModel4: TextGenerationModelRecord = {
       name: 'koboldcpp/L3-Super-Nova-RP-8B',
       parameters: 8000000000,
     };

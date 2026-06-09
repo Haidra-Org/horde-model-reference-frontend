@@ -276,7 +276,7 @@ cd ../horde-model-reference-frontend
 npm run generate-client
 
 # 3. Run drift tests
-npm test -- --include=src/app/models/api.models.drift.spec.ts
+npm test -- --include='**/api.models.drift.spec.ts'
 
 # 4. Review and commit changes
 git diff src/app/api-client/
@@ -332,7 +332,7 @@ jobs:
         run: npm run generate-client -- --url ${{ secrets.API_URL }}
 
       - name: Run drift tests
-        run: npm test -- --include=src/app/models/api.models.drift.spec.ts
+        run: npm test -- --include='**/api.models.drift.spec.ts'
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

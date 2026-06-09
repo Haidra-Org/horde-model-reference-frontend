@@ -33,7 +33,7 @@
   },
   "lint-staged": {
     "*.{ts,html}": [
-      "eslint --max-warnings=0 --fix",
+      "eslint --max-warnings=0 --fix --no-warn-ignored",
       "prettier --write"
     ],
     "*.{scss,css,js,mjs,cjs,json,md,yml,yaml}": "prettier --write"

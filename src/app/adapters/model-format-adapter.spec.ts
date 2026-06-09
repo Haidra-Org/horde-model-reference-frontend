@@ -6,18 +6,14 @@ import {
   formToV2Api,
   legacyApiToV2Api,
 } from './model-format-adapter';
+import { MODEL_REFERENCE_CATEGORY } from '../api-client';
 import {
-  MODEL_REFERENCE_CATEGORY,
-  ImageGenerationModelRecordInput,
-  TextGenerationModelRecordInput,
-  ControlNetModelRecordInput,
-  GenericModelRecordInput,
-  ImageGenerationModelRecordOutput,
-  TextGenerationModelRecordOutput,
-  ControlNetModelRecordOutput,
-  GenericModelRecordOutput,
-} from '../api-client';
-import { LegacyRecordUnion } from '../models/api.models';
+  ImageGenerationModelRecord,
+  TextGenerationModelRecord,
+  ControlNetModelRecord,
+  GenericModelRecord,
+  LegacyRecordUnion,
+} from '../models/api.models';
 
 // ---------------------------------------------------------------------------
 // Shared fixtures
@@ -93,7 +89,7 @@ function makeLegacyControlnetModel(overrides: Partial<LegacyRecordUnion> = {}): 
   } as LegacyRecordUnion;
 }
 
-function makeV2ImageGenModel(): ImageGenerationModelRecordOutput {
+function makeV2ImageGenModel(): ImageGenerationModelRecord {
   return {
     name: 'test-sd-model',
     record_type: MODEL_REFERENCE_CATEGORY.ImageGeneration,
@@ -121,10 +117,10 @@ function makeV2ImageGenModel(): ImageGenerationModelRecordOutput {
     },
     model_classification: { domain: 'image', purpose: 'generation' },
     finetune_series: null,
-  } as ImageGenerationModelRecordOutput;
+  } as ImageGenerationModelRecord;
 }
 
-function makeV2TextGenModel(): TextGenerationModelRecordOutput {
+function makeV2TextGenModel(): TextGenerationModelRecord {
   return {
     name: 'test-llm',
     record_type: MODEL_REFERENCE_CATEGORY.TextGeneration,
@@ -143,10 +139,10 @@ function makeV2TextGenModel(): TextGenerationModelRecordOutput {
     },
     model_classification: { domain: 'text', purpose: 'generation' },
     finetune_series: null,
-  } as TextGenerationModelRecordOutput;
+  } as TextGenerationModelRecord;
 }
 
-function makeV2ControlnetModel(): ControlNetModelRecordOutput {
+function makeV2ControlnetModel(): ControlNetModelRecord {
   return {
     name: 'test-controlnet',
     record_type: MODEL_REFERENCE_CATEGORY.Controlnet,
@@ -156,7 +152,7 @@ function makeV2ControlnetModel(): ControlNetModelRecordOutput {
     config: { download: [] },
     model_classification: { domain: 'image', purpose: 'auxiliary_or_patch' },
     finetune_series: null,
-  } as ControlNetModelRecordOutput;
+  } as ControlNetModelRecord;
 }
 
 // ---------------------------------------------------------------------------
@@ -285,7 +281,7 @@ describe('model-format-adapter', () => {
         formData,
         'test-sd-model',
         category,
-      ) as ImageGenerationModelRecordInput;
+      ) as ImageGenerationModelRecord;
 
       expect(roundTripped.name).toBe('test-sd-model');
       expect(roundTripped.record_type).toBe(MODEL_REFERENCE_CATEGORY.ImageGeneration);
@@ -305,11 +301,7 @@ describe('model-format-adapter', () => {
       const category = MODEL_REFERENCE_CATEGORY.TextGeneration;
 
       const formData = v2ApiToForm(original, category);
-      const roundTripped = formToV2Api(
-        formData,
-        'test-llm',
-        category,
-      ) as TextGenerationModelRecordInput;
+      const roundTripped = formToV2Api(formData, 'test-llm', category) as TextGenerationModelRecord;
 
       expect(roundTripped.name).toBe('test-llm');
       expect(roundTripped.record_type).toBe(MODEL_REFERENCE_CATEGORY.TextGeneration);
@@ -329,7 +321,7 @@ describe('model-format-adapter', () => {
         formData,
         'test-controlnet',
         category,
-      ) as ControlNetModelRecordInput;
+      ) as ControlNetModelRecord;
 
       expect(roundTripped.name).toBe('test-controlnet');
       expect(roundTripped.controlnet_style).toBe('canny');
@@ -341,7 +333,7 @@ describe('model-format-adapter', () => {
       const withNull = {
         ...makeV2ControlnetModel(),
         controlnet_style: null,
-      } as ControlNetModelRecordOutput;
+      } as ControlNetModelRecord;
       const nullForm = v2ApiToForm(withNull, category);
       expect(nullForm.categoryData.kind).toBe('controlnet');
       if (nullForm.categoryData.kind === 'controlnet') {
@@ -351,7 +343,7 @@ describe('model-format-adapter', () => {
       const withUndefined = {
         ...makeV2ControlnetModel(),
         controlnet_style: undefined,
-      } as ControlNetModelRecordOutput;
+      } as ControlNetModelRecord;
       const undefForm = v2ApiToForm(withUndefined, category);
       if (undefForm.categoryData.kind === 'controlnet') {
         expect(undefForm.categoryData.data.controlnet_style).toBe('');
@@ -375,7 +367,7 @@ describe('model-format-adapter', () => {
         formData,
         'test-sd-model',
         category,
-      ) as ImageGenerationModelRecordInput;
+      ) as ImageGenerationModelRecord;
       expect(roundTripped.model_classification).toEqual({
         domain: 'image',
         purpose: 'generation',
@@ -406,24 +398,20 @@ describe('model-format-adapter', () => {
     });
 
     it('should handle generic V2 models (e.g., ESRGAN)', () => {
-      const model: GenericModelRecordOutput = {
+      const model: GenericModelRecord = {
         name: 'test-esrgan',
         record_type: 'esrgan',
         description: 'ESRGAN model',
         version: '1.0',
         config: { download: [] },
         model_classification: { domain: 'image', purpose: 'miscellaneous' },
-      } as GenericModelRecordOutput;
+      } as GenericModelRecord;
       const category = MODEL_REFERENCE_CATEGORY.Esrgan;
 
       const formData = v2ApiToForm(model, category);
       expect(formData.categoryData.kind).toBe('generic');
 
-      const roundTripped = formToV2Api(
-        formData,
-        'test-esrgan',
-        category,
-      ) as GenericModelRecordInput;
+      const roundTripped = formToV2Api(formData, 'test-esrgan', category) as GenericModelRecord;
       expect(roundTripped.name).toBe('test-esrgan');
       expect(roundTripped.record_type).toBe(MODEL_REFERENCE_CATEGORY.Esrgan);
     });
@@ -440,7 +428,7 @@ describe('model-format-adapter', () => {
         legacy,
         'test-sd-model',
         MODEL_REFERENCE_CATEGORY.ImageGeneration,
-      ) as ImageGenerationModelRecordInput;
+      ) as ImageGenerationModelRecord;
 
       expect(result.name).toBe('test-sd-model');
       expect(result.record_type).toBe(MODEL_REFERENCE_CATEGORY.ImageGeneration);
@@ -455,7 +443,7 @@ describe('model-format-adapter', () => {
         legacy,
         'test-llm',
         MODEL_REFERENCE_CATEGORY.TextGeneration,
-      ) as TextGenerationModelRecordInput;
+      ) as TextGenerationModelRecord;
 
       expect(result.name).toBe('test-llm');
       expect(result.parameters).toBe(7000000000);
@@ -566,7 +554,7 @@ describe('model-format-adapter', () => {
         formData,
         'test-model',
         MODEL_REFERENCE_CATEGORY.ImageGeneration,
-      ) as ImageGenerationModelRecordInput;
+      ) as ImageGenerationModelRecord;
       expect(v2Result.name).toBe('test-model');
       expect(v2Result.record_type).toBe(MODEL_REFERENCE_CATEGORY.ImageGeneration);
       expect(v2Result.model_classification).toBeUndefined();

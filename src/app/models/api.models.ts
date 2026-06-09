@@ -1,8 +1,43 @@
-import { MODEL_REFERENCE_CATEGORY, ResponseReadV2ReferenceValue } from '../api-client';
+import {
+  MODEL_REFERENCE_CATEGORY,
+  ResponseReadV2ReferenceValue,
+  LegacyStableDiffusionRecordInput,
+  LegacyTextGenerationRecord as GeneratedLegacyTextGenerationRecord,
+  LegacyControlnetRecord as GeneratedLegacyControlnetRecord,
+  LegacyClipRecord as GeneratedLegacyClipRecord,
+} from '../api-client';
 
 // Type aliases for convenience
 export type ModelRecord = ResponseReadV2ReferenceValue;
 export type ModelReferenceCategory = MODEL_REFERENCE_CATEGORY;
+
+// ---------------------------------------------------------------------------
+// Generated-client record type seam
+//
+// App code imports record types from this module, never from '../api-client' directly. A
+// regeneration that renames generated types — e.g. FastAPI collapsing its `-Input`/`-Output`
+// record schemas into a single name — is then absorbed by editing the aliases here, instead of
+// rippling across adapters, services, and tests.
+// ---------------------------------------------------------------------------
+
+// V2 write/read record types (members of NewModelRecord / ResponseReadV2ReferenceValue).
+// Re-exported under their current generated names; a future rename becomes a one-line `as` here.
+// `ResponseReadV2ReferenceValue` is also surfaced as `ModelRecord` (above) for read-side ergonomics.
+export type {
+  ImageGenerationModelRecord,
+  TextGenerationModelRecord,
+  ControlNetModelRecord,
+  GenericModelRecord,
+  NewModelRecord,
+  ResponseReadV2ReferenceValue,
+} from '../api-client';
+
+// V1 (legacy) write-payload types — the exact shapes the generated v1 service methods accept.
+// Distinct names because the hand-written legacy domain types below share the unprefixed names.
+export type LegacyImageGenerationPayload = LegacyStableDiffusionRecordInput;
+export type LegacyTextGenerationPayload = GeneratedLegacyTextGenerationRecord;
+export type LegacyControlnetPayload = GeneratedLegacyControlnetRecord;
+export type LegacyClipPayload = GeneratedLegacyClipRecord;
 
 // Custom response types
 export type CategoryModelsResponse = Record<string, ModelRecord>;

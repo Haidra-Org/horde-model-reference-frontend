@@ -6,13 +6,35 @@
  *
  * Post-processed by generate-api-client.js to produce a proper union type.
  */
-import { ImageGenerationModelRecordOutput } from './imageGenerationModelRecordOutput';
-import { TextGenerationModelRecordOutput } from './textGenerationModelRecordOutput';
-import { ControlNetModelRecordOutput } from './controlNetModelRecordOutput';
-import { GenericModelRecordOutput } from './genericModelRecordOutput';
+import { ImageGenerationModelRecord } from './imageGenerationModelRecord';
+import { TextGenerationModelRecord } from './textGenerationModelRecord';
+import { ControlNetModelRecord } from './controlNetModelRecord';
+import { BlipModelRecord } from './blipModelRecord';
+import { ClipModelRecord } from './clipModelRecord';
+import { CodeformerModelRecord } from './codeformerModelRecord';
+import { EsrganModelRecord } from './esrganModelRecord';
+import { GfpganModelRecord } from './gfpganModelRecord';
+import { SafetyCheckerModelRecord } from './safetyCheckerModelRecord';
+import { VideoGenerationModelRecord } from './videoGenerationModelRecord';
+import { AudioGenerationModelRecord } from './audioGenerationModelRecord';
+import { MiscellaneousModelRecord } from './miscellaneousModelRecord';
+import { LoraModelRecord } from './loraModelRecord';
+import { TextualInversionModelRecord } from './textualInversionModelRecord';
+import { GenericModelRecord } from './genericModelRecord';
 
 export type ResponseReadV2ReferenceValue =
-  | ImageGenerationModelRecordOutput
-  | TextGenerationModelRecordOutput
-  | ControlNetModelRecordOutput
-  | GenericModelRecordOutput;
+  | ImageGenerationModelRecord
+  | TextGenerationModelRecord
+  | ControlNetModelRecord
+  | BlipModelRecord
+  | ClipModelRecord
+  | CodeformerModelRecord
+  | EsrganModelRecord
+  | GfpganModelRecord
+  | SafetyCheckerModelRecord
+  | VideoGenerationModelRecord
+  | AudioGenerationModelRecord
+  | MiscellaneousModelRecord
+  | LoraModelRecord
+  | TextualInversionModelRecord
+  | GenericModelRecord;

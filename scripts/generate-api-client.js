@@ -32,6 +32,10 @@ const DEFAULT_SCHEMA_URL = 'http://localhost:19800/api/openapi.json';
 const LOCAL_SCHEMA_PATH = './src/assets/openapi-schema.json';
 const OUTPUT_DIR = './src/app/api-client';
 
+// Matches a $ref to a model-record component schema (e.g. ".../ImageGenerationModelRecord").
+// Used to detect model-record unions structurally rather than by a hardcoded name list.
+const MODEL_RECORD_REF_RE = /\/[A-Za-z]*ModelRecord$/;
+
 // ============================================================================
 // Argument Parsing
 // ============================================================================
@@ -197,27 +201,16 @@ function fixInlineAnyOfUnions(schema) {
   let fixCount = 0;
   const DISCRIMINATOR_FIELD = 'record_type';
 
-  // Model record $ref patterns that indicate a union of category-specific types
-  const INPUT_REFS = new Set([
-    '#/components/schemas/ImageGenerationModelRecord-Input',
-    '#/components/schemas/TextGenerationModelRecord-Input',
-    '#/components/schemas/ControlNetModelRecord-Input',
-    '#/components/schemas/GenericModelRecord-Input',
-  ]);
-  const OUTPUT_REFS = new Set([
-    '#/components/schemas/ImageGenerationModelRecord-Output',
-    '#/components/schemas/TextGenerationModelRecord-Output',
-    '#/components/schemas/ControlNetModelRecord-Output',
-    '#/components/schemas/GenericModelRecord-Output',
-  ]);
-
   function isModelRecordUnion(anyOfArray) {
     if (!Array.isArray(anyOfArray) || anyOfArray.length < 3) return false;
     const refs = anyOfArray.filter((e) => e.$ref).map((e) => e.$ref);
     if (refs.length !== anyOfArray.length) return false;
-    const allInput = refs.every((r) => INPUT_REFS.has(r));
-    const allOutput = refs.every((r) => OUTPUT_REFS.has(r));
-    return allInput || allOutput;
+    // Structural detection: a union is a model-record union when every member is a $ref into
+    // components/schemas whose name ends in "ModelRecord". Deriving this from shape rather than a
+    // hardcoded name list keeps it correct as categories are added/removed and survives FastAPI
+    // collapsing its split `-Input`/`-Output` record schemas into a single name (which happens
+    // when a record's request and response JSON schemas are identical).
+    return refs.every((r) => MODEL_RECORD_REF_RE.test(r));
   }
 
   function convertAnyOfToOneOf(obj) {
@@ -474,38 +467,104 @@ function fixCaseCollisionImports() {
 }
 
 /**
+ * Map a model-record `$ref` (e.g. "#/components/schemas/ImageGenerationModelRecord") to the
+ * generated TypeScript type name and its relative import path. The typescript-angular generator
+ * names the interface after the schema component verbatim and the file after the same name with a
+ * lowercased first character (e.g. ControlNetModelRecord → ./controlNetModelRecord).
+ */
+function modelRecordRefToMember(ref) {
+  const name = ref.split('/').pop();
+  const fileStem = name.charAt(0).toLowerCase() + name.slice(1);
+  return { type: name, from: `./${fileStem}` };
+}
+
+/**
+ * Map the members of a model-record union (after preprocessing, stored under `oneOf`; before it,
+ * under `anyOf`) to `{type, from}` import descriptors, keeping only `*ModelRecord` members.
+ */
+function deriveModelRecordUnionMembers(unionSchema) {
+  const members = unionSchema.oneOf || unionSchema.anyOf;
+  if (!Array.isArray(members)) return null;
+  return members
+    .filter((e) => e.$ref && MODEL_RECORD_REF_RE.test(e.$ref))
+    .map((e) => modelRecordRefToMember(e.$ref));
+}
+
+/**
+ * Locate the request-body model-record union (FastAPI titles it "New Model Record") that backs the
+ * generated `NewModelRecord` type, and return its members.
+ */
+function findNewModelRecordMembers(schema) {
+  for (const pathItem of Object.values(schema.paths || {})) {
+    for (const op of Object.values(pathItem)) {
+      if (!op || typeof op !== 'object') continue;
+      const sch = op.requestBody?.content?.['application/json']?.schema;
+      if (sch && sch.title === 'New Model Record' && (sch.oneOf || sch.anyOf)) {
+        return deriveModelRecordUnionMembers(sch);
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Locate the `read_v2_reference` response dict-value union that backs the generated
+ * `ResponseReadV2ReferenceValue` type, and return its members.
+ */
+function findReadV2ReferenceValueMembers(schema) {
+  for (const pathItem of Object.values(schema.paths || {})) {
+    for (const op of Object.values(pathItem)) {
+      if (!op || typeof op !== 'object' || op.operationId !== 'read_v2_reference') continue;
+      const ap = op.responses?.['200']?.content?.['application/json']?.schema?.additionalProperties;
+      if (ap && (ap.oneOf || ap.anyOf)) return deriveModelRecordUnionMembers(ap);
+    }
+  }
+  return null;
+}
+
+/**
  * Post-process generated TypeScript files to fix types that openapi-generator produced
  * incorrectly despite schema preprocessing. The generator flattens oneOf/anyOf unions
  * into a single merged interface regardless of schema structure.
  *
  * This rewrites:
- * 1. `NewModelRecord` interface → union type alias of category-specific Input types
- * 2. `ResponseReadV2ReferenceValue` interface → union type alias of Output types
+ * 1. `NewModelRecord` interface → union type alias of category-specific record types
+ * 2. `ResponseReadV2ReferenceValue` interface → union type alias of category-specific record types
  * 3. Empty interfaces (Baseline, Style, ControlnetStyle, RecordType) → `string` aliases
+ *
+ * Union members (1 & 2) are derived from the live schema, not hardcoded, so the aliases follow the
+ * backend as categories change or as its `-Input`/`-Output` record schemas collapse to single names.
  */
-function postProcessGeneratedTypes() {
+function postProcessGeneratedTypes(schema) {
   console.log('\n🔧 Post-processing generated types...');
   const modelDir = path.join(OUTPUT_DIR, 'model');
   let fixCount = 0;
 
-  fixCount += rewriteUnionType(modelDir, 'newModelRecord.ts', 'NewModelRecord', [
-    { type: 'ImageGenerationModelRecordInput', from: './imageGenerationModelRecordInput' },
-    { type: 'TextGenerationModelRecordInput', from: './textGenerationModelRecordInput' },
-    { type: 'ControlNetModelRecordInput', from: './controlNetModelRecordInput' },
-    { type: 'GenericModelRecordInput', from: './genericModelRecordInput' },
-  ]);
+  // Derive each union's members from the live schema rather than hardcoding them, so the
+  // generated aliases stay correct when categories are added/removed or the backend collapses
+  // its `-Input`/`-Output` record schemas into single names. See deriveModelRecordUnionMembers.
+  const newModelMembers = findNewModelRecordMembers(schema);
+  if (newModelMembers && newModelMembers.length) {
+    fixCount += rewriteUnionType(modelDir, 'newModelRecord.ts', 'NewModelRecord', newModelMembers);
+  } else {
+    console.log(
+      '   ⚠️  Could not derive NewModelRecord members from schema — leaving generated file as-is',
+    );
+  }
 
-  fixCount += rewriteUnionType(
-    modelDir,
-    'responseReadV2ReferenceValue.ts',
-    'ResponseReadV2ReferenceValue',
-    [
-      { type: 'ImageGenerationModelRecordOutput', from: './imageGenerationModelRecordOutput' },
-      { type: 'TextGenerationModelRecordOutput', from: './textGenerationModelRecordOutput' },
-      { type: 'ControlNetModelRecordOutput', from: './controlNetModelRecordOutput' },
-      { type: 'GenericModelRecordOutput', from: './genericModelRecordOutput' },
-    ],
-  );
+  const readValueMembers = findReadV2ReferenceValueMembers(schema);
+  if (readValueMembers && readValueMembers.length) {
+    fixCount += rewriteUnionType(
+      modelDir,
+      'responseReadV2ReferenceValue.ts',
+      'ResponseReadV2ReferenceValue',
+      readValueMembers,
+    );
+  } else {
+    console.log(
+      '   ⚠️  Could not derive ResponseReadV2ReferenceValue members from schema — leaving generated file as-is',
+    );
+  }
 
   fixCount += rewriteEmptyInterfaceToString(modelDir, 'baseline.ts', 'Baseline');
   fixCount += rewriteEmptyInterfaceToString(modelDir, 'style.ts', 'Style');
@@ -557,17 +616,24 @@ function rewriteUnionType(modelDir, filename, typeName, members) {
 
 /**
  * Rewrite an empty interface (e.g. `export interface Baseline {}`) into a string type alias.
+ *
+ * A missing file or a non-empty interface is normal, not an error: `collapseEnumStringAnyOf`
+ * collapses `anyOf: [{$ref: SomeEnum}, {type: string}]` fields to inline `string` during
+ * pre-processing, so the generator emits no standalone component for them. These are logged at
+ * info level so a clean run doesn't read as a failure.
  */
 function rewriteEmptyInterfaceToString(modelDir, filename, typeName) {
   const filePath = path.join(modelDir, filename);
   if (!fs.existsSync(filePath)) {
-    console.log(`   ⚠️  ${filename} not found, skipping`);
+    console.log(
+      `   ℹ️  ${filename} not emitted (field collapsed to inline string) — nothing to do`,
+    );
     return 0;
   }
 
   const content = fs.readFileSync(filePath, 'utf8');
   if (!content.includes(`export interface ${typeName} {}`)) {
-    console.log(`   ⚠️  ${filename} doesn't contain empty interface, skipping`);
+    console.log(`   ℹ️  ${filename} is not an empty interface — nothing to do`);
     return 0;
   }
 
@@ -664,20 +730,22 @@ async function main() {
   console.log('╚═══════════════════════════════════════════════════════════════╝\n');
 
   try {
-    // Verify openapi-generator-cli is installed. Note that this "error" ('You're trying to run a package that should be provided by a local binary, but isn't') is simply returned
-
-    generation_cli_return_string = execSync('npx openapi-generator-cli version', { shell: true })
+    // Verify openapi-generator-cli is resolvable. It is a pinned devDependency
+    // (@openapitools/openapi-generator-cli), so `npx` should resolve it locally; this "error"
+    // string ('You're trying to run a package that should be provided by a local binary, but
+    // isn't') is simply returned (not thrown) when it can't be found.
+    const generationCliReturnString = execSync('npx openapi-generator-cli version', { shell: true })
       .toString()
       .trim();
 
     if (
-      generation_cli_return_string.includes(
+      generationCliReturnString.includes(
         "You're trying to run a package that should be provided by a local binary, but isn't",
       )
     ) {
-      console.error('\n❌ openapi-generator-cli is not installed!');
+      console.error('\n❌ openapi-generator-cli is not resolvable!');
       console.error(
-        'Please install it globally with: npm install -g @openapitools/openapi-generator-cli',
+        'It is a devDependency — run `npm ci` (or `npm install`) to restore it before regenerating.',
       );
       process.exit(1);
     }
@@ -724,7 +792,7 @@ async function main() {
     fixCaseCollisionImports();
 
     // Step 8: Post-process generated types (rewrite unions and empty interfaces)
-    postProcessGeneratedTypes();
+    postProcessGeneratedTypes(schema);
 
     // Step 9: Run prettier
     runPrettier();
@@ -737,11 +805,11 @@ async function main() {
     console.log('╚═══════════════════════════════════════════════════════════════╝\n');
 
     console.log('Next steps:');
-    console.log(
-      '  1. Run drift detection tests: npm test -- --include=src/app/models/api.models.drift.spec.ts',
-    );
-    console.log('  2. Review generated files in: ' + OUTPUT_DIR);
-    console.log('  3. Update any code that uses changed types\n');
+    console.log('  1. Type-check the app + spec projects:   npm run type-check');
+    console.log('  2. Run the test suite (incl. drift spec): npm test');
+    console.log('  3. Build (Angular template type-check):   npm run build');
+    console.log('  4. Reconcile the seam + consumers if generated names changed:');
+    console.log('       src/app/models/api.models.ts  (the generated-type re-export seam)\n');
   } catch (error) {
     console.error('\n❌ Error:', error.message);
     process.exit(1);

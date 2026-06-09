@@ -21,15 +21,10 @@ import {
   BackendInfo,
   CanonicalFormat,
   ReplicateMode,
-  ResponseReadV2ReferenceValue,
   CategoryStatistics,
   CategoryDeletionRiskResponse,
   PendingChangeRecord,
   HTTPValidationError,
-  NewModelRecord,
-  ImageGenerationModelRecordInput,
-  TextGenerationModelRecordInput,
-  ControlNetModelRecordInput,
   BatchUpdateResponse,
   CommonFieldsUpdateRequest,
   ComposeNameRequest,
@@ -50,10 +45,6 @@ import {
   AddFamilyMemberRequest,
   RemoveFamilyMemberRequest,
   DetectFamiliesResponse,
-  LegacyStableDiffusionRecordInput,
-  LegacyTextGenerationRecordInput,
-  LegacyControlnetRecordInput,
-  LegacyClipRecordInput,
   NameExceptionRequest,
   ParsedNameResponse,
 } from '../api-client';
@@ -62,6 +53,15 @@ import {
   BackendStatisticsResponse,
   LegacyModelsResponse,
   LegacyRecordUnion,
+  NewModelRecord,
+  ResponseReadV2ReferenceValue,
+  ImageGenerationModelRecord,
+  TextGenerationModelRecord,
+  ControlNetModelRecord,
+  LegacyImageGenerationPayload,
+  LegacyTextGenerationPayload,
+  LegacyControlnetPayload,
+  LegacyClipPayload,
 } from '../models/api.models';
 import { ModelValidationService } from './model-validation.service';
 import { NotificationService } from './notification.service';
@@ -372,11 +372,10 @@ export class ModelReferenceApiService {
   ): Observable<PendingChangeRecord> {
     const categoryMethodMap: Record<string, () => Observable<PendingChangeRecord>> = {
       image_generation: () =>
-        this.v2Service.createV2ImageGenerationModel(payload as ImageGenerationModelRecordInput),
+        this.v2Service.createV2ImageGeneration(payload as ImageGenerationModelRecord),
       text_generation: () =>
-        this.v2Service.createV2TextGenerationModel(payload as TextGenerationModelRecordInput),
-      controlnet: () =>
-        this.v2Service.createV2ControlnetModel(payload as ControlNetModelRecordInput),
+        this.v2Service.createV2TextGeneration(payload as TextGenerationModelRecord),
+      controlnet: () => this.v2Service.createV2Controlnet(payload as ControlNetModelRecord),
     };
 
     const createFn = categoryMethodMap[category];
@@ -413,18 +412,15 @@ export class ModelReferenceApiService {
     const categoryMethodMap: Record<string, () => Observable<unknown>> = {
       image_generation: () =>
         this.v1CreateUpdateService.createLegacyImageGenerationModel(
-          payload as LegacyStableDiffusionRecordInput,
+          payload as LegacyImageGenerationPayload,
         ),
       text_generation: () =>
         this.v1CreateUpdateService.createLegacyTextGenerationModel(
-          payload as LegacyTextGenerationRecordInput,
+          payload as LegacyTextGenerationPayload,
         ),
       controlnet: () =>
-        this.v1CreateUpdateService.createLegacyControlnetModel(
-          payload as LegacyControlnetRecordInput,
-        ),
-      clip: () =>
-        this.v1CreateUpdateService.createLegacyClipModel(payload as LegacyClipRecordInput),
+        this.v1CreateUpdateService.createLegacyControlnetModel(payload as LegacyControlnetPayload),
+      clip: () => this.v1CreateUpdateService.createLegacyClipModel(payload as LegacyClipPayload),
     };
 
     const createFn = categoryMethodMap[category];
@@ -448,17 +444,14 @@ export class ModelReferenceApiService {
   ): Observable<PendingChangeRecord> {
     const categoryMethodMap: Record<string, () => Observable<unknown>> = {
       image_generation: () =>
-        this.v1CreateUpdateService.updateLegacyModel(payload as LegacyStableDiffusionRecordInput),
+        this.v1CreateUpdateService.updateLegacyModel(payload as LegacyImageGenerationPayload),
       text_generation: () =>
         this.v1CreateUpdateService.updateLegacyTextGenerationModel(
-          payload as LegacyTextGenerationRecordInput,
+          payload as LegacyTextGenerationPayload,
         ),
       controlnet: () =>
-        this.v1CreateUpdateService.updateLegacyControlnetModel(
-          payload as LegacyControlnetRecordInput,
-        ),
-      clip: () =>
-        this.v1CreateUpdateService.updateLegacyClipModel(payload as LegacyClipRecordInput),
+        this.v1CreateUpdateService.updateLegacyControlnetModel(payload as LegacyControlnetPayload),
+      clip: () => this.v1CreateUpdateService.updateLegacyClipModel(payload as LegacyClipPayload),
     };
 
     const updateFn = categoryMethodMap[category];

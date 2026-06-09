@@ -13,21 +13,11 @@
  */
 
 import {
-  ControlNetModelRecordInput,
-  ControlNetModelRecordOutput,
   DownloadRecord,
   GenericModelRecordConfig,
-  GenericModelRecordInput,
   GenericModelRecordMetadata,
-  GenericModelRecordOutput,
-  ImageGenerationModelRecordInput,
-  ImageGenerationModelRecordOutput,
   MODEL_REFERENCE_CATEGORY,
   ModelClassification,
-  NewModelRecord,
-  ResponseReadV2ReferenceValue,
-  TextGenerationModelRecordInput,
-  TextGenerationModelRecordOutput,
   FineTuneSeriesInfo,
 } from '../api-client';
 import { CommonFieldsData } from '../components/model-fields/common-fields/common-fields.component';
@@ -35,7 +25,16 @@ import { StableDiffusionFieldsData } from '../components/model-fields/stable-dif
 import { TextGenerationFieldsData } from '../components/model-fields/text-generation-fields/text-generation-fields.component';
 import { ClipFieldsData } from '../components/model-fields/clip-fields/clip-fields.component';
 import { ControlNetFieldsData } from '../components/model-fields/controlnet-fields/controlnet-fields.component';
-import { LegacyRecordUnion, LegacyConfigFile } from '../models/api.models';
+import {
+  ControlNetModelRecord,
+  GenericModelRecord,
+  ImageGenerationModelRecord,
+  NewModelRecord,
+  ResponseReadV2ReferenceValue,
+  TextGenerationModelRecord,
+  LegacyRecordUnion,
+  LegacyConfigFile,
+} from '../models/api.models';
 import { legacyConfigToSimplified, simplifiedToLegacyConfig } from '../utils/config-converter';
 import { applyFixedFields } from '../models/legacy-fixed-fields.config';
 
@@ -154,7 +153,7 @@ const imageGenerationAdapter: CategoryAdapter<StableDiffusionFieldsData> = {
   },
 
   v2ToForm(model) {
-    const m = model as ImageGenerationModelRecordOutput;
+    const m = model as ImageGenerationModelRecord;
     return {
       inpainting: m.inpainting ?? false,
       baseline: m.baseline,
@@ -170,7 +169,7 @@ const imageGenerationAdapter: CategoryAdapter<StableDiffusionFieldsData> = {
   },
 
   formToV2(data, shared, commonData) {
-    const record: ImageGenerationModelRecordInput = {
+    const record: ImageGenerationModelRecord = {
       ...shared,
       nsfw: commonData.nsfw,
       style: commonData.style,
@@ -217,7 +216,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
   },
 
   v2ToForm(model) {
-    const m = model as TextGenerationModelRecordOutput;
+    const m = model as TextGenerationModelRecord;
     return {
       parameters: m.parameters,
       baseline: m.baseline ?? null,
@@ -231,7 +230,7 @@ const textGenerationAdapter: CategoryAdapter<TextGenerationFieldsData> = {
   },
 
   formToV2(data, shared, commonData) {
-    const record: TextGenerationModelRecordInput = {
+    const record: TextGenerationModelRecord = {
       ...shared,
       nsfw: commonData.nsfw,
       style: commonData.style,
@@ -261,14 +260,14 @@ const controlnetAdapter: CategoryAdapter<ControlNetFieldsData> = {
   },
 
   v2ToForm(model) {
-    const m = model as ControlNetModelRecordOutput;
+    const m = model as ControlNetModelRecord;
     return {
       controlnet_style: m.controlnet_style ?? '',
     };
   },
 
   formToV2(data, shared) {
-    const record: ControlNetModelRecordInput = {
+    const record: ControlNetModelRecord = {
       ...shared,
       controlnet_style: data.controlnet_style,
     };
@@ -289,16 +288,16 @@ const clipAdapter: CategoryAdapter<ClipFieldsData> = {
   },
 
   v2ToForm(model) {
-    // Clip uses GenericModelRecordOutput in V2 — no dedicated output type
-    const m = model as GenericModelRecordOutput & { pretrained_name?: string | null };
+    // Clip uses GenericModelRecord in V2 — no dedicated output type
+    const m = model as GenericModelRecord & { pretrained_name?: string | null };
     return {
       pretrained_name: m.pretrained_name,
     };
   },
 
   formToV2(_data, shared) {
-    // Clip maps to GenericModelRecordInput in V2
-    const record: GenericModelRecordInput = {
+    // Clip maps to GenericModelRecord in V2
+    const record: GenericModelRecord = {
       ...shared,
       record_type: shared.record_type as string,
       model_classification: shared.model_classification ?? {
@@ -490,7 +489,7 @@ export function formToV2Api(
     case 'clip':
       return clipAdapter.formToV2(cd.data, shared, data.commonData);
     case 'generic': {
-      const record: GenericModelRecordInput = {
+      const record: GenericModelRecord = {
         ...shared,
         record_type: category as string,
         model_classification: shared.model_classification ?? {

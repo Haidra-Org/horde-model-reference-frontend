@@ -826,9 +826,7 @@ describe('ModelReferenceApiService', () => {
             done();
           });
 
-        const req = httpMock.expectOne(
-          `${baseUrl}/model_references/v2/image_generation/create_model`,
-        );
+        const req = httpMock.expectOne(`${baseUrl}/model_references/v2/image_generation`);
         expect(req.request.method).toBe('POST');
 
         const body = req.request.body;
@@ -879,9 +877,7 @@ describe('ModelReferenceApiService', () => {
             done();
           });
 
-        const req = httpMock.expectOne(
-          `${baseUrl}/model_references/v2/text_generation/create_model`,
-        );
+        const req = httpMock.expectOne(`${baseUrl}/model_references/v2/text_generation`);
         expect(req.request.method).toBe('POST');
         expect(req.request.body.parameters).toBe(7000000000);
         expect(req.request.body.record_type).toBe(MODEL_REFERENCE_CATEGORY.TextGeneration);
@@ -951,7 +947,7 @@ describe('ModelReferenceApiService', () => {
           });
 
         const req = httpMock.expectOne(
-          `${baseUrl}/model_references/v2/image_generation/test-sd-model`,
+          `${baseUrl}/model_references/v2/image_generation/model/test-sd-model`,
         );
         expect(req.request.method).toBe('PUT');
         expect(req.request.body.name).toBe('test-sd-model');
