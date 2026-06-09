@@ -263,4 +263,40 @@
   .usage-stat-value {
     @apply text-base font-semibold text-gray-900 dark:text-gray-100;
   }
+
+  /* =================================================================
+     GLASS-IN-SCROLL CONTAINER CAVEAT
+     backdrop-filter renders invisibly inside overflow:auto scroll
+     containers in several browser engines. Therefore:
+     - .glass-inflow: translucent fill WITHOUT blur (in-flow surfaces)
+     - .glass-overlay: translucent fill WITH blur (fixed/sticky only)
+     ================================================================= */
+
+  .glass-inflow {
+    background: var(--color-glass-surface-panel);
+    border: 1px solid var(--color-border-hairline);
+    box-shadow: var(--shadow-glass);
+    /* NO backdrop-filter — safe inside scroll containers */
+  }
+
+  .dark .glass-inflow {
+    background: var(--color-glass-surface-dark);
+    border-color: var(--color-border-hairline-dark);
+    box-shadow: var(--shadow-glass-dark);
+  }
+
+  .glass-overlay {
+    background: var(--color-glass-surface-panel);
+    backdrop-filter: blur(var(--blur-glass-md));
+    -webkit-backdrop-filter: blur(var(--blur-glass-md));
+    border: 1px solid var(--color-glass-border-subtle);
+    box-shadow: var(--shadow-glass);
+    /* ONLY for fixed/sticky layers: sidebar, topbar, modals, toasts */
+  }
+
+  .dark .glass-overlay {
+    background: var(--color-glass-surface-dark);
+    border-color: var(--color-glass-border-dark-subtle);
+    box-shadow: var(--shadow-glass-dark);
+  }
 }

@@ -1338,4 +1338,80 @@
   .timeline-payload-pre {
     @apply mt-1 max-h-48 overflow-auto rounded bg-gray-900/70 p-2;
   }
+
+  /* =================================================================
+     DOMAIN TOP-BORDER ACCENTS
+     For cards and panels: 3px solid top border in domain color.
+     ================================================================= */
+
+  .accent-top-image {
+    border-top: 3px solid var(--color-accent-image);
+  }
+
+  .accent-top-text {
+    border-top: 3px solid var(--color-accent-text);
+  }
+
+  .accent-top-utility {
+    border-top: 3px solid var(--color-accent-utility);
+  }
+
+  /* =================================================================
+     MOTION UTILITIES
+     Entrance animations from the prototype (fadeUp, fadeIn, scaleIn).
+     Disabled under prefers-reduced-motion.
+     ================================================================= */
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .fade-up {
+    animation: fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .fade-in {
+    animation: fade-in 0.25s ease both;
+  }
+
+  .scale-in {
+    animation: scale-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up,
+    .fade-in,
+    .scale-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
 }

@@ -1467,4 +1467,25 @@
   .critical-badge {
     @apply rounded-full bg-warning-500/20 px-2 py-0.5 text-xs font-medium text-warning-200;
   }
+
+  /* =================================================================
+     PENDING ROW & GHOST ROW
+     Visual indicators for proposed changes in tables/lists.
+     ================================================================= */
+
+  /* Pending change row — amber left strip */
+  .row--pending {
+    box-shadow: inset 3px 0 0 var(--color-pending-strip);
+  }
+
+  /* Ghost row — create-proposal placeholder with dashed border */
+  .ghost-row {
+    border: 1px dashed var(--color-pending-border);
+    background: var(--color-pending-surface);
+    opacity: 0.75;
+  }
+
+  .dark .ghost-row {
+    border-color: var(--color-pending-border);
+  }
 }
