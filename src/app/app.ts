@@ -6,6 +6,8 @@ import { NotificationDisplayComponent } from './components/notification-display/
 import { ModelReferenceApiService } from './services/model-reference-api.service';
 import { AuthService } from './services/auth.service';
 import { PendingQueueSummaryService } from './services/pending-queue-summary.service';
+import { IconRegistryService } from './services/icon-registry.service';
+import { ICON_PATHS } from './shared/icon-paths';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -20,6 +22,9 @@ export class App {
   private readonly pendingSummary = inject(PendingQueueSummaryService);
 
   constructor() {
+    // Register all icons for the IconComponent (Phase 2+)
+    inject(IconRegistryService).registerAll(ICON_PATHS);
+
     this.api.detectBackendCapabilities().pipe(takeUntilDestroyed()).subscribe();
 
     // Start/stop pending queue polling based on auth state

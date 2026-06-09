@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { DEFAULT_CATEGORY } from './shared/constants';
-import { ModelListComponent } from './components/model-list/model-list.component';
+import { BrowseViewComponent } from './components/browse/browse-view.component';
 import { ModelFormComponent } from './components/model-form/model-form.component';
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
 import { GroupManagementComponent } from './components/text-model-group/group-management.component';
@@ -11,7 +11,7 @@ import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: `/categories/${DEFAULT_CATEGORY}`, pathMatch: 'full' },
-  { path: 'categories/:category', component: ModelListComponent },
+  { path: 'categories/:category', component: BrowseViewComponent },
   {
     path: 'categories/:category/audit',
     redirectTo: '/analytics?category=:category&tab=risk',

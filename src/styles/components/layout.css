@@ -2099,4 +2099,29 @@
   .dark .sidebar-footer {
     border-top-color: var(--color-border-hairline-dark);
   }
+
+  /* =================================================================
+     BROWSE LAYOUT
+     Category rail, cards grid, gallery grid, browse page container.
+     ================================================================= */
+
+  .browse-layout {
+    padding: 20px 26px 60px;
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+
+  /* ---- Cards grid ---- */
+  .browse-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(264px, 1fr));
+    gap: 14px;
+  }
+
+  /* ---- Gallery grid ---- */
+  .browse-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
 }
