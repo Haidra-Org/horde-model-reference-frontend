@@ -1,6 +1,9 @@
 {
   "name": "horde-model-reference-frontend",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "ng": "ng",
     "verify:design-system": "node scripts/verify-design-system.js",
@@ -16,7 +19,7 @@
     "test:ci": "npm test -- --watch=false --coverage",
     "test:e2e": "playwright test",
     "pretype-check": "npm run verify:design-system",
-    "type-check": "npx tsc --noEmit",
+    "type-check": "npx tsc --noEmit -p tsconfig.app.json && npx tsc --noEmit -p tsconfig.spec.json",
     "ci:local": "npm run lint && npm run type-check && npm run test:ci && npm run build:ci",
     "ci:openapi": "npm run generate-client -- --url http://localhost:19800/api/openapi.json && git diff --exit-code -- src/app/api-client src/assets/openapi-schema.json",
     "precommit:quick": "lint-staged",
@@ -65,13 +68,14 @@
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "^2.3.1",
-    "@angular/build": "^21.2.3",
-    "@angular/cli": "^21.2.3",
+    "@angular/build": "^21.2.14",
+    "@angular/cli": "^21.2.14",
     "@angular/compiler-cli": "^21.2.5",
+    "@openapitools/openapi-generator-cli": "2.35.0",
     "@playwright/test": "^1.58.2",
-    "@vitest/browser": "^4.1.1",
-    "@vitest/coverage-v8": "^4.1.1",
-    "@vitest/ui": "^4.1.1",
+    "@vitest/browser": "^4.1.6",
+    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/ui": "^4.1.6",
     "angular-eslint": "21.3.1",
     "eslint": "^9.37.0",
     "eslint-plugin-import": "^2.32.0",
@@ -86,7 +90,7 @@
     "typescript": "~5.9.2",
     "typescript-eslint": "8.57.2",
     "undici": "^7.24.6",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.6"
   },
   "overrides": {
     "picomatch": "4.0.4"
