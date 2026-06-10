@@ -2,13 +2,14 @@ import {
   Component,
   inject,
   OnInit,
+  OnDestroy,
   signal,
   computed,
   ChangeDetectionStrategy,
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { HordeButtonComponent } from '@haidra/design-system/button';
@@ -18,6 +19,9 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
+import { ShellContextService } from '../../services/shell-context.service';
+import { IconComponent } from '../common/icon.component';
+import { StatTileComponent } from '../model-detail/stat-tile.component';
 import {
   GroupFamilyResponse,
   GroupMemberInfo,
@@ -38,10 +42,11 @@ export interface SizeSubGroup {
 @Component({
   selector: 'app-text-model-group',
   imports: [
-    RouterLink,
     FormsModule,
     HordeBadgeComponent,
     HordeButtonComponent,
+    IconComponent,
+    StatTileComponent,
     AddVariationPanelComponent,
     MultiVariationPanelComponent,
     NameSchemaEditorComponent,
@@ -49,14 +54,15 @@ export interface SizeSubGroup {
   templateUrl: './text-model-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextModelGroupComponent implements OnInit {
+export class TextModelGroupComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
   private readonly api = inject(ModelReferenceApiService);
   private readonly notification = inject(NotificationService);
   private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pendingSummary = inject(PendingQueueSummaryService);
+  private readonly shellContext = inject(ShellContextService);
 
   readonly category = signal('text_generation');
   readonly groupName = signal('');
@@ -85,6 +91,127 @@ export class TextModelGroupComponent implements OnInit {
   readonly writable = computed(
     () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
   );
+
+  // ---- Variant matrix ----
+
+  /** Distinct backend prefixes across canonical members */
+  readonly distinctBackends = computed<string[]>(() => {
+    const members = this.canonicalMembers();
+    const backends = new Set(
+      members.map((m) => m.backend_prefix).filter((b): b is string => b != null && b.length > 0),
+    );
+    return [...backends].sort();
+  });
+
+  /** Distinct quantization values across canonical members */
+  readonly distinctQuants = computed<string[]>(() => {
+    const members = this.canonicalMembers();
+    const quants = new Set(
+      members.map((m) => m.parsed.quant).filter((q): q is string => q != null && q.length > 0),
+    );
+    return [...quants].sort();
+  });
+
+  /** Look up a member by backend prefix + quant */
+  readonly variantCell = computed(() => {
+    const members = this.canonicalMembers();
+    const matrix = new Map<string, GroupMemberInfo>();
+    for (const m of members) {
+      const be = m.backend_prefix ?? '';
+      const q = m.parsed.quant ?? '';
+      const key = `${be}::${q}`;
+      if (!matrix.has(key)) {
+        matrix.set(key, m);
+      }
+    }
+    return (backend: string, quant: string): GroupMemberInfo | undefined =>
+      matrix.get(`${backend}::${quant}`);
+  });
+
+  // ---- Stat tile data ----
+
+  /** Maximum parameter count among canonical members */
+  readonly maxParameters = computed<number | null>(() => {
+    const members = this.canonicalMembers();
+    let max: number | null = null;
+    for (const m of members) {
+      if (m.parameters != null && (max == null || m.parameters > max)) {
+        max = m.parameters;
+      }
+    }
+    return max;
+  });
+
+  /** Most common baseline among members */
+  readonly commonBaseline = computed<string | null>(() => {
+    const members = this.canonicalMembers();
+    const counts = new Map<string, number>();
+    for (const m of members) {
+      if (m.baseline) {
+        counts.set(m.baseline, (counts.get(m.baseline) ?? 0) + 1);
+      }
+    }
+    let best: string | null = null;
+    let bestCount = 0;
+    for (const [baseline, count] of counts) {
+      if (count > bestCount) {
+        bestCount = count;
+        best = baseline;
+      }
+    }
+    return best;
+  });
+
+  /** Most common instruct format among members */
+  readonly commonInstruct = computed<string | null>(() => {
+    const members = this.canonicalMembers();
+    const counts = new Map<string, number>();
+    for (const m of members) {
+      if (m.instruct_format) {
+        counts.set(m.instruct_format, (counts.get(m.instruct_format) ?? 0) + 1);
+      }
+    }
+    let best: string | null = null;
+    let bestCount = 0;
+    for (const [fmt, count] of counts) {
+      if (count > bestCount) {
+        bestCount = count;
+        best = fmt;
+      }
+    }
+    return best;
+  });
+
+  /** Whether any member has NSFW flag set */
+  readonly hasNsfw = computed(() => this.canonicalMembers().some((m) => m.nsfw === true));
+
+  // ---- Naming anatomy ----
+
+  /** Example breakdown for the naming anatomy visualization */
+  readonly namingAnatomy = computed(() => {
+    const members = this.canonicalMembers();
+    const backends = this.distinctBackends();
+    const quants = this.distinctQuants();
+
+    if (members.length === 0) return null;
+
+    const exemplar = members[0];
+    const backend = exemplar.backend_prefix ?? backends[0] ?? '';
+    const group = this.groupName();
+    const variant = exemplar.parsed.variant ?? '';
+    const quant = exemplar.parsed.quant ?? quants[0] ?? '';
+
+    return { backend, group, variant, quant };
+  });
+
+  // ---- Right rail ----
+
+  /** Sibling group names from the same family */
+  readonly siblingGroups = computed<string[]>(() => {
+    const family = this.relatedFamily();
+    if (!family) return [];
+    return family.members.filter((m) => m !== this.groupName());
+  });
 
   readonly deleteAllowed = computed(
     () => this.deleteConfirmationInput().trim() === this.modelToDelete(),
@@ -236,7 +363,7 @@ export class TextModelGroupComponent implements OnInit {
       .pipe(
         map((params) => ({
           category: params.get('category') ?? 'text_generation',
-          groupName: params.get('groupName') ?? '',
+          groupName: params.get('group') ?? params.get('groupName') ?? '',
         })),
         filter(({ groupName }) => groupName.length > 0),
         tap(({ category, groupName }) => {
@@ -254,10 +381,43 @@ export class TextModelGroupComponent implements OnInit {
           if (response) {
             this.groupData.set(response);
             this.loadAliases(response.group_name);
+            this.updateShellContext(response);
           }
           this.loading.set(false);
         },
       });
+  }
+
+  private updateShellContext(data: GroupMembersResponse): void {
+    const group = data.group_name;
+    const variantCount = data.canonical_count;
+    const backendCount = new Set(
+      data.members
+        .filter((m) => !m.is_backend_duplicate)
+        .map((m) => m.backend_prefix)
+        .filter((b): b is string => b != null && b.length > 0),
+    ).size;
+
+    this.shellContext.setContext({
+      breadcrumb: [{ label: 'Text groups', route: ['/text-groups'] }, { label: group }],
+      title: group,
+      sub: `${variantCount} variants across ${backendCount} backend(s)`,
+      actions: [
+        ...(this.writable()
+          ? [
+              {
+                id: 'propose-variant',
+                label: 'Propose variant',
+                icon: 'plus',
+                action: () =>
+                  this.router.navigate(['/categories', 'text_generation', 'create'], {
+                    queryParams: { groupName: group },
+                  }),
+              },
+            ]
+          : []),
+      ],
+    });
   }
 
   editMember(member: GroupMemberInfo): void {
@@ -469,7 +629,11 @@ export class TextModelGroupComponent implements OnInit {
   }
 
   goBackToList(): void {
-    this.router.navigate(['/categories', this.category()]);
+    this.router.navigate(['/text-groups']);
+  }
+
+  ngOnDestroy(): void {
+    this.shellContext.clearContext();
   }
 
   private onDeleteAllComplete(completed: number, errors: number): void {

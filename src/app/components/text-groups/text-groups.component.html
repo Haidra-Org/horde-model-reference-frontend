@@ -1,0 +1,127 @@
+<!-- Topbar breadcrumb, title, and actions are set via ShellContextService in ngOnInit -->
+
+@if (loading()) {
+  <div class="glass-inflow" style="padding: 40px; text-align: center">
+    <p style="color: var(--color-content-muted)">Loading text groups…</p>
+  </div>
+} @else {
+  <div class="text-groups-layout">
+    <app-text-tabs [tabs]="textTabs" />
+
+    <!-- Toolbar: search + sort -->
+    <div class="glass-inflow text-groups-toolbar">
+      <div class="text-groups-search">
+        <app-icon name="search" />
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Search groups…"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+        />
+      </div>
+      <app-segmented-control
+        size="sm"
+        [options]="sortOptions"
+        [(value)]="sortMode"
+        ariaLabel="Sort groups"
+      />
+    </div>
+
+    <!-- Family filter chips -->
+    @if (familyOptions().length > 0) {
+      <div class="filter-chips-row">
+        <span class="filter-chips-label">Family</span>
+        @for (opt of familyOptions(); track opt.value) {
+          <button
+            type="button"
+            class="filter-chip"
+            style="--chip-accent: var(--color-accent-text)"
+            [class.filter-chip--active]="activeFamilies().includes(opt.value)"
+            [attr.aria-pressed]="activeFamilies().includes(opt.value)"
+            (click)="toggleFamily(opt.value)"
+          >
+            {{ opt.label }}<span class="filter-chip__count">{{ opt.count }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Group cards grid -->
+    @if (groupCards().length === 0) {
+      <div class="glass-inflow" style="padding: 40px; text-align: center">
+        <p style="color: var(--color-content-muted)">
+          @if (searchQuery() || activeFamilies().length > 0) {
+            No groups match your filters.
+          } @else {
+            No text groups found.
+          }
+        </p>
+      </div>
+    } @else {
+      <div class="group-cards-grid">
+        @for (card of groupCards(); track card.group.group_name) {
+          <button
+            type="button"
+            class="glass-inflow group-card accent-top-text"
+            (click)="navigateToGroup(card.group.group_name)"
+          >
+            <div class="group-card-header">
+              <div class="group-card-name">
+                <app-icon name="branch" />
+                <span>{{ card.group.group_name }}</span>
+              </div>
+              @if (card.familyName) {
+                <span class="badge badge-purple">{{ card.familyName }}</span>
+              }
+            </div>
+
+            <div class="group-card-meta">
+              @if (card.group.available_sizes?.length) {
+                <span class="text-muted">{{ card.group.available_sizes!.join(', ') }}</span>
+              }
+            </div>
+
+            @if (card.group.health_issues?.length) {
+              <div class="group-card-health">
+                @for (issue of card.group.health_issues; track issue.issue_type) {
+                  <span class="tag tag-warning tag-sm" [title]="issue.message">{{
+                    issue.issue_type
+                  }}</span>
+                }
+              </div>
+            }
+
+            @if (card.group.aliases?.length) {
+              <div class="group-card-aliases">
+                @for (alias of card.group.aliases; track alias) {
+                  <span class="badge badge-secondary badge-sm mono">{{ alias }}</span>
+                }
+              </div>
+            }
+
+            <div class="group-card-divider"></div>
+
+            <div class="group-card-footer">
+              <span class="group-card-stat">
+                <app-icon name="cube" />
+                {{ card.group.canonical_count }} variant{{
+                  card.group.canonical_count === 1 ? '' : 's'
+                }}
+              </span>
+              <span class="group-card-stat">
+                <app-icon name="server" />
+                {{ card.group.backend_duplicate_count }} duplicate{{
+                  card.group.backend_duplicate_count === 1 ? '' : 's'
+                }}
+              </span>
+              @if (card.group.has_custom_schema) {
+                <span class="badge badge-info badge-sm">custom schema</span>
+              }
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </div>
+}

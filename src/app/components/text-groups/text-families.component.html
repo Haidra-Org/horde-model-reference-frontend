@@ -1,0 +1,132 @@
+<!-- Topbar breadcrumb, title, and actions are set via ShellContextService in ngOnInit -->
+
+@if (loading()) {
+  <div class="glass-inflow" style="padding: 40px; text-align: center">
+    <p style="color: var(--color-content-muted)">Loading families & aliases…</p>
+  </div>
+} @else {
+  <div class="text-groups-layout">
+    <app-text-tabs [tabs]="textTabs" />
+
+    <div class="families-grid">
+      <!-- Left: Group families -->
+      <div class="families-column">
+        <div class="section-title-row">
+          <h2 class="heading-section">Group families</h2>
+          <p class="text-muted">
+            Purely informational metadata — families surface "see also" relationships but don't
+            affect grouping or resolution.
+          </p>
+        </div>
+
+        @if (families().length === 0) {
+          <div class="glass-inflow" style="padding: 24px; text-align: center">
+            <p style="color: var(--color-content-muted)">No families defined yet.</p>
+          </div>
+        } @else {
+          <div class="families-list">
+            @for (family of families(); track family.family_name) {
+              <div class="glass-inflow family-card">
+                <div class="family-card-header">
+                  <div class="family-card-icon">
+                    <app-icon name="layers" />
+                  </div>
+                  <div class="family-card-name">{{ family.family_name }}</div>
+                  <span class="badge badge-secondary"
+                    >{{ family.members.length }} group{{
+                      family.members.length === 1 ? '' : 's'
+                    }}</span
+                  >
+                </div>
+                <div class="family-card-members">
+                  @for (member of family.members; track member) {
+                    <button
+                      type="button"
+                      class="badge badge-purple family-member-chip"
+                      (click)="navigateToGroup(member)"
+                    >
+                      <app-icon name="branch" />
+                      {{ member }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Right: Group aliases + detect suggestions -->
+      <div class="families-column">
+        <div class="section-title-row">
+          <h2 class="heading-section">Group aliases</h2>
+          <p class="text-muted">
+            Resolved after base-name extraction so aliased families collapse into one group.
+          </p>
+        </div>
+
+        @if (aliases().length === 0) {
+          <div class="glass-inflow" style="padding: 24px; text-align: center">
+            <p style="color: var(--color-content-muted)">No aliases defined yet.</p>
+          </div>
+        } @else {
+          <div class="glass-inflow" style="padding: 0; overflow: hidden">
+            <table class="aliases-table">
+              <thead>
+                <tr>
+                  <th>Alias</th>
+                  <th>Resolves to</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of aliases(); track entry.canonical) {
+                  @for (alias of entry.aliases; track alias) {
+                    <tr>
+                      <td class="mono alias-cell">{{ alias }}</td>
+                      <td>
+                        <button
+                          type="button"
+                          class="badge badge-purple alias-target-chip"
+                          (click)="navigateToGroup(entry.canonical)"
+                        >
+                          {{ entry.canonical }}
+                          <app-icon name="arrowRight" />
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- detect_families banner -->
+        @if (suggestionData(); as suggestions) {
+          <div class="glass-inflow detect-banner">
+            <div class="detect-banner-content">
+              <app-icon name="info" />
+              <div>
+                The <strong>detect_families</strong> heuristic suggests families from shared
+                hyphen-prefixes (longest prefix capturing ≥2 groups wins). Suggestions are reviewed
+                by an admin before being persisted.
+              </div>
+            </div>
+            @if (suggestions.suggestions.length > 0) {
+              <div class="detect-banner-stats">
+                <span class="text-muted"
+                  >{{ suggestions.total_groups_analyzed }} groups analyzed ·
+                  {{ suggestions.groups_in_families }} in families ·
+                  {{ suggestions.standalone_groups }} standalone</span
+                >
+                @if (canApprove()) {
+                  <span class="badge badge-info badge-sm">admin review required</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -643,7 +643,7 @@ describe('TextModelGroupComponent', () => {
       initWithGroupResponse(buildGroupResponse('Llama-3', []));
       component.goBackToList();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/categories', 'text_generation']);
+      expect(router.navigate).toHaveBeenCalledWith(['/text-groups']);
     });
   });
 
