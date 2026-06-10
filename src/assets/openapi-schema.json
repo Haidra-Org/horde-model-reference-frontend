@@ -3189,7 +3189,8 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": {
-                    "anyOf": [
+                    "description": "A model record conforming to one of the category-specific schemas",
+                    "oneOf": [
                       {
                         "$ref": "#/components/schemas/ImageGenerationModelRecord"
                       },
@@ -3236,7 +3237,9 @@
                         "$ref": "#/components/schemas/GenericModelRecord"
                       }
                     ],
-                    "description": "A model record conforming to one of the category-specific schemas"
+                    "discriminator": {
+                      "propertyName": "record_type"
+                    }
                   },
                   "title": "Response Read V2 Reference"
                 }
@@ -3411,7 +3414,9 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
+                "description": "A model record conforming to one of the category-specific schemas",
+                "title": "New Model Record",
+                "oneOf": [
                   {
                     "$ref": "#/components/schemas/ImageGenerationModelRecord"
                   },
@@ -3458,8 +3463,9 @@
                     "$ref": "#/components/schemas/GenericModelRecord"
                   }
                 ],
-                "description": "A model record conforming to one of the category-specific schemas",
-                "title": "New Model Record"
+                "discriminator": {
+                  "propertyName": "record_type"
+                }
               }
             }
           }
@@ -7871,7 +7877,9 @@
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
+                "description": "A model record conforming to one of the category-specific schemas",
+                "title": "New Model Record",
+                "oneOf": [
                   {
                     "$ref": "#/components/schemas/ImageGenerationModelRecord"
                   },
@@ -7918,8 +7926,9 @@
                     "$ref": "#/components/schemas/GenericModelRecord"
                   }
                 ],
-                "description": "A model record conforming to one of the category-specific schemas",
-                "title": "New Model Record"
+                "discriminator": {
+                  "propertyName": "record_type"
+                }
               }
             }
           }
@@ -12166,11 +12175,12 @@
       "CanonicalFormat": {
         "type": "string",
         "enum": [
-          "LEGACY",
-          "v2"
+          "legacy",
+          "v2",
+          "legacy"
         ],
         "title": "CanonicalFormat",
-        "description": "Which format is the canonical source of truth for model data.\n\nThis controls which API version has write access:\n- 'LEGACY': v1 API has CRUD operations, v2 API is read-only\n- 'v2': v2 API has CRUD operations, v1 API is read-only"
+        "description": "Which format is the canonical source of truth for model data.\n\nThis controls which API version has write access:\n- 'legacy': v1 API has CRUD operations, v2 API is read-only\n- 'v2': v2 API has CRUD operations, v1 API is read-only"
       },
       "CategoryDeletionRiskResponse": {
         "properties": {

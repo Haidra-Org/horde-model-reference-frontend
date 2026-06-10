@@ -27,13 +27,12 @@ export class ApiKeyHttpInterceptor implements HttpInterceptor {
 
     return next.handle(requestToSend).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (shouldAttach && (error.status === 401 || error.status === 403)) {
+        // 401 means the key itself was rejected — end the session once.
+        // 403 means a valid key lacks a role; the calling surface owns that
+        // messaging, so a background call must not log the user out.
+        if (shouldAttach && error.status === 401 && apiKey && this.authService.isAuthenticated()) {
           this.authService.logout();
-          const message =
-            error.status === 401
-              ? 'Authentication required. Please log in with an approver API key.'
-              : 'You are not on the pending queue approver list.';
-          this.notifications.error(message);
+          this.notifications.error('Your API key was rejected. Please sign in again.');
         }
         return throwError(() => error);
       }),

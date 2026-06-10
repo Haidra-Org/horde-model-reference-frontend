@@ -2909,10 +2909,6 @@
   border-bottom: 1px solid var(--color-border-hairline-strong, rgb(17 24 39 / 0.14));
 }
 
-.dark .deployment-matrix-header-row {
-  border-bottom-color: var(--color-border-hairline-strong, rgb(255 255 255 / 0.15));
-}
-
 .deployment-matrix-header-row th {
   text-align: left;
   padding: 10px 14px;
@@ -2925,10 +2921,6 @@
 
 .deployment-matrix-row {
   border-bottom: 1px solid var(--color-border-hairline, rgb(17 24 39 / 0.08));
-}
-
-.dark .deployment-matrix-row {
-  border-bottom-color: var(--color-border-hairline, rgb(255 255 255 / 0.08));
 }
 
 .deployment-matrix-row:last-child {

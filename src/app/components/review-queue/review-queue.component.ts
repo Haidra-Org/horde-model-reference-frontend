@@ -406,8 +406,8 @@ export class ReviewQueueComponent {
     () => !this.isApprover() && this.isRequestor() && this.isAuthenticated(),
   );
 
-  /** Read-only: can't write OR not authenticated as requestor/approver. */
-  readonly isReadOnly = computed(() => !this.canWrite() || !this.isAuthenticated());
+  /** Backend cannot accept writes (REPLICA mode or mismatched canonical format). */
+  readonly isReadOnly = computed(() => !this.canWrite());
 
   /** Public viewer: can write but not authenticated (or authenticated but no role). */
   readonly isPublicView = computed(

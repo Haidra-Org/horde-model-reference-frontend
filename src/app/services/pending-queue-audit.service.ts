@@ -109,8 +109,8 @@ export class PendingQueueAuditService {
 
   updateCacheFromPage(page: PendingQueueAuditBatchPage, domain?: AuditDomain | null): void {
     page.batches.forEach((summary: PendingQueueAuditBatchSummary) => {
-      const domainValue = domain ?? (page.domain === 'LEGACY' ? 'legacy' : page.domain);
-      const cacheKey = this.buildCacheKey(summary.batch_id, domainValue as AuditDomain);
+      const domainValue = domain ?? page.domain;
+      const cacheKey = this.buildCacheKey(summary.batch_id, domainValue);
       const cached = this.detailCache.get(cacheKey);
       if (cached) {
         this.detailCache.set(cacheKey, { ...cached, ...summary });
@@ -127,7 +127,6 @@ export class PendingQueueAuditService {
     let params = new HttpParams();
 
     if (domain) {
-      // Map internal lowercase 'legacy' to API's uppercase 'LEGACY'
       const apiDomain = domain === 'legacy' ? CanonicalFormat.Legacy : CanonicalFormat.V2;
       params = params.set('domain_override', apiDomain);
     }

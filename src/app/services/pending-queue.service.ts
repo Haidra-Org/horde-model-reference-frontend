@@ -211,8 +211,16 @@ export class PendingQueueService {
 
   private handleError(error: HttpErrorResponse, fallback: string): Observable<never> {
     if (error.status === 401) {
-      this.notifications.warning('You are not on the pending queue approver list.');
-      return throwError(() => new Error('Unauthorized.'));
+      // Session-level handling (logout + toast) is owned by the API-key interceptor.
+      return throwError(() => new Error('Authentication required.'));
+    }
+
+    if (error.status === 403) {
+      const detail = (error.error as { detail?: unknown } | null)?.detail;
+      const message =
+        typeof detail === 'string' ? detail : 'You do not have the required role for this action.';
+      this.notifications.warning(message);
+      return throwError(() => new Error(message));
     }
 
     if (error.status === 404) {

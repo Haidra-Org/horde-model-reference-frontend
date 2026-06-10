@@ -7,7 +7,7 @@ import type {
   PendingQueueAuditEvent as ApiPendingQueueAuditEvent,
 } from '../api-client';
 
-// Matches BackendCapabilities.canonicalFormat values (lowercase 'legacy', unlike API's 'LEGACY')
+// Matches BackendCapabilities.canonicalFormat and the API's CanonicalFormat values
 export type AuditDomain = 'legacy' | 'v2';
 
 export const AUDIT_DOMAINS: AuditDomain[] = ['legacy', 'v2'];

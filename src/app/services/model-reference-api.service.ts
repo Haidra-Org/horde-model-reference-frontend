@@ -111,7 +111,9 @@ export class ModelReferenceApiService {
           const capabilities: BackendCapabilities = {
             writable: info.writable,
             mode: info.replicate_mode === ReplicateMode.Primary ? 'PRIMARY' : 'REPLICA',
-            canonicalFormat: info.canonical_format === CanonicalFormat.Legacy ? 'legacy' : 'v2',
+            // Case-insensitive: older backends report 'LEGACY', current ones 'legacy'
+            canonicalFormat:
+              info.canonical_format.toLowerCase() === CanonicalFormat.Legacy ? 'legacy' : 'v2',
           };
           return capabilities;
         } else {

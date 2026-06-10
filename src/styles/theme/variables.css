@@ -80,6 +80,43 @@
   /* Calculate a cross-browser-friendly vertical scrollbar width once so we can offset table gutters. */
   --table-scrollbar-width: clamp(0px, calc(100vw - 100%), 1.5rem);
 
+  /* =================================================================
+     APP-LAYER SEMANTIC ALIASES
+     Component classes ported from the design prototype consume these
+     names; they alias the shared design-system tokens so both stay in
+     sync. Structure aliases that point at theme-adaptive tokens flip
+     automatically in dark mode; the rest are overridden under .dark.
+     ================================================================= */
+  --color-border: var(--color-edge-primary);
+  --color-border-default: var(--color-edge-primary);
+  --color-hairline: var(--color-border-hairline);
+  --color-hairline-strong: var(--color-border-hairline-strong);
+  --color-surface: var(--color-surface-primary);
+  --color-surface-raised: var(--color-surface-elevated);
+  --color-surface-nested: var(--color-glass-surface-nested);
+  --color-bg-3: var(--color-surface-tertiary);
+  --color-code-bg: var(--color-surface-code);
+  --color-primary: var(--color-primary-600);
+  --color-accent: var(--color-primary-600);
+  --color-danger: var(--color-danger-600);
+  --color-success: var(--color-success-600);
+  --t-normal: var(--transition-normal);
+  --shadow-card-hover: var(--shadow-glass-hover);
+
+  /* Status soft surfaces + text (prototype app-layer status tokens) */
+  --color-success-bg: rgb(220 252 231);
+  --color-success-text: rgb(22 101 52);
+  --color-success-border: var(--color-success-200);
+  --color-warning-bg: rgb(254 243 199);
+  --color-warning-text: rgb(133 77 14);
+  --color-warning-border: var(--color-warning-200);
+  --color-danger-bg: rgb(254 226 226);
+  --color-danger-text: rgb(153 27 27);
+  --color-danger-border: var(--color-danger-200);
+  --color-info-bg: rgb(224 242 254);
+  --color-info-text: rgb(7 89 133);
+  --color-info-border: var(--color-info-200);
+
   /* JSON syntax highlighting colors (overridden by theme classes) */
   --json-key: #0451a5;
   --json-string: #a31515;
@@ -109,6 +146,67 @@
   --color-row-hover: rgb(96 165 250 / 0.08);
   --color-chip-surface: rgb(31 41 55 / 0.7);
   --color-scrim: rgb(0 0 0 / 0.6);
+
+  /* =================================================================
+     SHARED SEMANTIC TOKEN OVERRIDES
+     The shared design-system token layer ships light values only and
+     expects dark handling downstream. Flip the semantic tokens here so
+     every class that consumes them is dark-mode correct without a
+     per-class .dark rule. Values follow the prototype's dark mapping
+     (design/assets/app.css). Candidate for upstreaming per D7.
+     ================================================================= */
+  --color-content-primary: rgb(241 245 249);
+  --color-content-secondary: rgb(148 163 184);
+  --color-content-muted: rgb(100 116 139);
+  --color-content-tertiary: rgb(100 116 139);
+
+  --color-surface-primary: #1b2433;
+  --color-surface-secondary: #131a27;
+  --color-surface-tertiary: #0c121d;
+  --color-surface-elevated: #1f2937;
+
+  --color-edge-primary: rgb(255 255 255 / 0.09);
+  --color-edge-secondary: rgb(255 255 255 / 0.05);
+  --color-edge-strong: rgb(255 255 255 / 0.16);
+
+  --color-border-hairline: rgb(255 255 255 / 0.08);
+  --color-border-hairline-strong: rgb(255 255 255 / 0.15);
+
+  --color-surface-code: var(--color-surface-code-dark);
+
+  /* Glass: flip base-named surfaces/borders/shadows to -dark variants */
+  --color-glass-surface: var(--color-glass-surface-dark);
+  --color-glass-surface-panel: var(--color-glass-surface-dark);
+  --color-glass-surface-elevated: var(--color-glass-surface-dark-elevated);
+  --color-glass-surface-heavy: var(--color-glass-surface-dark-heavy);
+  --color-glass-surface-nested: var(--color-glass-surface-dark-nested);
+  --color-glass-surface-subtle: var(--color-glass-surface-dark-subtle);
+  --color-glass-border: var(--color-glass-border-dark);
+  --color-glass-border-subtle: var(--color-glass-border-dark-subtle);
+  --color-glass-border-strong: var(--color-glass-border-dark-strong);
+  --shadow-glass: var(--shadow-glass-dark);
+  --shadow-glass-hover: var(--shadow-glass-dark-hover);
+  --shadow-glass-elevated: var(--shadow-glass-dark-elevated);
+  --shadow-glass-inset: var(--shadow-glass-dark-inset);
+
+  /* App-layer aliases that don't track a theme-adaptive token */
+  --color-primary: var(--color-primary-400);
+  --color-accent: var(--color-primary-400);
+  --color-danger: var(--color-danger-400);
+  --color-success: var(--color-success-400);
+
+  --color-success-bg: rgb(22 101 52 / 0.3);
+  --color-success-text: rgb(134 239 172);
+  --color-success-border: var(--color-success-800);
+  --color-warning-bg: rgb(133 77 14 / 0.3);
+  --color-warning-text: rgb(253 224 71);
+  --color-warning-border: var(--color-warning-800);
+  --color-danger-bg: rgb(153 27 27 / 0.3);
+  --color-danger-text: rgb(252 165 165);
+  --color-danger-border: var(--color-danger-800);
+  --color-info-bg: rgb(7 89 133 / 0.3);
+  --color-info-text: rgb(125 211 252);
+  --color-info-border: var(--color-info-800);
 }
 
 /* Theme-specific custom properties */

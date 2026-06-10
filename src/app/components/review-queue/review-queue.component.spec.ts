@@ -156,6 +156,14 @@ describe('ReviewQueueComponent', () => {
     expect(el.textContent).toContain('read-only');
   });
 
+  it('does not show the read-only banner for role-less viewers on a writable backend', async () => {
+    const { fixture } = await createComponent({ isApprover: false, isRequestor: false });
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.textContent).not.toContain('read-only');
+    expect(el.textContent).toContain('Public');
+  });
+
   it('shows batches section for approver view', async () => {
     const { fixture } = await createComponent({
       isApprover: true,

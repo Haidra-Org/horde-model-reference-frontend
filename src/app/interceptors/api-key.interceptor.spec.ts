@@ -19,6 +19,10 @@ class MockAuthService {
   getApiKey(): string | null {
     return this.apiKey;
   }
+
+  isAuthenticated(): boolean {
+    return this.apiKey !== null;
+  }
 }
 
 describe('ApiKeyHttpInterceptor', () => {
@@ -80,5 +84,25 @@ describe('ApiKeyHttpInterceptor', () => {
 
     const request = httpMock.expectOne('http://localhost:19800/api/pending_queue/audit/current');
     request.flush({ detail: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
+  });
+
+  it('keeps the session on forbidden responses (role failures are not auth failures)', () => {
+    const errorSpy = vi.spyOn(notifications, 'error');
+
+    http.post('http://localhost:19800/api/pending_queue/batches', {}).subscribe({
+      next: () => {
+        throw new Error('Expected request to fail');
+      },
+      error: () => {
+        expect(auth.logout).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
+      },
+    });
+
+    const request = httpMock.expectOne('http://localhost:19800/api/pending_queue/batches');
+    request.flush(
+      { detail: 'You are not on the pending queue approver list.' },
+      { status: 403, statusText: 'Forbidden' },
+    );
   });
 });
