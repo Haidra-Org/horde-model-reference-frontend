@@ -72,9 +72,7 @@ export const routes: Routes = [
   {
     path: 'analytics',
     loadComponent: () =>
-      import('./components/placeholder-page/placeholder-page.component').then(
-        (m) => m.PlaceholderPageComponent,
-      ),
+      import('./components/analytics/analytics.component').then((m) => m.AnalyticsComponent),
     data: { title: 'Analytics' },
   },
   {
