@@ -4,7 +4,7 @@ import { BrowseViewComponent } from './components/browse/browse-view.component';
 import { TextModelGroupComponent } from './components/text-model-group/text-model-group.component';
 import { GroupManagementComponent } from './components/text-model-group/group-management.component';
 import { CreateGroupWizardComponent } from './components/text-model-group/create-group-wizard.component';
-import { PendingQueueComponent } from './components/pending-queue/pending-queue.component';
+import { ReviewQueueComponent } from './components/review-queue/review-queue.component';
 import { authenticatedGuard } from './guards/role.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 
@@ -55,7 +55,7 @@ export const routes: Routes = [
   },
   {
     path: 'pending-queue',
-    component: PendingQueueComponent,
+    component: ReviewQueueComponent,
     canActivate: [authenticatedGuard],
   },
   // Redirect old audit trail route to the unified pending queue with history tab

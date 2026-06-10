@@ -1415,3 +1415,454 @@
     }
   }
 }
+
+/* =================================================================
+   Phase 5 — Review Queue Redesign
+   ================================================================= */
+
+/* --- Container --- */
+.review-queue-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 20px 26px 60px;
+}
+
+/* --- Banners --- */
+.review-queue-banner {
+  @apply flex gap-3 items-start p-4 mb-4 rounded-lg text-sm;
+}
+
+.review-queue-banner--warning {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning-text);
+}
+
+.review-queue-banner--info {
+  @apply border border-gray-200;
+  @apply dark:border-gray-700;
+}
+
+/* --- Status filter chips --- */
+.review-queue-chips {
+  @apply flex gap-2 flex-wrap mb-4;
+}
+
+.review-queue-chip {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer;
+  @apply border border-gray-300 bg-white text-gray-600;
+  @apply transition-colors duration-100;
+  @apply dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400;
+}
+
+.review-queue-chip:hover {
+  @apply bg-gray-100 dark:bg-gray-700;
+}
+
+.review-queue-chip--active {
+  @apply border-primary-500 bg-primary-500/15 text-primary-600;
+  @apply dark:border-primary-400 dark:bg-primary-400/15 dark:text-primary-400;
+}
+
+.review-queue-chip-count {
+  @apply opacity-60;
+}
+
+/* --- Grid layout --- */
+.review-queue-grid {
+  @apply grid gap-4;
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.review-queue-grid--has-detail {
+  grid-template-columns: minmax(0, 1fr) 440px;
+}
+
+.review-queue-list {
+  @apply flex flex-col gap-3;
+}
+
+.review-queue-row-list {
+  @apply flex flex-col gap-2;
+}
+
+.review-queue-detail {
+  /* Side panel scrolls independently */
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  position: sticky;
+  top: 100px;
+}
+
+/* --- Empty state --- */
+.review-queue-empty {
+  @apply flex flex-col items-center justify-center gap-3 p-10 text-center;
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.review-queue-empty svg {
+  @apply text-gray-300 dark:text-gray-600;
+}
+
+/* --- Section title --- */
+.review-queue-section-title {
+  @apply flex flex-col gap-1;
+}
+
+.review-queue-section-title > span:first-child {
+  @apply text-sm font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.review-queue-section-sub {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+/* --- Batches --- */
+.review-queue-batches {
+  @apply mt-7;
+}
+
+.review-queue-batch-list {
+  @apply flex flex-col gap-2 mt-3;
+}
+
+.review-queue-batch-card {
+  @apply flex items-center gap-3 p-3;
+}
+
+.review-queue-batch-id {
+  @apply w-9 h-9 rounded-lg inline-flex items-center justify-center font-extrabold text-sm flex-shrink-0;
+  background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
+  color: var(--color-primary-500);
+}
+
+.review-queue-batch-id--applied {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.review-queue-batch-info {
+  @apply flex-1 min-w-0;
+}
+
+.review-queue-batch-title {
+  @apply font-bold text-sm text-gray-900 dark:text-gray-100;
+}
+
+.review-queue-batch-meta {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.review-queue-empty-batches {
+  @apply p-4 text-sm text-gray-400 dark:text-gray-500;
+}
+
+/* --- Change row (redesigned) --- */
+.change-row {
+  @apply flex items-center gap-3 px-3 py-2.5 cursor-pointer;
+  @apply border border-gray-200 bg-white;
+  @apply transition-colors duration-100;
+  @apply dark:border-gray-700 dark:bg-gray-800;
+}
+
+.change-row:hover {
+  @apply bg-gray-50 dark:bg-gray-700/50;
+}
+
+.change-row--selected {
+  @apply border-primary-500 shadow-[0_0_0_1px_var(--color-primary-500)];
+  @apply dark:border-primary-400;
+}
+
+.change-row--pending {
+  @apply border-l-4 border-l-warning-400;
+  @apply dark:border-l-warning-500;
+}
+
+.change-row-check {
+  @apply w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center cursor-pointer p-0;
+  border-width: 1.5px;
+  @apply border-gray-400;
+  background: transparent;
+  @apply dark:border-gray-500;
+}
+
+.change-row-check--checked {
+  @apply border-primary-500 bg-primary-500;
+  @apply dark:border-primary-400 dark:bg-primary-400;
+}
+
+.change-row-op-avatar {
+  @apply w-9 h-9 rounded-lg inline-flex items-center justify-center flex-shrink-0;
+  color: var(--color-primary-500);
+  background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
+}
+
+.change-row-op-avatar[data-op='create'] {
+  color: var(--color-success-text);
+  background: color-mix(in srgb, var(--color-success-text) 14%, transparent);
+}
+
+.change-row-op-avatar[data-op='update'] {
+  color: var(--color-primary-500);
+  background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
+}
+
+.change-row-op-avatar[data-op='delete'] {
+  color: var(--color-danger-text);
+  background: color-mix(in srgb, var(--color-danger-text) 14%, transparent);
+}
+
+.change-row-info {
+  @apply flex-1 min-w-0;
+}
+
+.change-row-name-line {
+  @apply flex items-center gap-2;
+}
+
+.change-row-model-name {
+  @apply font-bold text-sm truncate text-gray-900 dark:text-gray-100;
+}
+
+.change-row-id {
+  @apply text-[11px] text-gray-400 dark:text-gray-500 flex-shrink-0;
+}
+
+.change-row-meta {
+  @apply flex items-center gap-1 mt-0.5 text-xs text-gray-500 dark:text-gray-400;
+}
+
+.change-row-op-label {
+  @apply font-semibold;
+}
+
+.change-row-op-label[data-op='create'] {
+  color: var(--color-success-text);
+}
+
+.change-row-op-label[data-op='update'] {
+  color: var(--color-primary-500);
+}
+
+.change-row-op-label[data-op='delete'] {
+  color: var(--color-danger-text);
+}
+
+.change-row-status-badge {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0;
+  @apply text-gray-600 bg-gray-100 border border-gray-300;
+  @apply dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600;
+}
+
+.change-row-status-badge[data-status='pending'] {
+  @apply text-warning-700 bg-warning-100 border-warning-300;
+  @apply dark:text-warning-300 dark:bg-warning-900/30 dark:border-warning-700;
+}
+
+.change-row-status-badge[data-status='approved'] {
+  @apply text-primary-700 bg-primary-100 border-primary-300;
+  @apply dark:text-primary-300 dark:bg-primary-900/30 dark:border-primary-700;
+}
+
+.change-row-status-badge[data-status='applied'] {
+  @apply text-success-700 bg-success-100 border-success-300;
+  @apply dark:text-success-300 dark:bg-success-900/30 dark:border-success-700;
+}
+
+.change-row-status-badge[data-status='rejected'] {
+  @apply text-danger-700 bg-danger-100 border-danger-300;
+  @apply dark:text-danger-300 dark:bg-danger-900/30 dark:border-danger-700;
+}
+
+/* --- Change detail side panel --- */
+.change-detail {
+  @apply rounded-lg border border-gray-200 overflow-hidden;
+  @apply dark:border-gray-700;
+}
+
+.change-detail-header {
+  @apply flex justify-between items-start gap-3 p-3 border-b border-gray-200;
+  @apply dark:border-gray-700;
+}
+
+.change-detail-header-info {
+  @apply flex-1 min-w-0;
+}
+
+.change-detail-op-line {
+  @apply flex items-center gap-2 mb-1;
+}
+
+.change-detail-op-label {
+  @apply text-sm font-bold;
+  color: var(--color-primary-500);
+}
+
+.change-detail-op-label[data-op='create'] {
+  color: var(--color-success-text);
+}
+
+.change-detail-op-label[data-op='delete'] {
+  color: var(--color-danger-text);
+}
+
+.change-detail-id {
+  @apply text-[11px] text-gray-400 dark:text-gray-500;
+}
+
+.change-detail-status-badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold;
+  @apply text-gray-600 bg-gray-100;
+  @apply dark:text-gray-300 dark:bg-gray-700;
+}
+
+.change-detail-status-badge[data-status='pending'] {
+  @apply text-warning-700 bg-warning-100;
+  @apply dark:text-warning-300 dark:bg-warning-900/30;
+}
+
+.change-detail-status-badge[data-status='approved'] {
+  @apply text-primary-700 bg-primary-100;
+  @apply dark:text-primary-300 dark:bg-primary-900/30;
+}
+
+.change-detail-status-badge[data-status='applied'] {
+  @apply text-success-700 bg-success-100;
+  @apply dark:text-success-300 dark:bg-success-900/30;
+}
+
+.change-detail-status-badge[data-status='rejected'] {
+  @apply text-danger-700 bg-danger-100;
+  @apply dark:text-danger-300 dark:bg-danger-900/30;
+}
+
+.change-detail-model-name {
+  @apply font-bold text-base text-gray-900 dark:text-gray-100;
+}
+
+.change-detail-meta {
+  @apply text-xs text-gray-500 dark:text-gray-400 mt-0.5;
+}
+
+.change-detail-close {
+  @apply p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100;
+  @apply dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-gray-700;
+  @apply flex-shrink-0 bg-transparent border-0 cursor-pointer;
+}
+
+/* Reject reason banner */
+.change-detail-reject-banner {
+  @apply flex gap-2 items-start px-3 py-2 text-sm;
+  background: var(--color-danger-bg);
+  border-bottom: 1px solid var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+
+/* Batch / job line */
+.change-detail-batch-line {
+  @apply px-3 py-2 text-xs text-gray-500 dark:text-gray-400;
+  @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+/* Tabs */
+.change-detail-tabs {
+  @apply flex gap-1 px-3 pt-2 border-b border-gray-200;
+  @apply dark:border-gray-700;
+}
+
+.change-detail-tab {
+  @apply px-3 py-2 text-[13px] font-semibold cursor-pointer;
+  @apply border-0 bg-transparent text-gray-500;
+  @apply dark:text-gray-400;
+  @apply border-b-2 border-transparent;
+  margin-bottom: -1px;
+}
+
+.change-detail-tab:hover {
+  @apply text-gray-700 dark:text-gray-200;
+}
+
+.change-detail-tab--active {
+  @apply text-primary-500 border-primary-500;
+  @apply dark:text-primary-400 dark:border-primary-400;
+}
+
+.change-detail-tab-body {
+  @apply p-4;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.change-detail-loading {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.change-detail-empty-diff {
+  @apply text-[13px] text-gray-400 dark:text-gray-500;
+}
+
+.change-detail-payload {
+  @apply m-0 text-xs leading-relaxed overflow-x-auto;
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+/* Diff list in side panel */
+.change-detail-diff-list {
+  @apply flex flex-col gap-2;
+}
+
+.change-detail-diff-card {
+  @apply rounded-lg border border-gray-200 overflow-hidden;
+  @apply dark:border-gray-700;
+}
+
+.change-detail-diff-card-header {
+  @apply flex items-center gap-2 px-3 py-1.5 text-[11.5px] font-bold;
+  @apply bg-gray-50 text-gray-600 border-b border-gray-200;
+  @apply dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-700;
+}
+
+.change-detail-diff-card-dot {
+  @apply w-1.5 h-1.5 rounded-full;
+  background: var(--color-primary-500);
+}
+
+.change-detail-diff-card-dot[data-kind='add'] {
+  background: var(--color-success-text);
+}
+
+.change-detail-diff-card-dot[data-kind='remove'] {
+  background: var(--color-danger-text);
+}
+
+.change-detail-diff-card-dot[data-kind='modified'] {
+  background: var(--color-primary-500);
+}
+
+.change-detail-diff-card-body {
+  @apply grid grid-cols-2;
+}
+
+.change-detail-diff-cell {
+  @apply px-3 py-2 text-xs;
+}
+
+.change-detail-diff-cell[data-side='before'] {
+  @apply border-r border-gray-200 dark:border-gray-700;
+}
+
+.change-detail-diff-cell-label {
+  @apply text-[9.5px] font-bold uppercase text-gray-400 dark:text-gray-500 mb-1;
+}
+
+.change-detail-diff-cell-value {
+  @apply text-xs text-gray-600 dark:text-gray-300 break-all;
+}
+
+/* Footer actions */
+.change-detail-footer {
+  @apply flex gap-2 p-3 border-t border-gray-200;
+  @apply dark:border-gray-700;
+}
