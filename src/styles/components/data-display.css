@@ -2816,3 +2816,147 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* =================================================================
+   CAPABILITY ROW (Deployment page)
+   ================================================================= */
+
+.cap-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+}
+
+.cap-row-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.cap-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cap-row-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cap-row-desc {
+  font-size: 11.5px;
+  color: var(--fg-3, var(--color-content-muted));
+}
+
+.cap-row-value {
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-glass-surface-nested);
+  color: var(--color-content-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* =================================================================
+   WRITE CELL (write-access matrix)
+   ================================================================= */
+
+.write-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-3, var(--color-content-muted));
+}
+
+.write-cell--rw {
+  font-weight: 700;
+  color: var(--success-text, #16a34a);
+}
+
+.write-cell-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--fg-3, var(--color-content-muted));
+}
+
+.write-cell--rw .write-cell-dot {
+  background: var(--success-icon, #16a34a);
+}
+
+/* =================================================================
+   DEPLOYMENT MATRIX TABLE
+   ================================================================= */
+
+.deployment-matrix {
+  padding: 0;
+  overflow: hidden;
+}
+
+.deployment-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.deployment-matrix-header-row {
+  border-bottom: 1px solid var(--color-border-hairline-strong, rgb(17 24 39 / 0.14));
+}
+
+.dark .deployment-matrix-header-row {
+  border-bottom-color: var(--color-border-hairline-strong, rgb(255 255 255 / 0.15));
+}
+
+.deployment-matrix-header-row th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-3, var(--color-content-muted));
+  font-weight: 700;
+}
+
+.deployment-matrix-row {
+  border-bottom: 1px solid var(--color-border-hairline, rgb(17 24 39 / 0.08));
+}
+
+.dark .deployment-matrix-row {
+  border-bottom-color: var(--color-border-hairline, rgb(255 255 255 / 0.08));
+}
+
+.deployment-matrix-row:last-child {
+  border-bottom: 0;
+}
+
+.deployment-matrix-row--current {
+  background: color-mix(in srgb, var(--color-brand-blue, #2563eb) 11%, transparent);
+}
+
+.deployment-matrix-fmt {
+  padding: 10px 14px;
+  font-weight: 500;
+  font-family: var(--font-mono, 'Courier New', monospace);
+}
+
+.deployment-matrix-row--current .deployment-matrix-fmt {
+  font-weight: 700;
+}
+
+.deployment-matrix-current-tag {
+  color: var(--color-brand-blue, #2563eb);
+  margin-left: 6px;
+  font-size: 11px;
+  font-family: var(--font-sans, sans-serif);
+  font-weight: 500;
+}
+
+.deployment-matrix-row td {
+  padding: 10px 14px;
+}

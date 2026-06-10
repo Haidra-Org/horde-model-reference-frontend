@@ -94,17 +94,11 @@ export const routes: Routes = [
   {
     path: 'deployment',
     loadComponent: () =>
-      import('./components/placeholder-page/placeholder-page.component').then(
-        (m) => m.PlaceholderPageComponent,
-      ),
-    data: { title: 'Deployment' },
+      import('./components/deployment/deployment.component').then((m) => m.DeploymentComponent),
   },
   {
     path: 'api-docs',
     loadComponent: () =>
-      import('./components/placeholder-page/placeholder-page.component').then(
-        (m) => m.PlaceholderPageComponent,
-      ),
-    data: { title: 'API & Docs' },
+      import('./components/api-docs/api-docs.component').then((m) => m.ApiDocsComponent),
   },
 ];
