@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { IconComponent } from '../../common/icon.component';
-import { BASELINE_SHORTHAND_MAP } from '../../../models/maps';
+import { prettyBaseline } from '../../../models/maps';
 import type { BrowseModel } from '../../../services/browse-models.service';
 import type { PendingChangeOverlay } from '../../../models/pending-change-overlay';
 
@@ -87,7 +87,7 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
               <!-- Params (text only) -->
               @if (isText()) {
                 <td style="padding:10px 16px;text-align:right;font-weight:600">
-                  {{ m.parameters_count ?? '—' }}
+                  {{ formatParams(m.parameters_count) }}
                 </td>
               }
 
@@ -112,7 +112,7 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                 @if (m._ghost) {
                   <span>—</span>
                 } @else {
-                  {{ m._stats?.usage_stats?.month ?? '…' }}
+                  {{ formatUsage(m._stats?.usage_stats?.month) }}
                 }
               </td>
 
@@ -181,7 +181,21 @@ export class ModelTableComponent {
   }
 
   protected baselineLabel(baseline: string): string {
-    return BASELINE_SHORTHAND_MAP[baseline] ?? baseline;
+    return prettyBaseline(baseline);
+  }
+
+  protected formatParams(n: number | null | undefined): string {
+    if (n == null) return '—';
+    if (n >= 1e9) return `${parseFloat((n / 1e9).toFixed(1))}B`;
+    if (n >= 1e6) return `${Math.round(n / 1e6)}M`;
+    return String(n);
+  }
+
+  protected formatUsage(n: number | null | undefined): string {
+    if (n == null) return '…';
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+    return String(n);
   }
 
   protected formatBytes(bytes: number | null | undefined): string {

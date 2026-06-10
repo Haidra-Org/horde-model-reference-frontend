@@ -243,7 +243,15 @@ export class PendingQueueService {
     }
 
     if (error.status === 503) {
-      this.notifications.warning('Pending queue is disabled on this deployment.');
+      // 503 covers both "feature disabled" and transient upstream (Horde auth)
+      // failures — only claim it's disabled when the backend says so.
+      const detail = (error.error as { detail?: unknown } | null)?.detail;
+      const disabled = typeof detail === 'string' && /disabled/i.test(detail);
+      this.notifications.warning(
+        disabled
+          ? 'Pending queue is disabled on this deployment.'
+          : 'Pending queue is temporarily unavailable. Please retry in a moment.',
+      );
       return throwError(() => new Error('Pending queue unavailable.'));
     }
 

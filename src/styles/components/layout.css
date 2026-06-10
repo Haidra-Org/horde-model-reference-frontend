@@ -1697,17 +1697,17 @@
 
   /* =================================================================
      CATEGORY RAIL
-     Horizontal, scrollable category selector for catalog views.
+     Horizontal category selector for catalog views.
      Domain-colored pills with model counts.
      ================================================================= */
 
   .category-rail {
     display: flex;
+    /* Wrap instead of horizontal scroll — categories must never hide off-screen */
+    flex-wrap: wrap;
     gap: --spacing(2);
-    overflow-x: auto;
     padding-block: --spacing(3);
-    padding-inline: --spacing(1);
-    scroll-behavior: smooth;
+    padding-inline: --spacing(3);
     /* In-flow surface — no blur */
     background: var(--color-glass-surface-subtle);
     border: 1px solid var(--color-border-hairline);

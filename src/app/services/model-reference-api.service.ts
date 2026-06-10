@@ -519,8 +519,11 @@ export class ModelReferenceApiService {
     return this.statisticsService
       .readModelsWithStats(
         category as MODEL_REFERENCE_CATEGORY,
-        false, // include_workers
-        includeBackendVariations,
+        // Omit default-valued params so the request URL matches the variant the
+        // browse views warm up — the backend caches per URL, and each distinct
+        // variant pays the full cold-fetch latency against the Horde API.
+        undefined, // include_workers
+        includeBackendVariations ? true : undefined,
       )
       .pipe(
         map((response) => response as BackendStatisticsResponse),

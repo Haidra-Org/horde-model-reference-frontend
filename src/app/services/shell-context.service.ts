@@ -22,6 +22,8 @@ export interface TopbarAction {
   label: string;
   /** Optional icon name (inline SVG identifier) */
   icon?: string;
+  /** Visual weight — 'primary' renders as the page's main CTA */
+  kind?: 'primary' | 'ghost';
   /** Click handler */
   action: () => void;
 }

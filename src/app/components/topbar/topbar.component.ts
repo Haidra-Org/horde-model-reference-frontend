@@ -76,7 +76,30 @@ import { SidebarService } from '../../services/sidebar.service';
         <!-- Actions slot -->
         <div class="topbar-actions">
           @for (action of ctx.actions(); track action.id) {
-            <button type="button" class="btn btn-ghost" (click)="action.action()">
+            <button
+              type="button"
+              class="btn"
+              [class.btn-primary]="action.kind === 'primary'"
+              [class.btn-ghost]="action.kind !== 'primary'"
+              (click)="action.action()"
+            >
+              @if (action.kind === 'primary') {
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              }
               {{ action.label }}
             </button>
           }

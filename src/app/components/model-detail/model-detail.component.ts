@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   OnInit,
   signal,
@@ -134,6 +135,7 @@ const TAB_LABELS: { id: DetailTab; label: string }[] = [
                 [value]="workerCount()"
                 [accent]="dmn().accentClass"
                 [sub]="workerSub()"
+                [loading]="statsLoading()"
               />
               <app-stat-tile
                 icon="M13 10V3L4 14h7v7l9-11h-7z"
@@ -141,6 +143,7 @@ const TAB_LABELS: { id: DetailTab; label: string }[] = [
                 [value]="usageMonth()"
                 [accent]="dmn().accentClass"
                 [sub]="usageSub()"
+                [loading]="statsLoading()"
               />
               @if (isText()) {
                 <app-stat-tile
@@ -218,6 +221,7 @@ export class ModelDetailComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly model = signal<BrowseModel | null>(null);
   protected readonly stats = signal<BackendCombinedModelStatistics | null>(null);
+  protected readonly statsLoading = signal(false);
   protected readonly riskData = signal<ModelDeletionRiskInfo | null>(null);
   protected readonly activeTab = signal<DetailTab>('overview');
 
@@ -314,6 +318,15 @@ export class ModelDetailComponent implements OnInit {
 
   // ---- Lifecycle ----
 
+  constructor() {
+    // Topbar actions depend on auth roles and backend capabilities, which can
+    // resolve after the model loads — keep the shell context reactive to both.
+    effect(() => {
+      const m = this.model();
+      if (m) this.setShellContext(this._category(), m);
+    });
+  }
+
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const cat = params.get('category') ?? '';
@@ -357,7 +370,6 @@ export class ModelDetailComponent implements OnInit {
           this.model.set(m);
           this.loading.set(false);
 
-          this.setShellContext(category, m);
           this.loadStats(category, modelName);
           this.loadRisk(category);
         },
@@ -368,20 +380,21 @@ export class ModelDetailComponent implements OnInit {
   }
 
   private loadStats(category: string, modelName: string): void {
+    this.statsLoading.set(true);
     this.api
-      .getModelsWithStats(category)
+      // Match the query variant the browse view uses so the backend cache is shared
+      .getModelsWithStats(category, category === 'text_generation')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
+          this.statsLoading.set(false);
           if (response) {
-            // Try matching by name or display_name
-            const entry =
-              response[modelName] ??
-              Object.values(response).find(
-                (v) => v && Object.keys(response).some((k) => k === modelName),
-              );
+            const entry = response[modelName] ?? response[this.model()?.display_name ?? ''];
             if (entry) this.stats.set(entry);
           }
+        },
+        error: () => {
+          this.statsLoading.set(false);
         },
       });
   }

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IconComponent } from '../../common/icon.component';
-import { BASELINE_SHORTHAND_MAP } from '../../../models/maps';
+import { prettyBaseline } from '../../../models/maps';
 import { domainMeta } from '../../../shared/domain';
 import type { BrowseModel } from '../../../services/browse-models.service';
 import type { PendingChangeOverlay } from '../../../models/pending-change-overlay';
@@ -77,10 +77,14 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                 <app-icon name="server" />{{ m._ghost ? '—' : (m._stats?.worker_count ?? '…') }}
               </span>
               <span style="display:inline-flex;align-items:center;gap:5px">
-                <app-icon name="bolt" />{{ m._ghost ? '—' : (m._stats?.usage_stats?.month ?? '…') }}
+                <app-icon name="bolt" />{{
+                  m._ghost ? '—' : formatUsage(m._stats?.usage_stats?.month)
+                }}
               </span>
               <span style="display:inline-flex;align-items:center;gap:5px">
-                {{ isText() ? (m.parameters_count ?? '—') : formatBytes(m.size_on_disk_bytes) }}
+                {{
+                  isText() ? formatParams(m.parameters_count) : formatBytes(m.size_on_disk_bytes)
+                }}
               </span>
             </div>
           </div>
@@ -109,7 +113,21 @@ export class ModelCardsComponent {
   }
 
   protected baselineLabel(baseline: string): string {
-    return BASELINE_SHORTHAND_MAP[baseline] ?? baseline;
+    return prettyBaseline(baseline);
+  }
+
+  protected formatUsage(n: number | null | undefined): string {
+    if (n == null) return '…';
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+    return String(n);
+  }
+
+  protected formatParams(n: number | null | undefined): string {
+    if (n == null) return '—';
+    if (n >= 1e9) return `${parseFloat((n / 1e9).toFixed(1))}B`;
+    if (n >= 1e6) return `${Math.round(n / 1e6)}M`;
+    return String(n);
   }
 
   protected formatBytes(bytes: number | null | undefined): string {

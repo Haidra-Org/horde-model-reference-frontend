@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   OnInit,
   signal,
@@ -225,6 +226,14 @@ export class BrowseViewComponent implements OnInit {
     () => this.api.backendCapabilities().writable && this.auth.isRequestor(),
   );
 
+  constructor() {
+    // Keep the topbar in sync with category, live/pending counts, backend mode
+    // and write capability — all of which can change after first render.
+    effect(() => {
+      this.setShellContext(this.store.category());
+    });
+  }
+
   ngOnInit(): void {
     // Load category list for the rail
     this.api
@@ -237,11 +246,10 @@ export class BrowseViewComponent implements OnInit {
     // Load category counts for the rail
     this.store.loadAllCategoryCounts();
 
-    // Subscribe to route params
+    // Subscribe to route params (shell context follows via the constructor effect)
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const cat = params.get('category') || DEFAULT_CATEGORY;
       this.store.loadCategory(cat);
-      this.setShellContext(cat);
     });
 
     // Hydrate filters from query params
@@ -258,19 +266,30 @@ export class BrowseViewComponent implements OnInit {
   private setShellContext(cat: string): void {
     const dm = domainMeta(cat);
     const displayName = RECORD_DISPLAY_MAP[cat] ?? cat;
+    const caps = this.api.backendCapabilities();
+    const liveCount = this.store.mergedModels().filter((m) => !m._ghost).length;
+    const pendingCount = this.store.pendingCount();
+    const sub = this.store.loading()
+      ? ''
+      : `${liveCount} live model${liveCount === 1 ? '' : 's'}` +
+        (pendingCount > 0 ? ` · ${pendingCount} pending` : '') +
+        (caps.mode !== 'UNKNOWN'
+          ? ` · ${caps.mode}${caps.canonicalFormat !== 'UNKNOWN' ? ' ' + caps.canonicalFormat : ''}`
+          : '');
     this.shellContext.setContext({
       breadcrumb: [
         { label: 'Catalog', route: ['/categories', DEFAULT_CATEGORY] },
         { label: dm.label },
       ],
       title: displayName,
-      sub: '',
+      sub,
       actions: this.canWrite()
         ? [
             {
               id: 'propose',
               label: 'Propose model',
               icon: 'plus',
+              kind: 'primary' as const,
               action: () => this.router.navigate(['/categories', cat, 'create']),
             },
           ]

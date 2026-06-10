@@ -77,9 +77,9 @@ export class ApiDocsComponent implements OnInit {
       `curl ${base}/model_references/v2/image_generation`,
       '',
       '# anonymous read needs no key — writes do:',
-      `curl -X POST ${base}/model_references/${v}/image_generation \\\\`,
-      '  -H "apikey: $AI_HORDE_API_KEY" \\\\',
-      '  -H "Content-Type: application/json" \\\\',
+      `curl -X POST ${base}/model_references/${v}/image_generation \\`,
+      '  -H "apikey: $AI_HORDE_API_KEY" \\',
+      '  -H "Content-Type: application/json" \\',
       `  -d '{"name":"my_finetune_xl","baseline":"stable_diffusion_xl","nsfw":false}'`,
       '# → 202 Accepted, returns a PendingChangeRecord',
     ].join('\n');

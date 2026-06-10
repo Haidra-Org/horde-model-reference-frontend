@@ -25,7 +25,7 @@ import type { SortKey, ViewMode } from '../../../services/browse-models.service'
           />
           <input
             class="form-input"
-            style="padding-left:34px"
+            style="padding-left:34px;width:100%"
             [placeholder]="'Search ' + placeholderCategory() + '…'"
             [ngModel]="searchQuery()"
             (ngModelChange)="onSearch($event)"

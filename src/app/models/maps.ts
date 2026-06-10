@@ -25,6 +25,25 @@ export const BASELINE_SHORTHAND_MAP: Record<string, string> = {
   'flux dev': 'f.dev',
 };
 
+/**
+ * Human-friendly label for a raw baseline value coming from either the legacy
+ * ("stable diffusion 1") or canonical ("stable_diffusion_1") spelling.
+ * Falls back to title-casing unknown values so new baselines never show raw.
+ */
+export function prettyBaseline(raw: string): string {
+  const extra: Record<string, string> = {
+    flux_1: 'FLUX.1',
+    'flux 1': 'FLUX.1',
+    flux_dev: 'FLUX.1 Dev',
+    'flux dev': 'FLUX.1 Dev',
+    infer: 'Auto-detect',
+  };
+  const normalized = BASELINE_NORMALIZATION_MAP[raw] ?? raw;
+  const known = extra[raw] ?? BASELINE_DISPLAY_MAP[normalized] ?? BASELINE_DISPLAY_MAP[raw];
+  if (known) return known;
+  return raw.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export const BASELINE_NORMALIZATION_MAP: Record<string, string> = {
   'stable diffusion 1': 'stable_diffusion_1',
   'stable diffusion 2': 'stable_diffusion_2_768',

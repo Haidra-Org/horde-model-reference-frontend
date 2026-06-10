@@ -620,6 +620,21 @@
     gap: 14px;
   }
 
+  /* Wizard fields stack label → control → hint at full panel width;
+     the shared .form-input is inline-sized by default. */
+  .write-step-fields .form-input,
+  .write-step-fields .form-textarea,
+  .write-step-fields .form-select {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .write-step-fields .form-hint {
+    display: block;
+    margin-top: 4px;
+  }
+
   .write-step-nav {
     display: flex;
     justify-content: space-between;

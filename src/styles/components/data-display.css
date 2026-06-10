@@ -1530,6 +1530,31 @@
     margin-top: 4px;
   }
 
+  .stat-tile-skeleton {
+    display: inline-block;
+    width: 56px;
+    height: 18px;
+    border-radius: 6px;
+    background: var(--color-border-hairline);
+    animation: stat-tile-pulse 1.4s ease-in-out infinite;
+  }
+
+  @keyframes stat-tile-pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stat-tile-skeleton {
+      animation: none;
+    }
+  }
+
   /* =================================================================
      IDENTITY RAIL (Phase 3 — Model Detail)
      Sticky left column with showcase, badges, KV rows.
@@ -1600,6 +1625,17 @@
 
   .kv-mono {
     font-family: var(--font-mono, monospace);
+  }
+
+  /* The rail is ~320px wide; the default 170px label would crush long
+     mono values (identifiers) into a one-character-per-line column. */
+  .identity-rail .kv-label {
+    width: 96px;
+  }
+
+  .identity-rail .kv-value {
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   /* =================================================================

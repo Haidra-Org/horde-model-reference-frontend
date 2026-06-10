@@ -12,6 +12,7 @@ import { MODEL_REFERENCE_CATEGORY } from '../api-client';
 import { HordeModelType } from '../models/horde-api.models';
 import { domainOf } from '../shared/domain';
 import { DEFAULT_CATEGORY } from '../shared/constants';
+import { prettyBaseline } from '../models/maps';
 
 // ---------------------------------------------------------------------------
 // Public type exports
@@ -51,10 +52,21 @@ export interface Facets {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Parse a parameter count (e.g. "13B", "7b", "0.5B") out of a model name. */
+function paramsFromName(name: string): number | null {
+  const match = /(\d+(?:\.\d+)?)\s*[bB]\b/.exec(name);
+  if (!match) return null;
+  const value = Number(match[1]);
+  if (!Number.isFinite(value) || value <= 0 || value > 2000) return null;
+  return Math.round(value * 1e9);
+}
+
 /** Normalize a legacy record or v2 response value into a flat BrowseModel. */
 export function toBrowseModel(record: Record<string, unknown>, category: string): BrowseModel {
+  const name = String(record['name'] ?? '');
+  const recordParams = (record['parameters_count'] as number | null | undefined) ?? null;
   return {
-    name: String(record['name'] ?? ''),
+    name,
     display_name: (record['display_name'] as string | null | undefined) ?? null,
     description: (record['description'] as string | null | undefined) ?? null,
     version: (record['version'] as string | null | undefined) ?? null,
@@ -64,7 +76,8 @@ export function toBrowseModel(record: Record<string, unknown>, category: string)
     tags: (record['tags'] as string[] | null | undefined) ?? null,
     family: ((record['family'] ?? record['finetune_series']) as string | null | undefined) ?? null,
     size_on_disk_bytes: (record['size_on_disk_bytes'] as number | null | undefined) ?? null,
-    parameters_count: (record['parameters_count'] as number | null | undefined) ?? null,
+    parameters_count:
+      recordParams ?? (category === 'text_generation' ? paramsFromName(name) : null),
     category,
     _raw: record as LegacyRecordUnion,
   };
@@ -248,7 +261,11 @@ export class BrowseModelsStore {
     }
 
     return {
-      baselines: Array.from(baselineCounts, ([value, count]) => ({ value, label: value, count })),
+      baselines: Array.from(baselineCounts, ([value, count]) => ({
+        value,
+        label: prettyBaseline(value),
+        count,
+      })),
       styles: Array.from(styleCounts, ([value, count]) => ({
         value,
         label: value.charAt(0).toUpperCase() + value.slice(1),

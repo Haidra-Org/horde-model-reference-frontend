@@ -20,9 +20,15 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         }
         <span class="stat-tile-label">{{ label() }}</span>
       </div>
-      <div class="stat-tile-value">{{ value() }}</div>
-      @if (sub()) {
-        <div class="stat-tile-sub">{{ sub() }}</div>
+      @if (loading()) {
+        <div class="stat-tile-value">
+          <span class="stat-tile-skeleton" aria-label="Loading"></span>
+        </div>
+      } @else {
+        <div class="stat-tile-value">{{ value() }}</div>
+        @if (sub()) {
+          <div class="stat-tile-sub">{{ sub() }}</div>
+        }
       }
     </div>
   `,
@@ -33,4 +39,5 @@ export class StatTileComponent {
   readonly value = input.required<string | number>();
   readonly sub = input<string>();
   readonly accent = input<string>();
+  readonly loading = input<boolean>(false);
 }
