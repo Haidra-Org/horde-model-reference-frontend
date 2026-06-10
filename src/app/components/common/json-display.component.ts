@@ -3,9 +3,7 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 @Component({
   selector: 'app-json-display',
   templateUrl: './json-display.component.html',
-  styleUrls: ['./json-display.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
 })
 export class JsonDisplayComponent {
   @Input() data: unknown;

@@ -469,7 +469,7 @@
   }
 
   .model-variation-copy-btn {
-    @apply flex-shrink-0 rounded p-0.5 text-gray-400 transition-colors;
+    @apply shrink-0 rounded p-0.5 text-gray-400 transition-colors;
     @apply hover:bg-gray-100 hover:text-gray-700;
     @apply dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-200;
   }
@@ -491,7 +491,7 @@
   }
 
   .model-variation-api-name-btn .model-variation-copy-icon {
-    @apply h-3.5 w-3.5 flex-shrink-0 text-gray-400 dark:text-gray-500;
+    @apply h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500;
   }
 
   .model-variation-meta-pill {

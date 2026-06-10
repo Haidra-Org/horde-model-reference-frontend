@@ -42,11 +42,9 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
           <!-- Gradient overlay -->
           <div class="browse-gallery-overlay">
             <div class="browse-gallery-name">{{ m.display_name ?? m.name }}</div>
-            <div
-              style="color:rgb(255 255 255 / 0.8);font-size:11.5px;display:flex;gap:11px;margin-top:3px"
-            >
+            <div class="browse-gallery-meta">
               <span>{{ baselineLabel(m.baseline ?? '') || m.style || '—' }}</span>
-              <span style="display:inline-flex;align-items:center;gap:4px">
+              <span class="browse-gallery-workers">
                 <app-icon name="server" />{{ m._ghost ? '—' : (m._stats?.worker_count ?? '…') }}
               </span>
             </div>

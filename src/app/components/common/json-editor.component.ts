@@ -11,7 +11,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 @Component({
   selector: 'app-json-editor',
   templateUrl: './json-editor.component.html',
-  styleUrls: ['./json-editor.component.css'],
+  host: { class: 'block json-editor-host' },
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {

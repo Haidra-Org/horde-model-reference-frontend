@@ -207,7 +207,7 @@
 
     /* Dense field groups */
     & .field-group-header {
-      @apply px-3 py-1.5 min-h-[36px];
+      @apply px-3 py-1.5 min-h-9;
     }
 
     & .field-group-content {
@@ -881,7 +881,7 @@
 
     /* Compact field groups */
     & .field-group-header {
-      @apply px-3 py-2 min-h-[40px];
+      @apply px-3 py-2 min-h-10;
     }
 
     & .field-group-header-title {

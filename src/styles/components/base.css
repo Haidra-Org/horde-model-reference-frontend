@@ -47,7 +47,7 @@
   .card-overview {
     @apply bg-primary-50 rounded p-6 border-l-4 border-primary-500;
     @apply dark:bg-primary-900/20 dark:border-primary-400;
-    @apply w-full max-w-screen-md;
+    @apply w-full max-w-3xl;
   }
 
   .card-overview-title {
@@ -56,7 +56,7 @@
   }
 
   .card-overview-icon {
-    @apply w-6 h-6 text-primary-600 flex-shrink-0;
+    @apply w-6 h-6 text-primary-600 shrink-0;
     @apply dark:text-primary-400;
   }
 
@@ -93,7 +93,7 @@
   }
 
   .card-showcase > div:last-child {
-    @apply absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity duration-200;
+    @apply absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity duration-200;
   }
 
   .card-showcase:hover > div:last-child {
@@ -107,7 +107,7 @@
   }
 
   .code-block pre {
-    @apply whitespace-pre-wrap break-words text-gray-700 font-mono text-xs leading-relaxed;
+    @apply whitespace-pre-wrap wrap-break-word text-gray-700 font-mono text-xs leading-relaxed;
     @apply dark:text-gray-300;
   }
 
@@ -154,7 +154,7 @@
   /* Text group variation workflows */
   .group-panel-header {
     @apply border-b border-gray-200;
-    @apply bg-gradient-to-r from-primary-50 via-white to-info-50;
+    @apply bg-linear-to-r from-primary-50 via-white to-info-50;
     @apply dark:border-gray-700 dark:from-primary-950/30 dark:via-gray-900 dark:to-info-950/20;
   }
 

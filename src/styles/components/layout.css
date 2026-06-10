@@ -90,7 +90,7 @@
     .btn,
     .field-group-header,
     .card-header-collapsible {
-      @apply min-h-[44px];
+      @apply min-h-11;
     }
 
     /* More compact spacing on mobile */
@@ -185,7 +185,7 @@
   }
 
   .field-group-header {
-    @apply w-full text-left px-4 py-3 min-h-[44px];
+    @apply w-full text-left px-4 py-3 min-h-11;
     @apply border-b border-gray-100 dark:border-gray-700;
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset;
     @apply transition-colors duration-100;
@@ -199,7 +199,7 @@
   .field-group-header-icon {
     @apply text-base text-gray-500 dark:text-gray-400;
     @apply transition-transform duration-150;
-    @apply flex-shrink-0 mt-0.5;
+    @apply shrink-0 mt-0.5;
   }
 
   .field-group-header-title {
@@ -278,7 +278,7 @@
 
   .form-section-header {
     @apply w-full flex items-center justify-between;
-    @apply px-5 py-3 min-h-[48px];
+    @apply px-5 py-3 min-h-12;
     background: var(--color-glass-surface-elevated);
     border-bottom: 1px solid var(--color-glass-border-subtle);
     @apply transition-colors duration-100;
@@ -499,7 +499,7 @@
   }
 
   .submission-context-icon {
-    @apply w-5 h-5 flex-shrink-0 mt-0.5;
+    @apply w-5 h-5 shrink-0 mt-0.5;
   }
 
   /* ===== Post-Submission Success Screen ===== */
@@ -607,7 +607,7 @@
   }
 
   .edit-summary-field-name {
-    @apply text-sm font-medium text-gray-700 dark:text-gray-300 w-32 flex-shrink-0;
+    @apply text-sm font-medium text-gray-700 dark:text-gray-300 w-32 shrink-0;
   }
 
   .edit-summary-values {
@@ -894,7 +894,7 @@
   }
 
   .icon-button-gray {
-    @apply p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0;
+    @apply p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0;
   }
 
   /* Section dividers with spacing */
@@ -940,7 +940,7 @@
     @apply dark:bg-gray-900 dark:border-gray-600 dark:text-gray-100;
     @apply dark:focus:ring-primary-400 dark:focus:border-primary-400 dark:disabled:bg-gray-900;
     @apply dark:placeholder:text-gray-500;
-    @apply resize-y min-h-[80px];
+    @apply resize-y min-h-20;
     @apply font-mono cursor-not-allowed;
   }
 
@@ -951,12 +951,12 @@
 
   /* JSON display container */
   .json-display-container {
-    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 overflow-x-auto text-sm whitespace-pre-wrap break-words;
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-4 overflow-x-auto text-sm whitespace-pre-wrap wrap-break-word;
   }
 
   /* Sidebar borders and backgrounds — glass surface */
   .sidebar-container {
-    @apply h-full flex flex-col transition-all duration-300 ease-in-out overflow-hidden flex-shrink-0;
+    @apply h-full flex flex-col transition-all duration-300 ease-in-out overflow-hidden shrink-0;
     background: var(--color-glass-surface-panel);
     backdrop-filter: blur(var(--blur-glass-sm));
     -webkit-backdrop-filter: blur(var(--blur-glass-sm));
@@ -995,7 +995,7 @@
 
   /* Toggle button inside the sidebar */
   .sidebar-toggle-btn {
-    @apply w-8 h-8 flex items-center justify-center rounded-md flex-shrink-0;
+    @apply w-8 h-8 flex items-center justify-center rounded-md shrink-0;
     @apply text-gray-500 dark:text-gray-400;
     @apply hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
   }
@@ -1199,7 +1199,7 @@
   }
 
   .notification-close-button {
-    @apply text-current opacity-70 hover:opacity-100 transition-opacity text-xl leading-none flex-shrink-0;
+    @apply text-current opacity-70 hover:opacity-100 transition-opacity text-xl leading-none shrink-0;
   }
 
   /* Persistent notification styling - stays until dismissed */
@@ -1208,7 +1208,7 @@
   }
 
   .notification-persistent-icon {
-    @apply flex-shrink-0 text-base;
+    @apply shrink-0 text-base;
   }
 
   /* Card header with collapsible styling - for hover effects */
@@ -1572,7 +1572,7 @@
   }
 
   .collapsible-section-expanded {
-    @apply max-h-[2000px] opacity-100;
+    @apply max-h-500 opacity-100;
   }
 
   /* Active filter tag with close button */
@@ -1856,7 +1856,7 @@
   }
 
   .topbar-breadcrumb-text {
-    /* non-link breadcrumb segment */
+    @apply text-gray-900 dark:text-gray-100;
   }
 
   .topbar-breadcrumb-sep {
@@ -1948,7 +1948,7 @@
   }
 
   .backend-chip-dot {
-    @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
+    @apply w-2.5 h-2.5 rounded-full shrink-0;
   }
 
   .backend-chip-dot--writable {
@@ -1973,7 +1973,7 @@
   }
 
   .backend-chip-format {
-    /* Format color set by modifier classes below */
+    color: var(--color-content-secondary);
   }
 
   .backend-chip-format--v2 {
@@ -2004,7 +2004,7 @@
      ================================================================= */
 
   .sidebar-logo-img {
-    @apply flex-shrink-0;
+    @apply shrink-0;
   }
 
   .sidebar-brand {
@@ -2076,7 +2076,7 @@
   }
 
   .sidebar-feature-item-icon {
-    @apply flex-shrink-0 inline-flex items-center;
+    @apply shrink-0 inline-flex items-center;
     color: inherit;
   }
 
@@ -2086,7 +2086,7 @@
 
   .sidebar-feature-badge {
     @apply inline-flex items-center justify-center;
-    @apply text-[10.5px] font-bold min-w-[18px] h-[18px] px-1.5 rounded-full;
+    @apply text-[10.5px] font-bold min-w-4.5 h-4.5 px-1.5 rounded-full;
     background: var(--color-pending-strip, #f59e0b);
     color: #3b2503;
   }
@@ -2423,4 +2423,160 @@
     word-break: break-all;
     font-family: var(--font-mono, 'Courier New', monospace);
   }
+}
+
+/* =================================================================
+   JSON EDITOR — syntax-highlighting overlay editor
+   Migrated from json-editor.component.css (Phase 9).
+   ================================================================= */
+
+.json-editor-host {
+  display: block;
+}
+
+.json-editor-wrapper {
+  position: relative;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  background-color: var(--color-gray-50);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.dark .json-editor-wrapper {
+  background-color: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+.json-editor-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0.75rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  background-color: transparent;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
+  overflow: hidden;
+}
+
+.json-editor-textarea {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: transparent;
+  caret-color: var(--color-gray-900);
+  resize: vertical;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .json-editor-textarea {
+  caret-color: var(--color-gray-50);
+}
+
+.json-editor-textarea::selection {
+  background-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  color: transparent;
+}
+
+.json-editor-textarea::-moz-selection {
+  background-color: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  color: transparent;
+}
+
+.json-editor-textarea::placeholder {
+  color: var(--color-gray-400);
+  -webkit-text-fill-color: var(--color-gray-400);
+}
+
+.dark .json-editor-textarea::placeholder {
+  color: var(--color-gray-500);
+  -webkit-text-fill-color: var(--color-gray-500);
+}
+
+.json-editor-textarea:read-only {
+  cursor: not-allowed;
+}
+
+.json-editor-textarea:focus {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: -2px;
+  border-radius: 0.5rem;
+}
+
+/* Error state (class applied by parent host binding) */
+app-json-editor.json-editor-error .json-editor-wrapper {
+  border-color: var(--color-danger-500);
+  box-shadow: 0 0 0 1px var(--color-danger-500);
+}
+
+app-json-editor.json-editor-error .json-editor-textarea:focus {
+  outline-color: var(--color-danger-500);
+}
+
+/* =================================================================
+   JSON SYNTAX HIGHLIGHTING — shared between json-editor & json-display
+   Migrated from json-editor.component.css and json-display.component.css (Phase 9).
+   ================================================================= */
+
+.json-key {
+  color: var(--json-key);
+}
+
+.json-string {
+  color: var(--json-string);
+}
+
+.json-number {
+  color: var(--json-number);
+}
+
+.json-boolean {
+  color: var(--json-boolean);
+}
+
+.json-null {
+  color: var(--json-null);
+  font-style: italic;
+}
+
+/* =================================================================
+   BROWSE GALLERY — inline style replacements (Phase 9)
+   ================================================================= */
+
+.browse-gallery-meta {
+  color: rgb(255 255 255 / 0.8);
+  font-size: 11.5px;
+  display: flex;
+  gap: 11px;
+  margin-top: 3px;
+}
+
+.browse-gallery-workers {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }

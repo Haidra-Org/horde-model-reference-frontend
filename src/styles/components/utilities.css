@@ -227,7 +227,7 @@
   }
 
   .showcase-more-indicator {
-    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent;
+    @apply absolute inset-0 bg-linear-to-t from-black/80 via-black/50 to-transparent;
     @apply flex items-center justify-center;
   }
 
@@ -292,7 +292,7 @@
 
   /* Showcase lightbox (for Phase 3) */
   .lightbox-overlay {
-    @apply fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999];
+    @apply fixed inset-0 bg-black/90 backdrop-blur-sm z-9999;
     @apply flex items-center justify-center p-4;
   }
 
@@ -443,7 +443,7 @@
   }
 
   .filter-button-icon {
-    @apply w-4 h-4 ml-2 flex-shrink-0;
+    @apply w-4 h-4 ml-2 shrink-0;
   }
 
   /* Filter dropdown header text */
@@ -1532,7 +1532,7 @@
 }
 
 .review-queue-batch-id {
-  @apply w-9 h-9 rounded-lg inline-flex items-center justify-center font-extrabold text-sm flex-shrink-0;
+  @apply w-9 h-9 rounded-lg inline-flex items-center justify-center font-extrabold text-sm shrink-0;
   background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
   color: var(--color-primary-500);
 }
@@ -1581,7 +1581,7 @@
 }
 
 .change-row-check {
-  @apply w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center cursor-pointer p-0;
+  @apply w-5 h-5 rounded-md border shrink-0 flex items-center justify-center cursor-pointer p-0;
   border-width: 1.5px;
   @apply border-gray-400;
   background: transparent;
@@ -1594,7 +1594,7 @@
 }
 
 .change-row-op-avatar {
-  @apply w-9 h-9 rounded-lg inline-flex items-center justify-center flex-shrink-0;
+  @apply w-9 h-9 rounded-lg inline-flex items-center justify-center shrink-0;
   color: var(--color-primary-500);
   background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
 }
@@ -1627,7 +1627,7 @@
 }
 
 .change-row-id {
-  @apply text-[11px] text-gray-400 dark:text-gray-500 flex-shrink-0;
+  @apply text-[11px] text-gray-400 dark:text-gray-500 shrink-0;
 }
 
 .change-row-meta {
@@ -1651,7 +1651,7 @@
 }
 
 .change-row-status-badge {
-  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0;
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold shrink-0;
   @apply text-gray-600 bg-gray-100 border border-gray-300;
   @apply dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600;
 }
@@ -1749,7 +1749,7 @@
 .change-detail-close {
   @apply p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100;
   @apply dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-gray-700;
-  @apply flex-shrink-0 bg-transparent border-0 cursor-pointer;
+  @apply shrink-0 bg-transparent border-0 cursor-pointer;
 }
 
 /* Reject reason banner */
