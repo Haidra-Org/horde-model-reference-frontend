@@ -7,27 +7,27 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { LegacyConfigInput } from './legacyConfigInput';
+import { ModelLicensing } from './modelLicensing';
 
 /**
  * CLIP legacy record with category-specific normalization.
  */
-export interface LegacyClipRecord {
-  [key: string]: any | any;
-
+export interface LegacyClipRecordInput {
   name: string;
-  type?: LegacyClipRecord.TypeEnum;
+  type?: LegacyClipRecordInput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: LegacyConfigInput;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
   pretrained_name?: string | null;
 }
-export namespace LegacyClipRecord {
+export namespace LegacyClipRecordInput {
   export const TypeEnum = {
     Clip: 'clip',
     Coca: 'coca',

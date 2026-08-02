@@ -24,5 +24,10 @@ export const CONTROLNET_STYLE = {
   ControlDepth: 'control_depth',
   ControlQr: 'control_qr',
   ControlQrXl: 'control_qr_xl',
+  ControlLineart: 'control_lineart',
+  ControlLineartAnime: 'control_lineart_anime',
+  ControlNormalBae: 'control_normal_bae',
+  ControlRecolor: 'control_recolor',
+  ControlTile: 'control_tile',
 } as const;
 export type CONTROLNET_STYLE = (typeof CONTROLNET_STYLE)[keyof typeof CONTROLNET_STYLE];

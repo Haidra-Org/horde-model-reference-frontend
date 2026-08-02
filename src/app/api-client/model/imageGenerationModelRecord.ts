@@ -9,6 +9,7 @@
  */
 import { ImageGenerationModelRecordRequirementsValue } from './imageGenerationModelRecordRequirementsValue';
 import { ModelClassification } from './modelClassification';
+import { ModelLicensing } from './modelLicensing';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
@@ -25,6 +26,8 @@ export interface ImageGenerationModelRecord {
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
+  size_on_disk_bytes?: number | null;
+  licensing?: ModelLicensing | null;
   inpainting?: boolean | null;
   baseline: string;
   optimization?: string | null;
@@ -36,5 +39,4 @@ export interface ImageGenerationModelRecord {
   nsfw: boolean;
   style?: string | null;
   requirements?: { [key: string]: ImageGenerationModelRecordRequirementsValue } | null;
-  size_on_disk_bytes?: number | null;
 }

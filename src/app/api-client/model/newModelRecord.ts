@@ -9,6 +9,7 @@
 import { ImageGenerationModelRecord } from './imageGenerationModelRecord';
 import { TextGenerationModelRecord } from './textGenerationModelRecord';
 import { ControlNetModelRecord } from './controlNetModelRecord';
+import { ControlNetAnnotatorModelRecord } from './controlNetAnnotatorModelRecord';
 import { BlipModelRecord } from './blipModelRecord';
 import { ClipModelRecord } from './clipModelRecord';
 import { CodeformerModelRecord } from './codeformerModelRecord';
@@ -26,6 +27,7 @@ export type NewModelRecord =
   | ImageGenerationModelRecord
   | TextGenerationModelRecord
   | ControlNetModelRecord
+  | ControlNetAnnotatorModelRecord
   | BlipModelRecord
   | ClipModelRecord
   | CodeformerModelRecord

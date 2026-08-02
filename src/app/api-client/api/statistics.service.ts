@@ -50,7 +50,7 @@ export class StatisticsService extends BaseService {
 
   /**
    * Get models merged with AI Horde runtime statistics
-   * Get AI Horde statistics data for models in a given category.  Combines live runtime statistics from the AI Horde API: - Worker count, queued jobs, performance metrics, ETA - Usage statistics (day, month, total) - Optional worker details - Optional per-backend variations (for text generation models)  **Caching:** - Model reference data: cached by ModelReferenceManager (60s TTL) - Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available) - Merged results: computed on-demand (no caching)  Args:     model_category_name: The model category (image_generation or text_generation).     manager: Model reference manager dependency.     horde_api: Horde API integration dependency.     include_workers: Include detailed worker information for each model.     include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.     min_worker_count: Filter to models with at least this many workers.     sort_by: Sort by field (worker_count, usage_total, usage_month, name).     sort_desc: Sort in descending order (default: True).  Returns:     JSONResponse: Dict of model_name -&gt; enriched_model_data.  Raises:     HTTPException: 404 if category not found, 500 if Horde API fails.
+   * Get AI Horde statistics data for models in a given category.  Combines live runtime statistics from the AI Horde API: - Worker count, queued jobs, performance metrics, ETA - Usage statistics (day, month, total) - Optional worker details - Optional per-backend variations (for text generation models)  **Caching:** - Model reference data: cached by ModelReferenceManager (60s TTL) - Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available) - Merged results: computed on-demand (no caching)  Args:     model_category_name: The model category (image_generation or text_generation).     manager: Model reference manager dependency.     horde_api: Horde API integration dependency.     include_workers: Include detailed worker information for each model.     include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.     min_worker_count: Filter to models with at least this many workers.     sort_by: Sort by field (worker_count, usage_total, usage_month, name).     sort_desc: Sort in descending order (default: True).  Returns:     JSONResponse: Dict of model_name -&gt; enriched_model_data.  Raises:     HTTPException: 400 if the category is unsupported, 404 if it is missing,         or 500 if the Horde API fails.
    * @param modelCategoryName
    * @param includeWorkers
    * @param includeBackendVariations
@@ -74,7 +74,7 @@ export class StatisticsService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<{ [key: string]: any }>;
+  ): Observable<object>;
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
@@ -89,7 +89,7 @@ export class StatisticsService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<{ [key: string]: any }>>;
+  ): Observable<HttpResponse<object>>;
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
@@ -104,7 +104,7 @@ export class StatisticsService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<{ [key: string]: any }>>;
+  ): Observable<HttpEvent<object>>;
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
@@ -174,7 +174,7 @@ export class StatisticsService extends BaseService {
 
     let localVarPath = `/model_references/statistics/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/with-stats`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<{ [key: string]: any }>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<object>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
       responseType: <any>responseType_,
@@ -188,7 +188,7 @@ export class StatisticsService extends BaseService {
 
   /**
    * Get statistics for a model category
-   * Get comprehensive statistics for a model reference category.  Returns aggregate metrics including: - Total model counts (overall, NSFW, SFW) - Baseline distribution - Download statistics - Tag and style distributions - Category-specific metrics (trigger words, inpainting, etc.)  Statistics are cached with TTL (default 300s) and automatically invalidated when model data changes. Caching is skipped when grouping is enabled.  Args:     model_category_name: The model reference category to get statistics for.     manager: The model reference manager (injected).     stats_cache: The statistics cache (injected).     group_text_models: Group text models by base name (strips quantization info).     limit: Maximum number of models to return (for pagination).     offset: Number of models to skip (for pagination).  Returns:     CategoryStatistics containing all computed metrics.  Raises:     HTTPException: 404 if category not found, 500 if computation fails.
+   * Get comprehensive statistics for a model reference category.  Returns aggregate metrics including: - Total model counts (overall, NSFW, SFW) - Baseline distribution - Download statistics - Tag and style distributions - Category-specific metrics (trigger words, inpainting, etc.)  Statistics are cached with TTL (default 300s) and automatically invalidated when model data changes. Caching is skipped when grouping is enabled.  Args:     model_category_name: The model reference category to get statistics for.     manager: The model reference manager (injected).     stats_cache: The statistics cache (injected).     group_text_models: Group text models by base name (strips quantization info).     limit: Maximum number of models to return (for pagination).     offset: Number of models to skip (for pagination).  Returns:     CategoryStatistics containing all computed metrics.  Raises:     HTTPException: 500 if computation fails.
    * @param modelCategoryName
    * @param groupTextModels Group text models by base name (strips quantization)
    * @param limit Maximum number of models to return (None &#x3D; all)

@@ -7,8 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TextContextWindow } from './textContextWindow';
+import { SupportClaim } from './supportClaim';
 import { ImageGenerationModelRecordRequirementsValue } from './imageGenerationModelRecordRequirementsValue';
 import { ModelClassification } from './modelClassification';
+import { ModelLicensing } from './modelLicensing';
+import { TextGuidanceSummary } from './textGuidanceSummary';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
@@ -25,6 +29,8 @@ export interface TextGenerationModelRecord {
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
+  size_on_disk_bytes?: number | null;
+  licensing?: ModelLicensing | null;
   baseline?: string | null;
   parameters: number;
   nsfw?: boolean;
@@ -36,4 +42,8 @@ export interface TextGenerationModelRecord {
   settings?: { [key: string]: ImageGenerationModelRecordRequirementsValue } | null;
   text_model_group?: string | null;
   name_schema_exception?: string | null;
+  context_window?: TextContextWindow | null;
+  interaction_modes?: { [key: string]: SupportClaim } | null;
+  capabilities?: { [key: string]: SupportClaim } | null;
+  guidance?: TextGuidanceSummary | null;
 }

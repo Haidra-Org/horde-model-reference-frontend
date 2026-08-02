@@ -1188,7 +1188,7 @@ export class V1Service extends BaseService {
 
   /**
    * Get diff for a pending change
-   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.
+   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1284,7 +1284,7 @@ export class V1Service extends BaseService {
 
   /**
    * Get diff for a pending change
-   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.
+   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1380,7 +1380,7 @@ export class V1Service extends BaseService {
 
   /**
    * Get diffs for multiple pending changes
-   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.
+   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeIds
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -1488,7 +1488,7 @@ export class V1Service extends BaseService {
 
   /**
    * Get diffs for multiple pending changes
-   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.
+   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeIds
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -2076,7 +2076,7 @@ export class V1Service extends BaseService {
 
   /**
    * List pending queue entries
-   * Return a filtered, paginated list of pending queue entries.
+   * Return a filtered, paginated list of pending queue entries.  Readable by any authenticated user; the queue is a transparency surface.
    * @param statuses
    * @param categories
    * @param batchId
@@ -2238,7 +2238,7 @@ export class V1Service extends BaseService {
 
   /**
    * List pending queue entries
-   * Return a filtered, paginated list of pending queue entries.
+   * Return a filtered, paginated list of pending queue entries.  Readable by any authenticated user; the queue is a transparency surface.
    * @param statuses
    * @param categories
    * @param batchId
@@ -4078,7 +4078,7 @@ export class V1Service extends BaseService {
 
   /**
    * Get a single pending change
-   * Return details for a single pending change.
+   * Return details for a single pending change.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -4174,7 +4174,7 @@ export class V1Service extends BaseService {
 
   /**
    * Get a single pending change
-   * Return details for a single pending change.
+   * Return details for a single pending change.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.

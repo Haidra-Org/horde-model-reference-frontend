@@ -15,6 +15,8 @@ export interface DownloadRecord {
   file_name: string;
   file_url: string;
   sha256sum?: string;
+  content_hash?: string | null;
   file_purpose?: string | null;
   known_slow_download?: boolean | null;
+  size_bytes?: number | null;
 }

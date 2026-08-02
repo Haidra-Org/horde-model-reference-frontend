@@ -15,11 +15,11 @@ import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
  */
 export interface PendingChangeDiff {
   change_id: number;
-  category: MODEL_REFERENCE_CATEGORY;
+  category: MODEL_REFERENCE_CATEGORY | null;
   model_name: string;
   operation: AuditOperation;
-  current_state?: { [key: string]: any } | null;
-  proposed_state?: { [key: string]: any } | null;
+  current_state?: object | null;
+  proposed_state?: object | null;
   /**
    * Computed net change type: \'added\', \'modified\', \'deleted\', or \'unchanged\'
    */
@@ -27,7 +27,7 @@ export interface PendingChangeDiff {
   /**
    * List of field-level differences between current and proposed state
    */
-  field_diffs?: Array<{ [key: string]: any } | null>;
+  field_diffs?: Array<object | null>;
   /**
    * True if any critical fields (baseline, nsfw, etc.) are affected
    */

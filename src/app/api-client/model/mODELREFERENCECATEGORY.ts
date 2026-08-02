@@ -16,6 +16,7 @@ export const MODEL_REFERENCE_CATEGORY = {
   Clip: 'clip',
   Codeformer: 'codeformer',
   Controlnet: 'controlnet',
+  ControlnetAnnotator: 'controlnet_annotator',
   Esrgan: 'esrgan',
   Gfpgan: 'gfpgan',
   SafetyChecker: 'safety_checker',

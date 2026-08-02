@@ -12,8 +12,6 @@
  * Persisted naming convention for a text model group.  When saved, overrides the inferred schema from ``infer_name_format()``.
  */
 export interface TextModelGroupNameSchema {
-  [key: string]: any | any;
-
   separator?: string;
   part_order?: Array<string>;
   author_included?: boolean;

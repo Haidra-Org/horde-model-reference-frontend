@@ -7,28 +7,27 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { ModelLicensing } from './modelLicensing';
 
 /**
- * GFPGAN legacy record with category-specific normalization.
+ * Safety Checker legacy record with category-specific normalization.
  */
-export interface LegacyGfpganRecord {
-  [key: string]: any | any;
-
+export interface LegacySafetyCheckerRecordOutput {
   name: string;
-  type?: LegacyGfpganRecord.TypeEnum;
+  type?: LegacySafetyCheckerRecordOutput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: object;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
 }
-export namespace LegacyGfpganRecord {
+export namespace LegacySafetyCheckerRecordOutput {
   export const TypeEnum = {
-    Gfpgan: 'gfpgan',
+    SafetyChecker: 'safety_checker',
   } as const;
   export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum];
 }

@@ -7,28 +7,28 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { LegacyConfigInput } from './legacyConfigInput';
+import { ModelLicensing } from './modelLicensing';
 
 /**
- * Codeformers legacy record with category-specific normalization.
+ * BLIP legacy record with category-specific normalization.
  */
-export interface LegacyCodeformerRecord {
-  [key: string]: any | any;
-
+export interface LegacyBlipRecordInput {
   name: string;
-  type?: LegacyCodeformerRecord.TypeEnum;
+  type?: LegacyBlipRecordInput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: LegacyConfigInput;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
 }
-export namespace LegacyCodeformerRecord {
+export namespace LegacyBlipRecordInput {
   export const TypeEnum = {
-    CodeFormers: 'CodeFormers',
+    Blip: 'blip',
   } as const;
   export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum];
 }

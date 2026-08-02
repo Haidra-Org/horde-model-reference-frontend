@@ -9,12 +9,10 @@
  */
 
 /**
- * A single legacy config download entry.
+ * Represents one source supporting a scope-specific licensing conclusion.
  */
-export interface LegacyConfigDownload {
-  [key: string]: any | any;
-
-  file_name?: string | null;
-  file_path?: string | null;
-  file_url?: string | null;
+export interface LicenseEvidence {
+  source: string;
+  description?: string | null;
+  checked_at?: string | null;
 }

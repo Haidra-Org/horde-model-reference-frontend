@@ -17,4 +17,5 @@ export interface UserRolesResponse {
   roles: Array<string>;
   is_approver: boolean;
   is_requestor: boolean;
+  is_license_editor: boolean;
 }

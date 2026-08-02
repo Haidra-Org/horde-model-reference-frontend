@@ -16,10 +16,10 @@ import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
  */
 export interface ModelNetChange {
   model_name: string;
-  category: MODEL_REFERENCE_CATEGORY;
+  category: MODEL_REFERENCE_CATEGORY | null;
   net_operation: NetChangeType;
-  before_state?: { [key: string]: any } | null;
-  after_state?: { [key: string]: any } | null;
+  before_state?: object | null;
+  after_state?: object | null;
   field_diffs?: Array<FieldDiff>;
   is_critical?: boolean;
 }

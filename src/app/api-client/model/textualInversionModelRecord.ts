@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { ModelClassification } from './modelClassification';
+import { ModelLicensing } from './modelLicensing';
 import { GenericModelRecordConfig } from './genericModelRecordConfig';
 import { GenericModelRecordMetadata } from './genericModelRecordMetadata';
 import { FineTuneSeriesInfo } from './fineTuneSeriesInfo';
@@ -24,6 +25,8 @@ export interface TextualInversionModelRecord {
   metadata?: GenericModelRecordMetadata;
   config?: GenericModelRecordConfig;
   model_classification?: ModelClassification;
+  size_on_disk_bytes?: number | null;
+  licensing?: ModelLicensing | null;
   baseline?: string | null;
   nsfw?: boolean;
   tags?: Array<string> | null;

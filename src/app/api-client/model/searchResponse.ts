@@ -12,7 +12,7 @@
  * Paginated search response.
  */
 export interface SearchResponse {
-  results: Array<{ [key: string]: any } | null>;
+  results: Array<object | null>;
   total: number;
   offset: number;
   limit: number;

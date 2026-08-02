@@ -8,14 +8,13 @@
  * Do not edit the class manually.
  */
 import { ImageGenerationModelRecordRequirementsValue } from './imageGenerationModelRecordRequirementsValue';
-import { LegacyConfig } from './legacyConfig';
+import { LegacyConfigInput } from './legacyConfigInput';
+import { ModelLicensing } from './modelLicensing';
 
 /**
  * Stable Diffusion legacy record with category-specific validation.
  */
 export interface LegacyStableDiffusionRecordInput {
-  [key: string]: any | any;
-
   name: string;
   type?: LegacyStableDiffusionRecordInput.TypeEnum;
   description?: string | null;
@@ -23,9 +22,10 @@ export interface LegacyStableDiffusionRecordInput {
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: LegacyConfigInput;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
   inpainting?: boolean;
   baseline: string;
   tags?: Array<string> | null;

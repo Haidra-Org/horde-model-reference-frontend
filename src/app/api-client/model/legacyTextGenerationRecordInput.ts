@@ -7,15 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TextContextWindow } from './textContextWindow';
+import { SupportClaim } from './supportClaim';
 import { ImageGenerationModelRecordRequirementsValue } from './imageGenerationModelRecordRequirementsValue';
-import { LegacyConfig } from './legacyConfig';
+import { LegacyConfigInput } from './legacyConfigInput';
+import { ModelLicensing } from './modelLicensing';
 
 /**
  * Text generation legacy record with category-specific validation.
  */
-export interface LegacyTextGenerationRecord {
-  [key: string]: any | any;
-
+export interface LegacyTextGenerationRecordInput {
   name: string;
   type?: string | null;
   description?: string | null;
@@ -23,9 +24,10 @@ export interface LegacyTextGenerationRecord {
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: LegacyConfigInput;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
   model_name?: string | null;
   baseline?: string | null;
   parameters?: number | null;
@@ -34,4 +36,7 @@ export interface LegacyTextGenerationRecord {
   tags?: Array<string> | null;
   instruct_format?: string | null;
   settings?: { [key: string]: ImageGenerationModelRecordRequirementsValue } | null;
+  context_window?: TextContextWindow | null;
+  interaction_modes?: { [key: string]: SupportClaim } | null;
+  capabilities?: { [key: string]: SupportClaim } | null;
 }

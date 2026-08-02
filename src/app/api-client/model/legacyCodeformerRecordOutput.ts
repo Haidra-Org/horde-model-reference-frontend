@@ -7,28 +7,27 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { ModelLicensing } from './modelLicensing';
 
 /**
- * ESRGAN legacy record with category-specific normalization.
+ * Codeformers legacy record with category-specific normalization.
  */
-export interface LegacyEsrganRecord {
-  [key: string]: any | any;
-
+export interface LegacyCodeformerRecordOutput {
   name: string;
-  type?: LegacyEsrganRecord.TypeEnum;
+  type?: LegacyCodeformerRecordOutput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: object;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
 }
-export namespace LegacyEsrganRecord {
+export namespace LegacyCodeformerRecordOutput {
   export const TypeEnum = {
-    Realesrgan: 'realesrgan',
+    CodeFormers: 'CodeFormers',
   } as const;
   export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum];
 }

@@ -18,7 +18,7 @@ import { GroupMemberInfo } from './groupMemberInfo';
 export interface GroupMembersResponse {
   group_name: string;
   members: Array<GroupMemberInfo>;
-  common_fields: { [key: string]: any };
+  common_fields: object;
   available_sizes: Array<string>;
   available_variants: Array<string | null>;
   available_quants: Array<string | null>;
@@ -32,4 +32,5 @@ export interface GroupMembersResponse {
   name_schema_is_custom?: boolean;
   exception_members?: Array<NameExceptionInfo>;
   related_family?: GroupFamilyResponse | null;
+  guidance_coverage?: { [key: string]: number };
 }

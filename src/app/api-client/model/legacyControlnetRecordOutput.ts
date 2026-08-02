@@ -7,26 +7,25 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { ModelLicensing } from './modelLicensing';
 
 /**
  * ControlNet legacy record with category-specific normalization.
  */
-export interface LegacyControlnetRecord {
-  [key: string]: any | any;
-
+export interface LegacyControlnetRecordOutput {
   name: string;
-  type: LegacyControlnetRecord.TypeEnum;
+  type: LegacyControlnetRecordOutput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: object;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
 }
-export namespace LegacyControlnetRecord {
+export namespace LegacyControlnetRecordOutput {
   export const TypeEnum = {
     ControlCanny: 'control_canny',
     ControlDepth: 'control_depth',
@@ -39,6 +38,11 @@ export namespace LegacyControlnetRecord {
     ControlSeg: 'control_seg',
     ControlQr: 'control_qr',
     ControlQrXl: 'control_qr_xl',
+    ControlLineart: 'control_lineart',
+    ControlLineartAnime: 'control_lineart_anime',
+    ControlNormalBae: 'control_normal_bae',
+    ControlRecolor: 'control_recolor',
+    ControlTile: 'control_tile',
   } as const;
   export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum];
 }

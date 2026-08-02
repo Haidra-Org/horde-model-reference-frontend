@@ -9,13 +9,11 @@
  */
 
 /**
- * A single legacy config file entry.
+ * Structured prose shared by the web view and Markdown renderer.
  */
-export interface LegacyConfigFile {
-  [key: string]: any | any;
-
-  path: string;
-  md5sum?: string | null;
-  sha256sum?: string | null;
-  file_type?: string | null;
+export interface GuidanceAudienceContent {
+  overview?: string;
+  use_cases?: Array<string>;
+  tips?: Array<string>;
+  caveats?: Array<string>;
 }

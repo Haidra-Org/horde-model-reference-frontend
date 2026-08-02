@@ -4,6 +4,8 @@ export * from './default.service';
 import { DefaultService } from './default.service';
 export * from './deletionRisk.service';
 import { DeletionRiskService } from './deletionRisk.service';
+export * from './licensing.service';
+import { LicensingService } from './licensing.service';
 export * from './metadata.service';
 import { MetadataService } from './metadata.service';
 export * from './pendingQueue.service';
@@ -12,6 +14,8 @@ export * from './search.service';
 import { SearchService } from './search.service';
 export * from './statistics.service';
 import { StatisticsService } from './statistics.service';
+export * from './textGuidance.service';
+import { TextGuidanceService } from './textGuidance.service';
 export * from './textUtils.service';
 import { TextUtilsService } from './textUtils.service';
 export * from './user.service';
@@ -26,10 +30,12 @@ export const APIS = [
   AuditService,
   DefaultService,
   DeletionRiskService,
+  LicensingService,
   MetadataService,
   PendingQueueService,
   SearchService,
   StatisticsService,
+  TextGuidanceService,
   TextUtilsService,
   UserService,
   V1Service,

@@ -7,28 +7,27 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { ModelLicensing } from './modelLicensing';
 
 /**
- * Safety Checker legacy record with category-specific normalization.
+ * BLIP legacy record with category-specific normalization.
  */
-export interface LegacySafetyCheckerRecord {
-  [key: string]: any | any;
-
+export interface LegacyBlipRecordOutput {
   name: string;
-  type?: LegacySafetyCheckerRecord.TypeEnum;
+  type?: LegacyBlipRecordOutput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: object;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
 }
-export namespace LegacySafetyCheckerRecord {
+export namespace LegacyBlipRecordOutput {
   export const TypeEnum = {
-    SafetyChecker: 'safety_checker',
+    Blip: 'blip',
   } as const;
   export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum];
 }

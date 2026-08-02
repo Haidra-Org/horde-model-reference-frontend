@@ -65,6 +65,8 @@ import { ComposeNameResponse } from '../model/composeNameResponse';
 // @ts-ignore
 import { ContainsMessage } from '../model/containsMessage';
 // @ts-ignore
+import { ControlNetAnnotatorModelRecord } from '../model/controlNetAnnotatorModelRecord';
+// @ts-ignore
 import { ControlNetModelRecord } from '../model/controlNetModelRecord';
 // @ts-ignore
 import { DetectFamiliesResponse } from '../model/detectFamiliesResponse';
@@ -97,11 +99,29 @@ import { GroupNameSchemaUpdateRequest } from '../model/groupNameSchemaUpdateRequ
 // @ts-ignore
 import { GroupsSummaryResponse } from '../model/groupsSummaryResponse';
 // @ts-ignore
+import { GuidanceMigrationPreview } from '../model/guidanceMigrationPreview';
+// @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
 import { ImageGenerationModelRecord } from '../model/imageGenerationModelRecord';
 // @ts-ignore
 import { LastUpdatedResponse } from '../model/lastUpdatedResponse';
+// @ts-ignore
+import { LicenseDefinition } from '../model/licenseDefinition';
+// @ts-ignore
+import { LicenseDefinitionPage } from '../model/licenseDefinitionPage';
+// @ts-ignore
+import { LicensedAsset } from '../model/licensedAsset';
+// @ts-ignore
+import { LicensedAssetKind } from '../model/licensedAssetKind';
+// @ts-ignore
+import { LicensedAssetPage } from '../model/licensedAssetPage';
+// @ts-ignore
+import { LicensedAssetView } from '../model/licensedAssetView';
+// @ts-ignore
+import { LicensingExport } from '../model/licensingExport';
+// @ts-ignore
+import { LicensingSummary } from '../model/licensingSummary';
 // @ts-ignore
 import { LoraModelRecord } from '../model/loraModelRecord';
 // @ts-ignore
@@ -135,6 +155,8 @@ import { PendingQueueAuditCurrentResponse } from '../model/pendingQueueAuditCurr
 // @ts-ignore
 import { PendingQueuePage } from '../model/pendingQueuePage';
 // @ts-ignore
+import { PermissionStatus } from '../model/permissionStatus';
+// @ts-ignore
 import { PurgePendingChangesRequest } from '../model/purgePendingChangesRequest';
 // @ts-ignore
 import { PurgePendingChangesResponse } from '../model/purgePendingChangesResponse';
@@ -142,6 +164,10 @@ import { PurgePendingChangesResponse } from '../model/purgePendingChangesRespons
 import { RemoveAliasRequest } from '../model/removeAliasRequest';
 // @ts-ignore
 import { RemoveFamilyMemberRequest } from '../model/removeFamilyMemberRequest';
+// @ts-ignore
+import { ResolvedTextGuidance } from '../model/resolvedTextGuidance';
+// @ts-ignore
+import { ResponseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet } from '../model/responseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet';
 // @ts-ignore
 import { ResponseReadV2ReferenceValue } from '../model/responseReadV2ReferenceValue';
 // @ts-ignore
@@ -154,6 +180,14 @@ import { SetAliasesRequest } from '../model/setAliasesRequest';
 import { SetFamilyRequest } from '../model/setFamilyRequest';
 // @ts-ignore
 import { TextGenerationModelRecord } from '../model/textGenerationModelRecord';
+// @ts-ignore
+import { TextGuidanceAssignmentPage } from '../model/textGuidanceAssignmentPage';
+// @ts-ignore
+import { TextGuidanceCatalog } from '../model/textGuidanceCatalog';
+// @ts-ignore
+import { TextGuidanceChangeSet } from '../model/textGuidanceChangeSet';
+// @ts-ignore
+import { TextUsageProfilePage } from '../model/textUsageProfilePage';
 // @ts-ignore
 import { TextualInversionModelRecord } from '../model/textualInversionModelRecord';
 // @ts-ignore
@@ -1259,6 +1293,426 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Create License Definition
+   * Create a normalized definition as an independently allowlisted editor.
+   * @param licenseDefinition
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost(
+    licenseDefinition: LicenseDefinition,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinition>;
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost(
+    licenseDefinition: LicenseDefinition,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinition>>;
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost(
+    licenseDefinition: LicenseDefinition,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinition>>;
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost(
+    licenseDefinition: LicenseDefinition,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseDefinition === null || licenseDefinition === undefined) {
+      throw new Error(
+        'Required parameter licenseDefinition was null or undefined when calling createLicenseDefinitionModelReferencesV2LicensingLicensesPost.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinition>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licenseDefinition,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Create License Definition
+   * Create a normalized definition as an independently allowlisted editor.
+   * @param licenseDefinition
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost_4(
+    licenseDefinition: LicenseDefinition,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinition>;
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost_4(
+    licenseDefinition: LicenseDefinition,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinition>>;
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost_4(
+    licenseDefinition: LicenseDefinition,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinition>>;
+  public createLicenseDefinitionModelReferencesV2LicensingLicensesPost_4(
+    licenseDefinition: LicenseDefinition,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseDefinition === null || licenseDefinition === undefined) {
+      throw new Error(
+        'Required parameter licenseDefinition was null or undefined when calling createLicenseDefinitionModelReferencesV2LicensingLicensesPost_4.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinition>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licenseDefinition,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Create Licensed Asset
+   * Create a non-model asset as an independently allowlisted editor.
+   * @param licensedAsset
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost(
+    licensedAsset: LicensedAsset,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAsset>;
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost(
+    licensedAsset: LicensedAsset,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAsset>>;
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost(
+    licensedAsset: LicensedAsset,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAsset>>;
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost(
+    licensedAsset: LicensedAsset,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licensedAsset === null || licensedAsset === undefined) {
+      throw new Error(
+        'Required parameter licensedAsset was null or undefined when calling createLicensedAssetModelReferencesV2LicensingAssetsPost.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAsset>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licensedAsset,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Create Licensed Asset
+   * Create a non-model asset as an independently allowlisted editor.
+   * @param licensedAsset
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost_5(
+    licensedAsset: LicensedAsset,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAsset>;
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost_5(
+    licensedAsset: LicensedAsset,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAsset>>;
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost_5(
+    licensedAsset: LicensedAsset,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAsset>>;
+  public createLicensedAssetModelReferencesV2LicensingAssetsPost_5(
+    licensedAsset: LicensedAsset,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licensedAsset === null || licensedAsset === undefined) {
+      throw new Error(
+        'Required parameter licensedAsset was null or undefined when calling createLicensedAssetModelReferencesV2LicensingAssetsPost_5.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAsset>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licensedAsset,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Create a new audio_generation model
    * @param audioGenerationModelRecord
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -1368,7 +1822,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2AudioGeneration_4(
+  public createV2AudioGeneration_6(
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -1378,7 +1832,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2AudioGeneration_4(
+  public createV2AudioGeneration_6(
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -1388,7 +1842,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2AudioGeneration_4(
+  public createV2AudioGeneration_6(
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -1398,7 +1852,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2AudioGeneration_4(
+  public createV2AudioGeneration_6(
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1410,7 +1864,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (audioGenerationModelRecord === null || audioGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter audioGenerationModelRecord was null or undefined when calling createV2AudioGeneration_4.',
+        'Required parameter audioGenerationModelRecord was null or undefined when calling createV2AudioGeneration_6.',
       );
     }
 
@@ -1576,7 +2030,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Blip_5(
+  public createV2Blip_7(
     blipModelRecord: BlipModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -1586,7 +2040,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Blip_5(
+  public createV2Blip_7(
     blipModelRecord: BlipModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -1596,7 +2050,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Blip_5(
+  public createV2Blip_7(
     blipModelRecord: BlipModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -1606,7 +2060,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Blip_5(
+  public createV2Blip_7(
     blipModelRecord: BlipModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1618,7 +2072,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (blipModelRecord === null || blipModelRecord === undefined) {
       throw new Error(
-        'Required parameter blipModelRecord was null or undefined when calling createV2Blip_5.',
+        'Required parameter blipModelRecord was null or undefined when calling createV2Blip_7.',
       );
     }
 
@@ -1784,7 +2238,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Clip_6(
+  public createV2Clip_8(
     clipModelRecord: ClipModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -1794,7 +2248,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Clip_6(
+  public createV2Clip_8(
     clipModelRecord: ClipModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -1804,7 +2258,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Clip_6(
+  public createV2Clip_8(
     clipModelRecord: ClipModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -1814,7 +2268,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Clip_6(
+  public createV2Clip_8(
     clipModelRecord: ClipModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -1826,7 +2280,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (clipModelRecord === null || clipModelRecord === undefined) {
       throw new Error(
-        'Required parameter clipModelRecord was null or undefined when calling createV2Clip_6.',
+        'Required parameter clipModelRecord was null or undefined when calling createV2Clip_8.',
       );
     }
 
@@ -1992,7 +2446,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Codeformer_7(
+  public createV2Codeformer_9(
     codeformerModelRecord: CodeformerModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2002,7 +2456,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Codeformer_7(
+  public createV2Codeformer_9(
     codeformerModelRecord: CodeformerModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2012,7 +2466,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Codeformer_7(
+  public createV2Codeformer_9(
     codeformerModelRecord: CodeformerModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2022,7 +2476,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Codeformer_7(
+  public createV2Codeformer_9(
     codeformerModelRecord: CodeformerModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2034,7 +2488,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (codeformerModelRecord === null || codeformerModelRecord === undefined) {
       throw new Error(
-        'Required parameter codeformerModelRecord was null or undefined when calling createV2Codeformer_7.',
+        'Required parameter codeformerModelRecord was null or undefined when calling createV2Codeformer_9.',
       );
     }
 
@@ -2195,12 +2649,220 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Create a new controlnet_annotator model
+   * @param controlNetAnnotatorModelRecord
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public createV2ControlnetAnnotator(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public createV2ControlnetAnnotator(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public createV2ControlnetAnnotator(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public createV2ControlnetAnnotator(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (controlNetAnnotatorModelRecord === null || controlNetAnnotatorModelRecord === undefined) {
+      throw new Error(
+        'Required parameter controlNetAnnotatorModelRecord was null or undefined when calling createV2ControlnetAnnotator.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: controlNetAnnotatorModelRecord,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Create a new controlnet_annotator model
+   * @param controlNetAnnotatorModelRecord
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public createV2ControlnetAnnotator_10(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public createV2ControlnetAnnotator_10(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public createV2ControlnetAnnotator_10(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public createV2ControlnetAnnotator_10(
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (controlNetAnnotatorModelRecord === null || controlNetAnnotatorModelRecord === undefined) {
+      throw new Error(
+        'Required parameter controlNetAnnotatorModelRecord was null or undefined when calling createV2ControlnetAnnotator_10.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: controlNetAnnotatorModelRecord,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Create a new controlnet model
    * @param controlNetModelRecord
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Controlnet_8(
+  public createV2Controlnet_11(
     controlNetModelRecord: ControlNetModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2210,7 +2872,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Controlnet_8(
+  public createV2Controlnet_11(
     controlNetModelRecord: ControlNetModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2220,7 +2882,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Controlnet_8(
+  public createV2Controlnet_11(
     controlNetModelRecord: ControlNetModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2230,7 +2892,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Controlnet_8(
+  public createV2Controlnet_11(
     controlNetModelRecord: ControlNetModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2242,7 +2904,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (controlNetModelRecord === null || controlNetModelRecord === undefined) {
       throw new Error(
-        'Required parameter controlNetModelRecord was null or undefined when calling createV2Controlnet_8.',
+        'Required parameter controlNetModelRecord was null or undefined when calling createV2Controlnet_11.',
       );
     }
 
@@ -2408,7 +3070,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Esrgan_9(
+  public createV2Esrgan_12(
     esrganModelRecord: EsrganModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2418,7 +3080,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Esrgan_9(
+  public createV2Esrgan_12(
     esrganModelRecord: EsrganModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2428,7 +3090,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Esrgan_9(
+  public createV2Esrgan_12(
     esrganModelRecord: EsrganModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2438,7 +3100,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Esrgan_9(
+  public createV2Esrgan_12(
     esrganModelRecord: EsrganModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2450,7 +3112,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (esrganModelRecord === null || esrganModelRecord === undefined) {
       throw new Error(
-        'Required parameter esrganModelRecord was null or undefined when calling createV2Esrgan_9.',
+        'Required parameter esrganModelRecord was null or undefined when calling createV2Esrgan_12.',
       );
     }
 
@@ -2616,7 +3278,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Gfpgan_10(
+  public createV2Gfpgan_13(
     gfpganModelRecord: GfpganModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2626,7 +3288,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Gfpgan_10(
+  public createV2Gfpgan_13(
     gfpganModelRecord: GfpganModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2636,7 +3298,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Gfpgan_10(
+  public createV2Gfpgan_13(
     gfpganModelRecord: GfpganModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2646,7 +3308,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Gfpgan_10(
+  public createV2Gfpgan_13(
     gfpganModelRecord: GfpganModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2658,7 +3320,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (gfpganModelRecord === null || gfpganModelRecord === undefined) {
       throw new Error(
-        'Required parameter gfpganModelRecord was null or undefined when calling createV2Gfpgan_10.',
+        'Required parameter gfpganModelRecord was null or undefined when calling createV2Gfpgan_13.',
       );
     }
 
@@ -2824,7 +3486,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2ImageGeneration_11(
+  public createV2ImageGeneration_14(
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -2834,7 +3496,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2ImageGeneration_11(
+  public createV2ImageGeneration_14(
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -2844,7 +3506,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2ImageGeneration_11(
+  public createV2ImageGeneration_14(
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -2854,7 +3516,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2ImageGeneration_11(
+  public createV2ImageGeneration_14(
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -2866,7 +3528,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (imageGenerationModelRecord === null || imageGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter imageGenerationModelRecord was null or undefined when calling createV2ImageGeneration_11.',
+        'Required parameter imageGenerationModelRecord was null or undefined when calling createV2ImageGeneration_14.',
       );
     }
 
@@ -3032,7 +3694,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Lora_12(
+  public createV2Lora_15(
     loraModelRecord: LoraModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3042,7 +3704,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Lora_12(
+  public createV2Lora_15(
     loraModelRecord: LoraModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3052,7 +3714,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Lora_12(
+  public createV2Lora_15(
     loraModelRecord: LoraModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3062,7 +3724,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Lora_12(
+  public createV2Lora_15(
     loraModelRecord: LoraModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3074,7 +3736,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (loraModelRecord === null || loraModelRecord === undefined) {
       throw new Error(
-        'Required parameter loraModelRecord was null or undefined when calling createV2Lora_12.',
+        'Required parameter loraModelRecord was null or undefined when calling createV2Lora_15.',
       );
     }
 
@@ -3240,7 +3902,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Miscellaneous_13(
+  public createV2Miscellaneous_16(
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3250,7 +3912,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Miscellaneous_13(
+  public createV2Miscellaneous_16(
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3260,7 +3922,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Miscellaneous_13(
+  public createV2Miscellaneous_16(
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3270,7 +3932,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Miscellaneous_13(
+  public createV2Miscellaneous_16(
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3282,7 +3944,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (miscellaneousModelRecord === null || miscellaneousModelRecord === undefined) {
       throw new Error(
-        'Required parameter miscellaneousModelRecord was null or undefined when calling createV2Miscellaneous_13.',
+        'Required parameter miscellaneousModelRecord was null or undefined when calling createV2Miscellaneous_16.',
       );
     }
 
@@ -3563,7 +4225,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2SafetyChecker_14(
+  public createV2SafetyChecker_17(
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3573,7 +4235,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2SafetyChecker_14(
+  public createV2SafetyChecker_17(
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3583,7 +4245,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2SafetyChecker_14(
+  public createV2SafetyChecker_17(
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3593,7 +4255,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2SafetyChecker_14(
+  public createV2SafetyChecker_17(
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3605,7 +4267,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (safetyCheckerModelRecord === null || safetyCheckerModelRecord === undefined) {
       throw new Error(
-        'Required parameter safetyCheckerModelRecord was null or undefined when calling createV2SafetyChecker_14.',
+        'Required parameter safetyCheckerModelRecord was null or undefined when calling createV2SafetyChecker_17.',
       );
     }
 
@@ -3771,7 +4433,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2TextGeneration_15(
+  public createV2TextGeneration_18(
     textGenerationModelRecord: TextGenerationModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3781,7 +4443,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2TextGeneration_15(
+  public createV2TextGeneration_18(
     textGenerationModelRecord: TextGenerationModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3791,7 +4453,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2TextGeneration_15(
+  public createV2TextGeneration_18(
     textGenerationModelRecord: TextGenerationModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -3801,7 +4463,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2TextGeneration_15(
+  public createV2TextGeneration_18(
     textGenerationModelRecord: TextGenerationModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3813,7 +4475,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (textGenerationModelRecord === null || textGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter textGenerationModelRecord was null or undefined when calling createV2TextGeneration_15.',
+        'Required parameter textGenerationModelRecord was null or undefined when calling createV2TextGeneration_18.',
       );
     }
 
@@ -3979,7 +4641,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2Ti_16(
+  public createV2Ti_19(
     textualInversionModelRecord: TextualInversionModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -3989,7 +4651,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2Ti_16(
+  public createV2Ti_19(
     textualInversionModelRecord: TextualInversionModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -3999,7 +4661,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2Ti_16(
+  public createV2Ti_19(
     textualInversionModelRecord: TextualInversionModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -4009,7 +4671,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2Ti_16(
+  public createV2Ti_19(
     textualInversionModelRecord: TextualInversionModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -4021,7 +4683,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (textualInversionModelRecord === null || textualInversionModelRecord === undefined) {
       throw new Error(
-        'Required parameter textualInversionModelRecord was null or undefined when calling createV2Ti_16.',
+        'Required parameter textualInversionModelRecord was null or undefined when calling createV2Ti_19.',
       );
     }
 
@@ -4187,7 +4849,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public createV2VideoGeneration_17(
+  public createV2VideoGeneration_20(
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe?: 'body',
     reportProgress?: boolean,
@@ -4197,7 +4859,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public createV2VideoGeneration_17(
+  public createV2VideoGeneration_20(
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe?: 'response',
     reportProgress?: boolean,
@@ -4207,7 +4869,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public createV2VideoGeneration_17(
+  public createV2VideoGeneration_20(
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe?: 'events',
     reportProgress?: boolean,
@@ -4217,7 +4879,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public createV2VideoGeneration_17(
+  public createV2VideoGeneration_20(
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -4229,7 +4891,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (videoGenerationModelRecord === null || videoGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter videoGenerationModelRecord was null or undefined when calling createV2VideoGeneration_17.',
+        'Required parameter videoGenerationModelRecord was null or undefined when calling createV2VideoGeneration_20.',
       );
     }
 
@@ -4480,12 +5142,12 @@ export class V2Service extends BaseService {
   /**
    * Delete a custom naming schema (revert to inferred)
    * Remove the persisted naming schema so the group reverts to inference.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -4494,8 +5156,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -4504,8 +5166,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<any>>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -4514,8 +5176,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<any>>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -4524,9 +5186,109 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete.',
+        'Required parameter name was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Delete License Definition
+   * Delete a definition only when no model, file, or auxiliary asset references it.
+   * @param licenseId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete(
+    licenseId: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any>;
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete(
+    licenseId: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<any>>;
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete(
+    licenseId: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<any>>;
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete(
+    licenseId: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseId === null || licenseId === undefined) {
+      throw new Error(
+        'Required parameter licenseId was null or undefined when calling deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete.',
       );
     }
 
@@ -4560,7 +5322,315 @@ export class V2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/licensing/licenses/${this.configuration.encodeParam({ name: 'licenseId', value: licenseId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Delete License Definition
+   * Delete a definition only when no model, file, or auxiliary asset references it.
+   * @param licenseId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete_21(
+    licenseId: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any>;
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete_21(
+    licenseId: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<any>>;
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete_21(
+    licenseId: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<any>>;
+  public deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete_21(
+    licenseId: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseId === null || licenseId === undefined) {
+      throw new Error(
+        'Required parameter licenseId was null or undefined when calling deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete_21.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses/${this.configuration.encodeParam({ name: 'licenseId', value: licenseId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Delete Licensed Asset
+   * Delete a directly managed non-model asset.
+   * @param assetKind
+   * @param assetIdentifier
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any>;
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<any>>;
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<any>>;
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (assetKind === null || assetKind === undefined) {
+      throw new Error(
+        'Required parameter assetKind was null or undefined when calling deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete.',
+      );
+    }
+    if (assetIdentifier === null || assetIdentifier === undefined) {
+      throw new Error(
+        'Required parameter assetIdentifier was null or undefined when calling deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets/${this.configuration.encodeParam({ name: 'assetKind', value: assetKind, in: 'path', style: 'simple', explode: false, dataType: 'LicensedAssetKind', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'assetIdentifier', value: assetIdentifier, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Delete Licensed Asset
+   * Delete a directly managed non-model asset.
+   * @param assetKind
+   * @param assetIdentifier
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete_22(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any>;
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete_22(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<any>>;
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete_22(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<any>>;
+  public deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete_22(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (assetKind === null || assetKind === undefined) {
+      throw new Error(
+        'Required parameter assetKind was null or undefined when calling deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete_22.',
+      );
+    }
+    if (assetIdentifier === null || assetIdentifier === undefined) {
+      throw new Error(
+        'Required parameter assetIdentifier was null or undefined when calling deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete_22.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets/${this.configuration.encodeParam({ name: 'assetKind', value: assetKind, in: 'path', style: 'simple', explode: false, dataType: 'LicensedAssetKind', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'assetIdentifier', value: assetIdentifier, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
@@ -4781,6 +5851,240 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Export Catalog
+   * Export the complete validated published guidance catalog.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public exportCatalogModelReferencesV2TextGenerationGuidanceExportGet(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<TextGuidanceCatalog>;
+  public exportCatalogModelReferencesV2TextGenerationGuidanceExportGet(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<TextGuidanceCatalog>>;
+  public exportCatalogModelReferencesV2TextGenerationGuidanceExportGet(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<TextGuidanceCatalog>>;
+  public exportCatalogModelReferencesV2TextGenerationGuidanceExportGet(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/guidance/export`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<TextGuidanceCatalog>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Export Licensing
+   * Return a deterministic complete snapshot for report generation.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public exportLicensingModelReferencesV2LicensingExportGet(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensingExport>;
+  public exportLicensingModelReferencesV2LicensingExportGet(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensingExport>>;
+  public exportLicensingModelReferencesV2LicensingExportGet(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensingExport>>;
+  public exportLicensingModelReferencesV2LicensingExportGet(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/export`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensingExport>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Export Licensing
+   * Return a deterministic complete snapshot for report generation.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public exportLicensingModelReferencesV2LicensingExportGet_23(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensingExport>;
+  public exportLicensingModelReferencesV2LicensingExportGet_23(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensingExport>>;
+  public exportLicensingModelReferencesV2LicensingExportGet_23(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensingExport>>;
+  public exportLicensingModelReferencesV2LicensingExportGet_23(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/export`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensingExport>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Get aliases for a canonical group
    * Return the alias entry for a specific canonical group name.
    * @param canonical
@@ -4986,7 +6290,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_18(
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_24(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe?: 'body',
@@ -4997,7 +6301,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<BatchNetChangeResponse>;
-  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_18(
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_24(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe?: 'response',
@@ -5008,7 +6312,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<BatchNetChangeResponse>>;
-  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_18(
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_24(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe?: 'events',
@@ -5019,7 +6323,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<BatchNetChangeResponse>>;
-  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_18(
+  public getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_24(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe: any = 'body',
@@ -5032,7 +6336,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (batchId === null || batchId === undefined) {
       throw new Error(
-        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_18.',
+        'Required parameter batchId was null or undefined when calling getBatchNetChangesModelReferencesV2PendingQueueAuditBatchesBatchIdNetChangesGet_24.',
       );
     }
 
@@ -5194,7 +6498,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_19(
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_25(
     domainOverride?: CanonicalFormat,
     observe?: 'body',
     reportProgress?: boolean,
@@ -5204,7 +6508,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueueAuditCurrentResponse>;
-  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_19(
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_25(
     domainOverride?: CanonicalFormat,
     observe?: 'response',
     reportProgress?: boolean,
@@ -5214,7 +6518,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueueAuditCurrentResponse>>;
-  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_19(
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_25(
     domainOverride?: CanonicalFormat,
     observe?: 'events',
     reportProgress?: boolean,
@@ -5224,7 +6528,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueueAuditCurrentResponse>>;
-  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_19(
+  public getCurrentPendingChangesModelReferencesV2PendingQueueAuditCurrentGet_25(
     domainOverride?: CanonicalFormat,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -5544,12 +6848,12 @@ export class V2Service extends BaseService {
   /**
    * Get all members of a text model group
    * Get all models in a text model group with parsed name info and common fields.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -5558,8 +6862,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupMembersResponse>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -5568,8 +6872,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupMembersResponse>>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -5578,8 +6882,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupMembersResponse>>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -5588,11 +6892,14 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling getGroupModelReferencesV2TextGenerationGroupGroupNameGet.',
+        'Required parameter name was null or undefined when calling getGroupModelReferencesV2TextGenerationGroupGet.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -5617,10 +6924,11 @@ export class V2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/text_generation/group`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupMembersResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -5633,12 +6941,12 @@ export class V2Service extends BaseService {
   /**
    * Get the naming schema for a text model group
    * Return the persisted naming schema if one exists, otherwise infer from member names.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -5647,8 +6955,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupNameSchemaResponse>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -5657,8 +6965,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupNameSchemaResponse>>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -5667,8 +6975,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupNameSchemaResponse>>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -5677,9 +6985,102 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet.',
+        'Required parameter name was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<GroupNameSchemaResponse>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get License Definition
+   * Return one normalized license definition.
+   * @param licenseId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet(
+    licenseId: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinition>;
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet(
+    licenseId: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinition>>;
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet(
+    licenseId: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinition>>;
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet(
+    licenseId: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseId === null || licenseId === undefined) {
+      throw new Error(
+        'Required parameter licenseId was null or undefined when calling getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet.',
       );
     }
 
@@ -5706,9 +7107,650 @@ export class V2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/licensing/licenses/${this.configuration.encodeParam({ name: 'licenseId', value: licenseId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<GroupNameSchemaResponse>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LicenseDefinition>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get License Definition
+   * Return one normalized license definition.
+   * @param licenseId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet_26(
+    licenseId: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinition>;
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet_26(
+    licenseId: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinition>>;
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet_26(
+    licenseId: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinition>>;
+  public getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet_26(
+    licenseId: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseId === null || licenseId === undefined) {
+      throw new Error(
+        'Required parameter licenseId was null or undefined when calling getLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdGet_26.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses/${this.configuration.encodeParam({ name: 'licenseId', value: licenseId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinition>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get Licensed Asset
+   * Return one directly managed non-model asset.
+   * @param assetKind
+   * @param assetIdentifier
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAsset>;
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAsset>>;
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAsset>>;
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (assetKind === null || assetKind === undefined) {
+      throw new Error(
+        'Required parameter assetKind was null or undefined when calling getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet.',
+      );
+    }
+    if (assetIdentifier === null || assetIdentifier === undefined) {
+      throw new Error(
+        'Required parameter assetIdentifier was null or undefined when calling getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets/${this.configuration.encodeParam({ name: 'assetKind', value: assetKind, in: 'path', style: 'simple', explode: false, dataType: 'LicensedAssetKind', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'assetIdentifier', value: assetIdentifier, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAsset>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get Licensed Asset
+   * Return one directly managed non-model asset.
+   * @param assetKind
+   * @param assetIdentifier
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet_27(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAsset>;
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet_27(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAsset>>;
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet_27(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAsset>>;
+  public getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet_27(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (assetKind === null || assetKind === undefined) {
+      throw new Error(
+        'Required parameter assetKind was null or undefined when calling getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet_27.',
+      );
+    }
+    if (assetIdentifier === null || assetIdentifier === undefined) {
+      throw new Error(
+        'Required parameter assetIdentifier was null or undefined when calling getLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierGet_27.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets/${this.configuration.encodeParam({ name: 'assetKind', value: assetKind, in: 'path', style: 'simple', explode: false, dataType: 'LicensedAssetKind', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'assetIdentifier', value: assetIdentifier, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAsset>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get Licensing Summary
+   * Return aggregate counts across model and non-model licensing data.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensingSummary>;
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensingSummary>>;
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensingSummary>>;
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/summary`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensingSummary>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get Licensing Summary
+   * Return aggregate counts across model and non-model licensing data.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet_28(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensingSummary>;
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet_28(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensingSummary>>;
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet_28(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensingSummary>>;
+  public getLicensingSummaryModelReferencesV2LicensingSummaryGet_28(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/summary`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensingSummary>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get Model Licensing
+   * Return the detailed licensing view for one canonical model.
+   * @param category
+   * @param modelName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAssetView>;
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAssetView>>;
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAssetView>>;
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (category === null || category === undefined) {
+      throw new Error(
+        'Required parameter category was null or undefined when calling getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet.',
+      );
+    }
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/models/${this.configuration.encodeParam({ name: 'category', value: category, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAssetView>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Get Model Licensing
+   * Return the detailed licensing view for one canonical model.
+   * @param category
+   * @param modelName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet_29(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAssetView>;
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet_29(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAssetView>>;
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet_29(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAssetView>>;
+  public getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet_29(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (category === null || category === undefined) {
+      throw new Error(
+        'Required parameter category was null or undefined when calling getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet_29.',
+      );
+    }
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet_29.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/models/${this.configuration.encodeParam({ name: 'category', value: category, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAssetView>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
@@ -5721,7 +7763,7 @@ export class V2Service extends BaseService {
 
   /**
    * Get diff for a pending change
-   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.
+   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -5817,12 +7859,12 @@ export class V2Service extends BaseService {
 
   /**
    * Get diff for a pending change
-   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.
+   * Return a detailed diff for a pending change.  Compares the pending change payload against the current model state in the backend to show exactly what would change if applied.  For UPDATE operations, returns field-level diffs showing added, removed, and modified fields. For CREATE/DELETE operations, shows the full proposed/current state respectively.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_20(
+  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_30(
     changeId: number,
     observe?: 'body',
     reportProgress?: boolean,
@@ -5832,7 +7874,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeDiff>;
-  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_20(
+  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_30(
     changeId: number,
     observe?: 'response',
     reportProgress?: boolean,
@@ -5842,7 +7884,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeDiff>>;
-  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_20(
+  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_30(
     changeId: number,
     observe?: 'events',
     reportProgress?: boolean,
@@ -5852,7 +7894,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeDiff>>;
-  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_20(
+  public getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_30(
     changeId: number,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -5864,7 +7906,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (changeId === null || changeId === undefined) {
       throw new Error(
-        'Required parameter changeId was null or undefined when calling getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_20.',
+        'Required parameter changeId was null or undefined when calling getPendingChangeDiffModelReferencesV2PendingQueueChangesChangeIdDiffGet_30.',
       );
     }
 
@@ -5913,7 +7955,7 @@ export class V2Service extends BaseService {
 
   /**
    * Get diffs for multiple pending changes
-   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.
+   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeIds
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -6021,12 +8063,12 @@ export class V2Service extends BaseService {
 
   /**
    * Get diffs for multiple pending changes
-   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.
+   * Return diffs for multiple pending changes in bulk.  Accepts a list of change IDs and returns diffs for each. Changes that cannot be found or diffed are reported in the errors array.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeIds
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_21(
+  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_31(
     changeIds: Array<number>,
     observe?: 'body',
     reportProgress?: boolean,
@@ -6036,7 +8078,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeDiffPage>;
-  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_21(
+  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_31(
     changeIds: Array<number>,
     observe?: 'response',
     reportProgress?: boolean,
@@ -6046,7 +8088,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeDiffPage>>;
-  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_21(
+  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_31(
     changeIds: Array<number>,
     observe?: 'events',
     reportProgress?: boolean,
@@ -6056,7 +8098,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeDiffPage>>;
-  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_21(
+  public getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_31(
     changeIds: Array<number>,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -6068,7 +8110,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (changeIds === null || changeIds === undefined) {
       throw new Error(
-        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_21.',
+        'Required parameter changeIds was null or undefined when calling getPendingChangesDiffsModelReferencesV2PendingQueueDiffsGet_31.',
       );
     }
 
@@ -6246,7 +8288,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_22(
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_32(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe?: 'body',
@@ -6257,7 +8299,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueueAuditBatchDetail>;
-  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_22(
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_32(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe?: 'response',
@@ -6268,7 +8310,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueueAuditBatchDetail>>;
-  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_22(
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_32(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe?: 'events',
@@ -6279,7 +8321,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueueAuditBatchDetail>>;
-  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_22(
+  public getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_32(
     batchId: number,
     domainOverride?: CanonicalFormat,
     observe: any = 'body',
@@ -6292,7 +8334,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (batchId === null || batchId === undefined) {
       throw new Error(
-        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_22.',
+        'Required parameter batchId was null or undefined when calling getPendingQueueBatchDetailModelReferencesV2PendingQueueAuditBatchesBatchIdGet_32.',
       );
     }
 
@@ -6341,6 +8383,103 @@ export class V2Service extends BaseService {
       {
         context: localVarHttpContext,
         params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get Profile
+   * Return one current published guidance profile.
+   * @param profileId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public getProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet(
+    profileId: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ResponseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet>;
+  public getProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet(
+    profileId: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<
+    HttpResponse<ResponseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet>
+  >;
+  public getProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet(
+    profileId: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<
+    HttpEvent<ResponseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet>
+  >;
+  public getProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet(
+    profileId: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (profileId === null || profileId === undefined) {
+      throw new Error(
+        'Required parameter profileId was null or undefined when calling getProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/guidance/profiles/${this.configuration.encodeParam({ name: 'profileId', value: profileId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ResponseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
         responseType: <any>responseType_,
         ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,
@@ -6427,6 +8566,111 @@ export class V2Service extends BaseService {
       transferCache: localVarTransferCache,
       reportProgress: reportProgress,
     });
+  }
+
+  /**
+   * List Assignments
+   * List explicit exact-model guidance assignments.
+   * @param modelName
+   * @param profileId
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listAssignmentsModelReferencesV2TextGenerationGuidanceAssignmentsGet(
+    modelName?: string,
+    profileId?: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<TextGuidanceAssignmentPage>;
+  public listAssignmentsModelReferencesV2TextGenerationGuidanceAssignmentsGet(
+    modelName?: string,
+    profileId?: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<TextGuidanceAssignmentPage>>;
+  public listAssignmentsModelReferencesV2TextGenerationGuidanceAssignmentsGet(
+    modelName?: string,
+    profileId?: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<TextGuidanceAssignmentPage>>;
+  public listAssignmentsModelReferencesV2TextGenerationGuidanceAssignmentsGet(
+    modelName?: string,
+    profileId?: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>modelName,
+      'model_name',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>profileId,
+      'profile_id',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/guidance/assignments`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<TextGuidanceAssignmentPage>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        params: localVarQueryParameters,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
@@ -6664,6 +8908,518 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * List License Definitions
+   * Return normalized license definitions with stable pagination.
+   * @param includeDeprecated Include deprecated definitions
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinitionPage>;
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinitionPage>>;
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinitionPage>>;
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>includeDeprecated,
+      'include_deprecated',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinitionPage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List License Definitions
+   * Return normalized license definitions with stable pagination.
+   * @param includeDeprecated Include deprecated definitions
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet_33(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinitionPage>;
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet_33(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinitionPage>>;
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet_33(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinitionPage>>;
+  public listLicenseDefinitionsModelReferencesV2LicensingLicensesGet_33(
+    includeDeprecated?: boolean,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>includeDeprecated,
+      'include_deprecated',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinitionPage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List Licensed Assets
+   * Return model and non-model licensed assets with consumer-oriented filters.
+   * @param assetKind model, custom_node, software_component, or other
+   * @param category
+   * @param licenseId
+   * @param commercialUse
+   * @param redistribution
+   * @param nameContains
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAssetPage>;
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAssetPage>>;
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAssetPage>>;
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>assetKind,
+      'asset_kind',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>category,
+      'category',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>licenseId,
+      'license_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>commercialUse,
+      'commercial_use',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>redistribution,
+      'redistribution',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>nameContains,
+      'name_contains',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAssetPage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * List Licensed Assets
+   * Return model and non-model licensed assets with consumer-oriented filters.
+   * @param assetKind model, custom_node, software_component, or other
+   * @param category
+   * @param licenseId
+   * @param commercialUse
+   * @param redistribution
+   * @param nameContains
+   * @param offset
+   * @param limit
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet_34(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAssetPage>;
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet_34(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAssetPage>>;
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet_34(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAssetPage>>;
+  public listLicensedAssetsModelReferencesV2LicensingAssetsGet_34(
+    assetKind?: string,
+    category?: MODEL_REFERENCE_CATEGORY,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
+    nameContains?: string,
+    offset?: number,
+    limit?: number,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>assetKind,
+      'asset_kind',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>category,
+      'category',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>licenseId,
+      'license_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>commercialUse,
+      'commercial_use',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>redistribution,
+      'redistribution',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>nameContains,
+      'name_contains',
+    );
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAssetPage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * List your own submitted pending changes
    * Return the caller\&#39;s own queued changes so a requestor can track a proposal\&#39;s fate.  Unlike &#x60;&#x60;/changes&#x60;&#x60; this requires only the *requestor* role; visibility is hard-scoped to the calling key\&#39;s user id and cannot be widened to other users\&#39; changes.
    * @param statuses
@@ -6801,7 +9557,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_23(
+  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_35(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     offset?: number,
@@ -6814,7 +9570,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueuePage>;
-  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_23(
+  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_35(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     offset?: number,
@@ -6827,7 +9583,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueuePage>>;
-  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_23(
+  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_35(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     offset?: number,
@@ -6840,7 +9596,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueuePage>>;
-  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_23(
+  public listMyPendingChangesModelReferencesV2PendingQueueMyChangesGet_35(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     offset?: number,
@@ -6921,7 +9677,7 @@ export class V2Service extends BaseService {
 
   /**
    * List pending queue entries
-   * Return a filtered, paginated list of pending queue entries.
+   * Return a filtered, paginated list of pending queue entries.  Readable by any authenticated user; the queue is a transparency surface.
    * @param statuses
    * @param categories
    * @param batchId
@@ -7083,7 +9839,7 @@ export class V2Service extends BaseService {
 
   /**
    * List pending queue entries
-   * Return a filtered, paginated list of pending queue entries.
+   * Return a filtered, paginated list of pending queue entries.  Readable by any authenticated user; the queue is a transparency surface.
    * @param statuses
    * @param categories
    * @param batchId
@@ -7094,7 +9850,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public listPendingChangesModelReferencesV2PendingQueueChangesGet_24(
+  public listPendingChangesModelReferencesV2PendingQueueChangesGet_36(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -7110,7 +9866,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueuePage>;
-  public listPendingChangesModelReferencesV2PendingQueueChangesGet_24(
+  public listPendingChangesModelReferencesV2PendingQueueChangesGet_36(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -7126,7 +9882,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueuePage>>;
-  public listPendingChangesModelReferencesV2PendingQueueChangesGet_24(
+  public listPendingChangesModelReferencesV2PendingQueueChangesGet_36(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -7142,7 +9898,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueuePage>>;
-  public listPendingChangesModelReferencesV2PendingQueueChangesGet_24(
+  public listPendingChangesModelReferencesV2PendingQueueChangesGet_36(
     statuses?: Array<PendingChangeStatus>,
     categories?: Array<MODEL_REFERENCE_CATEGORY>,
     batchId?: number,
@@ -7364,7 +10120,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_25(
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_37(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -7376,7 +10132,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingQueueAuditBatchPage>;
-  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_25(
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_37(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -7388,7 +10144,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingQueueAuditBatchPage>>;
-  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_25(
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_37(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -7400,7 +10156,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingQueueAuditBatchPage>>;
-  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_25(
+  public listPendingQueueBatchesModelReferencesV2PendingQueueAuditBatchesGet_37(
     cursor?: number,
     limit?: number,
     domainOverride?: CanonicalFormat,
@@ -7467,6 +10223,97 @@ export class V2Service extends BaseService {
         reportProgress: reportProgress,
       },
     );
+  }
+
+  /**
+   * List Profiles
+   * List published prompt contracts and usage recipes.
+   * @param includeDeprecated
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public listProfilesModelReferencesV2TextGenerationGuidanceProfilesGet(
+    includeDeprecated?: boolean,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<TextUsageProfilePage>;
+  public listProfilesModelReferencesV2TextGenerationGuidanceProfilesGet(
+    includeDeprecated?: boolean,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<TextUsageProfilePage>>;
+  public listProfilesModelReferencesV2TextGenerationGuidanceProfilesGet(
+    includeDeprecated?: boolean,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<TextUsageProfilePage>>;
+  public listProfilesModelReferencesV2TextGenerationGuidanceProfilesGet(
+    includeDeprecated?: boolean,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>includeDeprecated,
+      'include_deprecated',
+    );
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/guidance/profiles`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<TextUsageProfilePage>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -7584,7 +10431,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<{ [key: string]: any }>>;
+  ): Observable<Array<object>>;
   public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
     modelCategoryName: string,
     limit?: number,
@@ -7597,7 +10444,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<{ [key: string]: any }>>>;
+  ): Observable<HttpResponse<Array<object>>>;
   public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
     modelCategoryName: string,
     limit?: number,
@@ -7610,7 +10457,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<{ [key: string]: any }>>>;
+  ): Observable<HttpEvent<Array<object>>>;
   public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
     modelCategoryName: string,
     limit?: number,
@@ -7664,20 +10511,101 @@ export class V2Service extends BaseService {
 
     let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/popular`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<{ [key: string]: any }>>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        params: localVarQueryParameters,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
+    return this.httpClient.request<Array<object>>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Preview Legacy Migration
+   * Build an editable proposal from legacy instruct-format strings without storing it.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public previewLegacyMigrationModelReferencesV2TextGenerationGuidanceMigrationPreviewPost(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<GuidanceMigrationPreview>;
+  public previewLegacyMigrationModelReferencesV2TextGenerationGuidanceMigrationPreviewPost(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<GuidanceMigrationPreview>>;
+  public previewLegacyMigrationModelReferencesV2TextGenerationGuidanceMigrationPreviewPost(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<GuidanceMigrationPreview>>;
+  public previewLegacyMigrationModelReferencesV2TextGenerationGuidanceMigrationPreviewPost(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
     );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/guidance/migration/preview`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<GuidanceMigrationPreview>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -7792,7 +10720,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_26(
+  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_38(
     pendingBatchRequest: PendingBatchRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -7802,7 +10730,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingBatchResult>;
-  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_26(
+  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_38(
     pendingBatchRequest: PendingBatchRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -7812,7 +10740,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingBatchResult>>;
-  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_26(
+  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_38(
     pendingBatchRequest: PendingBatchRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -7822,7 +10750,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingBatchResult>>;
-  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_26(
+  public processPendingBatchModelReferencesV2PendingQueueBatchesPost_38(
     pendingBatchRequest: PendingBatchRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -7834,7 +10762,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (pendingBatchRequest === null || pendingBatchRequest === undefined) {
       throw new Error(
-        'Required parameter pendingBatchRequest was null or undefined when calling processPendingBatchModelReferencesV2PendingQueueBatchesPost_26.',
+        'Required parameter pendingBatchRequest was null or undefined when calling processPendingBatchModelReferencesV2PendingQueueBatchesPost_38.',
       );
     }
 
@@ -8006,7 +10934,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_27(
+  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_39(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -8016,7 +10944,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PurgePendingChangesResponse>;
-  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_27(
+  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_39(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -8026,7 +10954,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PurgePendingChangesResponse>>;
-  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_27(
+  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_39(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -8036,7 +10964,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PurgePendingChangesResponse>>;
-  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_27(
+  public purgePendingChangesModelReferencesV2PendingQueuePurgePost_39(
     purgePendingChangesRequest: PurgePendingChangesRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -8048,7 +10976,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (purgePendingChangesRequest === null || purgePendingChangesRequest === undefined) {
       throw new Error(
-        'Required parameter purgePendingChangesRequest was null or undefined when calling purgePendingChangesModelReferencesV2PendingQueuePurgePost_27.',
+        'Required parameter purgePendingChangesRequest was null or undefined when calling purgePendingChangesModelReferencesV2PendingQueuePurgePost_39.',
       );
     }
 
@@ -8196,7 +11124,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readAllV2Metadata_28(
+  public readAllV2Metadata_40(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -8205,7 +11133,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: CategoryMetadata }>;
-  public readAllV2Metadata_28(
+  public readAllV2Metadata_40(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -8214,7 +11142,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: CategoryMetadata }>>;
-  public readAllV2Metadata_28(
+  public readAllV2Metadata_40(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -8223,7 +11151,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: CategoryMetadata }>>;
-  public readAllV2Metadata_28(
+  public readAllV2Metadata_40(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -8274,7 +11202,7 @@ export class V2Service extends BaseService {
 
   /**
    * Get models merged with AI Horde runtime statistics
-   * Get AI Horde statistics data for models in a given category.  Combines live runtime statistics from the AI Horde API: - Worker count, queued jobs, performance metrics, ETA - Usage statistics (day, month, total) - Optional worker details - Optional per-backend variations (for text generation models)  **Caching:** - Model reference data: cached by ModelReferenceManager (60s TTL) - Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available) - Merged results: computed on-demand (no caching)  Args:     model_category_name: The model category (image_generation or text_generation).     manager: Model reference manager dependency.     horde_api: Horde API integration dependency.     include_workers: Include detailed worker information for each model.     include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.     min_worker_count: Filter to models with at least this many workers.     sort_by: Sort by field (worker_count, usage_total, usage_month, name).     sort_desc: Sort in descending order (default: True).  Returns:     JSONResponse: Dict of model_name -&gt; enriched_model_data.  Raises:     HTTPException: 404 if category not found, 500 if Horde API fails.
+   * Get AI Horde statistics data for models in a given category.  Combines live runtime statistics from the AI Horde API: - Worker count, queued jobs, performance metrics, ETA - Usage statistics (day, month, total) - Optional worker details - Optional per-backend variations (for text generation models)  **Caching:** - Model reference data: cached by ModelReferenceManager (60s TTL) - Horde API data: cached by HordeAPIIntegration (60s TTL, Redis if available) - Merged results: computed on-demand (no caching)  Args:     model_category_name: The model category (image_generation or text_generation).     manager: Model reference manager dependency.     horde_api: Horde API integration dependency.     include_workers: Include detailed worker information for each model.     include_backend_variations: Include per-backend statistics (aphrodite, koboldcpp) for text models.     min_worker_count: Filter to models with at least this many workers.     sort_by: Sort by field (worker_count, usage_total, usage_month, name).     sort_desc: Sort in descending order (default: True).  Returns:     JSONResponse: Dict of model_name -&gt; enriched_model_data.  Raises:     HTTPException: 400 if the category is unsupported, 404 if it is missing,         or 500 if the Horde API fails.
    * @param modelCategoryName
    * @param includeWorkers
    * @param includeBackendVariations
@@ -8298,7 +11226,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<{ [key: string]: any }>;
+  ): Observable<object>;
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
@@ -8313,7 +11241,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<{ [key: string]: any }>>;
+  ): Observable<HttpResponse<object>>;
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
@@ -8328,7 +11256,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<{ [key: string]: any }>>;
+  ): Observable<HttpEvent<object>>;
   public readModelsWithStats(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     includeWorkers?: boolean,
@@ -8398,7 +11326,7 @@ export class V2Service extends BaseService {
 
     let localVarPath = `/model_references/statistics/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/with-stats`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<{ [key: string]: any }>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<object>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters,
       responseType: <any>responseType_,
@@ -8412,7 +11340,7 @@ export class V2Service extends BaseService {
 
   /**
    * Get a single pending change
-   * Return details for a single pending change.
+   * Return details for a single pending change.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -8508,12 +11436,12 @@ export class V2Service extends BaseService {
 
   /**
    * Get a single pending change
-   * Return details for a single pending change.
+   * Return details for a single pending change.  Readable by any authenticated user — the queue is a transparency surface.
    * @param changeId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_29(
+  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_41(
     changeId: number,
     observe?: 'body',
     reportProgress?: boolean,
@@ -8523,7 +11451,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_29(
+  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_41(
     changeId: number,
     observe?: 'response',
     reportProgress?: boolean,
@@ -8533,7 +11461,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_29(
+  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_41(
     changeId: number,
     observe?: 'events',
     reportProgress?: boolean,
@@ -8543,7 +11471,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_29(
+  public readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_41(
     changeId: number,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -8555,7 +11483,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (changeId === null || changeId === undefined) {
       throw new Error(
-        'Required parameter changeId was null or undefined when calling readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_29.',
+        'Required parameter changeId was null or undefined when calling readPendingChangeModelReferencesV2PendingQueueChangesChangeIdGet_41.',
       );
     }
 
@@ -8688,7 +11616,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2AudioGenerationAll_30(
+  public readV2AudioGenerationAll_42(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -8697,7 +11625,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: AudioGenerationModelRecord }>;
-  public readV2AudioGenerationAll_30(
+  public readV2AudioGenerationAll_42(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -8706,7 +11634,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: AudioGenerationModelRecord }>>;
-  public readV2AudioGenerationAll_30(
+  public readV2AudioGenerationAll_42(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -8715,7 +11643,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: AudioGenerationModelRecord }>>;
-  public readV2AudioGenerationAll_30(
+  public readV2AudioGenerationAll_42(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -8862,7 +11790,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2AudioGenerationOne_31(
+  public readV2AudioGenerationOne_43(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -8872,7 +11800,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<AudioGenerationModelRecord>;
-  public readV2AudioGenerationOne_31(
+  public readV2AudioGenerationOne_43(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -8882,7 +11810,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<AudioGenerationModelRecord>>;
-  public readV2AudioGenerationOne_31(
+  public readV2AudioGenerationOne_43(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -8892,7 +11820,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<AudioGenerationModelRecord>>;
-  public readV2AudioGenerationOne_31(
+  public readV2AudioGenerationOne_43(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -8904,7 +11832,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2AudioGenerationOne_31.',
+        'Required parameter modelName was null or undefined when calling readV2AudioGenerationOne_43.',
       );
     }
 
@@ -9034,7 +11962,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2BlipAll_32(
+  public readV2BlipAll_44(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -9043,7 +11971,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: BlipModelRecord }>;
-  public readV2BlipAll_32(
+  public readV2BlipAll_44(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -9052,7 +11980,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: BlipModelRecord }>>;
-  public readV2BlipAll_32(
+  public readV2BlipAll_44(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -9061,7 +11989,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: BlipModelRecord }>>;
-  public readV2BlipAll_32(
+  public readV2BlipAll_44(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -9204,7 +12132,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2BlipOne_33(
+  public readV2BlipOne_45(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -9214,7 +12142,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<BlipModelRecord>;
-  public readV2BlipOne_33(
+  public readV2BlipOne_45(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -9224,7 +12152,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<BlipModelRecord>>;
-  public readV2BlipOne_33(
+  public readV2BlipOne_45(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -9234,7 +12162,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<BlipModelRecord>>;
-  public readV2BlipOne_33(
+  public readV2BlipOne_45(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -9246,7 +12174,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2BlipOne_33.',
+        'Required parameter modelName was null or undefined when calling readV2BlipOne_45.',
       );
     }
 
@@ -9520,7 +12448,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2CategoryLastUpdated_34(
+  public readV2CategoryLastUpdated_46(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
@@ -9530,7 +12458,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<CategoryLastUpdatedResponse>;
-  public readV2CategoryLastUpdated_34(
+  public readV2CategoryLastUpdated_46(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
@@ -9540,7 +12468,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<CategoryLastUpdatedResponse>>;
-  public readV2CategoryLastUpdated_34(
+  public readV2CategoryLastUpdated_46(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
@@ -9550,7 +12478,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<CategoryLastUpdatedResponse>>;
-  public readV2CategoryLastUpdated_34(
+  public readV2CategoryLastUpdated_46(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -9562,7 +12490,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryLastUpdated_34.',
+        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryLastUpdated_46.',
       );
     }
 
@@ -9702,7 +12630,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2CategoryMetadata_35(
+  public readV2CategoryMetadata_47(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'body',
     reportProgress?: boolean,
@@ -9712,7 +12640,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<CategoryMetadata>;
-  public readV2CategoryMetadata_35(
+  public readV2CategoryMetadata_47(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'response',
     reportProgress?: boolean,
@@ -9722,7 +12650,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<CategoryMetadata>>;
-  public readV2CategoryMetadata_35(
+  public readV2CategoryMetadata_47(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe?: 'events',
     reportProgress?: boolean,
@@ -9732,7 +12660,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<CategoryMetadata>>;
-  public readV2CategoryMetadata_35(
+  public readV2CategoryMetadata_47(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -9744,7 +12672,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelCategoryName === null || modelCategoryName === undefined) {
       throw new Error(
-        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryMetadata_35.',
+        'Required parameter modelCategoryName was null or undefined when calling readV2CategoryMetadata_47.',
       );
     }
 
@@ -9786,7 +12714,7 @@ export class V2Service extends BaseService {
 
   /**
    * Get statistics for a model category
-   * Get comprehensive statistics for a model reference category.  Returns aggregate metrics including: - Total model counts (overall, NSFW, SFW) - Baseline distribution - Download statistics - Tag and style distributions - Category-specific metrics (trigger words, inpainting, etc.)  Statistics are cached with TTL (default 300s) and automatically invalidated when model data changes. Caching is skipped when grouping is enabled.  Args:     model_category_name: The model reference category to get statistics for.     manager: The model reference manager (injected).     stats_cache: The statistics cache (injected).     group_text_models: Group text models by base name (strips quantization info).     limit: Maximum number of models to return (for pagination).     offset: Number of models to skip (for pagination).  Returns:     CategoryStatistics containing all computed metrics.  Raises:     HTTPException: 404 if category not found, 500 if computation fails.
+   * Get comprehensive statistics for a model reference category.  Returns aggregate metrics including: - Total model counts (overall, NSFW, SFW) - Baseline distribution - Download statistics - Tag and style distributions - Category-specific metrics (trigger words, inpainting, etc.)  Statistics are cached with TTL (default 300s) and automatically invalidated when model data changes. Caching is skipped when grouping is enabled.  Args:     model_category_name: The model reference category to get statistics for.     manager: The model reference manager (injected).     stats_cache: The statistics cache (injected).     group_text_models: Group text models by base name (strips quantization info).     limit: Maximum number of models to return (for pagination).     offset: Number of models to skip (for pagination).  Returns:     CategoryStatistics containing all computed metrics.  Raises:     HTTPException: 500 if computation fails.
    * @param modelCategoryName
    * @param groupTextModels Group text models by base name (strips quantization)
    * @param limit Maximum number of models to return (None &#x3D; all)
@@ -9984,7 +12912,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2ClipAll_36(
+  public readV2ClipAll_48(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -9993,7 +12921,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: ClipModelRecord }>;
-  public readV2ClipAll_36(
+  public readV2ClipAll_48(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -10002,7 +12930,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: ClipModelRecord }>>;
-  public readV2ClipAll_36(
+  public readV2ClipAll_48(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -10011,7 +12939,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: ClipModelRecord }>>;
-  public readV2ClipAll_36(
+  public readV2ClipAll_48(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -10154,7 +13082,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2ClipOne_37(
+  public readV2ClipOne_49(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -10164,7 +13092,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<ClipModelRecord>;
-  public readV2ClipOne_37(
+  public readV2ClipOne_49(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -10174,7 +13102,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<ClipModelRecord>>;
-  public readV2ClipOne_37(
+  public readV2ClipOne_49(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -10184,7 +13112,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<ClipModelRecord>>;
-  public readV2ClipOne_37(
+  public readV2ClipOne_49(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -10196,7 +13124,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2ClipOne_37.',
+        'Required parameter modelName was null or undefined when calling readV2ClipOne_49.',
       );
     }
 
@@ -10322,7 +13250,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2CodeformerAll_38(
+  public readV2CodeformerAll_50(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -10331,7 +13259,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: CodeformerModelRecord }>;
-  public readV2CodeformerAll_38(
+  public readV2CodeformerAll_50(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -10340,7 +13268,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: CodeformerModelRecord }>>;
-  public readV2CodeformerAll_38(
+  public readV2CodeformerAll_50(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -10349,7 +13277,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: CodeformerModelRecord }>>;
-  public readV2CodeformerAll_38(
+  public readV2CodeformerAll_50(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -10492,7 +13420,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2CodeformerOne_39(
+  public readV2CodeformerOne_51(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -10502,7 +13430,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<CodeformerModelRecord>;
-  public readV2CodeformerOne_39(
+  public readV2CodeformerOne_51(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -10512,7 +13440,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<CodeformerModelRecord>>;
-  public readV2CodeformerOne_39(
+  public readV2CodeformerOne_51(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -10522,7 +13450,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<CodeformerModelRecord>>;
-  public readV2CodeformerOne_39(
+  public readV2CodeformerOne_51(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -10534,7 +13462,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2CodeformerOne_39.',
+        'Required parameter modelName was null or undefined when calling readV2CodeformerOne_51.',
       );
     }
 
@@ -10660,7 +13588,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2ControlnetAll_40(
+  public readV2ControlnetAll_52(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -10669,7 +13597,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: ControlNetModelRecord }>;
-  public readV2ControlnetAll_40(
+  public readV2ControlnetAll_52(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -10678,7 +13606,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: ControlNetModelRecord }>>;
-  public readV2ControlnetAll_40(
+  public readV2ControlnetAll_52(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -10687,7 +13615,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: ControlNetModelRecord }>>;
-  public readV2ControlnetAll_40(
+  public readV2ControlnetAll_52(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -10722,6 +13650,352 @@ export class V2Service extends BaseService {
     let localVarPath = `/model_references/v2/controlnet`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<{ [key: string]: ControlNetModelRecord }>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get all controlnet_annotator models
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readV2ControlnetAnnotatorAll(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<{ [key: string]: ControlNetAnnotatorModelRecord }>;
+  public readV2ControlnetAnnotatorAll(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<{ [key: string]: ControlNetAnnotatorModelRecord }>>;
+  public readV2ControlnetAnnotatorAll(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<{ [key: string]: ControlNetAnnotatorModelRecord }>>;
+  public readV2ControlnetAnnotatorAll(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<{ [key: string]: ControlNetAnnotatorModelRecord }>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get all controlnet_annotator models
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readV2ControlnetAnnotatorAll_53(
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<{ [key: string]: ControlNetAnnotatorModelRecord }>;
+  public readV2ControlnetAnnotatorAll_53(
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<{ [key: string]: ControlNetAnnotatorModelRecord }>>;
+  public readV2ControlnetAnnotatorAll_53(
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<{ [key: string]: ControlNetAnnotatorModelRecord }>>;
+  public readV2ControlnetAnnotatorAll_53(
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<{ [key: string]: ControlNetAnnotatorModelRecord }>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get a specific controlnet_annotator model
+   * @param modelName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readV2ControlnetAnnotatorOne(
+    modelName: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ControlNetAnnotatorModelRecord>;
+  public readV2ControlnetAnnotatorOne(
+    modelName: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ControlNetAnnotatorModelRecord>>;
+  public readV2ControlnetAnnotatorOne(
+    modelName: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ControlNetAnnotatorModelRecord>>;
+  public readV2ControlnetAnnotatorOne(
+    modelName: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling readV2ControlnetAnnotatorOne.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator/model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ControlNetAnnotatorModelRecord>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
+   * Get a specific controlnet_annotator model
+   * @param modelName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readV2ControlnetAnnotatorOne_54(
+    modelName: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ControlNetAnnotatorModelRecord>;
+  public readV2ControlnetAnnotatorOne_54(
+    modelName: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ControlNetAnnotatorModelRecord>>;
+  public readV2ControlnetAnnotatorOne_54(
+    modelName: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ControlNetAnnotatorModelRecord>>;
+  public readV2ControlnetAnnotatorOne_54(
+    modelName: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling readV2ControlnetAnnotatorOne_54.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator/model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ControlNetAnnotatorModelRecord>(
       'get',
       `${basePath}${localVarPath}`,
       {
@@ -10830,7 +14104,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2ControlnetOne_41(
+  public readV2ControlnetOne_55(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -10840,7 +14114,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<ControlNetModelRecord>;
-  public readV2ControlnetOne_41(
+  public readV2ControlnetOne_55(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -10850,7 +14124,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<ControlNetModelRecord>>;
-  public readV2ControlnetOne_41(
+  public readV2ControlnetOne_55(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -10860,7 +14134,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<ControlNetModelRecord>>;
-  public readV2ControlnetOne_41(
+  public readV2ControlnetOne_55(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -10872,7 +14146,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2ControlnetOne_41.',
+        'Required parameter modelName was null or undefined when calling readV2ControlnetOne_55.',
       );
     }
 
@@ -10998,7 +14272,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2EsrganAll_42(
+  public readV2EsrganAll_56(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -11007,7 +14281,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: EsrganModelRecord }>;
-  public readV2EsrganAll_42(
+  public readV2EsrganAll_56(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -11016,7 +14290,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: EsrganModelRecord }>>;
-  public readV2EsrganAll_42(
+  public readV2EsrganAll_56(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -11025,7 +14299,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: EsrganModelRecord }>>;
-  public readV2EsrganAll_42(
+  public readV2EsrganAll_56(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -11168,7 +14442,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2EsrganOne_43(
+  public readV2EsrganOne_57(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -11178,7 +14452,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<EsrganModelRecord>;
-  public readV2EsrganOne_43(
+  public readV2EsrganOne_57(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -11188,7 +14462,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<EsrganModelRecord>>;
-  public readV2EsrganOne_43(
+  public readV2EsrganOne_57(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -11198,7 +14472,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<EsrganModelRecord>>;
-  public readV2EsrganOne_43(
+  public readV2EsrganOne_57(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -11210,7 +14484,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2EsrganOne_43.',
+        'Required parameter modelName was null or undefined when calling readV2EsrganOne_57.',
       );
     }
 
@@ -11336,7 +14610,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2GfpganAll_44(
+  public readV2GfpganAll_58(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -11345,7 +14619,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: GfpganModelRecord }>;
-  public readV2GfpganAll_44(
+  public readV2GfpganAll_58(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -11354,7 +14628,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: GfpganModelRecord }>>;
-  public readV2GfpganAll_44(
+  public readV2GfpganAll_58(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -11363,7 +14637,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: GfpganModelRecord }>>;
-  public readV2GfpganAll_44(
+  public readV2GfpganAll_58(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -11506,7 +14780,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2GfpganOne_45(
+  public readV2GfpganOne_59(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -11516,7 +14790,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GfpganModelRecord>;
-  public readV2GfpganOne_45(
+  public readV2GfpganOne_59(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -11526,7 +14800,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GfpganModelRecord>>;
-  public readV2GfpganOne_45(
+  public readV2GfpganOne_59(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -11536,7 +14810,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GfpganModelRecord>>;
-  public readV2GfpganOne_45(
+  public readV2GfpganOne_59(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -11548,7 +14822,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2GfpganOne_45.',
+        'Required parameter modelName was null or undefined when calling readV2GfpganOne_59.',
       );
     }
 
@@ -11674,7 +14948,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2ImageGenerationAll_46(
+  public readV2ImageGenerationAll_60(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -11683,7 +14957,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: ImageGenerationModelRecord }>;
-  public readV2ImageGenerationAll_46(
+  public readV2ImageGenerationAll_60(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -11692,7 +14966,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: ImageGenerationModelRecord }>>;
-  public readV2ImageGenerationAll_46(
+  public readV2ImageGenerationAll_60(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -11701,7 +14975,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: ImageGenerationModelRecord }>>;
-  public readV2ImageGenerationAll_46(
+  public readV2ImageGenerationAll_60(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -11848,7 +15122,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2ImageGenerationOne_47(
+  public readV2ImageGenerationOne_61(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -11858,7 +15132,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<ImageGenerationModelRecord>;
-  public readV2ImageGenerationOne_47(
+  public readV2ImageGenerationOne_61(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -11868,7 +15142,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<ImageGenerationModelRecord>>;
-  public readV2ImageGenerationOne_47(
+  public readV2ImageGenerationOne_61(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -11878,7 +15152,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<ImageGenerationModelRecord>>;
-  public readV2ImageGenerationOne_47(
+  public readV2ImageGenerationOne_61(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -11890,7 +15164,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2ImageGenerationOne_47.',
+        'Required parameter modelName was null or undefined when calling readV2ImageGenerationOne_61.',
       );
     }
 
@@ -12018,7 +15292,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2LastUpdated_48(
+  public readV2LastUpdated_62(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -12027,7 +15301,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<LastUpdatedResponse>;
-  public readV2LastUpdated_48(
+  public readV2LastUpdated_62(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -12036,7 +15310,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<LastUpdatedResponse>>;
-  public readV2LastUpdated_48(
+  public readV2LastUpdated_62(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -12045,7 +15319,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<LastUpdatedResponse>>;
-  public readV2LastUpdated_48(
+  public readV2LastUpdated_62(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -12176,7 +15450,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2LoraAll_49(
+  public readV2LoraAll_63(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -12185,7 +15459,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: LoraModelRecord }>;
-  public readV2LoraAll_49(
+  public readV2LoraAll_63(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -12194,7 +15468,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: LoraModelRecord }>>;
-  public readV2LoraAll_49(
+  public readV2LoraAll_63(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -12203,7 +15477,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: LoraModelRecord }>>;
-  public readV2LoraAll_49(
+  public readV2LoraAll_63(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -12346,7 +15620,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2LoraOne_50(
+  public readV2LoraOne_64(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -12356,7 +15630,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<LoraModelRecord>;
-  public readV2LoraOne_50(
+  public readV2LoraOne_64(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -12366,7 +15640,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<LoraModelRecord>>;
-  public readV2LoraOne_50(
+  public readV2LoraOne_64(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -12376,7 +15650,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<LoraModelRecord>>;
-  public readV2LoraOne_50(
+  public readV2LoraOne_64(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -12388,7 +15662,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2LoraOne_50.',
+        'Required parameter modelName was null or undefined when calling readV2LoraOne_64.',
       );
     }
 
@@ -12514,7 +15788,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2MiscellaneousAll_51(
+  public readV2MiscellaneousAll_65(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -12523,7 +15797,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: MiscellaneousModelRecord }>;
-  public readV2MiscellaneousAll_51(
+  public readV2MiscellaneousAll_65(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -12532,7 +15806,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: MiscellaneousModelRecord }>>;
-  public readV2MiscellaneousAll_51(
+  public readV2MiscellaneousAll_65(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -12541,7 +15815,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: MiscellaneousModelRecord }>>;
-  public readV2MiscellaneousAll_51(
+  public readV2MiscellaneousAll_65(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -12684,7 +15958,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2MiscellaneousOne_52(
+  public readV2MiscellaneousOne_66(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -12694,7 +15968,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<MiscellaneousModelRecord>;
-  public readV2MiscellaneousOne_52(
+  public readV2MiscellaneousOne_66(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -12704,7 +15978,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<MiscellaneousModelRecord>>;
-  public readV2MiscellaneousOne_52(
+  public readV2MiscellaneousOne_66(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -12714,7 +15988,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<MiscellaneousModelRecord>>;
-  public readV2MiscellaneousOne_52(
+  public readV2MiscellaneousOne_66(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -12726,7 +16000,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2MiscellaneousOne_52.',
+        'Required parameter modelName was null or undefined when calling readV2MiscellaneousOne_66.',
       );
     }
 
@@ -12938,6 +16212,106 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Get pending (beta) models for a category
+   * Return &#x60;&#x60;PENDING&#x60;&#x60;/&#x60;&#x60;APPROVED&#x60;&#x60; create/update changes as ready-to-use v2 records.  These are \&quot;beta\&quot; models awaiting (or pending) approval into the canonical reference. The payload is keyed by model name and shaped exactly like the canonical category endpoint, so a REPLICA client can overlay it onto canonical data without any format handling. &#x60;&#x60;DELETE&#x60;&#x60; changes are never surfaced (a beta cannot remove a live model), and when several changes target one name the most recent wins.  Reader authentication is required (any valid Horde API key), matching the other pending-queue read surfaces.
+   * @param modelCategoryName
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public readV2ReferencePending(
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<{ [key: string]: ResponseReadV2ReferenceValue }>;
+  public readV2ReferencePending(
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<{ [key: string]: ResponseReadV2ReferenceValue }>>;
+  public readV2ReferencePending(
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<{ [key: string]: ResponseReadV2ReferenceValue }>>;
+  public readV2ReferencePending(
+    modelCategoryName: MODEL_REFERENCE_CATEGORY,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelCategoryName === null || modelCategoryName === undefined) {
+      throw new Error(
+        'Required parameter modelCategoryName was null or undefined when calling readV2ReferencePending.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/pending`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<{ [key: string]: ResponseReadV2ReferenceValue }>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
+  }
+
+  /**
    * Get all v2 model reference names
    * Get all available v2 model reference category names.  Returns a list of all model categories that have v2 format references available.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -13105,7 +16479,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2SafetyCheckerAll_53(
+  public readV2SafetyCheckerAll_67(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -13114,7 +16488,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: SafetyCheckerModelRecord }>;
-  public readV2SafetyCheckerAll_53(
+  public readV2SafetyCheckerAll_67(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -13123,7 +16497,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: SafetyCheckerModelRecord }>>;
-  public readV2SafetyCheckerAll_53(
+  public readV2SafetyCheckerAll_67(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -13132,7 +16506,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: SafetyCheckerModelRecord }>>;
-  public readV2SafetyCheckerAll_53(
+  public readV2SafetyCheckerAll_67(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -13275,7 +16649,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2SafetyCheckerOne_54(
+  public readV2SafetyCheckerOne_68(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -13285,7 +16659,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<SafetyCheckerModelRecord>;
-  public readV2SafetyCheckerOne_54(
+  public readV2SafetyCheckerOne_68(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -13295,7 +16669,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<SafetyCheckerModelRecord>>;
-  public readV2SafetyCheckerOne_54(
+  public readV2SafetyCheckerOne_68(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -13305,7 +16679,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<SafetyCheckerModelRecord>>;
-  public readV2SafetyCheckerOne_54(
+  public readV2SafetyCheckerOne_68(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -13317,7 +16691,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2SafetyCheckerOne_54.',
+        'Required parameter modelName was null or undefined when calling readV2SafetyCheckerOne_68.',
       );
     }
 
@@ -13375,7 +16749,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<{ [key: string]: any }>;
+  ): Observable<object>;
   public readV2SingleModel(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
@@ -13386,7 +16760,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<{ [key: string]: any }>>;
+  ): Observable<HttpResponse<object>>;
   public readV2SingleModel(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
@@ -13397,7 +16771,7 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<{ [key: string]: any }>>;
+  ): Observable<HttpEvent<object>>;
   public readV2SingleModel(
     modelCategoryName: MODEL_REFERENCE_CATEGORY,
     modelName: string,
@@ -13445,7 +16819,7 @@ export class V2Service extends BaseService {
 
     let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'MODEL_REFERENCE_CATEGORY', dataFormat: undefined })}/model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<{ [key: string]: any }>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<object>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
@@ -13542,7 +16916,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2TextGenerationAll_55(
+  public readV2TextGenerationAll_69(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -13551,7 +16925,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: TextGenerationModelRecord }>;
-  public readV2TextGenerationAll_55(
+  public readV2TextGenerationAll_69(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -13560,7 +16934,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: TextGenerationModelRecord }>>;
-  public readV2TextGenerationAll_55(
+  public readV2TextGenerationAll_69(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -13569,7 +16943,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: TextGenerationModelRecord }>>;
-  public readV2TextGenerationAll_55(
+  public readV2TextGenerationAll_69(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -13712,7 +17086,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2TextGenerationOne_56(
+  public readV2TextGenerationOne_70(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -13722,7 +17096,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<TextGenerationModelRecord>;
-  public readV2TextGenerationOne_56(
+  public readV2TextGenerationOne_70(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -13732,7 +17106,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<TextGenerationModelRecord>>;
-  public readV2TextGenerationOne_56(
+  public readV2TextGenerationOne_70(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -13742,7 +17116,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<TextGenerationModelRecord>>;
-  public readV2TextGenerationOne_56(
+  public readV2TextGenerationOne_70(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -13754,7 +17128,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2TextGenerationOne_56.',
+        'Required parameter modelName was null or undefined when calling readV2TextGenerationOne_70.',
       );
     }
 
@@ -13880,7 +17254,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2TiAll_57(
+  public readV2TiAll_71(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -13889,7 +17263,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: TextualInversionModelRecord }>;
-  public readV2TiAll_57(
+  public readV2TiAll_71(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -13898,7 +17272,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: TextualInversionModelRecord }>>;
-  public readV2TiAll_57(
+  public readV2TiAll_71(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -13907,7 +17281,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: TextualInversionModelRecord }>>;
-  public readV2TiAll_57(
+  public readV2TiAll_71(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -14054,7 +17428,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2TiOne_58(
+  public readV2TiOne_72(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -14064,7 +17438,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<TextualInversionModelRecord>;
-  public readV2TiOne_58(
+  public readV2TiOne_72(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -14074,7 +17448,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<TextualInversionModelRecord>>;
-  public readV2TiOne_58(
+  public readV2TiOne_72(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -14084,7 +17458,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<TextualInversionModelRecord>>;
-  public readV2TiOne_58(
+  public readV2TiOne_72(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -14096,7 +17470,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2TiOne_58.',
+        'Required parameter modelName was null or undefined when calling readV2TiOne_72.',
       );
     }
 
@@ -14226,7 +17600,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2VideoGenerationAll_59(
+  public readV2VideoGenerationAll_73(
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -14235,7 +17609,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<{ [key: string]: VideoGenerationModelRecord }>;
-  public readV2VideoGenerationAll_59(
+  public readV2VideoGenerationAll_73(
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -14244,7 +17618,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<{ [key: string]: VideoGenerationModelRecord }>>;
-  public readV2VideoGenerationAll_59(
+  public readV2VideoGenerationAll_73(
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -14253,7 +17627,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<{ [key: string]: VideoGenerationModelRecord }>>;
-  public readV2VideoGenerationAll_59(
+  public readV2VideoGenerationAll_73(
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -14400,7 +17774,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public readV2VideoGenerationOne_60(
+  public readV2VideoGenerationOne_74(
     modelName: string,
     observe?: 'body',
     reportProgress?: boolean,
@@ -14410,7 +17784,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<VideoGenerationModelRecord>;
-  public readV2VideoGenerationOne_60(
+  public readV2VideoGenerationOne_74(
     modelName: string,
     observe?: 'response',
     reportProgress?: boolean,
@@ -14420,7 +17794,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<VideoGenerationModelRecord>>;
-  public readV2VideoGenerationOne_60(
+  public readV2VideoGenerationOne_74(
     modelName: string,
     observe?: 'events',
     reportProgress?: boolean,
@@ -14430,7 +17804,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<VideoGenerationModelRecord>>;
-  public readV2VideoGenerationOne_60(
+  public readV2VideoGenerationOne_74(
     modelName: string,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -14442,7 +17816,7 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling readV2VideoGenerationOne_60.',
+        'Required parameter modelName was null or undefined when calling readV2VideoGenerationOne_74.',
       );
     }
 
@@ -14717,6 +18091,579 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Replace License Definition
+   * Replace one normalized definition as an independently allowlisted editor.
+   * @param licenseId
+   * @param licenseDefinition
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinition>;
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinition>>;
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinition>>;
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseId === null || licenseId === undefined) {
+      throw new Error(
+        'Required parameter licenseId was null or undefined when calling replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut.',
+      );
+    }
+    if (licenseDefinition === null || licenseDefinition === undefined) {
+      throw new Error(
+        'Required parameter licenseDefinition was null or undefined when calling replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses/${this.configuration.encodeParam({ name: 'licenseId', value: licenseId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinition>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licenseDefinition,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Replace License Definition
+   * Replace one normalized definition as an independently allowlisted editor.
+   * @param licenseId
+   * @param licenseDefinition
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut_75(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicenseDefinition>;
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut_75(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicenseDefinition>>;
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut_75(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicenseDefinition>>;
+  public replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut_75(
+    licenseId: string,
+    licenseDefinition: LicenseDefinition,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (licenseId === null || licenseId === undefined) {
+      throw new Error(
+        'Required parameter licenseId was null or undefined when calling replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut_75.',
+      );
+    }
+    if (licenseDefinition === null || licenseDefinition === undefined) {
+      throw new Error(
+        'Required parameter licenseDefinition was null or undefined when calling replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut_75.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/licenses/${this.configuration.encodeParam({ name: 'licenseId', value: licenseId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicenseDefinition>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licenseDefinition,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Replace Licensed Asset
+   * Replace a non-model asset as an independently allowlisted editor.
+   * @param assetKind
+   * @param assetIdentifier
+   * @param licensedAsset
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAsset>;
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAsset>>;
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAsset>>;
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (assetKind === null || assetKind === undefined) {
+      throw new Error(
+        'Required parameter assetKind was null or undefined when calling replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut.',
+      );
+    }
+    if (assetIdentifier === null || assetIdentifier === undefined) {
+      throw new Error(
+        'Required parameter assetIdentifier was null or undefined when calling replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut.',
+      );
+    }
+    if (licensedAsset === null || licensedAsset === undefined) {
+      throw new Error(
+        'Required parameter licensedAsset was null or undefined when calling replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets/${this.configuration.encodeParam({ name: 'assetKind', value: assetKind, in: 'path', style: 'simple', explode: false, dataType: 'LicensedAssetKind', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'assetIdentifier', value: assetIdentifier, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAsset>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licensedAsset,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Replace Licensed Asset
+   * Replace a non-model asset as an independently allowlisted editor.
+   * @param assetKind
+   * @param assetIdentifier
+   * @param licensedAsset
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<LicensedAsset>;
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<LicensedAsset>>;
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<LicensedAsset>>;
+  public replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    licensedAsset: LicensedAsset,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (assetKind === null || assetKind === undefined) {
+      throw new Error(
+        'Required parameter assetKind was null or undefined when calling replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76.',
+      );
+    }
+    if (assetIdentifier === null || assetIdentifier === undefined) {
+      throw new Error(
+        'Required parameter assetIdentifier was null or undefined when calling replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76.',
+      );
+    }
+    if (licensedAsset === null || licensedAsset === undefined) {
+      throw new Error(
+        'Required parameter licensedAsset was null or undefined when calling replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut_76.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/licensing/assets/${this.configuration.encodeParam({ name: 'assetKind', value: assetKind, in: 'path', style: 'simple', explode: false, dataType: 'LicensedAssetKind', dataFormat: undefined })}/${this.configuration.encodeParam({ name: 'assetIdentifier', value: assetIdentifier, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<LicensedAsset>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: licensedAsset,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Resolve Model Guidance
+   * Resolve published guidance and legacy fallback for one exact model.
+   * @param name
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public resolveModelGuidanceModelReferencesV2TextGenerationGuidanceModelGet(
+    name: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<ResolvedTextGuidance>;
+  public resolveModelGuidanceModelReferencesV2TextGenerationGuidanceModelGet(
+    name: string,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<ResolvedTextGuidance>>;
+  public resolveModelGuidanceModelReferencesV2TextGenerationGuidanceModelGet(
+    name: string,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<ResolvedTextGuidance>>;
+  public resolveModelGuidanceModelReferencesV2TextGenerationGuidanceModelGet(
+    name: string,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (name === null || name === undefined) {
+      throw new Error(
+        'Required parameter name was null or undefined when calling resolveModelGuidanceModelReferencesV2TextGenerationGuidanceModelGet.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/guidance/model`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<ResolvedTextGuidance>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Search models across all categories
    * Search models across all categories with generic filters only.
    * @param nsfw Filter by NSFW status
@@ -14728,6 +18675,9 @@ export class V2Service extends BaseService {
    * @param sortDesc Sort descending
    * @param limit Max results to return
    * @param offset Number of results to skip
+   * @param licenseId Referenced license definition identifier
+   * @param commercialUse Commercial-use conclusion
+   * @param redistribution Redistribution conclusion
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -14741,6 +18691,9 @@ export class V2Service extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -14759,6 +18712,9 @@ export class V2Service extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -14777,6 +18733,9 @@ export class V2Service extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -14795,6 +18754,9 @@ export class V2Service extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -14845,6 +18807,21 @@ export class V2Service extends BaseService {
     );
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>licenseId,
+      'license_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>commercialUse,
+      'commercial_use',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>redistribution,
+      'redistribution',
+    );
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -14902,6 +18879,9 @@ export class V2Service extends BaseService {
    * @param excludeBackendVariations Exclude text model backend variations
    * @param quantized Filter by quantization (text only)
    * @param source Model source: \&#39;horde\&#39; (canonical), \&#39;any\&#39;, or a registered provider source id
+   * @param licenseId Referenced license definition identifier
+   * @param commercialUse Commercial-use conclusion
+   * @param redistribution Redistribution conclusion
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -14922,6 +18902,9 @@ export class V2Service extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -14947,6 +18930,9 @@ export class V2Service extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -14972,6 +18958,9 @@ export class V2Service extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -14997,6 +18986,9 @@ export class V2Service extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -15079,6 +19071,21 @@ export class V2Service extends BaseService {
       'quantized',
     );
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>source, 'source');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>licenseId,
+      'license_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>commercialUse,
+      'commercial_use',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>redistribution,
+      'redistribution',
+    );
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -15463,16 +19470,14 @@ export class V2Service extends BaseService {
   }
 
   /**
-   * Batch-update common fields across all canonical members of a group
-   * Update shared fields across all canonical members of a text model group.  Creates one PendingChangeRecord per canonical member with a shared batch_id.
-   * @param groupName
-   * @param commonFieldsUpdateRequest
+   * Submit Change Set
+   * Validate and enqueue one coherent guidance proposal in the shared queue.
+   * @param textGuidanceChangeSet
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
-    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+  public submitChangeSetModelReferencesV2TextGenerationGuidanceChangeSetsPost(
+    textGuidanceChangeSet: TextGuidanceChangeSet,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -15480,10 +19485,9 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<BatchUpdateResponse>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
-    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+  ): Observable<PendingChangeRecord>;
+  public submitChangeSetModelReferencesV2TextGenerationGuidanceChangeSetsPost(
+    textGuidanceChangeSet: TextGuidanceChangeSet,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -15491,10 +19495,9 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<BatchUpdateResponse>>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
-    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public submitChangeSetModelReferencesV2TextGenerationGuidanceChangeSetsPost(
+    textGuidanceChangeSet: TextGuidanceChangeSet,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -15502,10 +19505,9 @@ export class V2Service extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<BatchUpdateResponse>>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
-    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public submitChangeSetModelReferencesV2TextGenerationGuidanceChangeSetsPost(
+    textGuidanceChangeSet: TextGuidanceChangeSet,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -15514,14 +19516,9 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (textGuidanceChangeSet === null || textGuidanceChangeSet === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut.',
-      );
-    }
-    if (commonFieldsUpdateRequest === null || commonFieldsUpdateRequest === undefined) {
-      throw new Error(
-        'Required parameter commonFieldsUpdateRequest was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut.',
+        'Required parameter textGuidanceChangeSet was null or undefined when calling submitChangeSetModelReferencesV2TextGenerationGuidanceChangeSetsPost.',
       );
     }
 
@@ -15563,11 +19560,130 @@ export class V2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/common_fields`;
+    let localVarPath = `/model_references/v2/text_generation/guidance/change-sets`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: textGuidanceChangeSet,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Batch-update common fields across all canonical members of a group
+   * Update shared fields across all canonical members of a text model group.  Creates one PendingChangeRecord per canonical member with a shared batch_id.
+   * @param name Group name; may contain \&#39;/\&#39;.
+   * @param commonFieldsUpdateRequest
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
+    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<BatchUpdateResponse>;
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
+    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<BatchUpdateResponse>>;
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
+    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<BatchUpdateResponse>>;
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
+    commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (name === null || name === undefined) {
+      throw new Error(
+        'Required parameter name was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut.',
+      );
+    }
+    if (commonFieldsUpdateRequest === null || commonFieldsUpdateRequest === undefined) {
+      throw new Error(
+        'Required parameter commonFieldsUpdateRequest was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut.',
+      );
+    }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/text_generation/group/common_fields`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<BatchUpdateResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: commonFieldsUpdateRequest,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -15580,13 +19696,13 @@ export class V2Service extends BaseService {
   /**
    * Save a custom naming schema for a text model group
    * Persist a custom naming schema for a text model group.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param groupNameSchemaUpdateRequest
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -15596,8 +19712,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupNameSchemaResponse>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -15607,8 +19723,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupNameSchemaResponse>>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -15618,8 +19734,8 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupNameSchemaResponse>>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -15629,16 +19745,19 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut.',
+        'Required parameter name was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut.',
       );
     }
     if (groupNameSchemaUpdateRequest === null || groupNameSchemaUpdateRequest === undefined) {
       throw new Error(
-        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut.',
+        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -15678,11 +19797,12 @@ export class V2Service extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupNameSchemaResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: groupNameSchemaUpdateRequest,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -15813,7 +19933,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2AudioGeneration_61(
+  public updateV2AudioGeneration_77(
     modelName: string,
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe?: 'body',
@@ -15824,7 +19944,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2AudioGeneration_61(
+  public updateV2AudioGeneration_77(
     modelName: string,
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe?: 'response',
@@ -15835,7 +19955,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2AudioGeneration_61(
+  public updateV2AudioGeneration_77(
     modelName: string,
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe?: 'events',
@@ -15846,7 +19966,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2AudioGeneration_61(
+  public updateV2AudioGeneration_77(
     modelName: string,
     audioGenerationModelRecord: AudioGenerationModelRecord,
     observe: any = 'body',
@@ -15859,12 +19979,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2AudioGeneration_61.',
+        'Required parameter modelName was null or undefined when calling updateV2AudioGeneration_77.',
       );
     }
     if (audioGenerationModelRecord === null || audioGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter audioGenerationModelRecord was null or undefined when calling updateV2AudioGeneration_61.',
+        'Required parameter audioGenerationModelRecord was null or undefined when calling updateV2AudioGeneration_77.',
       );
     }
 
@@ -16041,7 +20161,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Blip_62(
+  public updateV2Blip_78(
     modelName: string,
     blipModelRecord: BlipModelRecord,
     observe?: 'body',
@@ -16052,7 +20172,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Blip_62(
+  public updateV2Blip_78(
     modelName: string,
     blipModelRecord: BlipModelRecord,
     observe?: 'response',
@@ -16063,7 +20183,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Blip_62(
+  public updateV2Blip_78(
     modelName: string,
     blipModelRecord: BlipModelRecord,
     observe?: 'events',
@@ -16074,7 +20194,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Blip_62(
+  public updateV2Blip_78(
     modelName: string,
     blipModelRecord: BlipModelRecord,
     observe: any = 'body',
@@ -16087,12 +20207,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Blip_62.',
+        'Required parameter modelName was null or undefined when calling updateV2Blip_78.',
       );
     }
     if (blipModelRecord === null || blipModelRecord === undefined) {
       throw new Error(
-        'Required parameter blipModelRecord was null or undefined when calling updateV2Blip_62.',
+        'Required parameter blipModelRecord was null or undefined when calling updateV2Blip_78.',
       );
     }
 
@@ -16269,7 +20389,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Clip_63(
+  public updateV2Clip_79(
     modelName: string,
     clipModelRecord: ClipModelRecord,
     observe?: 'body',
@@ -16280,7 +20400,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Clip_63(
+  public updateV2Clip_79(
     modelName: string,
     clipModelRecord: ClipModelRecord,
     observe?: 'response',
@@ -16291,7 +20411,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Clip_63(
+  public updateV2Clip_79(
     modelName: string,
     clipModelRecord: ClipModelRecord,
     observe?: 'events',
@@ -16302,7 +20422,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Clip_63(
+  public updateV2Clip_79(
     modelName: string,
     clipModelRecord: ClipModelRecord,
     observe: any = 'body',
@@ -16315,12 +20435,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Clip_63.',
+        'Required parameter modelName was null or undefined when calling updateV2Clip_79.',
       );
     }
     if (clipModelRecord === null || clipModelRecord === undefined) {
       throw new Error(
-        'Required parameter clipModelRecord was null or undefined when calling updateV2Clip_63.',
+        'Required parameter clipModelRecord was null or undefined when calling updateV2Clip_79.',
       );
     }
 
@@ -16497,7 +20617,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Codeformer_64(
+  public updateV2Codeformer_80(
     modelName: string,
     codeformerModelRecord: CodeformerModelRecord,
     observe?: 'body',
@@ -16508,7 +20628,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Codeformer_64(
+  public updateV2Codeformer_80(
     modelName: string,
     codeformerModelRecord: CodeformerModelRecord,
     observe?: 'response',
@@ -16519,7 +20639,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Codeformer_64(
+  public updateV2Codeformer_80(
     modelName: string,
     codeformerModelRecord: CodeformerModelRecord,
     observe?: 'events',
@@ -16530,7 +20650,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Codeformer_64(
+  public updateV2Codeformer_80(
     modelName: string,
     codeformerModelRecord: CodeformerModelRecord,
     observe: any = 'body',
@@ -16543,12 +20663,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Codeformer_64.',
+        'Required parameter modelName was null or undefined when calling updateV2Codeformer_80.',
       );
     }
     if (codeformerModelRecord === null || codeformerModelRecord === undefined) {
       throw new Error(
-        'Required parameter codeformerModelRecord was null or undefined when calling updateV2Codeformer_64.',
+        'Required parameter codeformerModelRecord was null or undefined when calling updateV2Codeformer_80.',
       );
     }
 
@@ -16719,13 +20839,241 @@ export class V2Service extends BaseService {
   }
 
   /**
+   * Update an existing controlnet_annotator model
+   * @param modelName
+   * @param controlNetAnnotatorModelRecord
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateV2ControlnetAnnotator(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public updateV2ControlnetAnnotator(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public updateV2ControlnetAnnotator(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public updateV2ControlnetAnnotator(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling updateV2ControlnetAnnotator.',
+      );
+    }
+    if (controlNetAnnotatorModelRecord === null || controlNetAnnotatorModelRecord === undefined) {
+      throw new Error(
+        'Required parameter controlNetAnnotatorModelRecord was null or undefined when calling updateV2ControlnetAnnotator.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator/model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: controlNetAnnotatorModelRecord,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
+   * Update an existing controlnet_annotator model
+   * @param modelName
+   * @param controlNetAnnotatorModelRecord
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public updateV2ControlnetAnnotator_81(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<PendingChangeRecord>;
+  public updateV2ControlnetAnnotator_81(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<PendingChangeRecord>>;
+  public updateV2ControlnetAnnotator_81(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<PendingChangeRecord>>;
+  public updateV2ControlnetAnnotator_81(
+    modelName: string,
+    controlNetAnnotatorModelRecord: ControlNetAnnotatorModelRecord,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<any> {
+    if (modelName === null || modelName === undefined) {
+      throw new Error(
+        'Required parameter modelName was null or undefined when calling updateV2ControlnetAnnotator_81.',
+      );
+    }
+    if (controlNetAnnotatorModelRecord === null || controlNetAnnotatorModelRecord === undefined) {
+      throw new Error(
+        'Required parameter controlNetAnnotatorModelRecord was null or undefined when calling updateV2ControlnetAnnotator_81.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (APIKeyHeader) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'APIKeyHeader',
+      'apikey',
+      localVarHeaders,
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/model_references/v2/controlnet_annotator/model/${this.configuration.encodeParam({ name: 'modelName', value: modelName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<PendingChangeRecord>('put', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: controlNetAnnotatorModelRecord,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
+  }
+
+  /**
    * Update an existing controlnet model
    * @param modelName
    * @param controlNetModelRecord
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Controlnet_65(
+  public updateV2Controlnet_82(
     modelName: string,
     controlNetModelRecord: ControlNetModelRecord,
     observe?: 'body',
@@ -16736,7 +21084,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Controlnet_65(
+  public updateV2Controlnet_82(
     modelName: string,
     controlNetModelRecord: ControlNetModelRecord,
     observe?: 'response',
@@ -16747,7 +21095,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Controlnet_65(
+  public updateV2Controlnet_82(
     modelName: string,
     controlNetModelRecord: ControlNetModelRecord,
     observe?: 'events',
@@ -16758,7 +21106,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Controlnet_65(
+  public updateV2Controlnet_82(
     modelName: string,
     controlNetModelRecord: ControlNetModelRecord,
     observe: any = 'body',
@@ -16771,12 +21119,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Controlnet_65.',
+        'Required parameter modelName was null or undefined when calling updateV2Controlnet_82.',
       );
     }
     if (controlNetModelRecord === null || controlNetModelRecord === undefined) {
       throw new Error(
-        'Required parameter controlNetModelRecord was null or undefined when calling updateV2Controlnet_65.',
+        'Required parameter controlNetModelRecord was null or undefined when calling updateV2Controlnet_82.',
       );
     }
 
@@ -16953,7 +21301,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Esrgan_66(
+  public updateV2Esrgan_83(
     modelName: string,
     esrganModelRecord: EsrganModelRecord,
     observe?: 'body',
@@ -16964,7 +21312,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Esrgan_66(
+  public updateV2Esrgan_83(
     modelName: string,
     esrganModelRecord: EsrganModelRecord,
     observe?: 'response',
@@ -16975,7 +21323,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Esrgan_66(
+  public updateV2Esrgan_83(
     modelName: string,
     esrganModelRecord: EsrganModelRecord,
     observe?: 'events',
@@ -16986,7 +21334,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Esrgan_66(
+  public updateV2Esrgan_83(
     modelName: string,
     esrganModelRecord: EsrganModelRecord,
     observe: any = 'body',
@@ -16999,12 +21347,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Esrgan_66.',
+        'Required parameter modelName was null or undefined when calling updateV2Esrgan_83.',
       );
     }
     if (esrganModelRecord === null || esrganModelRecord === undefined) {
       throw new Error(
-        'Required parameter esrganModelRecord was null or undefined when calling updateV2Esrgan_66.',
+        'Required parameter esrganModelRecord was null or undefined when calling updateV2Esrgan_83.',
       );
     }
 
@@ -17181,7 +21529,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Gfpgan_67(
+  public updateV2Gfpgan_84(
     modelName: string,
     gfpganModelRecord: GfpganModelRecord,
     observe?: 'body',
@@ -17192,7 +21540,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Gfpgan_67(
+  public updateV2Gfpgan_84(
     modelName: string,
     gfpganModelRecord: GfpganModelRecord,
     observe?: 'response',
@@ -17203,7 +21551,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Gfpgan_67(
+  public updateV2Gfpgan_84(
     modelName: string,
     gfpganModelRecord: GfpganModelRecord,
     observe?: 'events',
@@ -17214,7 +21562,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Gfpgan_67(
+  public updateV2Gfpgan_84(
     modelName: string,
     gfpganModelRecord: GfpganModelRecord,
     observe: any = 'body',
@@ -17227,12 +21575,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Gfpgan_67.',
+        'Required parameter modelName was null or undefined when calling updateV2Gfpgan_84.',
       );
     }
     if (gfpganModelRecord === null || gfpganModelRecord === undefined) {
       throw new Error(
-        'Required parameter gfpganModelRecord was null or undefined when calling updateV2Gfpgan_67.',
+        'Required parameter gfpganModelRecord was null or undefined when calling updateV2Gfpgan_84.',
       );
     }
 
@@ -17409,7 +21757,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2ImageGeneration_68(
+  public updateV2ImageGeneration_85(
     modelName: string,
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe?: 'body',
@@ -17420,7 +21768,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2ImageGeneration_68(
+  public updateV2ImageGeneration_85(
     modelName: string,
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe?: 'response',
@@ -17431,7 +21779,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2ImageGeneration_68(
+  public updateV2ImageGeneration_85(
     modelName: string,
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe?: 'events',
@@ -17442,7 +21790,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2ImageGeneration_68(
+  public updateV2ImageGeneration_85(
     modelName: string,
     imageGenerationModelRecord: ImageGenerationModelRecord,
     observe: any = 'body',
@@ -17455,12 +21803,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2ImageGeneration_68.',
+        'Required parameter modelName was null or undefined when calling updateV2ImageGeneration_85.',
       );
     }
     if (imageGenerationModelRecord === null || imageGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter imageGenerationModelRecord was null or undefined when calling updateV2ImageGeneration_68.',
+        'Required parameter imageGenerationModelRecord was null or undefined when calling updateV2ImageGeneration_85.',
       );
     }
 
@@ -17637,7 +21985,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Lora_69(
+  public updateV2Lora_86(
     modelName: string,
     loraModelRecord: LoraModelRecord,
     observe?: 'body',
@@ -17648,7 +21996,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Lora_69(
+  public updateV2Lora_86(
     modelName: string,
     loraModelRecord: LoraModelRecord,
     observe?: 'response',
@@ -17659,7 +22007,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Lora_69(
+  public updateV2Lora_86(
     modelName: string,
     loraModelRecord: LoraModelRecord,
     observe?: 'events',
@@ -17670,7 +22018,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Lora_69(
+  public updateV2Lora_86(
     modelName: string,
     loraModelRecord: LoraModelRecord,
     observe: any = 'body',
@@ -17683,12 +22031,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Lora_69.',
+        'Required parameter modelName was null or undefined when calling updateV2Lora_86.',
       );
     }
     if (loraModelRecord === null || loraModelRecord === undefined) {
       throw new Error(
-        'Required parameter loraModelRecord was null or undefined when calling updateV2Lora_69.',
+        'Required parameter loraModelRecord was null or undefined when calling updateV2Lora_86.',
       );
     }
 
@@ -17865,7 +22213,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Miscellaneous_70(
+  public updateV2Miscellaneous_87(
     modelName: string,
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe?: 'body',
@@ -17876,7 +22224,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Miscellaneous_70(
+  public updateV2Miscellaneous_87(
     modelName: string,
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe?: 'response',
@@ -17887,7 +22235,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Miscellaneous_70(
+  public updateV2Miscellaneous_87(
     modelName: string,
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe?: 'events',
@@ -17898,7 +22246,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Miscellaneous_70(
+  public updateV2Miscellaneous_87(
     modelName: string,
     miscellaneousModelRecord: MiscellaneousModelRecord,
     observe: any = 'body',
@@ -17911,12 +22259,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Miscellaneous_70.',
+        'Required parameter modelName was null or undefined when calling updateV2Miscellaneous_87.',
       );
     }
     if (miscellaneousModelRecord === null || miscellaneousModelRecord === undefined) {
       throw new Error(
-        'Required parameter miscellaneousModelRecord was null or undefined when calling updateV2Miscellaneous_70.',
+        'Required parameter miscellaneousModelRecord was null or undefined when calling updateV2Miscellaneous_87.',
       );
     }
 
@@ -18218,7 +22566,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2SafetyChecker_71(
+  public updateV2SafetyChecker_88(
     modelName: string,
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe?: 'body',
@@ -18229,7 +22577,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2SafetyChecker_71(
+  public updateV2SafetyChecker_88(
     modelName: string,
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe?: 'response',
@@ -18240,7 +22588,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2SafetyChecker_71(
+  public updateV2SafetyChecker_88(
     modelName: string,
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe?: 'events',
@@ -18251,7 +22599,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2SafetyChecker_71(
+  public updateV2SafetyChecker_88(
     modelName: string,
     safetyCheckerModelRecord: SafetyCheckerModelRecord,
     observe: any = 'body',
@@ -18264,12 +22612,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2SafetyChecker_71.',
+        'Required parameter modelName was null or undefined when calling updateV2SafetyChecker_88.',
       );
     }
     if (safetyCheckerModelRecord === null || safetyCheckerModelRecord === undefined) {
       throw new Error(
-        'Required parameter safetyCheckerModelRecord was null or undefined when calling updateV2SafetyChecker_71.',
+        'Required parameter safetyCheckerModelRecord was null or undefined when calling updateV2SafetyChecker_88.',
       );
     }
 
@@ -18446,7 +22794,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2TextGeneration_72(
+  public updateV2TextGeneration_89(
     modelName: string,
     textGenerationModelRecord: TextGenerationModelRecord,
     observe?: 'body',
@@ -18457,7 +22805,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2TextGeneration_72(
+  public updateV2TextGeneration_89(
     modelName: string,
     textGenerationModelRecord: TextGenerationModelRecord,
     observe?: 'response',
@@ -18468,7 +22816,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2TextGeneration_72(
+  public updateV2TextGeneration_89(
     modelName: string,
     textGenerationModelRecord: TextGenerationModelRecord,
     observe?: 'events',
@@ -18479,7 +22827,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2TextGeneration_72(
+  public updateV2TextGeneration_89(
     modelName: string,
     textGenerationModelRecord: TextGenerationModelRecord,
     observe: any = 'body',
@@ -18492,12 +22840,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2TextGeneration_72.',
+        'Required parameter modelName was null or undefined when calling updateV2TextGeneration_89.',
       );
     }
     if (textGenerationModelRecord === null || textGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter textGenerationModelRecord was null or undefined when calling updateV2TextGeneration_72.',
+        'Required parameter textGenerationModelRecord was null or undefined when calling updateV2TextGeneration_89.',
       );
     }
 
@@ -18674,7 +23022,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2Ti_73(
+  public updateV2Ti_90(
     modelName: string,
     textualInversionModelRecord: TextualInversionModelRecord,
     observe?: 'body',
@@ -18685,7 +23033,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2Ti_73(
+  public updateV2Ti_90(
     modelName: string,
     textualInversionModelRecord: TextualInversionModelRecord,
     observe?: 'response',
@@ -18696,7 +23044,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2Ti_73(
+  public updateV2Ti_90(
     modelName: string,
     textualInversionModelRecord: TextualInversionModelRecord,
     observe?: 'events',
@@ -18707,7 +23055,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2Ti_73(
+  public updateV2Ti_90(
     modelName: string,
     textualInversionModelRecord: TextualInversionModelRecord,
     observe: any = 'body',
@@ -18720,12 +23068,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2Ti_73.',
+        'Required parameter modelName was null or undefined when calling updateV2Ti_90.',
       );
     }
     if (textualInversionModelRecord === null || textualInversionModelRecord === undefined) {
       throw new Error(
-        'Required parameter textualInversionModelRecord was null or undefined when calling updateV2Ti_73.',
+        'Required parameter textualInversionModelRecord was null or undefined when calling updateV2Ti_90.',
       );
     }
 
@@ -18902,7 +23250,7 @@ export class V2Service extends BaseService {
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateV2VideoGeneration_74(
+  public updateV2VideoGeneration_91(
     modelName: string,
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe?: 'body',
@@ -18913,7 +23261,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<PendingChangeRecord>;
-  public updateV2VideoGeneration_74(
+  public updateV2VideoGeneration_91(
     modelName: string,
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe?: 'response',
@@ -18924,7 +23272,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<PendingChangeRecord>>;
-  public updateV2VideoGeneration_74(
+  public updateV2VideoGeneration_91(
     modelName: string,
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe?: 'events',
@@ -18935,7 +23283,7 @@ export class V2Service extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<PendingChangeRecord>>;
-  public updateV2VideoGeneration_74(
+  public updateV2VideoGeneration_91(
     modelName: string,
     videoGenerationModelRecord: VideoGenerationModelRecord,
     observe: any = 'body',
@@ -18948,12 +23296,12 @@ export class V2Service extends BaseService {
   ): Observable<any> {
     if (modelName === null || modelName === undefined) {
       throw new Error(
-        'Required parameter modelName was null or undefined when calling updateV2VideoGeneration_74.',
+        'Required parameter modelName was null or undefined when calling updateV2VideoGeneration_91.',
       );
     }
     if (videoGenerationModelRecord === null || videoGenerationModelRecord === undefined) {
       throw new Error(
-        'Required parameter videoGenerationModelRecord was null or undefined when calling updateV2VideoGeneration_74.',
+        'Required parameter videoGenerationModelRecord was null or undefined when calling updateV2VideoGeneration_91.',
       );
     }
 

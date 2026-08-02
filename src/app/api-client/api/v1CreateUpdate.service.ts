@@ -25,25 +25,43 @@ import { Observable } from 'rxjs';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
-import { LegacyBlipRecord } from '../model/legacyBlipRecord';
+import { LegacyBlipRecordInput } from '../model/legacyBlipRecordInput';
 // @ts-ignore
-import { LegacyClipRecord } from '../model/legacyClipRecord';
+import { LegacyBlipRecordOutput } from '../model/legacyBlipRecordOutput';
 // @ts-ignore
-import { LegacyCodeformerRecord } from '../model/legacyCodeformerRecord';
+import { LegacyClipRecordInput } from '../model/legacyClipRecordInput';
 // @ts-ignore
-import { LegacyControlnetRecord } from '../model/legacyControlnetRecord';
+import { LegacyClipRecordOutput } from '../model/legacyClipRecordOutput';
 // @ts-ignore
-import { LegacyEsrganRecord } from '../model/legacyEsrganRecord';
+import { LegacyCodeformerRecordInput } from '../model/legacyCodeformerRecordInput';
 // @ts-ignore
-import { LegacyGfpganRecord } from '../model/legacyGfpganRecord';
+import { LegacyCodeformerRecordOutput } from '../model/legacyCodeformerRecordOutput';
 // @ts-ignore
-import { LegacyMiscellaneousRecord } from '../model/legacyMiscellaneousRecord';
+import { LegacyControlnetRecordInput } from '../model/legacyControlnetRecordInput';
 // @ts-ignore
-import { LegacySafetyCheckerRecord } from '../model/legacySafetyCheckerRecord';
+import { LegacyControlnetRecordOutput } from '../model/legacyControlnetRecordOutput';
+// @ts-ignore
+import { LegacyEsrganRecordInput } from '../model/legacyEsrganRecordInput';
+// @ts-ignore
+import { LegacyEsrganRecordOutput } from '../model/legacyEsrganRecordOutput';
+// @ts-ignore
+import { LegacyGfpganRecordInput } from '../model/legacyGfpganRecordInput';
+// @ts-ignore
+import { LegacyGfpganRecordOutput } from '../model/legacyGfpganRecordOutput';
+// @ts-ignore
+import { LegacyMiscellaneousRecordInput } from '../model/legacyMiscellaneousRecordInput';
+// @ts-ignore
+import { LegacyMiscellaneousRecordOutput } from '../model/legacyMiscellaneousRecordOutput';
+// @ts-ignore
+import { LegacySafetyCheckerRecordInput } from '../model/legacySafetyCheckerRecordInput';
+// @ts-ignore
+import { LegacySafetyCheckerRecordOutput } from '../model/legacySafetyCheckerRecordOutput';
 // @ts-ignore
 import { LegacyStableDiffusionRecordInput } from '../model/legacyStableDiffusionRecordInput';
 // @ts-ignore
-import { LegacyTextGenerationRecord } from '../model/legacyTextGenerationRecord';
+import { LegacyTextGenerationRecordInput } from '../model/legacyTextGenerationRecordInput';
+// @ts-ignore
+import { LegacyTextGenerationRecordOutput } from '../model/legacyTextGenerationRecordOutput';
 // @ts-ignore
 import { MODEL_REFERENCE_CATEGORY } from '../model/mODELREFERENCECATEGORY';
 // @ts-ignore
@@ -69,12 +87,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new BLIP model in legacy format
    * Create a new BLIP model in legacy format.  The model name in the request body must not already exist in the blip category.
-   * @param legacyBlipRecord
+   * @param legacyBlipRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -82,9 +100,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyBlipRecord>;
+  ): Observable<LegacyBlipRecordOutput>;
   public createLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -92,9 +110,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyBlipRecord>>;
+  ): Observable<HttpResponse<LegacyBlipRecordOutput>>;
   public createLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -102,9 +120,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyBlipRecord>>;
+  ): Observable<HttpEvent<LegacyBlipRecordOutput>>;
   public createLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -113,9 +131,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyBlipRecord === null || legacyBlipRecord === undefined) {
+    if (legacyBlipRecordInput === null || legacyBlipRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyBlipRecord was null or undefined when calling createLegacyBlipModel.',
+        'Required parameter legacyBlipRecordInput was null or undefined when calling createLegacyBlipModel.',
       );
     }
 
@@ -159,9 +177,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/blip`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyBlipRecord>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyBlipRecordOutput>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyBlipRecord,
+      body: legacyBlipRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -174,12 +192,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new clip model in legacy format
    * Create a new CLIP model in legacy format.  The model name in the request body must not already exist in the clip category.
-   * @param legacyClipRecord
+   * @param legacyClipRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -187,9 +205,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyClipRecord>;
+  ): Observable<LegacyClipRecordOutput>;
   public createLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -197,9 +215,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyClipRecord>>;
+  ): Observable<HttpResponse<LegacyClipRecordOutput>>;
   public createLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -207,9 +225,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyClipRecord>>;
+  ): Observable<HttpEvent<LegacyClipRecordOutput>>;
   public createLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -218,9 +236,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyClipRecord === null || legacyClipRecord === undefined) {
+    if (legacyClipRecordInput === null || legacyClipRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyClipRecord was null or undefined when calling createLegacyClipModel.',
+        'Required parameter legacyClipRecordInput was null or undefined when calling createLegacyClipModel.',
       );
     }
 
@@ -264,9 +282,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/clip`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyClipRecord>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyClipRecordOutput>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyClipRecord,
+      body: legacyClipRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -279,12 +297,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new Codeformer model in legacy format
    * Create a new Codeformer model in legacy format.  The model name in the request body must not already exist in the codeformer category.
-   * @param legacyCodeformerRecord
+   * @param legacyCodeformerRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -292,9 +310,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyCodeformerRecord>;
+  ): Observable<LegacyCodeformerRecordOutput>;
   public createLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -302,9 +320,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyCodeformerRecord>>;
+  ): Observable<HttpResponse<LegacyCodeformerRecordOutput>>;
   public createLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -312,9 +330,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyCodeformerRecord>>;
+  ): Observable<HttpEvent<LegacyCodeformerRecordOutput>>;
   public createLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -323,9 +341,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyCodeformerRecord === null || legacyCodeformerRecord === undefined) {
+    if (legacyCodeformerRecordInput === null || legacyCodeformerRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyCodeformerRecord was null or undefined when calling createLegacyCodeformerModel.',
+        'Required parameter legacyCodeformerRecordInput was null or undefined when calling createLegacyCodeformerModel.',
       );
     }
 
@@ -369,27 +387,31 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/codeformer`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyCodeformerRecord>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: legacyCodeformerRecord,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<LegacyCodeformerRecordOutput>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: legacyCodeformerRecordInput,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
    * Create a new ControlNet model in legacy format
    * Create a new ControlNet model in legacy format.  The model name in the request body must not already exist in the controlnet category.
-   * @param legacyControlnetRecord
+   * @param legacyControlnetRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -397,9 +419,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyControlnetRecord>;
+  ): Observable<LegacyControlnetRecordOutput>;
   public createLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -407,9 +429,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyControlnetRecord>>;
+  ): Observable<HttpResponse<LegacyControlnetRecordOutput>>;
   public createLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -417,9 +439,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyControlnetRecord>>;
+  ): Observable<HttpEvent<LegacyControlnetRecordOutput>>;
   public createLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -428,9 +450,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyControlnetRecord === null || legacyControlnetRecord === undefined) {
+    if (legacyControlnetRecordInput === null || legacyControlnetRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyControlnetRecord was null or undefined when calling createLegacyControlnetModel.',
+        'Required parameter legacyControlnetRecordInput was null or undefined when calling createLegacyControlnetModel.',
       );
     }
 
@@ -474,27 +496,31 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/controlnet`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyControlnetRecord>('post', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: legacyControlnetRecord,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<LegacyControlnetRecordOutput>(
+      'post',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: legacyControlnetRecordInput,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
    * Create a new ESRGAN model in legacy format
    * Create a new ESRGAN model in legacy format.  The model name in the request body must not already exist in the esrgan category.
-   * @param legacyEsrganRecord
+   * @param legacyEsrganRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -502,9 +528,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyEsrganRecord>;
+  ): Observable<LegacyEsrganRecordOutput>;
   public createLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -512,9 +538,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyEsrganRecord>>;
+  ): Observable<HttpResponse<LegacyEsrganRecordOutput>>;
   public createLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -522,9 +548,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyEsrganRecord>>;
+  ): Observable<HttpEvent<LegacyEsrganRecordOutput>>;
   public createLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -533,9 +559,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyEsrganRecord === null || legacyEsrganRecord === undefined) {
+    if (legacyEsrganRecordInput === null || legacyEsrganRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyEsrganRecord was null or undefined when calling createLegacyEsrganModel.',
+        'Required parameter legacyEsrganRecordInput was null or undefined when calling createLegacyEsrganModel.',
       );
     }
 
@@ -579,9 +605,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/esrgan`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyEsrganRecord>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyEsrganRecordOutput>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyEsrganRecord,
+      body: legacyEsrganRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -594,12 +620,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new GFPGAN model in legacy format
    * Create a new GFPGAN model in legacy format.  The model name in the request body must not already exist in the gfpgan category.
-   * @param legacyGfpganRecord
+   * @param legacyGfpganRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -607,9 +633,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyGfpganRecord>;
+  ): Observable<LegacyGfpganRecordOutput>;
   public createLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -617,9 +643,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyGfpganRecord>>;
+  ): Observable<HttpResponse<LegacyGfpganRecordOutput>>;
   public createLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -627,9 +653,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyGfpganRecord>>;
+  ): Observable<HttpEvent<LegacyGfpganRecordOutput>>;
   public createLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -638,9 +664,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyGfpganRecord === null || legacyGfpganRecord === undefined) {
+    if (legacyGfpganRecordInput === null || legacyGfpganRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyGfpganRecord was null or undefined when calling createLegacyGfpganModel.',
+        'Required parameter legacyGfpganRecordInput was null or undefined when calling createLegacyGfpganModel.',
       );
     }
 
@@ -684,9 +710,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/gfpgan`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyGfpganRecord>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyGfpganRecordOutput>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyGfpganRecord,
+      body: legacyGfpganRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -712,7 +738,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<{ [key: string]: any }>;
+  ): Observable<object>;
   public createLegacyImageGenerationModel(
     legacyStableDiffusionRecordInput: LegacyStableDiffusionRecordInput,
     observe?: 'response',
@@ -722,7 +748,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<{ [key: string]: any }>>;
+  ): Observable<HttpResponse<object>>;
   public createLegacyImageGenerationModel(
     legacyStableDiffusionRecordInput: LegacyStableDiffusionRecordInput,
     observe?: 'events',
@@ -732,7 +758,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<{ [key: string]: any }>>;
+  ): Observable<HttpEvent<object>>;
   public createLegacyImageGenerationModel(
     legacyStableDiffusionRecordInput: LegacyStableDiffusionRecordInput,
     observe: any = 'body',
@@ -792,7 +818,7 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/image_generation`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<{ [key: string]: any }>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<object>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: legacyStableDiffusionRecordInput,
       responseType: <any>responseType_,
@@ -807,12 +833,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new miscellaneous model in legacy format
    * Create a new miscellaneous model in legacy format.  The model name in the request body must not already exist in the miscellaneous category.
-   * @param legacyMiscellaneousRecord
+   * @param legacyMiscellaneousRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -820,9 +846,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyMiscellaneousRecord>;
+  ): Observable<LegacyMiscellaneousRecordOutput>;
   public createLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -830,9 +856,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyMiscellaneousRecord>>;
+  ): Observable<HttpResponse<LegacyMiscellaneousRecordOutput>>;
   public createLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -840,9 +866,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyMiscellaneousRecord>>;
+  ): Observable<HttpEvent<LegacyMiscellaneousRecordOutput>>;
   public createLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -851,9 +877,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyMiscellaneousRecord === null || legacyMiscellaneousRecord === undefined) {
+    if (legacyMiscellaneousRecordInput === null || legacyMiscellaneousRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyMiscellaneousRecord was null or undefined when calling createLegacyMiscellaneousModel.',
+        'Required parameter legacyMiscellaneousRecordInput was null or undefined when calling createLegacyMiscellaneousModel.',
       );
     }
 
@@ -897,12 +923,12 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/miscellaneous`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyMiscellaneousRecord>(
+    return this.httpClient.request<LegacyMiscellaneousRecordOutput>(
       'post',
       `${basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
-        body: legacyMiscellaneousRecord,
+        body: legacyMiscellaneousRecordInput,
         responseType: <any>responseType_,
         ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,
@@ -916,12 +942,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new safety checker model in legacy format
    * Create a new safety checker model in legacy format.  The model name in the request body must not already exist in the safety_checker category.
-   * @param legacySafetyCheckerRecord
+   * @param legacySafetyCheckerRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -929,9 +955,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacySafetyCheckerRecord>;
+  ): Observable<LegacySafetyCheckerRecordOutput>;
   public createLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -939,9 +965,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacySafetyCheckerRecord>>;
+  ): Observable<HttpResponse<LegacySafetyCheckerRecordOutput>>;
   public createLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -949,9 +975,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacySafetyCheckerRecord>>;
+  ): Observable<HttpEvent<LegacySafetyCheckerRecordOutput>>;
   public createLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -960,9 +986,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacySafetyCheckerRecord === null || legacySafetyCheckerRecord === undefined) {
+    if (legacySafetyCheckerRecordInput === null || legacySafetyCheckerRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacySafetyCheckerRecord was null or undefined when calling createLegacySafetyCheckerModel.',
+        'Required parameter legacySafetyCheckerRecordInput was null or undefined when calling createLegacySafetyCheckerModel.',
       );
     }
 
@@ -1006,12 +1032,12 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/safety_checker`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacySafetyCheckerRecord>(
+    return this.httpClient.request<LegacySafetyCheckerRecordOutput>(
       'post',
       `${basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
-        body: legacySafetyCheckerRecord,
+        body: legacySafetyCheckerRecordInput,
         responseType: <any>responseType_,
         ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,
@@ -1025,12 +1051,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Create a new text generation model in legacy format
    * Create a new text generation model in legacy format.  The model name in the request body must not already exist in the text generation category.
-   * @param legacyTextGenerationRecord
+   * @param legacyTextGenerationRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public createLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1038,9 +1064,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyTextGenerationRecord>;
+  ): Observable<LegacyTextGenerationRecordOutput>;
   public createLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1048,9 +1074,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyTextGenerationRecord>>;
+  ): Observable<HttpResponse<LegacyTextGenerationRecordOutput>>;
   public createLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1058,9 +1084,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyTextGenerationRecord>>;
+  ): Observable<HttpEvent<LegacyTextGenerationRecordOutput>>;
   public createLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1069,9 +1095,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyTextGenerationRecord === null || legacyTextGenerationRecord === undefined) {
+    if (legacyTextGenerationRecordInput === null || legacyTextGenerationRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyTextGenerationRecord was null or undefined when calling createLegacyTextGenerationModel.',
+        'Required parameter legacyTextGenerationRecordInput was null or undefined when calling createLegacyTextGenerationModel.',
       );
     }
 
@@ -1115,12 +1141,12 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/text_generation`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyTextGenerationRecord>(
+    return this.httpClient.request<LegacyTextGenerationRecordOutput>(
       'post',
       `${basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
-        body: legacyTextGenerationRecord,
+        body: legacyTextGenerationRecordInput,
         responseType: <any>responseType_,
         ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,
@@ -1240,12 +1266,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Update an existing BLIP model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyBlipRecord
+   * @param legacyBlipRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1253,9 +1279,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyBlipRecord>;
+  ): Observable<LegacyBlipRecordOutput>;
   public updateLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1263,9 +1289,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyBlipRecord>>;
+  ): Observable<HttpResponse<LegacyBlipRecordOutput>>;
   public updateLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1273,9 +1299,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyBlipRecord>>;
+  ): Observable<HttpEvent<LegacyBlipRecordOutput>>;
   public updateLegacyBlipModel(
-    legacyBlipRecord: LegacyBlipRecord,
+    legacyBlipRecordInput: LegacyBlipRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1284,9 +1310,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyBlipRecord === null || legacyBlipRecord === undefined) {
+    if (legacyBlipRecordInput === null || legacyBlipRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyBlipRecord was null or undefined when calling updateLegacyBlipModel.',
+        'Required parameter legacyBlipRecordInput was null or undefined when calling updateLegacyBlipModel.',
       );
     }
 
@@ -1330,9 +1356,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/blip`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyBlipRecord>('put', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyBlipRecordOutput>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyBlipRecord,
+      body: legacyBlipRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -1345,12 +1371,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Update an existing CLIP model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyClipRecord
+   * @param legacyClipRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1358,9 +1384,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyClipRecord>;
+  ): Observable<LegacyClipRecordOutput>;
   public updateLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1368,9 +1394,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyClipRecord>>;
+  ): Observable<HttpResponse<LegacyClipRecordOutput>>;
   public updateLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1378,9 +1404,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyClipRecord>>;
+  ): Observable<HttpEvent<LegacyClipRecordOutput>>;
   public updateLegacyClipModel(
-    legacyClipRecord: LegacyClipRecord,
+    legacyClipRecordInput: LegacyClipRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1389,9 +1415,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyClipRecord === null || legacyClipRecord === undefined) {
+    if (legacyClipRecordInput === null || legacyClipRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyClipRecord was null or undefined when calling updateLegacyClipModel.',
+        'Required parameter legacyClipRecordInput was null or undefined when calling updateLegacyClipModel.',
       );
     }
 
@@ -1435,9 +1461,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/clip`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyClipRecord>('put', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyClipRecordOutput>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyClipRecord,
+      body: legacyClipRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -1450,12 +1476,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Update an existing Codeformer model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyCodeformerRecord
+   * @param legacyCodeformerRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1463,9 +1489,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyCodeformerRecord>;
+  ): Observable<LegacyCodeformerRecordOutput>;
   public updateLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1473,9 +1499,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyCodeformerRecord>>;
+  ): Observable<HttpResponse<LegacyCodeformerRecordOutput>>;
   public updateLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1483,9 +1509,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyCodeformerRecord>>;
+  ): Observable<HttpEvent<LegacyCodeformerRecordOutput>>;
   public updateLegacyCodeformerModel(
-    legacyCodeformerRecord: LegacyCodeformerRecord,
+    legacyCodeformerRecordInput: LegacyCodeformerRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1494,9 +1520,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyCodeformerRecord === null || legacyCodeformerRecord === undefined) {
+    if (legacyCodeformerRecordInput === null || legacyCodeformerRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyCodeformerRecord was null or undefined when calling updateLegacyCodeformerModel.',
+        'Required parameter legacyCodeformerRecordInput was null or undefined when calling updateLegacyCodeformerModel.',
       );
     }
 
@@ -1540,27 +1566,31 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/codeformer`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyCodeformerRecord>('put', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: legacyCodeformerRecord,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<LegacyCodeformerRecordOutput>(
+      'put',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: legacyCodeformerRecordInput,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
    * Update an existing ControlNet model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyControlnetRecord
+   * @param legacyControlnetRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1568,9 +1598,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyControlnetRecord>;
+  ): Observable<LegacyControlnetRecordOutput>;
   public updateLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1578,9 +1608,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyControlnetRecord>>;
+  ): Observable<HttpResponse<LegacyControlnetRecordOutput>>;
   public updateLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1588,9 +1618,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyControlnetRecord>>;
+  ): Observable<HttpEvent<LegacyControlnetRecordOutput>>;
   public updateLegacyControlnetModel(
-    legacyControlnetRecord: LegacyControlnetRecord,
+    legacyControlnetRecordInput: LegacyControlnetRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1599,9 +1629,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyControlnetRecord === null || legacyControlnetRecord === undefined) {
+    if (legacyControlnetRecordInput === null || legacyControlnetRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyControlnetRecord was null or undefined when calling updateLegacyControlnetModel.',
+        'Required parameter legacyControlnetRecordInput was null or undefined when calling updateLegacyControlnetModel.',
       );
     }
 
@@ -1645,27 +1675,31 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/controlnet`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyControlnetRecord>('put', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: legacyControlnetRecord,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<LegacyControlnetRecordOutput>(
+      'put',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: legacyControlnetRecordInput,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
    * Update an existing ESRGAN model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyEsrganRecord
+   * @param legacyEsrganRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1673,9 +1707,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyEsrganRecord>;
+  ): Observable<LegacyEsrganRecordOutput>;
   public updateLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1683,9 +1717,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyEsrganRecord>>;
+  ): Observable<HttpResponse<LegacyEsrganRecordOutput>>;
   public updateLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1693,9 +1727,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyEsrganRecord>>;
+  ): Observable<HttpEvent<LegacyEsrganRecordOutput>>;
   public updateLegacyEsrganModel(
-    legacyEsrganRecord: LegacyEsrganRecord,
+    legacyEsrganRecordInput: LegacyEsrganRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1704,9 +1738,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyEsrganRecord === null || legacyEsrganRecord === undefined) {
+    if (legacyEsrganRecordInput === null || legacyEsrganRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyEsrganRecord was null or undefined when calling updateLegacyEsrganModel.',
+        'Required parameter legacyEsrganRecordInput was null or undefined when calling updateLegacyEsrganModel.',
       );
     }
 
@@ -1750,9 +1784,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/esrgan`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyEsrganRecord>('put', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyEsrganRecordOutput>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyEsrganRecord,
+      body: legacyEsrganRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -1765,12 +1799,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Update an existing GFPGAN model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyGfpganRecord
+   * @param legacyGfpganRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1778,9 +1812,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyGfpganRecord>;
+  ): Observable<LegacyGfpganRecordOutput>;
   public updateLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1788,9 +1822,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyGfpganRecord>>;
+  ): Observable<HttpResponse<LegacyGfpganRecordOutput>>;
   public updateLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1798,9 +1832,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyGfpganRecord>>;
+  ): Observable<HttpEvent<LegacyGfpganRecordOutput>>;
   public updateLegacyGfpganModel(
-    legacyGfpganRecord: LegacyGfpganRecord,
+    legacyGfpganRecordInput: LegacyGfpganRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1809,9 +1843,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyGfpganRecord === null || legacyGfpganRecord === undefined) {
+    if (legacyGfpganRecordInput === null || legacyGfpganRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyGfpganRecord was null or undefined when calling updateLegacyGfpganModel.',
+        'Required parameter legacyGfpganRecordInput was null or undefined when calling updateLegacyGfpganModel.',
       );
     }
 
@@ -1855,9 +1889,9 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/gfpgan`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyGfpganRecord>('put', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<LegacyGfpganRecordOutput>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      body: legacyGfpganRecord,
+      body: legacyGfpganRecordInput,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -1870,12 +1904,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Update an existing miscellaneous model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyMiscellaneousRecord
+   * @param legacyMiscellaneousRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1883,9 +1917,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyMiscellaneousRecord>;
+  ): Observable<LegacyMiscellaneousRecordOutput>;
   public updateLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1893,9 +1927,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyMiscellaneousRecord>>;
+  ): Observable<HttpResponse<LegacyMiscellaneousRecordOutput>>;
   public updateLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1903,9 +1937,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyMiscellaneousRecord>>;
+  ): Observable<HttpEvent<LegacyMiscellaneousRecordOutput>>;
   public updateLegacyMiscellaneousModel(
-    legacyMiscellaneousRecord: LegacyMiscellaneousRecord,
+    legacyMiscellaneousRecordInput: LegacyMiscellaneousRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1914,9 +1948,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyMiscellaneousRecord === null || legacyMiscellaneousRecord === undefined) {
+    if (legacyMiscellaneousRecordInput === null || legacyMiscellaneousRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyMiscellaneousRecord was null or undefined when calling updateLegacyMiscellaneousModel.',
+        'Required parameter legacyMiscellaneousRecordInput was null or undefined when calling updateLegacyMiscellaneousModel.',
       );
     }
 
@@ -1960,16 +1994,20 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/miscellaneous`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyMiscellaneousRecord>('put', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: legacyMiscellaneousRecord,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<LegacyMiscellaneousRecordOutput>(
+      'put',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: legacyMiscellaneousRecordInput,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
@@ -1988,7 +2026,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<{ [key: string]: any }>;
+  ): Observable<object>;
   public updateLegacyModel(
     legacyStableDiffusionRecordInput: LegacyStableDiffusionRecordInput,
     observe?: 'response',
@@ -1998,7 +2036,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<{ [key: string]: any }>>;
+  ): Observable<HttpResponse<object>>;
   public updateLegacyModel(
     legacyStableDiffusionRecordInput: LegacyStableDiffusionRecordInput,
     observe?: 'events',
@@ -2008,7 +2046,7 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<{ [key: string]: any }>>;
+  ): Observable<HttpEvent<object>>;
   public updateLegacyModel(
     legacyStableDiffusionRecordInput: LegacyStableDiffusionRecordInput,
     observe: any = 'body',
@@ -2068,7 +2106,7 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/image_generation`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<{ [key: string]: any }>('put', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<object>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: legacyStableDiffusionRecordInput,
       responseType: <any>responseType_,
@@ -2083,12 +2121,12 @@ export class V1CreateUpdateService extends BaseService {
   /**
    * Update an existing safety checker model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacySafetyCheckerRecord
+   * @param legacySafetyCheckerRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2096,9 +2134,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacySafetyCheckerRecord>;
+  ): Observable<LegacySafetyCheckerRecordOutput>;
   public updateLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2106,9 +2144,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacySafetyCheckerRecord>>;
+  ): Observable<HttpResponse<LegacySafetyCheckerRecordOutput>>;
   public updateLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2116,9 +2154,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacySafetyCheckerRecord>>;
+  ): Observable<HttpEvent<LegacySafetyCheckerRecordOutput>>;
   public updateLegacySafetyCheckerModel(
-    legacySafetyCheckerRecord: LegacySafetyCheckerRecord,
+    legacySafetyCheckerRecordInput: LegacySafetyCheckerRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2127,9 +2165,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacySafetyCheckerRecord === null || legacySafetyCheckerRecord === undefined) {
+    if (legacySafetyCheckerRecordInput === null || legacySafetyCheckerRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacySafetyCheckerRecord was null or undefined when calling updateLegacySafetyCheckerModel.',
+        'Required parameter legacySafetyCheckerRecordInput was null or undefined when calling updateLegacySafetyCheckerModel.',
       );
     }
 
@@ -2173,27 +2211,31 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/safety_checker`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacySafetyCheckerRecord>('put', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      body: legacySafetyCheckerRecord,
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      transferCache: localVarTransferCache,
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<LegacySafetyCheckerRecordOutput>(
+      'put',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        body: legacySafetyCheckerRecordInput,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        transferCache: localVarTransferCache,
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
    * Update an existing model in legacy format
    * Update an existing model or create if it doesn\&#39;t exist (upsert) in legacy format.  This endpoint is only available when canonical_format&#x3D;\&#39;LEGACY\&#39; in PRIMARY mode.
-   * @param legacyTextGenerationRecord
+   * @param legacyTextGenerationRecordInput
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public updateLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2201,9 +2243,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<LegacyTextGenerationRecord>;
+  ): Observable<LegacyTextGenerationRecordOutput>;
   public updateLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2211,9 +2253,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<LegacyTextGenerationRecord>>;
+  ): Observable<HttpResponse<LegacyTextGenerationRecordOutput>>;
   public updateLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2221,9 +2263,9 @@ export class V1CreateUpdateService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<LegacyTextGenerationRecord>>;
+  ): Observable<HttpEvent<LegacyTextGenerationRecordOutput>>;
   public updateLegacyTextGenerationModel(
-    legacyTextGenerationRecord: LegacyTextGenerationRecord,
+    legacyTextGenerationRecordInput: LegacyTextGenerationRecordInput,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2232,9 +2274,9 @@ export class V1CreateUpdateService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (legacyTextGenerationRecord === null || legacyTextGenerationRecord === undefined) {
+    if (legacyTextGenerationRecordInput === null || legacyTextGenerationRecordInput === undefined) {
       throw new Error(
-        'Required parameter legacyTextGenerationRecord was null or undefined when calling updateLegacyTextGenerationModel.',
+        'Required parameter legacyTextGenerationRecordInput was null or undefined when calling updateLegacyTextGenerationModel.',
       );
     }
 
@@ -2278,12 +2320,12 @@ export class V1CreateUpdateService extends BaseService {
 
     let localVarPath = `/model_references/v1/text_generation`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<LegacyTextGenerationRecord>(
+    return this.httpClient.request<LegacyTextGenerationRecordOutput>(
       'put',
       `${basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
-        body: legacyTextGenerationRecord,
+        body: legacyTextGenerationRecordInput,
         responseType: <any>responseType_,
         ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,

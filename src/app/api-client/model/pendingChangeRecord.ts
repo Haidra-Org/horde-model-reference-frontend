@@ -9,6 +9,7 @@
  */
 import { PendingChangeStatus } from './pendingChangeStatus';
 import { AuditOperation } from './auditOperation';
+import { PendingResourceKind } from './pendingResourceKind';
 import { MODEL_REFERENCE_CATEGORY } from './mODELREFERENCECATEGORY';
 
 /**
@@ -19,10 +20,12 @@ export interface PendingChangeRecord {
    * Unique monotonic identifier for this change, allocated by PendingQueueStore. Callers should pass 0 as a sentinel when constructing new records; the store replaces it with the next available ID in enqueue_change(). After persistence, this is the canonical identifier used to approve, reject, apply, and audit-trail this change.
    */
   change_id: number;
-  category: MODEL_REFERENCE_CATEGORY;
+  resource_kind?: PendingResourceKind;
+  resource_id?: string | null;
+  category: MODEL_REFERENCE_CATEGORY | null;
   model_name: string;
   operation: AuditOperation;
-  payload?: { [key: string]: any } | null;
+  payload?: object | null;
   requested_by: string;
   requested_username: string;
   requested_at?: number;
@@ -42,7 +45,7 @@ export interface PendingChangeRecord {
   applied_username?: string | null;
   applied_job_id?: string | null;
   updated_at?: number;
-  request_metadata?: { [key: string]: any } | null;
+  request_metadata?: object | null;
   related_models?: Array<string> | null;
 }
 export namespace PendingChangeRecord {}

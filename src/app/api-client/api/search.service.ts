@@ -25,6 +25,8 @@ import { Observable } from 'rxjs';
 // @ts-ignore
 import { HTTPValidationError } from '../model/hTTPValidationError';
 // @ts-ignore
+import { PermissionStatus } from '../model/permissionStatus';
+// @ts-ignore
 import { SearchResponse } from '../model/searchResponse';
 
 // @ts-ignore
@@ -66,7 +68,7 @@ export class SearchService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<{ [key: string]: any }>>;
+  ): Observable<Array<object>>;
   public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
     modelCategoryName: string,
     limit?: number,
@@ -79,7 +81,7 @@ export class SearchService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<{ [key: string]: any }>>>;
+  ): Observable<HttpResponse<Array<object>>>;
   public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
     modelCategoryName: string,
     limit?: number,
@@ -92,7 +94,7 @@ export class SearchService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<{ [key: string]: any }>>>;
+  ): Observable<HttpEvent<Array<object>>>;
   public popularModelsModelReferencesV2ModelCategoryNamePopularGet(
     modelCategoryName: string,
     limit?: number,
@@ -146,20 +148,16 @@ export class SearchService extends BaseService {
 
     let localVarPath = `/model_references/v2/${this.configuration.encodeParam({ name: 'modelCategoryName', value: modelCategoryName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/popular`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<{ [key: string]: any }>>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        params: localVarQueryParameters,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<Array<object>>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      params: localVarQueryParameters,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      transferCache: localVarTransferCache,
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -174,6 +172,9 @@ export class SearchService extends BaseService {
    * @param sortDesc Sort descending
    * @param limit Max results to return
    * @param offset Number of results to skip
+   * @param licenseId Referenced license definition identifier
+   * @param commercialUse Commercial-use conclusion
+   * @param redistribution Redistribution conclusion
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -187,6 +188,9 @@ export class SearchService extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -205,6 +209,9 @@ export class SearchService extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -223,6 +230,9 @@ export class SearchService extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -241,6 +251,9 @@ export class SearchService extends BaseService {
     sortDesc?: boolean,
     limit?: number,
     offset?: number,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -291,6 +304,21 @@ export class SearchService extends BaseService {
     );
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>limit, 'limit');
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>offset, 'offset');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>licenseId,
+      'license_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>commercialUse,
+      'commercial_use',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>redistribution,
+      'redistribution',
+    );
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -348,6 +376,9 @@ export class SearchService extends BaseService {
    * @param excludeBackendVariations Exclude text model backend variations
    * @param quantized Filter by quantization (text only)
    * @param source Model source: \&#39;horde\&#39; (canonical), \&#39;any\&#39;, or a registered provider source id
+   * @param licenseId Referenced license definition identifier
+   * @param commercialUse Commercial-use conclusion
+   * @param redistribution Redistribution conclusion
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
@@ -368,6 +399,9 @@ export class SearchService extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -393,6 +427,9 @@ export class SearchService extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -418,6 +455,9 @@ export class SearchService extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -443,6 +483,9 @@ export class SearchService extends BaseService {
     excludeBackendVariations?: boolean,
     quantized?: boolean,
     source?: string,
+    licenseId?: string,
+    commercialUse?: PermissionStatus,
+    redistribution?: PermissionStatus,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -525,6 +568,21 @@ export class SearchService extends BaseService {
       'quantized',
     );
     localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>source, 'source');
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>licenseId,
+      'license_id',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>commercialUse,
+      'commercial_use',
+    );
+    localVarQueryParameters = this.addToHttpParams(
+      localVarQueryParameters,
+      <any>redistribution,
+      'redistribution',
+    );
 
     let localVarHeaders = this.defaultHeaders;
 

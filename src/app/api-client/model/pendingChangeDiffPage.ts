@@ -18,5 +18,5 @@ export interface PendingChangeDiffPage {
   /**
    * Changes that could not be diffed, with error details
    */
-  errors?: Array<{ [key: string]: any } | null>;
+  errors?: Array<object | null>;
 }

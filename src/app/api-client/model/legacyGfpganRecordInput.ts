@@ -7,28 +7,28 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LegacyConfig } from './legacyConfig';
+import { LegacyConfigInput } from './legacyConfigInput';
+import { ModelLicensing } from './modelLicensing';
 
 /**
- * Miscellaneous legacy record with category-specific normalization.
+ * GFPGAN legacy record with category-specific normalization.
  */
-export interface LegacyMiscellaneousRecord {
-  [key: string]: any | any;
-
+export interface LegacyGfpganRecordInput {
   name: string;
-  type?: LegacyMiscellaneousRecord.TypeEnum;
+  type?: LegacyGfpganRecordInput.TypeEnum;
   description?: string | null;
   version?: string | null;
   style?: string | null;
   nsfw?: boolean | null;
   download_all?: boolean | null;
-  config?: LegacyConfig;
+  config?: LegacyConfigInput;
   available?: boolean | null;
   features_not_supported?: Array<string> | null;
+  licensing?: ModelLicensing | null;
 }
-export namespace LegacyMiscellaneousRecord {
+export namespace LegacyGfpganRecordInput {
   export const TypeEnum = {
-    LayerDiffuse: 'layer_diffuse',
+    Gfpgan: 'gfpgan',
   } as const;
   export type TypeEnum = (typeof TypeEnum)[keyof typeof TypeEnum];
 }

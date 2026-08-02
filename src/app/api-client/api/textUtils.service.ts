@@ -1289,12 +1289,12 @@ export class TextUtilsService extends BaseService {
   /**
    * Delete a custom naming schema (revert to inferred)
    * Remove the persisted naming schema so the group reverts to inference.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1303,8 +1303,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1313,8 +1313,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<any>>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1323,8 +1323,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<any>>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1333,11 +1333,14 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete.',
+        'Required parameter name was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -1369,10 +1372,11 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -1385,12 +1389,12 @@ export class TextUtilsService extends BaseService {
   /**
    * Delete a custom naming schema (revert to inferred)
    * Remove the persisted naming schema so the group reverts to inference.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete_7(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete_7(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -1399,8 +1403,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete_7(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete_7(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -1409,8 +1413,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<any>>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete_7(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete_7(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -1419,8 +1423,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<any>>;
-  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete_7(
-    groupName: string,
+  public deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete_7(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -1429,11 +1433,14 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete_7.',
+        'Required parameter name was null or undefined when calling deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete_7.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -1465,10 +1472,11 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -2195,12 +2203,12 @@ export class TextUtilsService extends BaseService {
   /**
    * Get all members of a text model group
    * Get all models in a text model group with parsed name info and common fields.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2209,8 +2217,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupMembersResponse>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2219,8 +2227,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupMembersResponse>>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2229,8 +2237,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupMembersResponse>>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2239,11 +2247,14 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling getGroupModelReferencesV2TextGenerationGroupGroupNameGet.',
+        'Required parameter name was null or undefined when calling getGroupModelReferencesV2TextGenerationGroupGet.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -2268,10 +2279,11 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/text_generation/group`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupMembersResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -2284,12 +2296,12 @@ export class TextUtilsService extends BaseService {
   /**
    * Get all members of a text model group
    * Get all models in a text model group with parsed name info and common fields.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet_12(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet_12(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2298,8 +2310,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupMembersResponse>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet_12(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet_12(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2308,8 +2320,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupMembersResponse>>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet_12(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet_12(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2318,8 +2330,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupMembersResponse>>;
-  public getGroupModelReferencesV2TextGenerationGroupGroupNameGet_12(
-    groupName: string,
+  public getGroupModelReferencesV2TextGenerationGroupGet_12(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2328,11 +2340,14 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling getGroupModelReferencesV2TextGenerationGroupGroupNameGet_12.',
+        'Required parameter name was null or undefined when calling getGroupModelReferencesV2TextGenerationGroupGet_12.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -2357,10 +2372,11 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/model_references/v2/text_generation/group`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupMembersResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -2373,12 +2389,12 @@ export class TextUtilsService extends BaseService {
   /**
    * Get the naming schema for a text model group
    * Return the persisted naming schema if one exists, otherwise infer from member names.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2387,8 +2403,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupNameSchemaResponse>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2397,8 +2413,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupNameSchemaResponse>>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2407,8 +2423,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupNameSchemaResponse>>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2417,11 +2433,14 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet.',
+        'Required parameter name was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -2446,10 +2465,11 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupNameSchemaResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -2462,12 +2482,12 @@ export class TextUtilsService extends BaseService {
   /**
    * Get the naming schema for a text model group
    * Return the persisted naming schema if one exists, otherwise infer from member names.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet_13(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet_13(
+    name: string,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -2476,8 +2496,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupNameSchemaResponse>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet_13(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet_13(
+    name: string,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -2486,8 +2506,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupNameSchemaResponse>>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet_13(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet_13(
+    name: string,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -2496,8 +2516,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupNameSchemaResponse>>;
-  public getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet_13(
-    groupName: string,
+  public getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet_13(
+    name: string,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -2506,11 +2526,14 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet_13.',
+        'Required parameter name was null or undefined when calling getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet_13.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -2535,10 +2558,11 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupNameSchemaResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -4511,13 +4535,13 @@ export class TextUtilsService extends BaseService {
   /**
    * Batch-update common fields across all canonical members of a group
    * Update shared fields across all canonical members of a text model group.  Creates one PendingChangeRecord per canonical member with a shared batch_id.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param commonFieldsUpdateRequest
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -4527,8 +4551,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<BatchUpdateResponse>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -4538,8 +4562,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<BatchUpdateResponse>>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -4549,8 +4573,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<BatchUpdateResponse>>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -4560,16 +4584,19 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut.',
+        'Required parameter name was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut.',
       );
     }
     if (commonFieldsUpdateRequest === null || commonFieldsUpdateRequest === undefined) {
       throw new Error(
-        'Required parameter commonFieldsUpdateRequest was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut.',
+        'Required parameter commonFieldsUpdateRequest was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -4609,11 +4636,12 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/common_fields`;
+    let localVarPath = `/model_references/v2/text_generation/group/common_fields`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<BatchUpdateResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: commonFieldsUpdateRequest,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -4626,13 +4654,13 @@ export class TextUtilsService extends BaseService {
   /**
    * Batch-update common fields across all canonical members of a group
    * Update shared fields across all canonical members of a text model group.  Creates one PendingChangeRecord per canonical member with a shared batch_id.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param commonFieldsUpdateRequest
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut_24(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut_24(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -4642,8 +4670,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<BatchUpdateResponse>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut_24(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut_24(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -4653,8 +4681,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<BatchUpdateResponse>>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut_24(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut_24(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -4664,8 +4692,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<BatchUpdateResponse>>;
-  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut_24(
-    groupName: string,
+  public updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut_24(
+    name: string,
     commonFieldsUpdateRequest: CommonFieldsUpdateRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -4675,16 +4703,19 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut_24.',
+        'Required parameter name was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut_24.',
       );
     }
     if (commonFieldsUpdateRequest === null || commonFieldsUpdateRequest === undefined) {
       throw new Error(
-        'Required parameter commonFieldsUpdateRequest was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut_24.',
+        'Required parameter commonFieldsUpdateRequest was null or undefined when calling updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut_24.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -4724,11 +4755,12 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/common_fields`;
+    let localVarPath = `/model_references/v2/text_generation/group/common_fields`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<BatchUpdateResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: commonFieldsUpdateRequest,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -4741,13 +4773,13 @@ export class TextUtilsService extends BaseService {
   /**
    * Save a custom naming schema for a text model group
    * Persist a custom naming schema for a text model group.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param groupNameSchemaUpdateRequest
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -4757,8 +4789,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupNameSchemaResponse>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -4768,8 +4800,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupNameSchemaResponse>>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -4779,8 +4811,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupNameSchemaResponse>>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -4790,16 +4822,19 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut.',
+        'Required parameter name was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut.',
       );
     }
     if (groupNameSchemaUpdateRequest === null || groupNameSchemaUpdateRequest === undefined) {
       throw new Error(
-        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut.',
+        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -4839,11 +4874,12 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupNameSchemaResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: groupNameSchemaUpdateRequest,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -4856,13 +4892,13 @@ export class TextUtilsService extends BaseService {
   /**
    * Save a custom naming schema for a text model group
    * Persist a custom naming schema for a text model group.
-   * @param groupName
+   * @param name Group name; may contain \&#39;/\&#39;.
    * @param groupNameSchemaUpdateRequest
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut_25(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut_25(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'body',
     reportProgress?: boolean,
@@ -4872,8 +4908,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<GroupNameSchemaResponse>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut_25(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut_25(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'response',
     reportProgress?: boolean,
@@ -4883,8 +4919,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpResponse<GroupNameSchemaResponse>>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut_25(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut_25(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe?: 'events',
     reportProgress?: boolean,
@@ -4894,8 +4930,8 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<HttpEvent<GroupNameSchemaResponse>>;
-  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut_25(
-    groupName: string,
+  public updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut_25(
+    name: string,
     groupNameSchemaUpdateRequest: GroupNameSchemaUpdateRequest,
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -4905,16 +4941,19 @@ export class TextUtilsService extends BaseService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (groupName === null || groupName === undefined) {
+    if (name === null || name === undefined) {
       throw new Error(
-        'Required parameter groupName was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut_25.',
+        'Required parameter name was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut_25.',
       );
     }
     if (groupNameSchemaUpdateRequest === null || groupNameSchemaUpdateRequest === undefined) {
       throw new Error(
-        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut_25.',
+        'Required parameter groupNameSchemaUpdateRequest was null or undefined when calling updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut_25.',
       );
     }
+
+    let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
+    localVarQueryParameters = this.addToHttpParams(localVarQueryParameters, <any>name, 'name');
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -4954,11 +4993,12 @@ export class TextUtilsService extends BaseService {
       }
     }
 
-    let localVarPath = `/model_references/v2/text_generation/group/${this.configuration.encodeParam({ name: 'groupName', value: groupName, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/name_schema`;
+    let localVarPath = `/model_references/v2/text_generation/group/name_schema`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<GroupNameSchemaResponse>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: groupNameSchemaUpdateRequest,
+      params: localVarQueryParameters,
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,

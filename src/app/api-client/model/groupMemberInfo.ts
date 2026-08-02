@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { ParsedNameInfo } from './parsedNameInfo';
+import { TextGuidanceSummary } from './textGuidanceSummary';
 
 /**
  * A single member of a text model group with parsed name info.
@@ -26,4 +27,5 @@ export interface GroupMemberInfo {
   instruct_format?: string | null;
   is_backend_duplicate?: boolean;
   backend_prefix?: string | null;
+  guidance?: TextGuidanceSummary | null;
 }

@@ -16,5 +16,5 @@ export interface PendingQueueAuditEvent {
   timestamp: number;
   action: string;
   logical_user_id?: string | null;
-  payload?: { [key: string]: any };
+  payload?: object;
 }

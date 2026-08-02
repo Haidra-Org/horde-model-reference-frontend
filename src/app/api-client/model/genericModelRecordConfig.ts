@@ -14,4 +14,5 @@ import { DownloadRecord } from './downloadRecord';
  */
 export interface GenericModelRecordConfig {
   download?: Array<DownloadRecord>;
+  embedded_component_hashes?: { [key: string]: string } | null;
 }
