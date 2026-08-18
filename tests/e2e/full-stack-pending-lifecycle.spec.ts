@@ -108,8 +108,12 @@ test.describe('real pending-change lifecycle', () => {
       `${fixtureApiUrl}/model_references/v1/image_generation`,
       { headers: { apikey: fixtureApiKey } },
     );
-    expect(afterRemovalResponse.ok()).toBe(true);
-    const modelsAfterRemoval = (await afterRemovalResponse.json()) as Record<string, unknown>;
-    expect(modelsAfterRemoval[modelName]).toBeUndefined();
+    // The v1 legacy read answers 404 for an empty category, which is the expected state
+    // once the only model in the disposable fixture root has been removed.
+    expect([200, 404]).toContain(afterRemovalResponse.status());
+    if (afterRemovalResponse.ok()) {
+      const modelsAfterRemoval = (await afterRemovalResponse.json()) as Record<string, unknown>;
+      expect(modelsAfterRemoval[modelName]).toBeUndefined();
+    }
   });
 });
