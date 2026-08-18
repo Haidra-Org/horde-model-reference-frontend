@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { IconComponent } from '../../common/icon.component';
 import { prettyBaseline } from '../../../models/maps';
 import { domainMeta } from '../../../shared/domain';
+import { ViewerCapabilitiesService } from '../../../services/viewer-capabilities.service';
 import type { BrowseModel } from '../../../services/browse-models.service';
 import type { PendingChangeOverlay } from '../../../models/pending-change-overlay';
 
@@ -13,17 +14,19 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
     <div class="browse-cards-grid">
       @for (m of models(); track m.name) {
         @let dm = metaFor(m.category ?? '');
-        <div
+        <article
           class="glass-inflow browse-card"
           [class.browse-card--ghost]="m._ghost"
           [class.accent-top-image]="dm.domain === 'image'"
           [class.accent-top-text]="dm.domain === 'text'"
           [class.accent-top-utility]="dm.domain === 'utility'"
-          (click)="modelOpen.emit(m)"
-          (keydown.enter)="modelOpen.emit(m)"
-          tabindex="0"
-          role="link"
         >
+          <button
+            type="button"
+            class="browse-card-open"
+            (click)="modelOpen.emit(m)"
+            [attr.aria-label]="'Open ' + (m.display_name ?? m.name)"
+          ></button>
           @if (m._pending && !m._ghost) {
             <div style="position:absolute;top:10px;left:10px;z-index:2">
               <button
@@ -31,6 +34,7 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                 class="badge badge-warning badge-sm"
                 style="cursor:pointer;border:1px solid var(--color-pending-border)"
                 (click)="pendingOpen.emit(m._pending); $event.stopPropagation()"
+                [attr.aria-label]="pendingLabel(m._pending) + ' for ' + (m.display_name ?? m.name)"
               >
                 <app-icon name="clock" />{{ pendingLabel(m._pending) }}
               </button>
@@ -56,6 +60,9 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
 
             <!-- Badges -->
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px">
+              @if (m._group) {
+                <span class="badge badge-gray">{{ m._group.variantCount }} variants</span>
+              }
               @if (m.baseline) {
                 <span class="badge badge-blue">{{ baselineLabel(m.baseline) }}</span>
               }
@@ -64,6 +71,21 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
               }
               @if (m.style) {
                 <span class="badge badge-gray">{{ m.style }}</span>
+              }
+              @if (m._licensingMixed) {
+                <span class="badge badge-warning" title="Variants have different licenses">
+                  Multiple licenses
+                </span>
+              } @else if (m.licensing?.license_expression === 'NOASSERTION' || !m.licensing) {
+                @if (showCurationSignals()) {
+                  <span class="badge badge-gray" title="Unknown does not mean permitted">
+                    License not reviewed
+                  </span>
+                }
+              } @else {
+                <span class="badge badge-gray" [title]="commercialLabel(m)">
+                  {{ m.licensing.license_expression }}
+                </span>
               }
             </div>
 
@@ -82,19 +104,22 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                 }}
               </span>
               <span style="display:inline-flex;align-items:center;gap:5px">
-                {{
-                  isText() ? formatParams(m.parameters_count) : formatBytes(m.size_on_disk_bytes)
-                }}
+                {{ statThird(m) }}
               </span>
             </div>
           </div>
-        </div>
+        </article>
       }
     </div>
   `,
 })
 export class ModelCardsComponent {
   readonly models = input.required<BrowseModel[]>();
+
+  private readonly viewer = inject(ViewerCapabilitiesService);
+
+  /** An absent licence conclusion is not a licence finding, so it is not stated as one. */
+  protected readonly showCurationSignals = this.viewer.canSeeCuration;
   readonly isText = input(false);
   readonly modelOpen = output<BrowseModel>();
   readonly pendingOpen = output<PendingChangeOverlay>();
@@ -114,6 +139,27 @@ export class ModelCardsComponent {
 
   protected baselineLabel(baseline: string): string {
     return prettyBaseline(baseline);
+  }
+
+  protected commercialLabel(model: BrowseModel): string {
+    switch (model.licensing?.commercial_use) {
+      case 'allowed':
+        return 'Commercial use allowed';
+      case 'allowed_with_conditions':
+        return 'Commercial use allowed with conditions';
+      case 'prohibited':
+        return 'Commercial use prohibited';
+      default:
+        return 'Commercial use unknown';
+    }
+  }
+
+  /** Third stat slot: size range for groups, params for text, disk size otherwise. */
+  protected statThird(m: BrowseModel): string {
+    if (m._group) return m._group.sizeLabel || this.formatParams(m.parameters_count);
+    return this.isText()
+      ? this.formatParams(m.parameters_count)
+      : this.formatBytes(m.size_on_disk_bytes);
   }
 
   protected formatUsage(n: number | null | undefined): string {

@@ -1,27 +1,55 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { RouterLink } from '@angular/router';
 import { IconComponent } from '../../common/icon.component';
 import { prettyBaseline } from '../../../models/maps';
-import type { BrowseModel } from '../../../services/browse-models.service';
+import {
+  browseModelDisplayName,
+  type BrowseModel,
+  type SortDirection,
+  type SortKey,
+} from '../../../services/browse-models.service';
 import type { PendingChangeOverlay } from '../../../models/pending-change-overlay';
+
+export interface BrowseTableColumn {
+  label: string;
+  alignment: 'left' | 'right';
+  sortKey?: SortKey;
+}
 
 @Component({
   selector: 'app-model-table',
-  imports: [ScrollingModule, IconComponent],
+  imports: [ScrollingModule, RouterLink, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="glass-inflow" style="overflow:hidden;padding:0">
-      <cdk-virtual-scroll-viewport [itemSize]="52" style="height:60vh">
-        <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+    <div class="glass-inflow browse-table-shell">
+      <cdk-virtual-scroll-viewport
+        [itemSize]="58"
+        class="browse-table-viewport"
+        aria-label="Model catalog results"
+      >
+        <table class="browse-model-table">
           <thead>
-            <tr style="border-bottom:1px solid var(--color-border-hairline-strong)">
-              @for (col of columns(); track col[0]) {
+            <tr>
+              @for (col of columns(); track col.label) {
                 <th
-                  style="text-align:{{
-                    col[1]
-                  }};padding:11px 16px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-content-muted);font-weight:700;white-space:nowrap"
+                  scope="col"
+                  [class.browse-cell--right]="col.alignment === 'right'"
+                  [attr.aria-sort]="ariaSort(col)"
                 >
-                  {{ col[0] }}
+                  @if (col.sortKey) {
+                    <button
+                      type="button"
+                      class="browse-table-sort"
+                      [class.browse-table-sort--active]="sortKey() === col.sortKey"
+                      (click)="sortChange.emit(col.sortKey)"
+                    >
+                      {{ col.label }}
+                      <span aria-hidden="true">{{ sortIndicator(col) }}</span>
+                    </button>
+                  } @else {
+                    {{ col.label }}
+                  }
                 </th>
               }
             </tr>
@@ -33,8 +61,6 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
               [class.row--pending]="!!m._pending && !m._ghost"
               [class.ghost-row]="!!m._ghost"
               (click)="modelOpen.emit(m)"
-              (keydown.enter)="modelOpen.emit(m)"
-              tabindex="0"
             >
               <!-- Model name + showcase -->
               <td style="padding:10px 16px">
@@ -44,34 +70,65 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                     [class.browse-table-showcase--ghost]="m._ghost"
                   >
                     @if (!m._ghost) {
-                      <span>{{ initials(m.display_name ?? m.name) }}</span>
+                      <span>{{ initials(displayName(m)) }}</span>
                     }
                   </div>
                   <div style="min-width:0">
-                    <div
-                      style="font-weight:600;display:flex;align-items:center;gap:7px;white-space:nowrap"
+                    <button
+                      type="button"
+                      class="browse-table-model-link"
+                      (click)="modelOpen.emit(m); $event.stopPropagation()"
+                      [attr.aria-label]="
+                        'Open ' + displayName(m) + (m._group ? ' model group' : '')
+                      "
                     >
-                      {{ m.display_name ?? m.name }}
+                      {{ displayName(m) }}
                       @if (m.nsfw) {
                         <span class="badge badge-danger badge-xs">NSFW</span>
                       }
-                    </div>
+                      @if (m._group) {
+                        <span class="badge badge-gray badge-xs"
+                          >{{ m._group.variantCount }} variants</span
+                        >
+                      }
+                    </button>
                     <div
                       style="font-size:11px;color:var(--color-content-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px;font-family:monospace"
                     >
-                      {{ m.name }}
+                      @if (m._group) {
+                        text model group
+                      } @else {
+                        {{ m.name }}
+                      }
                     </div>
                   </div>
                 </div>
               </td>
 
-              <!-- Baseline / Family column -->
+              <!-- Baseline / text-group column -->
               @if (isText()) {
                 <td style="padding:10px 16px">
-                  @if (m.family) {
-                    <span class="badge badge-purple">{{ m.family }}</span>
+                  @if (m.text_model_group) {
+                    <a
+                      class="badge badge-purple concept-badge"
+                      [routerLink]="['/text-groups/group']"
+                      [queryParams]="{ name: m.text_model_group }"
+                      (click)="$event.stopPropagation()"
+                    >
+                      {{ m.text_model_group }}
+                    </a>
+                    @if (m.text_group_family) {
+                      <a
+                        class="browse-table-family-link"
+                        [routerLink]="['/text-groups']"
+                        [queryParams]="{ families: m.text_group_family }"
+                        (click)="$event.stopPropagation()"
+                      >
+                        {{ m.text_group_family }}
+                      </a>
+                    }
                   } @else {
-                    <span style="color:var(--color-content-muted)">—</span>
+                    <span style="color:var(--color-content-muted)">Ungrouped</span>
                   }
                 </td>
               } @else {
@@ -84,10 +141,31 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                 </td>
               }
 
+              <!-- Licensing -->
+              <td style="padding:10px 16px">
+                @if (m._licensingMixed) {
+                  <span class="badge badge-warning" title="Variants have different conclusions">
+                    Multiple
+                  </span>
+                } @else if (m.licensing?.license_expression === 'NOASSERTION' || !m.licensing) {
+                  <span class="badge badge-gray" title="Unknown does not mean permitted">
+                    Not reviewed
+                  </span>
+                } @else {
+                  <span class="badge badge-gray" [title]="'Commercial use: ' + commercialLabel(m)">
+                    {{ m.licensing.license_expression }} · {{ commercialLabel(m) }}
+                  </span>
+                }
+              </td>
+
               <!-- Params (text only) -->
               @if (isText()) {
                 <td style="padding:10px 16px;text-align:right;font-weight:600">
-                  {{ formatParams(m.parameters_count) }}
+                  @if (m._group) {
+                    {{ m._group.sizeLabel || '—' }}
+                  } @else {
+                    {{ formatParams(m.parameters_count) }}
+                  }
                 </td>
               }
 
@@ -164,8 +242,11 @@ export class ModelTableComponent {
   readonly isText = input(false);
   readonly modelOpen = output<BrowseModel>();
   readonly pendingOpen = output<PendingChangeOverlay>();
+  readonly sortChange = output<SortKey>();
 
-  readonly columns = input.required<[string, string][]>();
+  readonly columns = input.required<BrowseTableColumn[]>();
+  readonly sortKey = input.required<SortKey>();
+  readonly sortDirection = input.required<SortDirection>();
 
   protected trackByName(_index: number, model: BrowseModel): string {
     return model.name;
@@ -180,8 +261,35 @@ export class ModelTableComponent {
     );
   }
 
+  protected displayName(model: BrowseModel): string {
+    return browseModelDisplayName(model);
+  }
+
+  protected ariaSort(column: BrowseTableColumn): 'ascending' | 'descending' | null {
+    if (!column.sortKey || column.sortKey !== this.sortKey()) return null;
+    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  protected sortIndicator(column: BrowseTableColumn): string {
+    if (column.sortKey !== this.sortKey()) return '↕';
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
+  }
+
   protected baselineLabel(baseline: string): string {
     return prettyBaseline(baseline);
+  }
+
+  protected commercialLabel(model: BrowseModel): string {
+    switch (model.licensing?.commercial_use) {
+      case 'allowed':
+        return 'commercial allowed';
+      case 'allowed_with_conditions':
+        return 'commercial conditional';
+      case 'prohibited':
+        return 'commercial prohibited';
+      default:
+        return 'commercial unknown';
+    }
   }
 
   protected formatParams(n: number | null | undefined): string {

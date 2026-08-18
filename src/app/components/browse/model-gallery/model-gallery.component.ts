@@ -11,13 +11,13 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
   template: `
     <div class="browse-gallery-grid">
       @for (m of models(); track m.name) {
-        <div
-          class="browse-gallery-tile"
-          (click)="modelOpen.emit(m)"
-          (keydown.enter)="modelOpen.emit(m)"
-          tabindex="0"
-          role="link"
-        >
+        <article class="browse-gallery-tile">
+          <button
+            type="button"
+            class="browse-gallery-open"
+            (click)="modelOpen.emit(m)"
+            [attr.aria-label]="'Open ' + (m.display_name ?? m.name)"
+          ></button>
           <!-- Showcase placeholder -->
           <div class="browse-gallery-showcase">
             <span>{{ initials(m.display_name ?? m.name) }}</span>
@@ -33,6 +33,7 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
                 class="badge badge-warning badge-sm"
                 style="cursor:pointer;border:1px solid var(--color-pending-border)"
                 (click)="pendingOpen.emit(m._pending); $event.stopPropagation()"
+                [attr.aria-label]="pendingLabel(m._pending) + ' for ' + (m.display_name ?? m.name)"
               >
                 <app-icon name="clock" />{{ pendingLabel(m._pending) }}
               </button>
@@ -43,13 +44,17 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
           <div class="browse-gallery-overlay">
             <div class="browse-gallery-name">{{ m.display_name ?? m.name }}</div>
             <div class="browse-gallery-meta">
-              <span>{{ baselineLabel(m.baseline ?? '') || m.style || '—' }}</span>
+              @if (m._group) {
+                <span>{{ m._group.variantCount }} variants</span>
+              } @else {
+                <span>{{ baselineLabel(m.baseline ?? '') || m.style || '—' }}</span>
+              }
               <span class="browse-gallery-workers">
                 <app-icon name="server" />{{ m._ghost ? '—' : (m._stats?.worker_count ?? '…') }}
               </span>
             </div>
           </div>
-        </div>
+        </article>
       }
     </div>
   `,

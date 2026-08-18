@@ -51,6 +51,24 @@ import type { Facets, NsfwFilter } from '../../../services/browse-models.service
         </div>
       }
 
+      <!-- Group filter (text domain) -->
+      @if (showGroups()) {
+        <div class="filter-chip-group">
+          <span class="filter-chips-label">Group</span>
+          @for (opt of facets().groups; track opt.value) {
+            <button
+              type="button"
+              class="filter-chip"
+              [class.filter-chip--active]="activeGroups().includes(opt.value)"
+              [attr.aria-pressed]="activeGroups().includes(opt.value)"
+              (click)="toggleGroup(opt.value)"
+            >
+              {{ opt.label }}<span class="filter-chip__count">{{ opt.count }}</span>
+            </button>
+          }
+        </div>
+      }
+
       <!-- Family filter (text domain) -->
       @if (showFamilies()) {
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
@@ -63,6 +81,24 @@ import type { Facets, NsfwFilter } from '../../../services/browse-models.service
               [class.filter-chip--active]="activeFamilies().includes(opt.value)"
               [attr.aria-pressed]="activeFamilies().includes(opt.value)"
               (click)="toggleFamily(opt.value)"
+            >
+              {{ opt.label }}<span class="filter-chip__count">{{ opt.count }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Safety filter -->
+      @if (showTags()) {
+        <div class="filter-chip-group">
+          <span class="filter-chips-label">Tags</span>
+          @for (opt of facets().tags.slice(0, 16); track opt.value) {
+            <button
+              type="button"
+              class="filter-chip filter-chip--tag"
+              [class.filter-chip--active]="activeTags().includes(opt.value)"
+              [attr.aria-pressed]="activeTags().includes(opt.value)"
+              (click)="toggleTag(opt.value)"
             >
               {{ opt.label }}<span class="filter-chip__count">{{ opt.count }}</span>
             </button>
@@ -103,7 +139,9 @@ export class FilterChipsComponent {
   readonly facets = input.required<Facets>();
   readonly activeBaselines = model<string[]>([]);
   readonly activeStyles = model<string[]>([]);
+  readonly activeGroups = model<string[]>([]);
   readonly activeFamilies = model<string[]>([]);
+  readonly activeTags = model<string[]>([]);
   readonly nsfwFilter = model<NsfwFilter>('all');
   readonly pendingOnly = model(false);
   readonly hasPending = input(false);
@@ -112,7 +150,9 @@ export class FilterChipsComponent {
 
   readonly showBaselines = input(false);
   readonly showStyles = input(false);
+  readonly showGroups = input(false);
   readonly showFamilies = input(false);
+  readonly showTags = input(false);
   readonly showSafety = input(false);
 
   readonly safetyOptions: SegmentedOption[] = [
@@ -133,8 +173,22 @@ export class FilterChipsComponent {
     this.activeStyles.set(arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]);
   }
 
+  toggleGroup(value: string): void {
+    const groups = this.activeGroups();
+    this.activeGroups.set(
+      groups.includes(value) ? groups.filter((group) => group !== value) : [...groups, value],
+    );
+  }
+
   toggleFamily(value: string): void {
     const arr = this.activeFamilies();
     this.activeFamilies.set(arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]);
+  }
+
+  toggleTag(value: string): void {
+    const tags = this.activeTags();
+    this.activeTags.set(
+      tags.includes(value) ? tags.filter((candidate) => candidate !== value) : [...tags, value],
+    );
   }
 }
