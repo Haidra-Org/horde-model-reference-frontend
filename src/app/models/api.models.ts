@@ -2,9 +2,10 @@ import {
   MODEL_REFERENCE_CATEGORY,
   ResponseReadV2ReferenceValue,
   LegacyStableDiffusionRecordInput,
-  LegacyTextGenerationRecord as GeneratedLegacyTextGenerationRecord,
-  LegacyControlnetRecord as GeneratedLegacyControlnetRecord,
-  LegacyClipRecord as GeneratedLegacyClipRecord,
+  LegacyTextGenerationRecordInput as GeneratedLegacyTextGenerationRecord,
+  LegacyControlnetRecordInput as GeneratedLegacyControlnetRecord,
+  LegacyClipRecordInput as GeneratedLegacyClipRecord,
+  ModelLicensing,
 } from '../api-client';
 
 // Type aliases for convenience
@@ -80,6 +81,7 @@ export interface LegacyGenericRecord {
   config?: LegacyConfig;
   available?: boolean | null;
   features_not_supported?: string[] | null;
+  licensing?: ModelLicensing | null;
   [key: string]: unknown;
 }
 
@@ -170,6 +172,10 @@ export interface HordeWorkerSummary {
   online: boolean;
   trusted: boolean;
   uptime: number;
+  max_length?: number | null;
+  max_context_length?: number | null;
+  bridge_agent: string;
+  nsfw: boolean;
 }
 
 export interface BackendCombinedModelStatistics {
@@ -181,6 +187,7 @@ export interface BackendCombinedModelStatistics {
   usage_stats?: HordeModelUsageStats | null;
   worker_summaries?: Record<string, HordeWorkerSummary> | null;
   backend_variations?: Record<string, BackendVariation> | null;
+  observed_at?: number;
 }
 
 export type BackendStatisticsResponse = Record<string, BackendCombinedModelStatistics>;
