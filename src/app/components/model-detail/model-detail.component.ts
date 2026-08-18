@@ -10,16 +10,20 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { ShellContextService } from '../../services/shell-context.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
-import { AuthService } from '../../services/auth.service';
+import { ViewerCapabilitiesService } from '../../services/viewer-capabilities.service';
 import { ModelIdentityRailComponent } from './identity-rail.component';
 import { StatTileComponent } from './stat-tile.component';
 import { OverviewTabComponent } from './overview-tab.component';
 import { FilesTabComponent } from './files-tab.component';
 import { RawJsonTabComponent } from './raw-json-tab.component';
 import { RiskTabComponent } from './risk-tab.component';
+import { LicensingTabComponent } from './licensing-tab.component';
+import { TextGuidanceTabComponent } from './text-guidance-tab.component';
+import { ConfirmationModalComponent } from '../common/confirmation-modal/confirmation-modal.component';
 import { RECORD_DISPLAY_MAP, BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { domainMeta } from '../../shared/domain';
 import { toBrowseModel } from '../../services/browse-models.service';
@@ -27,15 +31,24 @@ import type { BrowseModel } from '../../services/browse-models.service';
 import type { BackendCombinedModelStatistics } from '../../models/api.models';
 import type { ModelDeletionRiskInfo } from '../../api-client/model/modelDeletionRiskInfo';
 import type { PendingChangeOverlay } from '../../models/pending-change-overlay';
+import { NotificationService } from '../../services/notification.service';
+import { MODEL_REFERENCE_CATEGORY, type GroupMembersResponse } from '../../api-client';
 
-type DetailTab = 'overview' | 'files' | 'json' | 'risk';
+type DetailTab = 'overview' | 'guidance' | 'licensing' | 'files' | 'json' | 'risk';
 
 const TAB_LABELS: { id: DetailTab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
+  { id: 'guidance', label: 'Usage guidance' },
+  { id: 'licensing', label: 'Licensing' },
   { id: 'files', label: 'Files & checksums' },
   { id: 'json', label: 'Raw JSON' },
-  { id: 'risk', label: 'Usage & risk' },
+  { id: 'risk', label: 'Availability' },
 ];
+
+/** Label for the availability tab once it also carries the deletion-risk verdict. */
+const CURATION_RISK_TAB_LABEL = 'Availability & risk';
+
+const HORDE_RUNTIME_CATEGORIES = new Set(['image_generation', 'text_generation']);
 
 @Component({
   selector: 'app-model-detail',
@@ -47,6 +60,9 @@ const TAB_LABELS: { id: DetailTab; label: string }[] = [
     FilesTabComponent,
     RawJsonTabComponent,
     RiskTabComponent,
+    LicensingTabComponent,
+    TextGuidanceTabComponent,
+    ConfirmationModalComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -121,6 +137,37 @@ const TAB_LABELS: { id: DetailTab; label: string }[] = [
           </div>
         }
 
+        @if (isText()) {
+          <nav
+            class="text-hierarchy-path text-hierarchy-path--detail"
+            aria-label="Text model hierarchy"
+          >
+            @if (textFamilyName(); as familyName) {
+              <a [routerLink]="['/text-groups']" [queryParams]="{ families: familyName }">
+                <span>Family</span><strong>{{ familyName }}</strong>
+              </a>
+              <span aria-hidden="true">›</span>
+            }
+            @if (textGroupName(); as groupName) {
+              <a [routerLink]="['/text-groups/group']" [queryParams]="{ name: groupName }">
+                <span>Group</span><strong>{{ groupName }}</strong>
+              </a>
+              <span aria-hidden="true">›</span>
+            }
+            <div>
+              <span>Exact model record</span><strong>{{ m.name }}</strong>
+            </div>
+            @if (textGroupName(); as groupName) {
+              <a
+                class="text-hierarchy-path__catalog-link"
+                [routerLink]="['/categories', 'text_generation']"
+                [queryParams]="{ groups: groupName }"
+                >Compare group models</a
+              >
+            }
+          </nav>
+        }
+
         <div class="detail-grid">
           <!-- LEFT: Identity rail -->
           <app-model-identity-rail [model]="m" [showcaseSrc]="showcaseSrc()" />
@@ -170,18 +217,42 @@ const TAB_LABELS: { id: DetailTab; label: string }[] = [
               />
             </div>
 
+            @if (isText() && runtimeCeilings(); as runtime) {
+              <section class="runtime-ceilings" aria-label="Live worker capabilities">
+                <div>
+                  <span>Live worker ceiling</span><strong>{{ runtime.context }}</strong
+                  ><small>maximum context observed</small>
+                </div>
+                <div>
+                  <span>Output ceiling</span><strong>{{ runtime.output }}</strong
+                  ><small>maximum generation length</small>
+                </div>
+                <div>
+                  <span>Worker software</span><strong>{{ runtime.bridges }}</strong
+                  ><small>public bridge variants</small>
+                </div>
+                <p>
+                  Live worker limits can change and do not replace the reviewed model metadata in
+                  Overview.
+                </p>
+              </section>
+            }
+
             <!-- Tabs -->
             <nav class="detail-tabs" role="tablist" [attr.aria-label]="'Model detail sections'">
-              @for (tab of tabList; track tab.id) {
+              @for (tab of tabList(); track tab.id) {
                 <button
                   type="button"
                   class="detail-tab"
                   role="tab"
+                  [id]="'model-detail-tab-' + tab.id"
+                  [attr.aria-controls]="'model-detail-panel-' + tab.id"
                   [attr.aria-selected]="activeTab() === tab.id"
                   [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
                   [style.color]="activeTab() === tab.id ? dmn().accentClass : ''"
                   [style.borderBottomColor]="activeTab() === tab.id ? dmn().accentClass : ''"
                   (click)="setTab(tab.id)"
+                  (keydown)="onTabKeydown($event, $index)"
                 >
                   {{ tab.label }}
                 </button>
@@ -189,23 +260,65 @@ const TAB_LABELS: { id: DetailTab; label: string }[] = [
             </nav>
 
             <!-- Tab panels -->
-            @switch (activeTab()) {
-              @case ('overview') {
-                <app-overview-tab [model]="m" [isImage]="isImage()" [isText]="isText()" />
+            <div
+              class="detail-tab-panel"
+              role="tabpanel"
+              tabindex="0"
+              [id]="'model-detail-panel-' + activeTab()"
+              [attr.aria-labelledby]="'model-detail-tab-' + activeTab()"
+            >
+              @switch (activeTab()) {
+                @case ('overview') {
+                  <app-overview-tab [model]="m" [isImage]="isImage()" [isText]="isText()" />
+                }
+                @case ('licensing') {
+                  <app-licensing-tab [model]="m" />
+                }
+                @case ('guidance') {
+                  <app-text-guidance-tab [modelName]="m.name" />
+                }
+                @case ('files') {
+                  <app-files-tab [model]="m" />
+                }
+                @case ('json') {
+                  <app-raw-json-tab [model]="m" />
+                }
+                @case ('risk') {
+                  <app-risk-tab [riskData]="riskData()" [showRisk]="showCurationSignals()" />
+                }
               }
-              @case ('files') {
-                <app-files-tab [model]="m" />
-              }
-              @case ('json') {
-                <app-raw-json-tab [model]="m" />
-              }
-              @case ('risk') {
-                <app-risk-tab [riskData]="riskData()" />
-              }
-            }
+            </div>
           </div>
         </div>
       }
+
+      <app-confirmation-modal
+        [open]="deleteDialogOpen()"
+        severity="delete"
+        title="Propose model removal"
+        [message]="'This submits a reviewable deletion; the model is not removed until an approver applies it.'"
+        confirmText="Submit removal proposal"
+        [loading]="deleteSubmitting()"
+        [confirmDisabled]="deleteConfirmationText() !== _modelName()"
+        (confirmed)="confirmDeletion()"
+        (cancelled)="closeDeleteDialog()"
+      >
+        <div class="form-group">
+          <label class="form-label" for="delete-model-confirmation">
+            Type <strong>{{ _modelName() }}</strong> to confirm
+          </label>
+          <input
+            id="delete-model-confirmation"
+            class="form-input"
+            autocomplete="off"
+            [value]="deleteConfirmationText()"
+            (input)="updateDeleteConfirmation($event)"
+          />
+          @if (deleteError()) {
+            <p class="form-error" role="alert">{{ deleteError() }}</p>
+          }
+        </div>
+      </app-confirmation-modal>
     </div>
   `,
 })
@@ -215,7 +328,8 @@ export class ModelDetailComponent implements OnInit {
   private readonly api = inject(ModelReferenceApiService);
   private readonly shellContext = inject(ShellContextService);
   private readonly pendingSummary = inject(PendingQueueSummaryService);
-  private readonly auth = inject(AuthService);
+  private readonly viewer = inject(ViewerCapabilitiesService);
+  private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
@@ -223,19 +337,38 @@ export class ModelDetailComponent implements OnInit {
   protected readonly stats = signal<BackendCombinedModelStatistics | null>(null);
   protected readonly statsLoading = signal(false);
   protected readonly riskData = signal<ModelDeletionRiskInfo | null>(null);
+  protected readonly textGroupData = signal<GroupMembersResponse | null>(null);
   protected readonly activeTab = signal<DetailTab>('overview');
+  protected readonly deleteDialogOpen = signal(false);
+  protected readonly deleteConfirmationText = signal('');
+  protected readonly deleteSubmitting = signal(false);
+  protected readonly deleteError = signal<string | null>(null);
 
   private readonly _category = signal('');
-  private readonly _modelName = signal('');
+  protected readonly _modelName = signal('');
 
   protected readonly dmn = computed(() => domainMeta(this._category()));
   protected readonly isImage = computed(() => this.dmn().domain === 'image');
   protected readonly isText = computed(() => this.dmn().domain === 'text');
+  protected readonly textGroupName = computed(() => this.model()?.text_model_group ?? null);
+  protected readonly textFamilyName = computed(
+    () =>
+      this.textGroupData()?.related_family?.family_name ?? this.model()?.text_group_family ?? null,
+  );
 
-  protected readonly tabList = TAB_LABELS;
+  protected readonly showCurationSignals = this.viewer.canSeeCuration;
 
-  protected readonly canWrite = computed(
-    () => this.api.backendCapabilities().writable && this.auth.isRequestor(),
+  protected readonly tabList = computed(() =>
+    TAB_LABELS.filter((tab) => tab.id !== 'guidance' || this.isText()).map((tab) =>
+      tab.id === 'risk' && this.showCurationSignals()
+        ? { ...tab, label: CURATION_RISK_TAB_LABEL }
+        : tab,
+    ),
+  );
+
+  protected readonly canWrite = this.viewer.canPropose;
+  protected readonly canProposeDeletion = computed(
+    () => this.canWrite() && this.pendingOverlay() === null,
   );
 
   protected readonly showcaseSrc = computed(() => {
@@ -296,6 +429,20 @@ export class ModelDetailComponent implements OnInit {
     return (raw?.['instruct_format'] as string) ?? undefined;
   });
 
+  protected readonly runtimeCeilings = computed(() => {
+    const summaries = Object.values(this.stats()?.worker_summaries ?? {});
+    if (summaries.length === 0) return null;
+    const maximumContext = Math.max(...summaries.map((worker) => worker.max_context_length ?? 0));
+    const maximumOutput = Math.max(...summaries.map((worker) => worker.max_length ?? 0));
+    const bridgeVariants = new Set(summaries.map((worker) => worker.bridge_agent).filter(Boolean))
+      .size;
+    return {
+      context: maximumContext ? `${maximumContext.toLocaleString()} tokens` : 'Not advertised',
+      output: maximumOutput ? `${maximumOutput.toLocaleString()} tokens` : 'Not advertised',
+      bridges: bridgeVariants ? String(bridgeVariants) : 'Not advertised',
+    };
+  });
+
   // ---- Pending overlay ----
 
   protected readonly pendingOverlay = computed<PendingChangeOverlay | null>(() => {
@@ -338,7 +485,7 @@ export class ModelDetailComponent implements OnInit {
 
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((qp) => {
       const tab = qp.get('tab') as DetailTab | null;
-      if (tab && TAB_LABELS.some((t) => t.id === tab)) {
+      if (tab && this.tabList().some((t) => t.id === tab)) {
         this.activeTab.set(tab);
       }
     });
@@ -349,32 +496,62 @@ export class ModelDetailComponent implements OnInit {
   private loadModel(category: string, modelName: string): void {
     this.loading.set(true);
     this.model.set(null);
+    this.stats.set(null);
+    this.riskData.set(null);
+    this.textGroupData.set(null);
+    this.statsLoading.set(false);
 
-    this.api
-      .getDisplayModelsAsArray(category)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (models) => {
-          const raw = models.find(
-            (m) =>
-              (m as Record<string, unknown>)['name'] === modelName ||
-              (m as Record<string, unknown>)['display_name'] === modelName,
-          );
+    const models$ =
+      category === 'text_generation'
+        ? this.api.getModelsInCategory(category).pipe(map((response) => Object.values(response)))
+        : this.api.getDisplayModelsAsArray(category);
 
-          if (!raw) {
-            this.loading.set(false);
-            return;
-          }
+    models$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (models) => {
+        const raw = models.find(
+          (m) =>
+            (m as Record<string, unknown>)['name'] === modelName ||
+            (m as Record<string, unknown>)['display_name'] === modelName,
+        );
 
-          const m = toBrowseModel(raw as Record<string, unknown>, category);
-          this.model.set(m);
+        if (!raw) {
           this.loading.set(false);
+          return;
+        }
 
+        const m = toBrowseModel(raw as Record<string, unknown>, category);
+        this.model.set(m);
+        this.loading.set(false);
+
+        if (category === 'text_generation' && m.text_model_group) {
+          this.loadTextHierarchy(m.text_model_group);
+        }
+
+        if (HORDE_RUNTIME_CATEGORIES.has(category)) {
           this.loadStats(category, modelName);
           this.loadRisk(category);
-        },
-        error: () => {
-          this.loading.set(false);
+        }
+      },
+      error: () => {
+        this.loading.set(false);
+      },
+    });
+  }
+
+  private loadTextHierarchy(groupName: string): void {
+    this.api
+      .getGroupMembers(groupName)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (group) => {
+          this.textGroupData.set(group);
+          const current = this.model();
+          if (current) {
+            this.model.set({
+              ...current,
+              text_group_family: group.related_family?.family_name ?? null,
+            });
+          }
         },
       });
   }
@@ -383,7 +560,7 @@ export class ModelDetailComponent implements OnInit {
     this.statsLoading.set(true);
     this.api
       // Match the query variant the browse view uses so the backend cache is shared
-      .getModelsWithStats(category, category === 'text_generation')
+      .getModelsWithStats(category, category === 'text_generation', category === 'text_generation')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -433,6 +610,17 @@ export class ModelDetailComponent implements OnInit {
               },
             ]
           : []),
+        ...(this.canProposeDeletion()
+          ? [
+              {
+                id: 'delete',
+                label: 'Propose removal',
+                icon: 'trash',
+                kind: 'ghost' as const,
+                action: () => this.openDeleteDialog(),
+              },
+            ]
+          : []),
         ...(this.homepage(model)
           ? [
               {
@@ -451,6 +639,64 @@ export class ModelDetailComponent implements OnInit {
     return ((model._raw as Record<string, unknown>)?.['homepage'] as string) ?? null;
   }
 
+  private openDeleteDialog(): void {
+    this.deleteConfirmationText.set('');
+    this.deleteError.set(null);
+    this.deleteDialogOpen.set(true);
+  }
+
+  protected closeDeleteDialog(): void {
+    if (this.deleteSubmitting()) return;
+    this.deleteDialogOpen.set(false);
+    this.deleteConfirmationText.set('');
+    this.deleteError.set(null);
+  }
+
+  protected updateDeleteConfirmation(event: Event): void {
+    this.deleteConfirmationText.set((event.target as HTMLInputElement).value);
+  }
+
+  protected confirmDeletion(): void {
+    const modelName = this._modelName();
+    if (this.deleteConfirmationText() !== modelName || this.deleteSubmitting()) return;
+
+    this.deleteSubmitting.set(true);
+    this.deleteError.set(null);
+    this.api
+      .submitProposal({
+        operation: 'delete',
+        category: this._category() as MODEL_REFERENCE_CATEGORY,
+        model_name: modelName,
+        payload: {},
+        diff: [
+          {
+            field: '(model)',
+            before: modelName,
+            after: null,
+            kind: 'delete',
+          },
+        ],
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (change) => {
+          this.deleteSubmitting.set(false);
+          this.deleteDialogOpen.set(false);
+          this.notifications.success(`Removal proposal #${change.change_id} submitted for review`);
+          void this.router.navigate(['/pending-queue'], {
+            queryParams: { focus: change.change_id },
+          });
+        },
+        error: (error: unknown) => {
+          this.deleteSubmitting.set(false);
+          const message =
+            error instanceof Error ? error.message : 'Unable to submit removal proposal';
+          this.deleteError.set(message);
+          this.notifications.error(message);
+        },
+      });
+  }
+
   // ---- Tab switching ----
 
   protected setTab(tab: DetailTab): void {
@@ -461,6 +707,23 @@ export class ModelDetailComponent implements OnInit {
       replaceUrl: true,
       relativeTo: this.route,
     });
+  }
+
+  protected onTabKeydown(event: KeyboardEvent, currentIndex: number): void {
+    const tabsForModel = this.tabList();
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabsForModel.length;
+    else if (event.key === 'ArrowLeft')
+      nextIndex = (currentIndex - 1 + tabsForModel.length) % tabsForModel.length;
+    else if (event.key === 'Home') nextIndex = 0;
+    else if (event.key === 'End') nextIndex = tabsForModel.length - 1;
+    else return;
+
+    event.preventDefault();
+    this.setTab(tabsForModel[nextIndex].id);
+    const tabList = (event.currentTarget as HTMLElement).closest('[role="tablist"]');
+    const tabs = tabList?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    tabs?.[nextIndex]?.focus();
   }
 
   // ---- Formatting helpers ----
