@@ -4,6 +4,17 @@
 .vscode/
 openapitools.json
 .github/copilot*
+.design-audit/
+design/
+docs/plans/
+
+
+shakeout-*
+
+# Playwright e2e artifacts
+test-results/
+playwright-report/
+.playwright/
 
 
 # Logs
