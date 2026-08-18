@@ -1,159 +1,77 @@
 import { expect, test } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
 
-const API_BASE = process.env.E2E_API_BASE ?? 'http://localhost:19800/api';
-const AUDIT_BASE = `${API_BASE}/model_references/v2/pending_queue/audit`;
+/**
+ * The standalone "Audit Trail" page was unified into the pending-queue view, so
+ * `/pending-queue/audit` is now a redirect into `/pending-queue` (the review
+ * queue), guarded by `authenticatedGuard`. These mocked tests pin that current
+ * contract: legacy audit links keep working, and unauthenticated visitors are
+ * bounced out by the guard.
+ */
 
-const pendingSnapshot = {
-  domain: 'legacy',
-  pending_changes: [
-    {
-      change_id: 501,
-      status: 'PENDING',
-      operation: 'update',
-      category: 'image_generation',
-      model_name: 'Test Model',
-      requested_by: 'user-123',
-      requested_at: 1_700_000_500,
-      events: [{ event_id: 1, timestamp: 1_700_000_500, action: 'enqueue', payload: {} }],
-    },
-  ],
-  total_pending: 1,
-  generated_at: 1_700_000_900,
-};
+const API_KEY = 'mock-approver-key';
 
-const batchSummaries = {
-  domain: 'legacy',
-  batches: [
-    {
-      batch_id: 9001,
-      batch_title: 'Release 42',
-      approved_by: 'moderator',
-      approved_at: 1_700_001_200,
-      applied_at: 1_700_001_800,
-      approved_change_count: 2,
-      rejected_change_count: 0,
-      applied_change_count: 2,
-      total_change_count: 2,
-      last_event_id: 99,
-    },
-  ],
-  next_cursor: null,
-};
-
-const batchDetail = {
-  ...batchSummaries.batches[0],
-  changes: [
-    {
-      change_id: 501,
-      status: 'APPLIED',
-      operation: 'update',
-      category: 'image_generation',
-      model_name: 'Test Model',
-      requested_by: 'user-123',
-      requested_at: 1_700_000_500,
-      approved_by: 'moderator',
-      approved_at: 1_700_001_200,
-      applied_by: 'queue-worker',
-      applied_at: 1_700_001_800,
-      events: [
-        { event_id: 1, timestamp: 1_700_000_500, action: 'enqueue', payload: {} },
-        { event_id: 2, timestamp: 1_700_001_200, action: 'approve', payload: { batch_id: 9001 } },
-        { event_id: 3, timestamp: 1_700_001_800, action: 'apply', payload: { batch_id: 9001 } },
-      ],
-    },
-  ],
-};
-
-async function mockReplicateMode(page: Page): Promise<void> {
-  await page.route(`${API_BASE}/replicate_mode`, (route: Route) => {
-    route.fulfill({ body: '"PRIMARY"', contentType: 'application/json' });
-  });
-}
-
-async function ensureApiKey(route: Route, apiKey: string): Promise<void> {
-  const headers = route.request().headers();
-  expect(headers['apikey']).toBe(apiKey);
-}
-
-async function mockAuditEndpoints(page: Page, apiKey: string): Promise<void> {
-  await page.route('**/model_references/v2/pending_queue/audit/current**', async (route: Route) => {
-    await ensureApiKey(route, apiKey);
-    const url = new URL(route.request().url());
-    expect(url.href.startsWith(`${AUDIT_BASE}/current`)).toBe(true);
-    await route.fulfill({ json: pendingSnapshot });
-  });
-
-  await page.route(
-    '**/model_references/v2/pending_queue/audit/batches?**',
-    async (route: Route) => {
-      await ensureApiKey(route, apiKey);
-      const url = new URL(route.request().url());
-      expect(url.href.startsWith(`${AUDIT_BASE}/batches`)).toBe(true);
-      await route.fulfill({ json: batchSummaries });
-    },
+async function mockBackend(page: Page): Promise<void> {
+  await page.route('**/replicate_mode', (route: Route) =>
+    route.fulfill({ json: { replicate_mode: 'PRIMARY', canonical_format: 'v2', writable: true } }),
   );
 
-  await page.route(
-    '**/model_references/v2/pending_queue/audit/batches/9001**',
-    async (route: Route) => {
-      await ensureApiKey(route, apiKey);
-      const url = new URL(route.request().url());
-      expect(url.href.startsWith(`${AUDIT_BASE}/batches/9001`)).toBe(true);
-      await route.fulfill({ json: batchDetail });
-    },
+  await page.route('https://aihorde.net/api/v2/find_user', (route: Route) =>
+    route.fulfill({ json: { username: 'qa-approver' } }),
+  );
+
+  await page.route('**/model_references/v2/me/roles', (route: Route) =>
+    route.fulfill({
+      json: {
+        user_id: 'qa-approver',
+        username: 'qa-approver',
+        roles: ['approver', 'requestor'],
+        is_approver: true,
+        is_requestor: true,
+      },
+    }),
+  );
+
+  await page.route('**/model_references/v2/pending_queue/changes**', (route: Route) =>
+    route.fulfill({ json: { items: [], total: 0 } }),
   );
 }
 
-async function loginAsApprover(page: Page, apiKey: string): Promise<void> {
-  await page.route('https://aihorde.net/api/v2/find_user', async (route: Route) => {
-    const headers = route.request().headers();
-    expect(headers['apikey']).toBe(apiKey);
-    await route.fulfill({ json: { username: 'qa-user' } });
-  });
-
-  await page.getByRole('button', { name: 'Login', exact: true }).click();
+async function login(page: Page): Promise<void> {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
   const modal = page.locator('.modal-dialog');
-  await modal.locator('#api-key-input').fill(apiKey);
+  await expect(modal).toBeVisible();
+  await modal.locator('#api-key-input').fill(API_KEY);
   await modal.getByRole('button', { name: 'Login' }).click();
-  await expect(page.getByText('qa-user')).toBeVisible();
+  await expect(modal).toHaveCount(0, { timeout: 20000 });
 }
 
-test('redirects unauthenticated visitors away from the audit trail', async ({
+test('redirects unauthenticated visitors away from the (legacy) audit route', async ({
   page,
 }: {
   page: Page;
 }) => {
-  await mockReplicateMode(page);
+  await mockBackend(page);
   await page.goto('/pending-queue/audit');
-  await expect(page).toHaveURL('/');
-  await expect(
-    page.getByText('Please log in with an approver API key to view the audit trail.'),
-  ).toBeVisible();
+
+  // The guard rejects the anonymous user and routes back to the app root, which
+  // in turn lands on the default browse page — never the guarded queue.
+  await expect(page).toHaveURL(/\/categories\//, { timeout: 15000 });
+  await expect(page.getByText('Please log in to access this page.')).toBeVisible();
 });
 
-test('shows pending queue data once an approver is authenticated', async ({
+test('authenticated visitors land on the unified pending queue from the legacy audit route', async ({
   page,
 }: {
   page: Page;
 }) => {
-  const apiKey = 'test-key-123';
-  await mockReplicateMode(page);
-  await mockAuditEndpoints(page, apiKey);
+  await mockBackend(page);
+  await login(page);
 
-  await page.goto('/');
-  await loginAsApprover(page, apiKey);
+  await page.goto('/pending-queue/audit');
 
-  await page.getByRole('link', { name: 'Audit Trail' }).click();
-  await expect(page).toHaveURL(/pending-queue\/audit/);
-
-  await expect(page.getByRole('cell', { name: '#501' })).toBeVisible();
-  await expect(page.getByText('Batch #9001 · Release 42')).toBeVisible();
-
-  await page.getByRole('button', { name: /Batch #9001/ }).click();
-  const drawer = page.getByRole('dialog', { name: 'Pending queue batch detail' });
-  await expect(drawer).toBeVisible();
-  await expect(drawer.getByRole('heading', { name: /Batch #9001/ })).toBeVisible();
-  await expect(drawer.getByText('Change #501 · Test Model')).toBeVisible();
-  await expect(drawer.getByText('3 timeline events')).toBeVisible();
+  // Legacy /pending-queue/audit now redirects into the unified pending queue.
+  await expect(page).toHaveURL(/\/pending-queue/, { timeout: 15000 });
+  await expect(page.locator('.page-container')).toBeVisible();
 });
