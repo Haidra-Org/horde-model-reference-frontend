@@ -18,6 +18,7 @@ import type { CategoryStatistics } from '../../api-client/model/categoryStatisti
 import type { BackendStatisticsResponse } from '../../models/api.models';
 import { BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { catchError, combineLatest, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 /**
  * Human-readable labels for baseline values (falls back to raw baseline name).
@@ -57,6 +58,15 @@ function fmtNum(n: number | null | undefined): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="analytics-tab-content">
+      <div class="analytics-action-row">
+        <p class="text-muted">
+          Select a distribution row to inspect the matching models in the catalog.
+        </p>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="browseAll()">
+          Browse all models
+        </button>
+      </div>
+
       <!-- Stat tiles -->
       <div class="analytics-stat-tiles">
         <app-stat-tile
@@ -111,6 +121,8 @@ function fmtNum(n: number | null | undefined): string {
                     [count]="bar.count"
                     [percentage]="bar.percentage"
                     [accent]="accentColor()"
+                    [actionLabel]="'Browse ' + bar.label + ' models'"
+                    (activated)="drillDown('baselines', bar.value)"
                   />
                 }
               </div>
@@ -143,6 +155,8 @@ function fmtNum(n: number | null | undefined): string {
                   [count]="bar.count"
                   [percentage]="bar.percentage"
                   [accent]="accentColor()"
+                  [actionLabel]="'Browse models tagged ' + bar.label"
+                  (activated)="drillDown(isImageDomain() ? 'styles' : 'tags', bar.value)"
                 />
               }
             </div>
@@ -173,6 +187,8 @@ function fmtNum(n: number | null | undefined): string {
                   [count]="bar.count"
                   [percentage]="bar.percentage"
                   [accent]="safetyAccent(bar.label)"
+                  [actionLabel]="'Browse ' + bar.label + ' models'"
+                  (activated)="drillDown('nsfw', bar.label.toLocaleLowerCase())"
                 />
               }
             </div>
@@ -187,6 +203,7 @@ export class AnalyticsStatisticsComponent implements OnInit {
 
   private readonly api = inject(ModelReferenceApiService);
   private readonly hordeApi = inject(HordeApiService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
@@ -198,7 +215,11 @@ export class AnalyticsStatisticsComponent implements OnInit {
   protected readonly isImageDomain = computed(() => domainOf(this.category()) === 'image');
   protected readonly isTextDomain = computed(() => domainOf(this.category()) === 'text');
   protected readonly accentColor = computed(() =>
-    this.isImageDomain() ? '#1d4ed8' : this.isTextDomain() ? '#9333ea' : '#0891b2',
+    this.isImageDomain()
+      ? 'var(--color-accent-image)'
+      : this.isTextDomain()
+        ? 'var(--color-accent-text)'
+        : 'var(--color-accent-utility)',
   );
 
   // Stat tiles
@@ -239,6 +260,7 @@ export class AnalyticsStatisticsComponent implements OnInit {
     if (!dist) return [];
     return Object.entries(dist)
       .map(([key, val]) => ({
+        value: key,
         label: baselineLabel(key),
         count: val.count,
         percentage: val.percentage,
@@ -262,7 +284,12 @@ export class AnalyticsStatisticsComponent implements OnInit {
     // For image: use top_styles; for text: use top_tags
     const items = this.isImageDomain() ? (stats.top_styles ?? stats.top_tags) : stats.top_tags;
     if (!items) return [];
-    return items.map((t) => ({ label: t.tag, count: t.count, percentage: t.percentage }));
+    return items.map((t) => ({
+      value: t.tag,
+      label: t.tag,
+      count: t.count,
+      percentage: t.percentage,
+    }));
   });
 
   protected readonly hostBars = computed(() => {
@@ -293,13 +320,23 @@ export class AnalyticsStatisticsComponent implements OnInit {
 
   /** Accent color for host bar: highlight preferred hosts */
   protected hostAccent(host: string): string {
-    if (host === 'huggingface.co') return '#059669'; // success
+    if (host === 'huggingface.co') return 'var(--color-success-600)';
     return undefined!;
   }
 
   /** Accent color for safety bar */
   protected safetyAccent(label: string): string {
-    return label === 'NSFW' ? '#b45309' : '#1d4ed8'; // pending / image accent
+    return label === 'NSFW' ? 'var(--color-warning-600)' : 'var(--color-accent-image)';
+  }
+
+  protected browseAll(): void {
+    void this.router.navigate(['/categories', this.category()]);
+  }
+
+  protected drillDown(filter: 'baselines' | 'styles' | 'tags' | 'nsfw', value: string): void {
+    void this.router.navigate(['/categories', this.category()], {
+      queryParams: { [filter]: value },
+    });
   }
 
   ngOnInit(): void {

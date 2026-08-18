@@ -7,6 +7,7 @@ import { BASE_PATH } from '../../api-client';
 import { AnalyticsShowcasesComponent } from './analytics-showcases.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { of } from 'rxjs';
+import { provideRouter } from '@angular/router';
 
 describe('AnalyticsShowcasesComponent', () => {
   let fixture: ComponentFixture<AnalyticsShowcasesComponent>;
@@ -42,6 +43,7 @@ describe('AnalyticsShowcasesComponent', () => {
         provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter([]),
         { provide: BASE_PATH, useValue: 'http://localhost:19800/api' },
         { provide: ModelReferenceApiService, useValue: apiStub },
       ],
@@ -89,6 +91,9 @@ describe('AnalyticsShowcasesComponent', () => {
 
     const lightbox = nativeEl.querySelector('.lightbox-scrim');
     expect(lightbox).toBeTruthy();
+    expect(lightbox?.querySelector('a')?.getAttribute('href')).toBe(
+      '/categories/image_generation/model/model-a',
+    );
   });
 
   it('should close lightbox on close button click', () => {

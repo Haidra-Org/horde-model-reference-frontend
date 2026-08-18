@@ -168,4 +168,16 @@ describe('AnalyticsRiskComponent', () => {
     // Text domain should show group variants toggle
     expect(nativeEl.querySelector('app-segmented-control')).toBeTruthy();
   });
+
+  it('routes grouped text risk rows to the group and its filtered exact-model list', () => {
+    fixture.componentRef.setInput('category', 'text_generation');
+    fixture.detectChanges();
+
+    const destinations = Array.from<HTMLAnchorElement>(
+      nativeEl.querySelectorAll('.analytics-risk-table a'),
+    ).map((link) => link.getAttribute('href'));
+    expect(destinations).toContain('/text-groups/group?name=risky-model-1');
+    expect(destinations).toContain('/categories/text_generation?groups=risky-model-1');
+    expect(destinations).not.toContain('/categories/text_generation/model/risky-model-1?tab=risk');
+  });
 });

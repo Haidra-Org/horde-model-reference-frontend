@@ -116,6 +116,21 @@ export class ApiDocsComponent implements OnInit {
         ],
       },
       {
+        title: 'Licensing — public conclusions',
+        icon: 'shield',
+        color: 'var(--warning-icon, #d97706)',
+        rows: [
+          { method: 'GET', path: '/model_references/v2/licensing/summary' },
+          { method: 'GET', path: '/model_references/v2/licensing/licenses' },
+          { method: 'GET', path: '/model_references/v2/licensing/assets' },
+          {
+            method: 'GET',
+            path: '/model_references/v2/licensing/models/{category}/{name}',
+          },
+          { method: 'GET', path: '/model_references/v2/licensing/export' },
+        ],
+      },
+      {
         title: 'Writes — requestor key, enqueued (202)',
         icon: 'wand',
         color: 'var(--success-icon, #16a34a)',
@@ -138,6 +153,22 @@ export class ApiDocsComponent implements OnInit {
           { method: 'POST', path: `${base}/pending_queue/apply_batch/{id}` },
         ],
       },
+      {
+        title: 'Licensing management — license-editor key',
+        icon: 'shield',
+        color: 'var(--danger-text, #dc2626)',
+        rows: [
+          { method: 'POST', path: '/model_references/v2/licensing/licenses' },
+          { method: 'PUT', path: '/model_references/v2/licensing/licenses/{license_id}' },
+          { method: 'DELETE', path: '/model_references/v2/licensing/licenses/{license_id}' },
+          { method: 'POST', path: '/model_references/v2/licensing/assets' },
+          { method: 'PUT', path: '/model_references/v2/licensing/assets/{kind}/{identifier}' },
+          {
+            method: 'DELETE',
+            path: '/model_references/v2/licensing/assets/{kind}/{identifier}',
+          },
+        ],
+      },
     ];
   };
 
@@ -151,7 +182,7 @@ export class ApiDocsComponent implements OnInit {
           id: 'swagger',
           label: 'Swagger /docs',
           action: () => {
-            window.open('/docs', '_blank');
+            window.open(`${this.apiBaseUrl()}/docs`, '_blank', 'noopener');
           },
         },
       ],

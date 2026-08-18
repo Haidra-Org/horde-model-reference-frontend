@@ -90,9 +90,21 @@ describe('ApiDocsComponent', () => {
     expect(foundCategories).toBeTruthy();
   });
 
-  it('should render all four endpoint groups', () => {
-    const groups = nativeEl.querySelectorAll('.api-docs-group');
-    expect(groups.length).toBe(4);
+  it('documents both public licensing discovery and license-editor management', () => {
+    const groups = Array.from<HTMLElement>(nativeEl.querySelectorAll('.api-docs-group'));
+    const publicLicensing = groups.find((group) =>
+      group.textContent?.includes('Licensing — public conclusions'),
+    );
+    const licensingManagement = groups.find((group) =>
+      group.textContent?.includes('Licensing management — license-editor key'),
+    );
+
+    expect(publicLicensing?.textContent).toContain('GET');
+    expect(publicLicensing?.textContent).toContain('/model_references/v2/licensing/summary');
+    expect(publicLicensing?.textContent).toContain('/model_references/v2/licensing/models/');
+    expect(licensingManagement?.textContent).toContain('POST');
+    expect(licensingManagement?.textContent).toContain('DELETE');
+    expect(licensingManagement?.textContent).toContain('/model_references/v2/licensing/licenses');
   });
 
   it('should show canonical version in badge', () => {

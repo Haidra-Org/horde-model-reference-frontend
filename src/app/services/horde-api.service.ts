@@ -92,6 +92,7 @@ export class HordeApiService {
     type: HordeModelType,
     minCount?: number,
     includeBackendVariations?: boolean,
+    includeWorkers = false,
   ): Observable<BackendStatisticsResponse> {
     const category = type === 'image' ? 'image_generation' : 'text_generation';
     let params = new HttpParams();
@@ -104,6 +105,9 @@ export class HordeApiService {
     const shouldIncludeVariations = includeBackendVariations ?? type === 'text';
     if (shouldIncludeVariations) {
       params = params.set('include_backend_variations', 'true');
+    }
+    if (includeWorkers) {
+      params = params.set('include_workers', 'true');
     }
 
     this.statsLoadState.set('loading');
@@ -136,12 +140,16 @@ export class HordeApiService {
    * it might indicate backend caching issues or stale Horde API data.
    */
   private checkStatsStaleness(response: BackendStatisticsResponse): void {
-    // For now, we don't have timestamps in the response
-    // This is a placeholder for future staleness detection
-    // We could add a timestamp field to the backend response in the future
     const modelCount = Object.keys(response).length;
     if (modelCount === 0) {
       console.warn('[HordeApiService] Received empty statistics response from backend');
+    }
+    const observed = Object.values(response)
+      .map((entry) => entry.observed_at)
+      .filter((timestamp): timestamp is number => timestamp !== undefined);
+    const oldest = observed.length ? Math.min(...observed) : null;
+    if (oldest !== null && Date.now() / 1000 - oldest > 300) {
+      console.warn('[HordeApiService] Runtime statistics are more than five minutes old');
     }
   }
 

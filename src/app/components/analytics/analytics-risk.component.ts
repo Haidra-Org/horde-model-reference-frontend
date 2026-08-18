@@ -234,13 +234,27 @@ const PRESETS: PresetChip[] = [
                     </td>
                     <!-- Model name with link -->
                     <td>
-                      <a
-                        class="link"
-                        [routerLink]="['/categories', category(), 'model', row.model.name]"
-                        [queryParams]="{ tab: 'risk' }"
-                      >
-                        {{ row.model.name }}
-                      </a>
+                      @if (groupedTextView()) {
+                        <a
+                          class="link"
+                          [routerLink]="['/text-groups/group']"
+                          [queryParams]="{ name: row.model.name }"
+                          >{{ row.model.name }}</a
+                        >
+                        <a
+                          class="analytics-risk-related-link"
+                          [routerLink]="['/categories', 'text_generation']"
+                          [queryParams]="{ groups: row.model.name }"
+                          >Browse exact models</a
+                        >
+                      } @else {
+                        <a
+                          class="link"
+                          [routerLink]="['/categories', category(), 'model', row.model.name]"
+                          [queryParams]="{ tab: 'risk' }"
+                          >{{ row.model.name }}</a
+                        >
+                      }
                     </td>
                     <!-- Flags -->
                     <td>
@@ -307,6 +321,9 @@ export class AnalyticsRiskComponent implements OnInit {
   ];
 
   protected readonly isTextDomain = computed(() => domainOf(this.category()) === 'text');
+  protected readonly groupedTextView = computed(
+    () => this.isTextDomain() && this.groupMode() === 'grouped',
+  );
   protected readonly accentColor = computed(() => {
     const d = domainOf(this.category());
     return d === 'image' ? '#1d4ed8' : d === 'text' ? '#9333ea' : '#0891b2';

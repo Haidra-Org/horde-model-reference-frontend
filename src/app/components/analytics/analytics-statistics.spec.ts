@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, provideZonelessChangeDetection } from '@angular/core';
+import { Component, signal, provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BASE_PATH } from '../../api-client';
@@ -8,6 +8,10 @@ import { AnalyticsStatisticsComponent } from './analytics-statistics.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { HordeApiService } from '../../services/horde-api.service';
 import { of } from 'rxjs';
+import { provideRouter, Router } from '@angular/router';
+
+@Component({ template: '' })
+class RouteTargetStubComponent {}
 
 function makeCategoryStatistics(overrides: Record<string, unknown> = {}) {
   return {
@@ -64,6 +68,7 @@ describe('AnalyticsStatisticsComponent', () => {
         provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter([{ path: 'categories/:category', component: RouteTargetStubComponent }]),
         { provide: BASE_PATH, useValue: 'http://localhost:19800/api' },
         { provide: ModelReferenceApiService, useValue: apiStub },
         { provide: HordeApiService, useValue: hordeStub },
@@ -108,6 +113,31 @@ describe('AnalyticsStatisticsComponent', () => {
     expect(nativeEl.textContent).toContain('Safety mix');
     expect(nativeEl.textContent).toContain('SFW');
     expect(nativeEl.textContent).toContain('NSFW');
+  });
+
+  it('turns a baseline distribution into a filtered catalog destination', async () => {
+    const drillDown = nativeEl.querySelector<HTMLButtonElement>(
+      'button[aria-label="Browse SDXL models"]',
+    );
+    expect(drillDown).not.toBeNull();
+
+    drillDown?.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe(
+      '/categories/image_generation?baselines=stable_diffusion_xl',
+    );
+  });
+
+  it('maps the safety distribution to the browser safety filter', async () => {
+    const drillDown = nativeEl.querySelector<HTMLButtonElement>(
+      'button[aria-label="Browse NSFW models"]',
+    );
+    expect(drillDown).not.toBeNull();
+    drillDown?.click();
+    await fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/categories/image_generation?nsfw=nsfw');
   });
 
   it('should handle loading state', () => {

@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { catchError, map, of } from 'rxjs';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 interface ShowcaseModel {
   name: string;
@@ -25,7 +26,7 @@ interface ShowcaseModel {
  */
 @Component({
   selector: 'app-analytics-showcases',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="analytics-tab-content">
@@ -44,10 +45,10 @@ interface ShowcaseModel {
               <button
                 type="button"
                 class="card-showcase"
-                (click)="openLightbox(img, m.display_name ?? m.name)"
-                (keydown.enter)="openLightbox(img, m.display_name ?? m.name)"
+                (click)="openLightbox(img, m.display_name ?? m.name, m.name)"
+                (keydown.enter)="openLightbox(img, m.display_name ?? m.name, m.name)"
                 (keydown.space)="
-                  $event.preventDefault(); openLightbox(img, m.display_name ?? m.name)
+                  $event.preventDefault(); openLightbox(img, m.display_name ?? m.name, m.name)
                 "
                 [attr.aria-label]="'View showcase for ' + (m.display_name ?? m.name)"
               >
@@ -123,6 +124,12 @@ interface ShowcaseModel {
               height="800"
               priority
             />
+            <a
+              class="btn btn-secondary lightbox-model-link"
+              [routerLink]="['/categories', category(), 'model', lightboxModelName()]"
+            >
+              Open model record
+            </a>
           </div>
         </div>
       }
@@ -141,6 +148,7 @@ export class AnalyticsShowcasesComponent implements OnInit {
   // Lightbox
   protected readonly lightboxSrc = signal<string | null>(null);
   protected readonly lightboxLabel = signal('');
+  protected readonly lightboxModelName = signal('');
 
   ngOnInit(): void {
     this.api
@@ -175,9 +183,10 @@ export class AnalyticsShowcasesComponent implements OnInit {
     return result;
   }
 
-  protected openLightbox(src: string, label: string): void {
+  protected openLightbox(src: string, label: string, modelName: string): void {
     this.lightboxSrc.set(src);
     this.lightboxLabel.set(label);
+    this.lightboxModelName.set(modelName);
   }
 
   protected onScrimClick(event: MouseEvent): void {
@@ -190,5 +199,6 @@ export class AnalyticsShowcasesComponent implements OnInit {
   protected closeLightbox(): void {
     this.lightboxSrc.set(null);
     this.lightboxLabel.set('');
+    this.lightboxModelName.set('');
   }
 }

@@ -8,6 +8,7 @@ import { BASE_PATH } from '../../api-client';
 import { AnalyticsComponent } from './analytics.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { ShellContextService } from '../../services/shell-context.service';
+import { ViewerCapabilitiesService } from '../../services/viewer-capabilities.service';
 import { of, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -32,8 +33,25 @@ describe('AnalyticsComponent', () => {
     getDisplayModelsAsArray: vi.fn().mockReturnValue(of([])),
   };
 
+  const canSeeCuration = signal(false);
+
+  const viewerStub = {
+    canSeeCuration: canSeeCuration.asReadonly(),
+    canPropose: signal(false).asReadonly(),
+    canApprove: canSeeCuration.asReadonly(),
+    canEditLicensing: signal(false).asReadonly(),
+  };
+
+  /** Re-render after flipping viewer entitlement, which the tab strip derives from. */
+  const asCurator = async (): Promise<void> => {
+    canSeeCuration.set(true);
+    await fixture.whenStable();
+    fixture.detectChanges();
+  };
+
   beforeEach(async () => {
     queryParamMapSubject.next({ category: 'image_generation', tab: 'statistics' });
+    canSeeCuration.set(false);
 
     await TestBed.configureTestingModule({
       imports: [AnalyticsComponent],
@@ -43,6 +61,7 @@ describe('AnalyticsComponent', () => {
         provideHttpClientTesting(),
         { provide: BASE_PATH, useValue: 'http://localhost:19800/api' },
         { provide: ModelReferenceApiService, useValue: apiStub },
+        { provide: ViewerCapabilitiesService, useValue: viewerStub },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -63,15 +82,20 @@ describe('AnalyticsComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render category rail', () => {
-    expect(nativeEl.querySelector('app-category-rail')).toBeTruthy();
+  it('should render category selector', () => {
+    expect(nativeEl.querySelector('app-category-selector')).toBeTruthy();
   });
 
   it('should render the tab segmented control', () => {
     expect(nativeEl.querySelector('app-segmented-control')).toBeTruthy();
   });
 
-  it('should render cache TTL badge', () => {
+  it('should hide the cache TTL badge from a visitor', () => {
+    expect(nativeEl.textContent).not.toContain('Cache');
+  });
+
+  it('should render the cache TTL badge for a curator', async () => {
+    await asCurator();
     expect(nativeEl.textContent).toContain('Cache');
   });
 
@@ -79,9 +103,18 @@ describe('AnalyticsComponent', () => {
     expect(nativeEl.querySelector('app-analytics-statistics')).toBeTruthy();
   });
 
-  it('should show risk tab when query param is risk', async () => {
+  it('should fall back to statistics when a visitor requests the risk tab', async () => {
+    // Deletion risk is a curation judgement; a bookmarked ?tab=risk must not reinstate it.
     queryParamMapSubject.next({ category: 'image_generation', tab: 'risk' });
     fixture.detectChanges();
+
+    expect(nativeEl.querySelector('app-analytics-risk')).toBeNull();
+    expect(nativeEl.querySelector('app-analytics-statistics')).toBeTruthy();
+  });
+
+  it('should show risk tab when query param is risk and the viewer is a curator', async () => {
+    queryParamMapSubject.next({ category: 'image_generation', tab: 'risk' });
+    await asCurator();
 
     expect(nativeEl.querySelector('app-analytics-risk')).toBeTruthy();
   });
@@ -96,7 +129,7 @@ describe('AnalyticsComponent', () => {
   it('should set shell context with breadcrumb and title', () => {
     const ctx = shellContext.context();
     expect(ctx.breadcrumb.length).toBeGreaterThan(0);
-    expect(ctx.title).toBe('Model analytics');
+    expect(ctx.title).toBe('Catalog statistics');
   });
 
   it('should default to DEFAULT_CATEGORY when no category query param', async () => {
