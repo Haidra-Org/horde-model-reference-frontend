@@ -10,20 +10,29 @@ import {
 import { Router, NavigationEnd, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ModelReferenceApiService } from '../../services/model-reference-api.service';
-import { AuthService } from '../../services/auth.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { SidebarService } from '../../services/sidebar.service';
+import { ViewerCapabilitiesService } from '../../services/viewer-capabilities.service';
 import { BackendStatusChipComponent } from '../backend-status-chip/backend-status-chip.component';
 import { DEFAULT_CATEGORY } from '../../shared/constants';
+
+/**
+ * Who a nav entry is offered to.
+ *
+ * `public` entries are always present. The others are omitted entirely rather than
+ * disabled: contribution is allowlist-controlled, so for almost every visitor a
+ * greyed-out entry is a door they can never open and an invitation to ask why.
+ */
+type NavVisibility = 'public' | 'contributor' | 'curator';
 
 interface SidebarNavItem {
   id: string;
   label: string;
   route: string;
+  /** Query params bound separately; embedding them in `route` breaks routerLink array commands. */
+  queryParams?: Record<string, string>;
   icon: string;
-  needWrite?: boolean;
-  needApprove?: boolean;
+  visibility: NavVisibility;
   badge?: 'queue';
 }
 
@@ -36,41 +45,77 @@ const NAV_ITEMS: { group: string; items: SidebarNavItem[] }[] = [
         label: 'Browse models',
         route: `/categories/${DEFAULT_CATEGORY}`,
         icon: 'layers',
+        visibility: 'public',
       },
-      { id: 'text-groups', label: 'Text groups', route: '/text-groups', icon: 'branch' },
+      {
+        id: 'text-groups',
+        label: 'Text groups',
+        route: '/text-groups',
+        icon: 'branch',
+        visibility: 'public',
+      },
+      {
+        id: 'text-guidance',
+        label: 'Usage guidance',
+        route: '/text-guidance',
+        icon: 'doc',
+        visibility: 'public',
+      },
+      {
+        id: 'licensing',
+        label: 'Licensing',
+        route: '/licensing',
+        icon: 'shield',
+        visibility: 'public',
+      },
       {
         id: 'analytics',
-        label: 'Analytics',
-        route: `/analytics?category=${DEFAULT_CATEGORY}&tab=statistics`,
+        label: 'Statistics',
+        route: '/analytics',
+        queryParams: { category: DEFAULT_CATEGORY, tab: 'statistics' },
         icon: 'chart',
+        visibility: 'public',
       },
     ],
   },
   {
-    group: 'Contribute',
+    group: 'Curation',
     items: [
       {
         id: 'propose',
         label: 'Propose a change',
         route: '/propose',
         icon: 'wand',
-        needWrite: true,
+        visibility: 'contributor',
+      },
+      {
+        id: 'families',
+        label: 'Families & aliases',
+        route: '/text-groups/families',
+        icon: 'branch',
+        visibility: 'contributor',
       },
       {
         id: 'queue',
         label: 'Review queue',
         route: '/pending-queue',
         icon: 'inbox',
-        needApprove: true,
+        visibility: 'curator',
         badge: 'queue',
       },
     ],
   },
   {
-    group: 'System',
+    group: 'Developers',
     items: [
-      { id: 'deployment', label: 'Deployment', route: '/deployment', icon: 'server' },
-      { id: 'docs', label: 'API & docs', route: '/api-docs', icon: 'doc' },
+      { id: 'docs', label: 'API & docs', route: '/api-docs', icon: 'doc', visibility: 'public' },
+      {
+        id: 'deployment',
+        label: 'This deployment',
+        route: '/deployment',
+        icon: 'server',
+        visibility: 'public',
+      },
     ],
   },
 ];
@@ -82,8 +127,7 @@ const NAV_ITEMS: { group: string; items: SidebarNavItem[] }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit {
-  private readonly api = inject(ModelReferenceApiService);
-  readonly auth = inject(AuthService);
+  readonly viewer = inject(ViewerCapabilitiesService);
   readonly pendingSummary = inject(PendingQueueSummaryService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -91,13 +135,6 @@ export class SidebarComponent implements OnInit {
 
   readonly isCollapsed = this.sidebarService.isCollapsed;
   readonly isMobile = this.sidebarService.isMobile;
-
-  readonly canWrite = computed(
-    () => this.api.backendCapabilities().writable && this.auth.isRequestor(),
-  );
-  readonly canApprove = computed(
-    () => this.api.backendCapabilities().writable && this.auth.isApprover(),
-  );
 
   readonly pendingCount = computed(() => this.pendingSummary.totalPendingCount());
 
@@ -107,17 +144,27 @@ export class SidebarComponent implements OnInit {
 
   readonly navItemStates = computed(() => {
     const current = this.currentRoute();
-    const cw = this.canWrite();
-    const ca = this.canApprove();
+    const canPropose = this.viewer.canPropose();
+    const canApprove = this.viewer.canApprove();
+
+    const isVisible = (item: SidebarNavItem): boolean => {
+      switch (item.visibility) {
+        case 'public':
+          return true;
+        case 'contributor':
+          return canPropose;
+        case 'curator':
+          return canApprove;
+      }
+    };
 
     return NAV_ITEMS.map((group) => ({
       ...group,
-      items: group.items.map((item) => {
-        const isActive = this.isRouteActive(current, item);
-        const isDisabled = (item.needWrite && !cw) || (item.needApprove && !ca);
-        return { ...item, isActive, isDisabled };
-      }),
-    }));
+      items: group.items
+        .filter(isVisible)
+        .map((item) => ({ ...item, isActive: this.isRouteActive(current, item) })),
+      // A group whose every entry is gated must not render its heading.
+    })).filter((group) => group.items.length > 0);
   });
 
   ngOnInit(): void {
@@ -144,8 +191,6 @@ export class SidebarComponent implements OnInit {
   getIcon(name: string): string {
     return ICON_MAP[name] ?? '';
   }
-
-  readonly shieldIcon = ICON_MAP['shield'];
 
   private isRouteActive(currentUrl: string, item: SidebarNavItem): boolean {
     if (item.id === 'browse') {

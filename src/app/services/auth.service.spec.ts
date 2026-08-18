@@ -83,12 +83,14 @@ describe('AuthService', () => {
         roles: ['approver', 'requestor'],
         is_approver: true,
         is_requestor: true,
+        is_license_editor: true,
       }),
     );
 
     // After roles are fetched, should be fully authenticated
     expect(service.isAuthenticated()).toBe(true);
     expect(service.isApprover()).toBe(true);
+    expect(service.isLicenseEditor()).toBe(true);
   });
 
   it('should reject login with empty API key', async () => {

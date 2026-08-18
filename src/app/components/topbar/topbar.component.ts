@@ -112,10 +112,14 @@ import { SidebarService } from '../../services/sidebar.service';
             <span
               class="topbar-role-badge"
               [class.topbar-role-badge--approver]="auth.isApprover()"
-              [class.topbar-role-badge--requestor]="auth.isRequestor() && !auth.isApprover()"
+              [class.topbar-role-badge--requestor]="
+                auth.isRequestor() && !auth.isApprover() && !auth.isLicenseEditor()
+              "
             >
               @if (auth.isApprover()) {
                 Approver
+              } @else if (auth.isLicenseEditor()) {
+                License editor
               } @else if (auth.isRequestor()) {
                 Requestor
               } @else {
@@ -192,18 +196,18 @@ export class TopbarComponent {
 
   readonly showLoginModal = signal(false);
 
-  // Heuristic: can go back if there's history (we can't directly check history.length in Angular)
-  // The back button is shown when the router has navigated beyond the initial route.
-  // We use a simple signal set by the first navigation.
+  // The first completed route is the landing page, not evidence of in-app history.
+  // Only reveal Back after a subsequent client-side navigation.
   private navigated = signal(false);
 
   readonly canGoBack = computed(() => this.navigated());
 
   constructor() {
-    // Mark that we've navigated after the first NavigationEnd event
+    let completedNavigations = 0;
     this.router.events.subscribe((event) => {
       if (event.constructor.name === 'NavigationEnd') {
-        this.navigated.set(true);
+        completedNavigations++;
+        this.navigated.set(completedNavigations > 1);
       }
     });
   }

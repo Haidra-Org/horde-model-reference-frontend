@@ -51,6 +51,9 @@ export class AuthService {
   /** Whether the current user has requestor privileges. */
   readonly isRequestor = computed(() => this.user()?.isRequestor ?? false);
 
+  /** Whether the current user may directly manage licensing definitions and auxiliary assets. */
+  readonly isLicenseEditor = computed(() => this.user()?.isLicenseEditor ?? false);
+
   /** The highest role the current user has. */
   readonly highestRole = computed<UserRole>(() => this.user()?.highestRole ?? 'anonymous');
 
@@ -250,6 +253,7 @@ export class AuthService {
             highestRole: 'user',
             isApprover: false,
             isRequestor: false,
+            isLicenseEditor: false,
           };
           this.user.set(user);
           return user;

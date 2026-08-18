@@ -33,6 +33,7 @@ export interface UserRolesResponse {
   roles: string[];
   is_approver: boolean;
   is_requestor: boolean;
+  is_license_editor: boolean;
 }
 
 /**
@@ -56,6 +57,9 @@ export interface AuthenticatedUser {
 
   /** Whether the user has requestor privileges. */
   isRequestor: boolean;
+
+  /** Whether the user may directly manage normalized licensing records. */
+  isLicenseEditor: boolean;
 }
 
 /**
@@ -118,6 +122,7 @@ export function createAuthenticatedUser(response: UserRolesResponse): Authentica
     highestRole,
     isApprover: response.is_approver,
     isRequestor: response.is_requestor,
+    isLicenseEditor: response.is_license_editor,
   };
 }
 

@@ -17,6 +17,7 @@ describe('TopbarComponent', () => {
   const username = signal<string | null>(null);
   const isApprover = signal(false);
   const isRequestor = signal(false);
+  const isLicenseEditor = signal(false);
   const logout = vi.fn();
 
   const authStub = {
@@ -24,6 +25,7 @@ describe('TopbarComponent', () => {
     username: username.asReadonly(),
     isApprover: isApprover.asReadonly(),
     isRequestor: isRequestor.asReadonly(),
+    isLicenseEditor: isLicenseEditor.asReadonly(),
     logout,
   };
 
@@ -32,6 +34,7 @@ describe('TopbarComponent', () => {
     username.set(null);
     isApprover.set(false);
     isRequestor.set(false);
+    isLicenseEditor.set(false);
     logout.mockReset();
 
     await TestBed.configureTestingModule({
@@ -67,6 +70,10 @@ describe('TopbarComponent', () => {
     expect(signInBtn).toBeTruthy();
   });
 
+  it('does not imply an in-app back destination on the initial page', () => {
+    expect(nativeEl.querySelector('button[aria-label="Go back"]')).toBeNull();
+  });
+
   it('should show username when authenticated', () => {
     isAuthenticated.set(true);
     username.set('testuser');
@@ -98,6 +105,15 @@ describe('TopbarComponent', () => {
     const badge = nativeEl.querySelector('.topbar-role-badge--requestor');
     expect(badge).toBeTruthy();
     expect(badge!.textContent).toContain('Requestor');
+  });
+
+  it('shows the independent license-editor capability to the signed-in user', () => {
+    isAuthenticated.set(true);
+    username.set('license-curator');
+    isLicenseEditor.set(true);
+    fixture.detectChanges();
+
+    expect(nativeEl.querySelector('.topbar-role-badge')?.textContent).toContain('License editor');
   });
 
   it('should render breadcrumb from ShellContextService', () => {

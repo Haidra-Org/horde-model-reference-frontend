@@ -51,42 +51,24 @@
           <div class="sidebar-feature-group-title">{{ group.group }}</div>
           <div class="sidebar-feature-group-items">
             @for (item of group.items; track item.id) {
-              @if (item.isDisabled) {
-                <!-- Disabled item (no write/approve capability) -->
-                <button
-                  type="button"
-                  class="sidebar-feature-item sidebar-feature-item--disabled"
-                  disabled
-                  [attr.aria-disabled]="true"
-                  [title]="
-                    item.needWrite
-                      ? 'Read-only backend or insufficient role'
-                      : 'Requires approver role'
-                  "
-                >
-                  <span class="sidebar-feature-item-icon" [innerHTML]="getIcon(item.icon)"></span>
-                  <span class="sidebar-feature-item-label">{{ item.label }}</span>
-                  <span class="sidebar-feature-item-icon" [innerHTML]="shieldIcon"></span>
-                </button>
-              } @else {
-                <a
-                  class="sidebar-feature-item"
-                  [class.sidebar-feature-item--active]="item.isActive"
-                  [routerLink]="[item.route]"
-                  [attr.aria-current]="item.isActive ? 'page' : null"
-                >
-                  <span class="sidebar-feature-item-icon" [innerHTML]="getIcon(item.icon)"></span>
-                  <span class="sidebar-feature-item-label">{{ item.label }}</span>
-                  @if (item.badge === 'queue' && pendingCount() > 0) {
-                    <span
-                      class="sidebar-feature-badge"
-                      [attr.aria-label]="pendingCount() + ' pending changes'"
-                    >
-                      {{ pendingCount() }}
-                    </span>
-                  }
-                </a>
-              }
+              <a
+                class="sidebar-feature-item"
+                [class.sidebar-feature-item--active]="item.isActive"
+                [routerLink]="[item.route]"
+                [queryParams]="item.queryParams ?? null"
+                [attr.aria-current]="item.isActive ? 'page' : null"
+              >
+                <span class="sidebar-feature-item-icon" [innerHTML]="getIcon(item.icon)"></span>
+                <span class="sidebar-feature-item-label">{{ item.label }}</span>
+                @if (item.badge === 'queue' && pendingCount() > 0) {
+                  <span
+                    class="sidebar-feature-badge"
+                    [attr.aria-label]="pendingCount() + ' pending changes'"
+                  >
+                    {{ pendingCount() }}
+                  </span>
+                }
+              </a>
             }
           </div>
         </div>
