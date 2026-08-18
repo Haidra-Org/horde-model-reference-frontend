@@ -9,15 +9,15 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HordeBadgeComponent } from '@haidra/design-system/badge';
 import { HordeButtonComponent } from '@haidra/design-system/button';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
 import { catchError, of } from 'rxjs';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
+import { ViewerCapabilitiesService } from '../../services/viewer-capabilities.service';
 import { NotificationService } from '../../services/notification.service';
-import { AuthService } from '../../services/auth.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { ShellContextService } from '../../services/shell-context.service';
 import { IconComponent } from '../common/icon.component';
@@ -32,6 +32,7 @@ import {
 import { AddVariationPanelComponent } from './add-variation-panel.component';
 import { MultiVariationPanelComponent } from './multi-variation-panel.component';
 import { NameSchemaEditorComponent } from './name-schema-editor.component';
+import { sortParameterSizeLabels, sortTextModelMembers } from '../../utils/text-model-sort';
 
 export interface SizeSubGroup {
   size: string;
@@ -39,10 +40,13 @@ export interface SizeSubGroup {
   expanded: boolean;
 }
 
+type GroupDetailSection = 'variants' | 'overview' | 'naming' | 'maintenance';
+
 @Component({
   selector: 'app-text-model-group',
   imports: [
     FormsModule,
+    RouterLink,
     HordeBadgeComponent,
     HordeButtonComponent,
     IconComponent,
@@ -58,8 +62,8 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   readonly router = inject(Router);
   private readonly api = inject(ModelReferenceApiService);
+  private readonly viewer = inject(ViewerCapabilitiesService);
   private readonly notification = inject(NotificationService);
-  private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pendingSummary = inject(PendingQueueSummaryService);
   private readonly shellContext = inject(ShellContextService);
@@ -68,6 +72,9 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
   readonly groupName = signal('');
   readonly loading = signal(true);
   readonly groupData = signal<GroupMembersResponse | null>(null);
+  /** Non-404 load failure (network, 5xx). A 404 is an empty/missing group, shown as "not found". */
+  readonly loadError = signal<string | null>(null);
+  readonly activeSection = signal<GroupDetailSection>('variants');
 
   // Editing common fields
   readonly editingCommonFields = signal(false);
@@ -88,9 +95,13 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
 
   readonly Object = Object;
 
-  readonly writable = computed(
-    () => this.api.backendCapabilities().writable && this.auth.isAuthenticated(),
-  );
+  // Previously keyed off `isAuthenticated()`, which offered the editing panels to any
+  // signed-in visitor even though proposing is allowlist-controlled and the submit would
+  // have been rejected.
+  readonly writable = this.viewer.canPropose;
+
+  /** Group-health warnings are a maintenance backlog, not catalog information. */
+  readonly showCurationSignals = this.viewer.canSeeCuration;
 
   // ---- Variant matrix ----
 
@@ -224,7 +235,10 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
   readonly canonicalMembers = computed(() => {
     const data = this.groupData();
     if (!data) return [];
-    return data.members.filter((m) => !m.is_backend_duplicate);
+    return sortTextModelMembers(
+      data.members.filter((member) => !member.is_backend_duplicate),
+      data.name_format,
+    );
   });
 
   readonly backendDuplicates = computed(() => {
@@ -245,7 +259,7 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
       if (memberNames.has(r.model_name)) return true;
       // Match creates by group name in payload or name prefix
       if (r.operation === 'create') {
-        const payload = r.payload ?? {};
+        const payload = (r.payload ?? {}) as Record<string, unknown>;
         if (payload['text_model_group'] === group) return true;
       }
       return false;
@@ -265,7 +279,7 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
   );
 
   readonly commonFields = computed(() => {
-    return this.groupData()?.common_fields ?? {};
+    return (this.groupData()?.common_fields ?? {}) as Record<string, unknown>;
   });
 
   readonly nameSchemaIsCustom = computed(() => this.groupData()?.name_schema_is_custom ?? false);
@@ -309,7 +323,9 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
   readonly parameterSummary = computed(() => {
     const data = this.groupData();
     if (!data) return null;
-    return data.available_sizes.length > 0 ? data.available_sizes : null;
+    return data.available_sizes.length > 0
+      ? sortParameterSizeLabels(data.available_sizes, this.canonicalMembers())
+      : null;
   });
 
   /** Whether to show size sub-groups (for large groups with >10 canonical members) */
@@ -327,9 +343,9 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
       groups.set(size, existing);
     }
 
-    return Array.from(groups.entries()).map(([size, members]) => ({
+    return sortParameterSizeLabels([...groups.keys()], members).map((size) => ({
       size,
-      members,
+      members: groups.get(size) ?? [],
       expanded: true,
     }));
   });
@@ -350,42 +366,77 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
       warnings.push('Members have different NSFW flags');
     }
 
-    const missingDesc = members.filter((m) => !m.description);
-    if (missingDesc.length > 0) {
-      warnings.push(`${missingDesc.length} member(s) missing descriptions`);
-    }
-
     return warnings;
   });
 
+  readonly metadataNotices = computed<string[]>(() => {
+    const missingDescriptionCount = this.canonicalMembers().filter(
+      (member) => !member.description,
+    ).length;
+    return missingDescriptionCount > 0
+      ? [`${missingDescriptionCount} member(s) missing descriptions`]
+      : [];
+  });
+
   ngOnInit(): void {
-    this.route.paramMap
+    this.route.queryParamMap
       .pipe(
         map((params) => ({
           category: params.get('category') ?? 'text_generation',
-          groupName: params.get('group') ?? params.get('groupName') ?? '',
+          groupName: params.get('name') ?? '',
+          requestedSection: params.get('view'),
         })),
+        distinctUntilChanged(
+          (previous, current) =>
+            previous.category === current.category && previous.groupName === current.groupName,
+        ),
         filter(({ groupName }) => groupName.length > 0),
-        tap(({ category, groupName }) => {
+        tap(({ category, groupName, requestedSection }) => {
           this.category.set(category);
           this.groupName.set(groupName);
+          if (isGroupDetailSection(requestedSection)) {
+            this.activeSection.set(
+              requestedSection === 'maintenance' && !this.writable()
+                ? 'variants'
+                : requestedSection,
+            );
+          }
           this.loading.set(true);
         }),
         switchMap(({ groupName }) =>
-          this.api.getGroupMembers(groupName).pipe(catchError(() => of(null))),
+          this.api.getGroupMembers(groupName).pipe(
+            map((response) => ({ response, error: null as string | null })),
+            catchError((err: Error) =>
+              of({ response: null, error: err?.message ?? 'Failed to load group' }),
+            ),
+          ),
         ),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: (response) => {
+        next: ({ response, error }) => {
+          this.groupData.set(response);
+          // A 404 is a genuinely empty/missing group (rendered via the not-found state). Only
+          // surface other failures (network, 5xx) as an error so they aren't mislabeled.
+          this.loadError.set(error && !error.startsWith('Not Found') ? error : null);
           if (response) {
-            this.groupData.set(response);
             this.loadAliases(response.group_name);
             this.updateShellContext(response);
           }
           this.loading.set(false);
         },
       });
+  }
+
+  setActiveSection(section: GroupDetailSection): void {
+    if (section === 'maintenance' && !this.writable()) return;
+    this.activeSection.set(section);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { view: section === 'variants' ? null : section },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private updateShellContext(data: GroupMembersResponse): void {
@@ -401,7 +452,9 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
     this.shellContext.setContext({
       breadcrumb: [{ label: 'Text groups', route: ['/text-groups'] }, { label: group }],
       title: group,
-      sub: `${variantCount} variants across ${backendCount} backend(s)`,
+      sub: `${variantCount} ${variantCount === 1 ? 'variant' : 'variants'} across ${backendCount} ${
+        backendCount === 1 ? 'backend' : 'backends'
+      }`,
       actions: [
         ...(this.writable()
           ? [
@@ -655,6 +708,7 @@ export class TextModelGroupComponent implements OnInit, OnDestroy {
 
   private reloadGroup(): void {
     this.loading.set(true);
+    this.loadError.set(null);
     this.api
       .getGroupMembers(this.groupName())
       .pipe(
@@ -700,4 +754,8 @@ function formatParameterCount(params: number): string {
     return millions % 1 === 0 ? `${millions}M` : `${millions.toFixed(1)}M`;
   }
   return `${params}`;
+}
+
+function isGroupDetailSection(value: string | null): value is GroupDetailSection {
+  return ['variants', 'overview', 'naming', 'maintenance'].includes(value ?? '');
 }

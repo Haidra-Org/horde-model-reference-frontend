@@ -1,132 +1,365 @@
-<!-- Topbar breadcrumb, title, and actions are set via ShellContextService in ngOnInit -->
-
 @if (loading()) {
-  <div class="glass-inflow" style="padding: 40px; text-align: center">
-    <p style="color: var(--color-content-muted)">Loading families & aliases…</p>
-  </div>
+  <div class="glass-inflow catalog-state" role="status">Loading families and aliases…</div>
 } @else {
   <div class="text-groups-layout">
     <app-text-tabs [tabs]="textTabs" />
 
-    <div class="families-grid">
-      <!-- Left: Group families -->
-      <div class="families-column">
-        <div class="section-title-row">
-          <h2 class="heading-section">Group families</h2>
-          <p class="text-muted">
-            Purely informational metadata — families surface "see also" relationships but don't
-            affect grouping or resolution.
-          </p>
-        </div>
+    @if (loadError()) {
+      <div class="alert alert--danger" role="alert">{{ loadError() }}</div>
+    }
 
-        @if (families().length === 0) {
-          <div class="glass-inflow" style="padding: 24px; text-align: center">
-            <p style="color: var(--color-content-muted)">No families defined yet.</p>
-          </div>
-        } @else {
-          <div class="families-list">
-            @for (family of families(); track family.family_name) {
-              <div class="glass-inflow family-card">
-                <div class="family-card-header">
-                  <div class="family-card-icon">
-                    <app-icon name="layers" />
-                  </div>
-                  <div class="family-card-name">{{ family.family_name }}</div>
-                  <span class="badge badge-secondary"
-                    >{{ family.members.length }} group{{
-                      family.members.length === 1 ? '' : 's'
-                    }}</span
-                  >
-                </div>
-                <div class="family-card-members">
-                  @for (member of family.members; track member) {
-                    <button
-                      type="button"
-                      class="badge badge-purple family-member-chip"
-                      (click)="navigateToGroup(member)"
-                    >
-                      <app-icon name="branch" />
-                      {{ member }}
-                    </button>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
+    <nav class="workspace-tabs" aria-label="Family metadata workspace">
+      <button
+        type="button"
+        class="workspace-tabs__tab"
+        [class.workspace-tabs__tab--active]="activeView() === 'saved'"
+        [attr.aria-current]="activeView() === 'saved' ? 'page' : null"
+        (click)="setActiveView('saved')"
+      >
+        Saved families <span>{{ families().length }}</span>
+      </button>
+      <button
+        type="button"
+        class="workspace-tabs__tab"
+        [class.workspace-tabs__tab--active]="activeView() === 'aliases'"
+        [attr.aria-current]="activeView() === 'aliases' ? 'page' : null"
+        (click)="setActiveView('aliases')"
+      >
+        Alias rules <span>{{ aliasRuleCount() }}</span>
+      </button>
+      <button
+        type="button"
+        class="workspace-tabs__tab"
+        [class.workspace-tabs__tab--active]="activeView() === 'suggestions'"
+        [attr.aria-current]="activeView() === 'suggestions' ? 'page' : null"
+        (click)="setActiveView('suggestions')"
+      >
+        Suggestions <span>{{ detectedFamilies().length }}</span>
+      </button>
+    </nav>
 
-      <!-- Right: Group aliases + detect suggestions -->
-      <div class="families-column">
-        <div class="section-title-row">
-          <h2 class="heading-section">Group aliases</h2>
-          <p class="text-muted">
-            Resolved after base-name extraction so aliased families collapse into one group.
-          </p>
-        </div>
-
-        @if (aliases().length === 0) {
-          <div class="glass-inflow" style="padding: 24px; text-align: center">
-            <p style="color: var(--color-content-muted)">No aliases defined yet.</p>
+    @switch (activeView()) {
+      @case ('saved') {
+        <section class="workspace-section" aria-labelledby="saved-families-heading">
+          <div class="workspace-section__header">
+            <div>
+              <h2 id="saved-families-heading" class="heading-section">
+                Saved family relationships
+              </h2>
+              <p class="text-muted">
+                Families provide related-group discovery. They do not change model-name resolution.
+              </p>
+            </div>
           </div>
-        } @else {
-          <div class="glass-inflow" style="padding: 0; overflow: hidden">
-            <table class="aliases-table">
-              <thead>
-                <tr>
-                  <th>Alias</th>
-                  <th>Resolves to</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (entry of aliases(); track entry.canonical) {
-                  @for (alias of entry.aliases; track alias) {
+
+          @if (families().length === 0) {
+            <div class="glass-inflow catalog-state">
+              <h3 class="heading-section">No families defined yet</h3>
+              <p class="text-muted">
+                Review detector suggestions to establish intentional relationships.
+              </p>
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                (click)="setActiveView('suggestions')"
+              >
+                Review suggestions
+              </button>
+            </div>
+          } @else {
+            <div class="glass-inflow catalog-table-shell">
+              <table class="catalog-table family-resource-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Family</th>
+                    <th scope="col">Groups</th>
+                    <th scope="col">Members</th>
+                    <th scope="col"><span class="sr-only">Exact models</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (family of families(); track family.family_name) {
                     <tr>
-                      <td class="mono alias-cell">{{ alias }}</td>
                       <td>
+                        <a
+                          class="catalog-resource-link"
+                          [routerLink]="['/text-groups']"
+                          [queryParams]="{ families: family.family_name }"
+                        >
+                          <app-icon name="layers" />
+                          <strong>{{ family.family_name }}</strong>
+                        </a>
+                      </td>
+                      <td>
+                        <strong>{{ family.members.length }}</strong>
+                        <span class="catalog-cell-note">related groups</span>
+                      </td>
+                      <td>
+                        <div class="catalog-tags">
+                          @for (member of family.members; track member) {
+                            <a
+                              class="badge badge-purple family-member-chip"
+                              [routerLink]="['/text-groups/group']"
+                              [queryParams]="{ name: member }"
+                            >
+                              {{ member }}
+                            </a>
+                          }
+                        </div>
+                      </td>
+                      <td class="catalog-table__actions">
                         <button
                           type="button"
-                          class="badge badge-purple alias-target-chip"
-                          (click)="navigateToGroup(entry.canonical)"
+                          class="btn btn-ghost btn-sm"
+                          [attr.aria-expanded]="expandedFamily() === family.family_name"
+                          [attr.aria-controls]="'family-models-' + $index"
+                          (click)="toggleFamilyModels(family)"
                         >
-                          {{ entry.canonical }}
-                          <app-icon name="arrowRight" />
+                          {{
+                            expandedFamily() === family.family_name ? 'Hide models' : 'Show models'
+                          }}
                         </button>
                       </td>
                     </tr>
+                    @if (expandedFamily() === family.family_name) {
+                      <tr class="family-models-row">
+                        <td colspan="4">
+                          <section
+                            class="family-models-panel"
+                            [id]="'family-models-' + $index"
+                            [attr.aria-label]="family.family_name + ' exact model records'"
+                          >
+                            <header>
+                              <div>
+                                <strong>Exact model records in {{ family.family_name }}</strong>
+                                <p>
+                                  Families contain groups; groups contain the independently served
+                                  model records below.
+                                </p>
+                              </div>
+                              <a
+                                class="btn btn-secondary btn-sm"
+                                [routerLink]="['/categories', 'text_generation']"
+                                [queryParams]="{ families: family.family_name }"
+                                >Browse as model list</a
+                              >
+                            </header>
+                            @if (familyModelsLoading() === family.family_name) {
+                              <div class="catalog-state" role="status">Loading exact models…</div>
+                            } @else if (familyModelsError() === family.family_name) {
+                              <div class="alert alert--warning" role="alert">
+                                Model records for this family could not be loaded.
+                              </div>
+                            } @else {
+                              <div class="family-model-groups">
+                                @for (
+                                  group of modelGroupsForFamily(family.family_name);
+                                  track group.groupName
+                                ) {
+                                  <section>
+                                    <a
+                                      class="family-model-group-link"
+                                      [routerLink]="['/text-groups/group']"
+                                      [queryParams]="{ name: group.groupName }"
+                                      >{{ group.groupName }}</a
+                                    >
+                                    <div class="family-exact-model-links">
+                                      @for (model of group.members; track model.name) {
+                                        <a
+                                          [routerLink]="[
+                                            '/categories',
+                                            'text_generation',
+                                            'model',
+                                            model.name,
+                                          ]"
+                                        >
+                                          <strong>{{ model.display_name || model.name }}</strong>
+                                          @if (
+                                            model.display_name && model.display_name !== model.name
+                                          ) {
+                                            <code>{{ model.name }}</code>
+                                          }
+                                        </a>
+                                      } @empty {
+                                        <span class="catalog-cell-note">
+                                          {{
+                                            group.loadFailed
+                                              ? 'Group records could not be loaded.'
+                                              : 'No canonical records returned.'
+                                          }}
+                                        </span>
+                                      }
+                                    </div>
+                                  </section>
+                                }
+                              </div>
+                            }
+                          </section>
+                        </td>
+                      </tr>
+                    }
                   }
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-
-        <!-- detect_families banner -->
-        @if (suggestionData(); as suggestions) {
-          <div class="glass-inflow detect-banner">
-            <div class="detect-banner-content">
-              <app-icon name="info" />
-              <div>
-                The <strong>detect_families</strong> heuristic suggests families from shared
-                hyphen-prefixes (longest prefix capturing ≥2 groups wins). Suggestions are reviewed
-                by an admin before being persisted.
-              </div>
+                </tbody>
+              </table>
             </div>
-            @if (suggestions.suggestions.length > 0) {
-              <div class="detect-banner-stats">
-                <span class="text-muted"
-                  >{{ suggestions.total_groups_analyzed }} groups analyzed ·
-                  {{ suggestions.groups_in_families }} in families ·
-                  {{ suggestions.standalone_groups }} standalone</span
-                >
-                @if (canApprove()) {
-                  <span class="badge badge-info badge-sm">admin review required</span>
-                }
-              </div>
-            }
+          }
+        </section>
+      }
+
+      @case ('aliases') {
+        <section class="workspace-section" aria-labelledby="alias-rules-heading">
+          <div class="workspace-section__header">
+            <div>
+              <h2 id="alias-rules-heading" class="heading-section">Canonical resolution rules</h2>
+              <p class="text-muted">
+                An incoming alternate group name resolves to one canonical text group after
+                base-name extraction.
+              </p>
+            </div>
           </div>
-        }
-      </div>
-    </div>
+
+          @if (aliases().length === 0) {
+            <div class="glass-inflow catalog-state">
+              <h3 class="heading-section">No alias rules defined</h3>
+              <p class="text-muted">Only canonical group names currently resolve.</p>
+            </div>
+          } @else {
+            <div class="glass-inflow catalog-table-shell">
+              <table class="catalog-table aliases-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Incoming alias</th>
+                    <th scope="col">Canonical group</th>
+                    <th scope="col">Effect</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entry of aliases(); track entry.canonical) {
+                    @for (alias of entry.aliases; track alias) {
+                      <tr>
+                        <td class="mono">{{ alias }}</td>
+                        <td>
+                          <button
+                            type="button"
+                            class="badge badge-purple alias-target-chip"
+                            (click)="navigateToGroup(entry.canonical)"
+                          >
+                            {{ entry.canonical }}
+                            <app-icon name="arrowRight" />
+                          </button>
+                        </td>
+                        <td><span class="catalog-cell-note">Canonicalizes lookup</span></td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+      }
+
+      @case ('suggestions') {
+        <section class="workspace-section" aria-labelledby="family-suggestions-heading">
+          <div class="workspace-section__header workspace-section__header--tools">
+            <div>
+              <h2 id="family-suggestions-heading" class="heading-section">
+                Heuristic family suggestions
+              </h2>
+              <p class="text-muted">
+                Candidates are inferred from shared name prefixes. Inspect their members before
+                saving; they are not catalog metadata until approved.
+              </p>
+            </div>
+            <label class="workspace-search">
+              <span class="sr-only">Search detected families</span>
+              <app-icon name="search" />
+              <input
+                class="form-input"
+                type="search"
+                placeholder="Search family or group…"
+                [value]="suggestionQuery()"
+                (input)="updateSuggestionQuery($event)"
+              />
+            </label>
+          </div>
+
+          @if (suggestionData(); as suggestions) {
+            <div class="suggestion-method">
+              <app-icon name="info" />
+              <span>
+                Longest shared hyphen-prefix with at least two groups ·
+                {{ suggestions.total_groups_analyzed }} analyzed ·
+                {{ suggestions.groups_in_families }} grouped ·
+                {{ suggestions.standalone_groups }} standalone
+              </span>
+              @if (canApprove()) {
+                <span class="badge badge-info badge-sm">Admin review</span>
+              }
+            </div>
+          }
+
+          @if (detectedFamilies().length === 0) {
+            <div class="glass-inflow catalog-state">
+              <h3 class="heading-section">No suggestions to review</h3>
+              <p class="text-muted">
+                @if (suggestionQuery()) {
+                  No candidates match “{{ suggestionQuery() }}”.
+                } @else {
+                  The detector found no unsaved candidates.
+                }
+              </p>
+            </div>
+          } @else {
+            <div class="suggestion-review-list">
+              @for (family of detectedFamilies(); track family.family_name) {
+                <article class="suggestion-review-row">
+                  <div class="suggestion-review-row__identity">
+                    <app-icon name="layers" />
+                    <div>
+                      <strong>{{ family.family_name }}</strong>
+                      <span>{{ family.members.length }} proposed related groups</span>
+                    </div>
+                  </div>
+                  <div class="suggestion-review-row__members">
+                    @for (member of family.members; track member) {
+                      <button
+                        type="button"
+                        class="family-member-link"
+                        (click)="navigateToGroup(member)"
+                      >
+                        {{ member }}
+                      </button>
+                    }
+                  </div>
+                  <div class="suggestion-review-row__actions">
+                    @if (canApprove()) {
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        [disabled]="savingFamily() !== null"
+                        (click)="persistSuggestion(family)"
+                      >
+                        {{ savingFamily() === family.family_name ? 'Saving…' : 'Save' }}
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-ghost btn-sm"
+                        [disabled]="savingFamily() !== null"
+                        (click)="dismissSuggestion(family.family_name)"
+                      >
+                        Dismiss
+                      </button>
+                    } @else {
+                      <span class="catalog-cell-note">Review only</span>
+                    }
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </section>
+      }
+    }
   </div>
 }

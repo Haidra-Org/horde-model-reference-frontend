@@ -20,6 +20,7 @@ import {
 } from '../../api-client';
 import { FormModelData } from '../../adapters/model-format-adapter';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
+import { sortParameterSizeLabels } from '../../utils/text-model-sort';
 import { NotificationService } from '../../services/notification.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
@@ -127,7 +128,9 @@ export class AddVariationPanelComponent implements OnInit {
     () => this.readinessItems().filter((item) => item.ready).length,
   );
 
-  readonly availableSizes = computed(() => this.groupData().available_sizes);
+  readonly availableSizes = computed(() =>
+    sortParameterSizeLabels(this.groupData().available_sizes, this.groupData().members),
+  );
 
   readonly availableVariants = computed(() =>
     this.groupData().available_variants.filter((v): v is string => v != null),
@@ -235,7 +238,7 @@ export class AddVariationPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const common = this.groupData().common_fields;
+    const common = this.groupData().common_fields as Record<string, unknown>;
     this.baseline.set((common['baseline'] as string) ?? '');
     this.description.set((common['description'] as string) ?? '');
     this.url.set((common['url'] as string) ?? '');
@@ -348,6 +351,7 @@ export class AddVariationPanelComponent implements OnInit {
         },
       },
       downloads: [],
+      licensing: null,
       legacyFiles: [],
       v2Fields: {
         recordType: 'text_generation' as MODEL_REFERENCE_CATEGORY,

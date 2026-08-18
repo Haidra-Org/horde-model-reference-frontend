@@ -45,7 +45,20 @@ function buildMember(name: string, opts: Partial<GroupMemberInfo> = {}): GroupMe
 function buildGroupData(overrides: Partial<GroupMembersResponse> = {}): GroupMembersResponse {
   return {
     group_name: 'Llama-3',
-    members: [buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000 })],
+    members: [
+      buildMember('Llama-3-1B', {
+        parameters: 1_000_000_000,
+        parsed: { base_name: 'Llama-3', size: '1B' },
+      }),
+      buildMember('Llama-3-8B-Instruct', {
+        parameters: 8_000_000_000,
+        parsed: { base_name: 'Llama-3', size: '8B', variant: 'Instruct' },
+      }),
+      buildMember('Llama-3-70B', {
+        parameters: 70_000_000_000,
+        parsed: { base_name: 'Llama-3', size: '70B' },
+      }),
+    ],
     common_fields: { baseline: 'llama3', nsfw: false },
     available_sizes: ['1B', '8B', '70B'],
     available_variants: ['Instruct', 'Chat', null],
@@ -57,7 +70,7 @@ function buildGroupData(overrides: Partial<GroupMembersResponse> = {}): GroupMem
       author_included: false,
       template: '{base}-{size}-{variant}-{version}-{quant}',
     },
-    canonical_count: 1,
+    canonical_count: 3,
     backend_duplicate_count: 0,
     size_usage: { '8B': 1 },
     variant_usage: { Instruct: 1 },

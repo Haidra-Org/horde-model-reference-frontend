@@ -1,126 +1,243 @@
-<!-- Topbar breadcrumb, title, and actions are set via ShellContextService in ngOnInit -->
-
 @if (loading()) {
-  <div class="glass-inflow" style="padding: 40px; text-align: center">
-    <p style="color: var(--color-content-muted)">Loading text groups…</p>
+  <div class="glass-inflow catalog-state" role="status">Loading text groups…</div>
+} @else if (loadError()) {
+  <div class="alert alert--danger" role="alert">
+    Text groups could not be loaded. Check the API connection and try again.
   </div>
 } @else {
   <div class="text-groups-layout">
-    <app-text-tabs [tabs]="textTabs" />
+    <app-text-tabs [tabs]="textTabs()" />
 
-    <!-- Toolbar: search + sort -->
+    <section class="catalog-overview" aria-label="Text group catalog summary">
+      <div>
+        <span class="catalog-overview__value">{{ summary()?.total_groups ?? 0 }}</span>
+        <span class="catalog-overview__label">groups</span>
+      </div>
+      <div>
+        <span class="catalog-overview__value">{{ summary()?.total_models ?? 0 }}</span>
+        <span class="catalog-overview__label">variants</span>
+      </div>
+      <div>
+        <span class="catalog-overview__value">{{ filterCounts().multi }}</span>
+        <span class="catalog-overview__label">multi-variant</span>
+      </div>
+      @if (showCurationSignals()) {
+        <div>
+          <span class="catalog-overview__value">{{ filterCounts().attention }}</span>
+          <span class="catalog-overview__label">need attention</span>
+        </div>
+      }
+    </section>
+
     <div class="glass-inflow text-groups-toolbar">
-      <div class="text-groups-search">
+      <label class="text-groups-search">
+        <span class="sr-only">Search text groups</span>
         <app-icon name="search" />
         <input
-          type="text"
+          type="search"
           class="form-input"
-          placeholder="Search groups…"
+          placeholder="Search group, family, or alias…"
           [ngModel]="searchQuery()"
-          (ngModelChange)="searchQuery.set($event)"
+          (ngModelChange)="updateSearchQuery($event)"
         />
-      </div>
+      </label>
       <app-segmented-control
         size="sm"
-        [options]="sortOptions"
-        [(value)]="sortMode"
+        [options]="sortOptions()"
+        [value]="resolvedSortMode()"
+        (valueChange)="updateSortMode($event)"
         ariaLabel="Sort groups"
       />
     </div>
 
-    <!-- Family filter chips -->
+    <div class="catalog-filters" aria-label="Filter text groups">
+      <span class="filter-chips-label">Show</span>
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip--active]="resolvedViewFilter() === 'all'"
+        [attr.aria-pressed]="resolvedViewFilter() === 'all'"
+        (click)="setViewFilter('all')"
+      >
+        All <span class="filter-chip__count">{{ filterCounts().all }}</span>
+      </button>
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip--active]="resolvedViewFilter() === 'multi'"
+        [attr.aria-pressed]="resolvedViewFilter() === 'multi'"
+        (click)="setViewFilter('multi')"
+      >
+        Multi-variant <span class="filter-chip__count">{{ filterCounts().multi }}</span>
+      </button>
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip--active]="resolvedViewFilter() === 'singleton'"
+        [attr.aria-pressed]="resolvedViewFilter() === 'singleton'"
+        (click)="setViewFilter('singleton')"
+      >
+        Singletons <span class="filter-chip__count">{{ filterCounts().singleton }}</span>
+      </button>
+      @if (showCurationSignals()) {
+        <button
+          type="button"
+          class="filter-chip filter-chip--warning"
+          [class.filter-chip--active]="resolvedViewFilter() === 'attention'"
+          [attr.aria-pressed]="resolvedViewFilter() === 'attention'"
+          (click)="setViewFilter('attention')"
+        >
+          Needs attention <span class="filter-chip__count">{{ filterCounts().attention }}</span>
+        </button>
+      }
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip--active]="resolvedViewFilter() === 'custom'"
+        [attr.aria-pressed]="resolvedViewFilter() === 'custom'"
+        (click)="setViewFilter('custom')"
+      >
+        Custom naming <span class="filter-chip__count">{{ filterCounts().custom }}</span>
+      </button>
+      @if (hasActiveFilters()) {
+        <button type="button" class="catalog-filters__clear" (click)="clearFilters()">
+          Clear filters
+        </button>
+      }
+    </div>
+
     @if (familyOptions().length > 0) {
       <div class="filter-chips-row">
         <span class="filter-chips-label">Family</span>
-        @for (opt of familyOptions(); track opt.value) {
+        @for (option of familyOptions(); track option.value) {
           <button
             type="button"
-            class="filter-chip"
-            style="--chip-accent: var(--color-accent-text)"
-            [class.filter-chip--active]="activeFamilies().includes(opt.value)"
-            [attr.aria-pressed]="activeFamilies().includes(opt.value)"
-            (click)="toggleFamily(opt.value)"
+            class="filter-chip filter-chip--text"
+            [class.filter-chip--active]="activeFamilies().includes(option.value)"
+            [attr.aria-pressed]="activeFamilies().includes(option.value)"
+            (click)="toggleFamily(option.value)"
           >
-            {{ opt.label }}<span class="filter-chip__count">{{ opt.count }}</span>
+            {{ option.label }}<span class="filter-chip__count">{{ option.count }}</span>
           </button>
         }
       </div>
     }
 
-    <!-- Group cards grid -->
-    @if (groupCards().length === 0) {
-      <div class="glass-inflow" style="padding: 40px; text-align: center">
-        <p style="color: var(--color-content-muted)">
-          @if (searchQuery() || activeFamilies().length > 0) {
-            No groups match your filters.
-          } @else {
-            No text groups found.
-          }
-        </p>
+    <div class="catalog-results-line" aria-live="polite">
+      {{ filteredGroupRows().length }} of {{ groupRows().length }} groups
+    </div>
+
+    @if (filteredGroupRows().length === 0) {
+      <div class="glass-inflow catalog-state">
+        <h2 class="heading-section">No matching groups</h2>
+        <p class="text-muted">Try a broader search or clear the active filters.</p>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilters()">
+          Clear filters
+        </button>
       </div>
     } @else {
-      <div class="group-cards-grid">
-        @for (card of groupCards(); track card.group.group_name) {
-          <button
-            type="button"
-            class="glass-inflow group-card accent-top-text"
-            (click)="navigateToGroup(card.group.group_name)"
-          >
-            <div class="group-card-header">
-              <div class="group-card-name">
-                <app-icon name="branch" />
-                <span>{{ card.group.group_name }}</span>
-              </div>
-              @if (card.familyName) {
-                <span class="badge badge-purple">{{ card.familyName }}</span>
+      <div class="glass-inflow catalog-table-shell">
+        <table class="catalog-table">
+          <thead>
+            <tr>
+              <th scope="col">Group</th>
+              <th scope="col">Variants</th>
+              <th scope="col">Sizes</th>
+              <th scope="col">Family</th>
+              @if (showCurationSignals()) {
+                <th scope="col">Data quality</th>
               }
-            </div>
-
-            <div class="group-card-meta">
-              @if (card.group.available_sizes?.length) {
-                <span class="text-muted">{{ card.group.available_sizes!.join(', ') }}</span>
-              }
-            </div>
-
-            @if (card.group.health_issues?.length) {
-              <div class="group-card-health">
-                @for (issue of card.group.health_issues; track issue.issue_type) {
-                  <span class="tag tag-warning tag-sm" [title]="issue.message">{{
-                    issue.issue_type
-                  }}</span>
+              <th scope="col"><span class="sr-only">Open</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of filteredGroupRows(); track row.group.group_name) {
+              <tr>
+                <td>
+                  <a
+                    class="catalog-resource-link"
+                    [routerLink]="['/text-groups/group']"
+                    [queryParams]="{ name: row.group.group_name }"
+                  >
+                    <app-icon name="branch" />
+                    <span>
+                      <strong>{{ row.group.group_name }}</strong>
+                      @if (row.group.aliases?.length) {
+                        <small>Aliases: {{ row.group.aliases!.join(', ') }}</small>
+                      }
+                    </span>
+                  </a>
+                </td>
+                <td>
+                  <a
+                    class="concept-link"
+                    [routerLink]="['/categories', 'text_generation']"
+                    [queryParams]="{ groups: row.group.group_name }"
+                    [attr.aria-label]="'Browse exact models in ' + row.group.group_name"
+                  >
+                    <strong>{{ row.group.canonical_count }}</strong>
+                  </a>
+                  <span class="catalog-cell-note">
+                    {{ row.group.canonical_count === 1 ? 'canonical model' : 'canonical models' }}
+                  </span>
+                </td>
+                <td>
+                  @if (row.group.available_sizes?.length) {
+                    <div
+                      class="catalog-tags"
+                      [attr.aria-label]="'Parameter sizes for ' + row.group.group_name"
+                    >
+                      @for (size of row.group.available_sizes!.slice(0, 3); track size) {
+                        <span class="tag tag-secondary tag-sm">{{ size }}</span>
+                      }
+                      @if (row.group.available_sizes!.length > 3) {
+                        <span class="catalog-cell-note"
+                          >+{{ row.group.available_sizes!.length - 3 }}</span
+                        >
+                      }
+                    </div>
+                  } @else {
+                    <span class="catalog-cell-note">Not specified</span>
+                  }
+                </td>
+                <td>
+                  @if (row.group.family_name) {
+                    <a
+                      class="badge badge-purple badge-sm concept-badge"
+                      [routerLink]="['/text-groups']"
+                      [queryParams]="{ families: row.group.family_name }"
+                      >{{ row.group.family_name }}</a
+                    >
+                  } @else {
+                    <span class="catalog-cell-note">Unassigned</span>
+                  }
+                </td>
+                @if (showCurationSignals()) {
+                  <td>
+                    @if (row.actionableIssues.length > 0) {
+                      <span class="catalog-quality catalog-quality--warning">
+                        {{ row.actionableIssues.length }} issue{{
+                          row.actionableIssues.length === 1 ? '' : 's'
+                        }}
+                      </span>
+                      <span class="catalog-cell-note" [title]="row.actionableIssues[0].message">
+                        {{ issueLabel(row.actionableIssues[0].issue_type) }}
+                      </span>
+                    } @else if (row.informationalIssues.length > 0) {
+                      <span class="catalog-quality catalog-quality--info">Informational</span>
+                      <span class="catalog-cell-note">
+                        {{ issueLabel(row.informationalIssues[0].issue_type) }}
+                      </span>
+                    } @else {
+                      <span class="catalog-quality catalog-quality--good">Complete</span>
+                    }
+                  </td>
                 }
-              </div>
+                <td class="catalog-table__open" aria-hidden="true">→</td>
+              </tr>
             }
-
-            @if (card.group.aliases?.length) {
-              <div class="group-card-aliases">
-                @for (alias of card.group.aliases; track alias) {
-                  <span class="badge badge-secondary badge-sm mono">{{ alias }}</span>
-                }
-              </div>
-            }
-
-            <div class="group-card-divider"></div>
-
-            <div class="group-card-footer">
-              <span class="group-card-stat">
-                <app-icon name="cube" />
-                {{ card.group.canonical_count }} variant{{
-                  card.group.canonical_count === 1 ? '' : 's'
-                }}
-              </span>
-              <span class="group-card-stat">
-                <app-icon name="server" />
-                {{ card.group.backend_duplicate_count }} duplicate{{
-                  card.group.backend_duplicate_count === 1 ? '' : 's'
-                }}
-              </span>
-              @if (card.group.has_custom_schema) {
-                <span class="badge badge-info badge-sm">custom schema</span>
-              }
-            </div>
-          </button>
-        }
+          </tbody>
+        </table>
       </div>
     }
   </div>

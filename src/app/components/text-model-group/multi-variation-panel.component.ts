@@ -20,6 +20,7 @@ import {
 } from '../../api-client';
 import { FormModelData } from '../../adapters/model-format-adapter';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
+import { sortParameterSizeLabels } from '../../utils/text-model-sort';
 import { NotificationService } from '../../services/notification.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
@@ -114,7 +115,7 @@ export class MultiVariationPanelComponent implements OnInit {
         seeded.push(selected);
       }
     }
-    return seeded;
+    return sortParameterSizeLabels(seeded, this.groupData().members);
   });
 
   readonly availableQuants = computed(() => {
@@ -280,7 +281,7 @@ export class MultiVariationPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const common = this.groupData().common_fields;
+    const common = this.groupData().common_fields as Record<string, unknown>;
     this.baseline.set((common['baseline'] as string) ?? '');
     this.description.set((common['description'] as string) ?? '');
     this.url.set((common['url'] as string) ?? '');
@@ -596,6 +597,7 @@ export class MultiVariationPanelComponent implements OnInit {
         },
       },
       downloads: [],
+      licensing: null,
       legacyFiles: [],
       v2Fields: {
         recordType: 'text_generation' as MODEL_REFERENCE_CATEGORY,

@@ -4,14 +4,96 @@
   <div class="glass-inflow" style="padding: 40px; text-align: center">
     <p style="color: var(--color-content-muted)">Loading group…</p>
   </div>
+} @else if (loadError()) {
+  <div class="glass-inflow" style="padding: 40px; text-align: center">
+    <p style="color: var(--danger-text, #dc2626); font-weight: 600">Could not load this group</p>
+    <p style="color: var(--color-content-muted); margin-top: 4px">{{ loadError() }}</p>
+  </div>
 } @else if (!groupData()) {
   <div class="glass-inflow" style="padding: 40px; text-align: center">
     <p style="color: var(--color-content-muted)">Group not found.</p>
   </div>
 } @else {
   <div class="text-group-detail-layout">
+    <nav class="workspace-tabs group-detail-tabs" aria-label="Text group detail sections">
+      <button
+        type="button"
+        class="workspace-tabs__tab"
+        [class.workspace-tabs__tab--active]="activeSection() === 'variants'"
+        [attr.aria-current]="activeSection() === 'variants' ? 'page' : null"
+        (click)="setActiveSection('variants')"
+      >
+        Variants <span>{{ canonicalMembers().length }}</span>
+      </button>
+      <button
+        type="button"
+        class="workspace-tabs__tab"
+        [class.workspace-tabs__tab--active]="activeSection() === 'overview'"
+        [attr.aria-current]="activeSection() === 'overview' ? 'page' : null"
+        (click)="setActiveSection('overview')"
+      >
+        Overview
+      </button>
+      <button
+        type="button"
+        class="workspace-tabs__tab"
+        [class.workspace-tabs__tab--active]="activeSection() === 'naming'"
+        [attr.aria-current]="activeSection() === 'naming' ? 'page' : null"
+        (click)="setActiveSection('naming')"
+      >
+        Naming & resolution
+      </button>
+      @if (writable()) {
+        <button
+          type="button"
+          class="workspace-tabs__tab"
+          [class.workspace-tabs__tab--active]="activeSection() === 'maintenance'"
+          [attr.aria-current]="activeSection() === 'maintenance' ? 'page' : null"
+          (click)="setActiveSection('maintenance')"
+        >
+          Maintenance
+          @if (pendingGroupChanges().length > 0) {
+            <span>{{ pendingGroupChanges().length }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <nav class="text-hierarchy-path" aria-label="Text model hierarchy">
+      @if (relatedFamily(); as family) {
+        <a [routerLink]="['/text-groups']" [queryParams]="{ families: family.family_name }">
+          <span>Family</span><strong>{{ family.family_name }}</strong>
+        </a>
+        <span aria-hidden="true">›</span>
+      }
+      <div>
+        <span>Group</span><strong>{{ groupName() }}</strong>
+      </div>
+      <span aria-hidden="true">›</span>
+      <a [routerLink]="['/categories', 'text_generation']" [queryParams]="{ groups: groupName() }">
+        <span>Model records</span><strong>{{ canonicalMembers().length }} exact</strong>
+      </a>
+    </nav>
+
+    @if (showCurationSignals() && healthWarnings().length > 0) {
+      <div class="alert alert--warning group-quality-alert">
+        <strong>Needs attention</strong>
+        <ul class="mt-1 ml-4 list-disc text-sm">
+          @for (warning of healthWarnings(); track warning) {
+            <li>{{ warning }}</li>
+          }
+        </ul>
+      </div>
+    }
+    @if (metadataNotices().length > 0) {
+      <div class="group-metadata-notice">
+        <app-icon name="info" />
+        <span>{{ metadataNotices().join(' · ') }}</span>
+      </div>
+    }
+
     <!-- Stat tiles -->
-    <div class="detail-stat-tiles">
+    <div class="detail-stat-tiles" [class.detail-section-hidden]="activeSection() !== 'overview'">
       <app-stat-tile
         label="Parameters"
         [value]="maxParameters() ? formatParams(maxParameters()!) : '—'"
@@ -43,16 +125,23 @@
     </div>
 
     <!-- Two-column: main content + right rail -->
-    <div class="text-group-detail-grid">
+    <div
+      class="text-group-detail-grid"
+      [class.text-group-detail-grid--single]="activeSection() !== 'overview'"
+    >
       <!-- LEFT: Main content -->
       <div class="text-group-detail-main">
         <!-- Variant matrix -->
-        @if (distinctBackends().length > 0 && distinctQuants().length > 0) {
+        @if (
+          activeSection() === 'variants' &&
+          distinctBackends().length > 0 &&
+          distinctQuants().length > 0
+        ) {
           <div class="section-title-row">
             <h2 class="heading-section">Variant matrix</h2>
             <p class="text-muted">
-              Each concrete model is a backend prefix + this group + a quantization. The horde
-              groups them so you reason about the family, not the file.
+              Each concrete model is an exact served record. The group aligns related sizes,
+              variants, quantizations, and backend compatibility for comparison.
             </p>
           </div>
           <div class="glass-inflow variant-matrix-container">
@@ -72,16 +161,16 @@
                     @for (q of distinctQuants(); track q) {
                       @if (variantCell()(be, q); as member) {
                         <td class="variant-matrix__cell variant-matrix__cell--populated">
-                          <button
-                            type="button"
+                          <a
                             class="variant-matrix__btn"
                             [title]="member.name"
-                            (click)="editMember(member)"
+                            [routerLink]="['/categories', 'text_generation', 'model', member.name]"
                           >
                             <span class="variant-matrix__size">{{
                               member.parameters ? formatParams(member.parameters) : '—'
                             }}</span>
-                          </button>
+                            <span class="sr-only">Open {{ member.name }}</span>
+                          </a>
                         </td>
                       } @else {
                         <td class="variant-matrix__cell variant-matrix__cell--empty">—</td>
@@ -95,7 +184,7 @@
         }
 
         <!-- Naming anatomy -->
-        @if (namingAnatomy(); as na) {
+        @if (activeSection() === 'naming' && namingAnatomy(); as na) {
           <div class="section-title-row">
             <h2 class="heading-section">Naming anatomy</h2>
             <p class="text-muted">Parsed from each model name by the text-model parser.</p>
@@ -144,35 +233,27 @@
         }
 
         <!-- Action buttons -->
-        <div class="text-group-detail-actions">
-          <horde-button variant="secondary" (click)="goBackToList()">← Back to Groups</horde-button>
-          @if (writable()) {
-            <horde-button variant="primary" (click)="openAddVariation()"
-              >+ Add Variation</horde-button
+        @if (activeSection() === 'maintenance') {
+          <div class="text-group-detail-actions">
+            <horde-button variant="secondary" (click)="goBackToList()"
+              >← Back to Groups</horde-button
             >
-            <horde-button variant="secondary" (click)="openMultiVariation()"
-              >⊞ Batch Create</horde-button
-            >
-          }
-          @if (writable() && canonicalMembers().length > 1 && !deletingAll()) {
-            <horde-button variant="danger" (click)="confirmDeleteAll()">Delete All</horde-button>
-          }
-        </div>
-
-        <!-- Health Warnings -->
-        @if (healthWarnings().length > 0) {
-          <div class="alert alert--warning">
-            <strong>Group Health Check</strong>
-            <ul class="mt-1 ml-4 list-disc text-sm">
-              @for (warning of healthWarnings(); track warning) {
-                <li>{{ warning }}</li>
-              }
-            </ul>
+            @if (writable()) {
+              <horde-button variant="primary" (click)="openAddVariation()"
+                >+ Add Variation</horde-button
+              >
+              <horde-button variant="secondary" (click)="openMultiVariation()"
+                >⊞ Batch Create</horde-button
+              >
+            }
+            @if (writable() && canonicalMembers().length > 1 && !deletingAll()) {
+              <horde-button variant="danger" (click)="confirmDeleteAll()">Delete All</horde-button>
+            }
           </div>
         }
 
         <!-- Pending Changes Section -->
-        @if (pendingGroupChanges().length > 0) {
+        @if (activeSection() === 'maintenance' && pendingGroupChanges().length > 0) {
           <div class="card border-warning-300 dark:border-warning-700">
             <div class="card-header">
               <div class="flex items-center gap-2">
@@ -230,7 +311,7 @@
         }
 
         <!-- Add Variation Panel -->
-        @if (showAddVariation()) {
+        @if (activeSection() === 'maintenance' && showAddVariation()) {
           <app-add-variation-panel
             [groupName]="groupName()"
             [groupData]="groupData()!"
@@ -241,7 +322,7 @@
         }
 
         <!-- Multi-Variation Panel -->
-        @if (showMultiVariation()) {
+        @if (activeSection() === 'maintenance' && showMultiVariation()) {
           <app-multi-variation-panel
             [groupName]="groupName()"
             [groupData]="groupData()!"
@@ -252,7 +333,7 @@
         }
 
         <!-- Name Schema Editor -->
-        @if (groupData()) {
+        @if (groupData() && (activeSection() === 'naming' || activeSection() === 'maintenance')) {
           <app-name-schema-editor
             [groupName]="groupName()"
             [nameFormat]="groupData()!.name_format"
@@ -263,7 +344,11 @@
         }
 
         <!-- Common Fields Panel -->
-        @if (groupData() && Object.keys(commonFields()).length > 0) {
+        @if (
+          groupData() &&
+          Object.keys(commonFields()).length > 0 &&
+          (activeSection() === 'overview' || activeSection() === 'maintenance')
+        ) {
           <div
             class="card transition-colors duration-200"
             [class.border-primary-300]="editingCommonFields()"
@@ -416,7 +501,7 @@
         }
 
         <!-- Canonical Members -->
-        @if (canonicalMembers().length > 0) {
+        @if (activeSection() === 'variants' && canonicalMembers().length > 0) {
           <!-- Size Sub-Groups for large groups -->
           @if (useSizeSubGroups()) {
             <div class="space-y-4">
@@ -460,7 +545,16 @@
                               <tr>
                                 <td class="font-medium text-gray-900 dark:text-gray-100">
                                   <div class="flex flex-col">
-                                    <span>{{ member.name }}</span>
+                                    <a
+                                      class="link"
+                                      [routerLink]="[
+                                        '/categories',
+                                        'text_generation',
+                                        'model',
+                                        member.name,
+                                      ]"
+                                      >{{ member.name }}</a
+                                    >
                                     @if (
                                       member.display_name && member.display_name !== member.name
                                     ) {
@@ -574,7 +668,16 @@
                         <tr>
                           <td class="font-medium text-gray-900 dark:text-gray-100">
                             <div class="flex flex-col">
-                              <span>{{ member.name }}</span>
+                              <a
+                                class="link"
+                                [routerLink]="[
+                                  '/categories',
+                                  'text_generation',
+                                  'model',
+                                  member.name,
+                                ]"
+                                >{{ member.name }}</a
+                              >
                               @if (member.display_name && member.display_name !== member.name) {
                                 <span class="text-xs text-muted">{{ member.display_name }}</span>
                               }
@@ -660,7 +763,7 @@
         }
 
         <!-- Backend Duplicates -->
-        @if (backendDuplicates().length > 0) {
+        @if (activeSection() === 'variants' && backendDuplicates().length > 0) {
           <div class="card">
             <div class="card-header">
               <h2 class="heading-section">Backend Duplicates</h2>
@@ -714,7 +817,10 @@
       </div>
 
       <!-- RIGHT: Rail -->
-      <div class="text-group-detail-rail">
+      <div
+        class="text-group-detail-rail"
+        [class.detail-section-hidden]="activeSection() !== 'overview'"
+      >
         <!-- Summary card -->
         <div class="glass-inflow rail-card">
           <div class="rail-card-label">Summary</div>
@@ -723,13 +829,13 @@
               <div class="rail-kv-row">
                 <dt>Family</dt>
                 <dd>
-                  <button
-                    type="button"
+                  <a
                     class="badge badge-purple"
-                    (click)="router.navigate(['/text-groups/families'])"
+                    [routerLink]="['/text-groups']"
+                    [queryParams]="{ families: family.family_name }"
                   >
                     {{ family.family_name }}
-                  </button>
+                  </a>
                 </dd>
               </div>
             }
@@ -772,14 +878,14 @@
               </div>
               <div class="rail-siblings">
                 @for (s of siblingGroups(); track s) {
-                  <button
-                    type="button"
+                  <a
                     class="rail-sibling-btn"
-                    (click)="router.navigate(['/text-groups', s])"
+                    [routerLink]="['/text-groups/group']"
+                    [queryParams]="{ name: s }"
                   >
                     {{ s }}
                     <app-icon name="arrowRight" />
-                  </button>
+                  </a>
                 }
               </div>
             </div>

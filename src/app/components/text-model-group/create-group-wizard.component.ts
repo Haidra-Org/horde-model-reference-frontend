@@ -440,6 +440,7 @@ export class CreateGroupWizardComponent {
         },
       },
       downloads: [],
+      licensing: null,
       legacyFiles: [],
       v2Fields: null,
     };

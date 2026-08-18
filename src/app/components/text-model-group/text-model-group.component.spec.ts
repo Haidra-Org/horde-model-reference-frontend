@@ -26,6 +26,9 @@ interface NotificationSpy {
 
 interface AuthSpy {
   isAuthenticated: ReturnType<typeof computed>;
+  isRequestor: ReturnType<typeof computed>;
+  isApprover: ReturnType<typeof computed>;
+  isLicenseEditor: ReturnType<typeof computed>;
 }
 
 interface PendingSummarySpy {
@@ -58,11 +61,17 @@ function buildMember(
     display_name?: string;
     is_backend_duplicate?: boolean;
     backend_prefix?: string | null;
+    size?: string | null;
+    variant?: string | null;
   } = {},
 ): GroupMemberInfo {
   return {
     name,
-    parsed: { base_name: name },
+    parsed: {
+      base_name: 'Llama-3',
+      size: opts.size ?? null,
+      variant: opts.variant ?? null,
+    },
     parameters: opts.parameters ?? null,
     baseline: opts.baseline ?? null,
     nsfw: opts.nsfw ?? null,
@@ -111,16 +120,18 @@ describe('TextModelGroupComponent', () => {
   let auth: AuthSpy;
   let pendingSummary: PendingSummarySpy;
   let isAuthenticatedSource: WritableSignal<boolean>;
+  let isRequestorSource: WritableSignal<boolean>;
   let router: Router;
   let rawParams: BehaviorSubject<Record<string, string>>;
 
   beforeEach(async () => {
     rawParams = new BehaviorSubject<Record<string, string>>({
       category: 'text_generation',
-      groupName: 'Llama-3',
+      name: 'Llama-3',
     });
 
     isAuthenticatedSource = signal(true);
+    isRequestorSource = signal(true);
 
     api = {
       backendCapabilities: signal({ writable: true, mode: 'PRIMARY', canonicalFormat: 'legacy' }),
@@ -138,6 +149,9 @@ describe('TextModelGroupComponent', () => {
 
     auth = {
       isAuthenticated: computed(() => isAuthenticatedSource()),
+      isRequestor: computed(() => isRequestorSource()),
+      isApprover: computed(() => false),
+      isLicenseEditor: computed(() => false),
     };
 
     pendingSummary = {
@@ -145,7 +159,7 @@ describe('TextModelGroupComponent', () => {
       refresh: vi.fn(),
     };
 
-    const paramMap$ = rawParams.pipe(map((p) => convertToParamMap(p)));
+    const queryParamMap$ = rawParams.pipe(map((p) => convertToParamMap(p)));
 
     await TestBed.configureTestingModule({
       imports: [TextModelGroupComponent],
@@ -156,7 +170,7 @@ describe('TextModelGroupComponent', () => {
         { provide: NotificationService, useValue: notification },
         { provide: AuthService, useValue: auth },
         { provide: PendingQueueSummaryService, useValue: pendingSummary },
-        { provide: ActivatedRoute, useValue: { paramMap: paramMap$ } },
+        { provide: ActivatedRoute, useValue: { queryParamMap: queryParamMap$ } },
       ],
     }).compileComponents();
 
@@ -189,8 +203,53 @@ describe('TextModelGroupComponent', () => {
 
       expect(component.canonicalMembers().length).toBe(2);
       expect(component.canonicalMembers().map((m) => m.name)).toEqual([
-        'Llama-3-8B-Instruct',
         'Llama-3-1B-Instruct',
+        'Llama-3-8B-Instruct',
+      ]);
+    });
+
+    it('uses inferred name structure to order full names by actual parameter size', () => {
+      const response = buildGroupResponse(
+        'Llama-3',
+        [
+          buildMember('Llama-3-0.5B-Instruct', {
+            parameters: 500_000_000,
+            size: '0.5B',
+            variant: 'Instruct',
+          }),
+          buildMember('Llama-3-1.8B-Instruct', {
+            parameters: 1_800_000_000,
+            size: '1.8B',
+            variant: 'Instruct',
+          }),
+          buildMember('Llama-3-100B-Instruct', {
+            parameters: 100_000_000_000,
+            size: '100B',
+            variant: 'Instruct',
+          }),
+          buildMember('Llama-3-8B-Instruct', {
+            parameters: 8_000_000_000,
+            size: '8B',
+            variant: 'Instruct',
+          }),
+        ],
+        {
+          name_format: {
+            separator: '-',
+            part_order: ['base', 'size', 'variant'],
+            author_included: false,
+            template: '{base}-{size}-{variant}',
+          },
+        },
+      );
+
+      initWithGroupResponse(response);
+
+      expect(component.canonicalMembers().map((member) => member.name)).toEqual([
+        'Llama-3-0.5B-Instruct',
+        'Llama-3-1.8B-Instruct',
+        'Llama-3-8B-Instruct',
+        'Llama-3-100B-Instruct',
       ]);
     });
 
@@ -411,7 +470,7 @@ describe('TextModelGroupComponent', () => {
       );
     });
 
-    it('detects missing descriptions', () => {
+    it('reports missing descriptions as metadata context rather than a health warning', () => {
       initWithGroupResponse(
         buildGroupResponse('Llama-3', [
           buildMember('Llama-3-8B', { description: 'Has one' }),
@@ -419,9 +478,10 @@ describe('TextModelGroupComponent', () => {
         ]),
       );
 
-      expect(component.healthWarnings()).toEqual(
+      expect(component.metadataNotices()).toEqual(
         expect.arrayContaining([expect.stringContaining('missing descriptions')]),
       );
+      expect(component.healthWarnings()).toEqual([]);
     });
 
     it('returns no warnings for a consistent single-member group', () => {
@@ -447,6 +507,63 @@ describe('TextModelGroupComponent', () => {
       );
 
       expect(component.healthWarnings()).toEqual([]);
+    });
+  });
+
+  describe('detail information architecture', () => {
+    it('opens on concrete variants and keeps maintenance controls out of the reading path', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('Llama-3-8B', { description: 'A model' }),
+          buildMember('Llama-3-70B', { description: 'A model' }),
+        ]),
+      );
+      fixture.detectChanges();
+
+      expect(component.activeSection()).toBe('variants');
+      expect(fixture.nativeElement.textContent).toContain('Canonical Models');
+      expect(fixture.nativeElement.textContent).not.toContain('Edit Shared');
+    });
+
+    it('links the group comparison and every canonical member to actionable destinations', () => {
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [
+          buildMember('publisher/Llama-3-8B', { description: 'A model' }),
+        ]),
+      );
+      fixture.detectChanges();
+
+      const destinations = Array.from<HTMLAnchorElement>(
+        fixture.nativeElement.querySelectorAll('a'),
+      ).map((link) => link.getAttribute('href'));
+      expect(destinations).toContain('/categories/text_generation?groups=Llama-3');
+      expect(destinations).toContain('/categories/text_generation/model/publisher%2FLlama-3-8B');
+    });
+
+    it('shows maintenance as a separate workflow only to a contributor on a writable server', () => {
+      api.backendCapabilities.set({
+        writable: false,
+        mode: 'REPLICA',
+        canonicalFormat: 'legacy',
+      });
+      initWithGroupResponse(
+        buildGroupResponse('Llama-3', [buildMember('Llama-3-8B', { description: 'A model' })], {
+          common_fields: { baseline: 'llama3' },
+        }),
+      );
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).not.toContain('Maintenance');
+
+      api.backendCapabilities.set({
+        writable: true,
+        mode: 'PRIMARY',
+        canonicalFormat: 'legacy',
+      });
+      isRequestorSource.set(true);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Maintenance');
     });
   });
 
@@ -603,9 +720,9 @@ describe('TextModelGroupComponent', () => {
       const response = buildGroupResponse(
         'Llama-3',
         [
-          buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000 }),
-          buildMember('Llama-3-1B-Instruct', { parameters: 1_000_000_000 }),
-          buildMember('Llama-3-70B-Instruct', { parameters: 70_000_000_000 }),
+          buildMember('Llama-3-8B-Instruct', { parameters: 8_000_000_000, size: '8B' }),
+          buildMember('Llama-3-1B-Instruct', { parameters: 1_000_000_000, size: '1B' }),
+          buildMember('Llama-3-70B-Instruct', { parameters: 70_000_000_000, size: '70B' }),
         ],
         { available_sizes: ['1B', '8B', '70B'] },
       );
@@ -648,7 +765,7 @@ describe('TextModelGroupComponent', () => {
   });
 
   describe('writable state', () => {
-    it('is writable when backend supports writes and user is authenticated', () => {
+    it('is writable when backend supports writes and the viewer may propose', () => {
       initWithGroupResponse(buildGroupResponse('Llama-3', []));
       expect(component.writable()).toBe(true);
     });
@@ -659,8 +776,10 @@ describe('TextModelGroupComponent', () => {
       expect(component.writable()).toBe(false);
     });
 
-    it('is not writable when user is not authenticated', () => {
-      isAuthenticatedSource.set(false);
+    it('is not writable for a signed-in viewer who may not propose', () => {
+      // Proposing is allowlist-controlled, so holding a valid key is not sufficient.
+      isAuthenticatedSource.set(true);
+      isRequestorSource.set(false);
       initWithGroupResponse(buildGroupResponse('Llama-3', []));
       expect(component.writable()).toBe(false);
     });
