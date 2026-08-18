@@ -1,0 +1,119 @@
+<div class="glass-inflow model-license">
+  <div class="model-license__header">
+    <div>
+      <span class="model-license__eyebrow">Reviewed conclusion</span>
+      <h2>{{ licensing().license_expression }}</h2>
+    </div>
+    @if (isUnknown()) {
+      <span class="model-license__notice">No assertion</span>
+    }
+  </div>
+
+  @if (isUnknown()) {
+    <div class="model-license__warning" role="note">
+      <strong>Unknown does not mean allowed.</strong>
+      No reviewer has recorded a reliable licensing conclusion for this model yet. Consult the
+      source terms before commercial use or redistribution.
+    </div>
+  }
+
+  <div class="model-license__permissions">
+    <div>
+      <span>Commercial use</span>
+      <strong [class]="permissionClass(licensing().commercial_use)">
+        {{ permissionLabel(licensing().commercial_use) }}
+      </strong>
+    </div>
+    <div>
+      <span>Redistribution</span>
+      <strong [class]="permissionClass(licensing().redistribution)">
+        {{ permissionLabel(licensing().redistribution) }}
+      </strong>
+    </div>
+  </div>
+
+  @if (licensing().license_ids?.length) {
+    <div class="model-license__section">
+      <h3>License records</h3>
+      <div class="model-license__chips">
+        @for (licenseId of licensing().license_ids; track licenseId) {
+          <a class="badge badge-blue" routerLink="/licensing">{{ licenseId }}</a>
+        }
+      </div>
+    </div>
+  }
+
+  @if (licensing().obligations?.length) {
+    <div class="model-license__section">
+      <h3>Obligations</h3>
+      <div class="model-license__chips">
+        @for (obligation of licensing().obligations; track obligation) {
+          <span class="badge badge-warning">{{ obligationLabel(obligation) }}</span>
+        }
+      </div>
+    </div>
+  }
+
+  @if (licensing().attribution) {
+    <div class="kv-row">
+      <span class="kv-label">Attribution</span>
+      <span class="kv-value">{{ licensing().attribution }}</span>
+    </div>
+  }
+
+  @if (licensing().evidence?.length) {
+    <div class="model-license__section">
+      <h3>Evidence reviewed</h3>
+      <ul class="model-license__evidence">
+        @for (evidence of licensing().evidence; track evidence.source) {
+          <li>
+            <a class="link" [href]="evidence.source" target="_blank" rel="noopener">
+              {{ evidence.description || evidence.source }}
+            </a>
+            @if (evidence.checked_at) {
+              <span>Checked {{ evidence.checked_at }}</span>
+            }
+          </li>
+        }
+      </ul>
+    </div>
+  }
+
+  @if (fileOverrides().length) {
+    <div class="model-license__section">
+      <h3>File-specific conclusions</h3>
+      <div class="model-license__files">
+        @for (entry of fileOverrides(); track entry.name) {
+          <div>
+            <code>{{ entry.name }}</code>
+            <span>{{ entry.assignment.license_expression }}</span>
+            <strong [class]="permissionClass(entry.assignment.commercial_use)">
+              Commercial {{ permissionLabel(entry.assignment.commercial_use).toLowerCase() }}
+            </strong>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (licensing().notes) {
+    <p class="model-license__notes">{{ licensing().notes }}</p>
+  }
+
+  <div class="model-license__footer">
+    @if (licensing().reviewed_by || licensing().reviewed_at) {
+      <span class="model-license__review-metadata">
+        Reviewed
+        @if (licensing().reviewed_by) {
+          by {{ licensing().reviewed_by }}
+        }
+        @if (licensing().reviewed_at) {
+          on {{ licensing().reviewed_at }}
+        }
+      </span>
+    } @else {
+      <span>Not yet reviewed</span>
+    }
+    <a class="link" routerLink="/licensing">Browse licensing records</a>
+  </div>
+</div>

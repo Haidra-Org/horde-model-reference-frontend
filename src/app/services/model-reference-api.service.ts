@@ -16,6 +16,7 @@ import {
   StatisticsService,
   DeletionRiskService,
   TextUtilsService,
+  LicensingService,
   MODEL_REFERENCE_CATEGORY,
   BASE_PATH,
   BackendInfo,
@@ -47,6 +48,15 @@ import {
   DetectFamiliesResponse,
   NameExceptionRequest,
   ParsedNameResponse,
+  LicenseDefinition,
+  LicenseDefinitionPage,
+  LicensedAsset,
+  LicensedAssetKind,
+  LicensedAssetPage,
+  LicensedAssetView,
+  LicensingExport,
+  LicensingSummary,
+  PermissionStatus,
 } from '../api-client';
 import {
   BackendCapabilities,
@@ -78,6 +88,17 @@ export interface ProposalPayload {
   diff: { field: string; before: string | null; after: string | null; kind: string }[];
 }
 
+export interface LicensedAssetFilters {
+  assetKind?: string;
+  category?: MODEL_REFERENCE_CATEGORY;
+  licenseId?: string;
+  commercialUse?: PermissionStatus;
+  redistribution?: PermissionStatus;
+  nameContains?: string;
+  offset?: number;
+  limit?: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -91,6 +112,7 @@ export class ModelReferenceApiService {
   private readonly statisticsService = inject(StatisticsService);
   private readonly deletionRiskService = inject(DeletionRiskService);
   private readonly textUtilsService = inject(TextUtilsService);
+  private readonly licensingService = inject(LicensingService);
   private readonly validationService = inject(ModelValidationService);
   private readonly notifications = inject(NotificationService);
 
@@ -354,7 +376,7 @@ export class ModelReferenceApiService {
     return this.updateViaV2Api(category, modelName, payload);
   }
 
-  deleteModel(category: string, modelName: string): Observable<void> {
+  deleteModel(category: string, modelName: string): Observable<PendingChangeRecord> {
     if (!this.backendCapabilities().writable) {
       return throwError(
         () => new Error('Backend does not support write operations (REPLICA mode or wrong format)'),
@@ -365,14 +387,14 @@ export class ModelReferenceApiService {
 
     if (this.backendCapabilities().canonicalFormat === 'legacy') {
       return this.v1CreateUpdateService.deleteLegacyModel(categoryEnum, modelName).pipe(
-        map(() => undefined),
         catchError(this.handleError),
+        map((response: unknown) => this.requirePendingChange(response, 'legacy model deletion')),
       );
     }
 
     return this.v2Service.deleteV2Model(categoryEnum, modelName).pipe(
-      map(() => undefined),
       catchError(this.handleError),
+      map((response: unknown) => this.requirePendingChange(response, 'v2 model deletion')),
     );
   }
 
@@ -387,9 +409,7 @@ export class ModelReferenceApiService {
     const { operation, category, model_name, payload } = proposal;
 
     if (operation === 'delete') {
-      return this.deleteModel(category, model_name).pipe(
-        map(() => ({ change_id: 0, status: 'pending' }) as PendingChangeRecord),
-      );
+      return this.deleteModel(category, model_name);
     }
 
     // Convert the raw record to FormModelData for the adapter pipeline
@@ -505,6 +525,17 @@ export class ModelReferenceApiService {
     return throwError(() => new Error(`V1 update not supported for category '${category}'`));
   }
 
+  private requirePendingChange(response: unknown, operation: string): PendingChangeRecord {
+    if (
+      response === null ||
+      typeof response !== 'object' ||
+      typeof (response as { change_id?: unknown }).change_id !== 'number'
+    ) {
+      throw new Error(`The API did not return a queued change for ${operation}`);
+    }
+    return response as PendingChangeRecord;
+  }
+
   /**
    * Get models with Horde statistics including optional backend variations.
    *
@@ -515,6 +546,7 @@ export class ModelReferenceApiService {
   getModelsWithStats(
     category: string,
     includeBackendVariations = false,
+    includeWorkers = false,
   ): Observable<BackendStatisticsResponse | null> {
     return this.statisticsService
       .readModelsWithStats(
@@ -522,7 +554,7 @@ export class ModelReferenceApiService {
         // Omit default-valued params so the request URL matches the variant the
         // browse views warm up — the backend caches per URL, and each distinct
         // variant pays the full cold-fetch latency against the Horde API.
-        undefined, // include_workers
+        includeWorkers ? true : undefined,
         includeBackendVariations ? true : undefined,
       )
       .pipe(
@@ -638,7 +670,7 @@ export class ModelReferenceApiService {
 
   getGroupMembers(groupName: string): Observable<GroupMembersResponse> {
     return this.textUtilsService
-      .getGroupModelReferencesV2TextGenerationGroupGroupNameGet(groupName)
+      .getGroupModelReferencesV2TextGenerationGroupGet(groupName)
       .pipe(catchError(this.handleError));
   }
 
@@ -653,10 +685,7 @@ export class ModelReferenceApiService {
     fields: CommonFieldsUpdateRequest,
   ): Observable<BatchUpdateResponse> {
     return this.textUtilsService
-      .updateGroupCommonFieldsModelReferencesV2TextGenerationGroupGroupNameCommonFieldsPut(
-        groupName,
-        fields,
-      )
+      .updateGroupCommonFieldsModelReferencesV2TextGenerationGroupCommonFieldsPut(groupName, fields)
       .pipe(catchError(this.handleError));
   }
 
@@ -673,7 +702,7 @@ export class ModelReferenceApiService {
 
   getGroupNameSchema(groupName: string): Observable<GroupNameSchemaResponse> {
     return this.textUtilsService
-      .getGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaGet(groupName)
+      .getGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaGet(groupName)
       .pipe(catchError(this.handleError));
   }
 
@@ -682,16 +711,13 @@ export class ModelReferenceApiService {
     schema: GroupNameSchemaUpdateRequest,
   ): Observable<GroupNameSchemaResponse> {
     return this.textUtilsService
-      .updateGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaPut(
-        groupName,
-        schema,
-      )
+      .updateGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaPut(groupName, schema)
       .pipe(catchError(this.handleError));
   }
 
   deleteGroupNameSchema(groupName: string): Observable<GroupNameSchemaResponse> {
     return this.textUtilsService
-      .deleteGroupNameSchemaModelReferencesV2TextGenerationGroupGroupNameNameSchemaDelete(groupName)
+      .deleteGroupNameSchemaModelReferencesV2TextGenerationGroupNameSchemaDelete(groupName)
       .pipe(catchError(this.handleError));
   }
 
@@ -813,6 +839,100 @@ export class ModelReferenceApiService {
   deleteFamily(familyName: string): Observable<object> {
     return this.textUtilsService
       .deleteFamilyModelReferencesV2TextGenerationFamiliesFamilyNameDelete(familyName)
+      .pipe(catchError(this.handleError));
+  }
+
+  // --- Licensing ---
+
+  getLicensingSummary(): Observable<LicensingSummary> {
+    return this.licensingService
+      .getLicensingSummaryModelReferencesV2LicensingSummaryGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  listLicenseDefinitions(includeDeprecated = false): Observable<LicenseDefinitionPage> {
+    return this.licensingService
+      .listLicenseDefinitionsModelReferencesV2LicensingLicensesGet(includeDeprecated, 0, 100)
+      .pipe(catchError(this.handleError));
+  }
+
+  listLicensedAssets(filters: LicensedAssetFilters = {}): Observable<LicensedAssetPage> {
+    return this.licensingService
+      .listLicensedAssetsModelReferencesV2LicensingAssetsGet(
+        filters.assetKind,
+        filters.category,
+        filters.licenseId,
+        filters.commercialUse,
+        filters.redistribution,
+        filters.nameContains,
+        filters.offset ?? 0,
+        filters.limit ?? 50,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getModelLicensing(
+    category: MODEL_REFERENCE_CATEGORY,
+    modelName: string,
+  ): Observable<LicensedAssetView> {
+    return this.licensingService
+      .getModelLicensingModelReferencesV2LicensingModelsCategoryModelNameGet(category, modelName)
+      .pipe(catchError(this.handleError));
+  }
+
+  exportLicensing(): Observable<LicensingExport> {
+    return this.licensingService
+      .exportLicensingModelReferencesV2LicensingExportGet()
+      .pipe(catchError(this.handleError));
+  }
+
+  createLicenseDefinition(definition: LicenseDefinition): Observable<LicenseDefinition> {
+    return this.licensingService
+      .createLicenseDefinitionModelReferencesV2LicensingLicensesPost(definition)
+      .pipe(catchError(this.handleError));
+  }
+
+  replaceLicenseDefinition(
+    licenseId: string,
+    definition: LicenseDefinition,
+  ): Observable<LicenseDefinition> {
+    return this.licensingService
+      .replaceLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdPut(licenseId, definition)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteLicenseDefinition(licenseId: string): Observable<unknown> {
+    return this.licensingService
+      .deleteLicenseDefinitionModelReferencesV2LicensingLicensesLicenseIdDelete(licenseId)
+      .pipe(catchError(this.handleError));
+  }
+
+  createLicensedAsset(asset: LicensedAsset): Observable<LicensedAsset> {
+    return this.licensingService
+      .createLicensedAssetModelReferencesV2LicensingAssetsPost(asset)
+      .pipe(catchError(this.handleError));
+  }
+
+  replaceLicensedAsset(
+    assetKind: LicensedAssetKind,
+    assetIdentifier: string,
+    asset: LicensedAsset,
+  ): Observable<LicensedAsset> {
+    return this.licensingService
+      .replaceLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierPut(
+        assetKind,
+        assetIdentifier,
+        asset,
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteLicensedAsset(assetKind: LicensedAssetKind, assetIdentifier: string): Observable<unknown> {
+    return this.licensingService
+      .deleteLicensedAssetModelReferencesV2LicensingAssetsAssetKindAssetIdentifierDelete(
+        assetKind,
+        assetIdentifier,
+      )
       .pipe(catchError(this.handleError));
   }
 }

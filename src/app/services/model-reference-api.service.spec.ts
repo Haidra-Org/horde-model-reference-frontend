@@ -726,6 +726,7 @@ describe('ModelReferenceApiService', () => {
           file_url: 'https://example.com/model.safetensors',
         },
       ],
+      licensing: null,
       legacyFiles: [],
       v2Fields: null,
     };
@@ -751,6 +752,7 @@ describe('ModelReferenceApiService', () => {
         },
       },
       downloads: [{ file_name: 'model.gguf', file_url: 'https://example.com/model.gguf' }],
+      licensing: null,
       legacyFiles: [],
       v2Fields: null,
     };
@@ -954,6 +956,81 @@ describe('ModelReferenceApiService', () => {
         expect(req.request.body.record_type).toBe(MODEL_REFERENCE_CATEGORY.ImageGeneration);
 
         req.flush(mockPendingChange);
+      }),
+    );
+  });
+
+  describe('deleteModel (queued deletion)', () => {
+    const queuedDeletion = {
+      ...mockPendingChange,
+      change_id: 42,
+      model_name: 'test-sd-model',
+      operation: 'delete' as PendingChangeRecord['operation'],
+      status: 'pending' as PendingChangeRecord['status'],
+    };
+
+    it(
+      'returns the real queued change from the legacy endpoint',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'legacy',
+        });
+
+        service.deleteModel('image_generation', 'test-sd-model').subscribe((result) => {
+          expect(result.change_id).toBe(42);
+          expect(result.operation).toBe('delete');
+          done();
+        });
+
+        const request = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/image_generation/model/test-sd-model`,
+        );
+        expect(request.request.method).toBe('DELETE');
+        request.flush(queuedDeletion);
+      }),
+    );
+
+    it(
+      'returns the real queued change from the v2 endpoint',
+      withDone((done) => {
+        service.backendCapabilities.set({ writable: true, mode: 'PRIMARY', canonicalFormat: 'v2' });
+
+        service.deleteModel('image_generation', 'test-sd-model').subscribe((result) => {
+          expect(result.change_id).toBe(42);
+          expect(result.operation).toBe('delete');
+          done();
+        });
+
+        const request = httpMock.expectOne(
+          `${baseUrl}/model_references/v2/image_generation/model/test-sd-model`,
+        );
+        expect(request.request.method).toBe('DELETE');
+        request.flush(queuedDeletion);
+      }),
+    );
+
+    it(
+      'fails clearly when an API response does not identify a queued change',
+      withDone((done) => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: 'legacy',
+        });
+
+        service.deleteModel('image_generation', 'test-sd-model').subscribe({
+          error: (error: Error) => {
+            expect(error.message).toContain('did not return a queued change');
+            done();
+          },
+        });
+
+        const request = httpMock.expectOne(
+          `${baseUrl}/model_references/v1/image_generation/model/test-sd-model`,
+        );
+        request.flush(null);
       }),
     );
   });

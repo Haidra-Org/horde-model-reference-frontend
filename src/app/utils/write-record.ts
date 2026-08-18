@@ -10,7 +10,13 @@
  * - simplifiedToLegacyConfig() / legacyConfigToSimplified() for config shape conversion
  */
 
-import type { MODEL_REFERENCE_CATEGORY, DownloadRecord } from '../api-client';
+import type {
+  MODEL_REFERENCE_CATEGORY,
+  DownloadRecord,
+  LicenseObligation,
+  ModelLicensing,
+  PermissionStatus,
+} from '../api-client';
 import type { GenericModelRecordConfig } from '../api-client/model/genericModelRecordConfig';
 import { applyFixedFields } from '../models/legacy-fixed-fields.config';
 import type { ModelReferenceCategory } from '../models/api.models';
@@ -49,6 +55,19 @@ export interface WriteFormState {
 
   /* files */
   download: WriteFormDownload[];
+
+  /* licensing */
+  license_expression: string;
+  license_ids: string;
+  commercial_use: PermissionStatus;
+  redistribution: PermissionStatus;
+  license_obligations: LicenseObligation[];
+  license_attribution: string;
+  license_evidence_source: string;
+  license_evidence_description: string;
+  license_reviewed_by: string;
+  license_reviewed_at: string;
+  license_notes: string;
 }
 
 /** Return a blank form state for a new model (category-aware defaults). */
@@ -69,6 +88,17 @@ export function blankForm(category: MODEL_REFERENCE_CATEGORY | string): WriteFor
     text_model_group: '',
     homepage: '',
     min_bridge_version: '',
+    license_expression: 'NOASSERTION',
+    license_ids: '',
+    commercial_use: 'unknown',
+    redistribution: 'unknown',
+    license_obligations: [],
+    license_attribution: '',
+    license_evidence_source: '',
+    license_evidence_description: '',
+    license_reviewed_by: '',
+    license_reviewed_at: '',
+    license_notes: 'No reviewed licensing conclusion is currently available.',
     download: [
       {
         file_name: '',
@@ -85,6 +115,7 @@ export function editFormFromRecord(
   _category: MODEL_REFERENCE_CATEGORY | string,
   record: Record<string, unknown>,
 ): WriteFormState {
+  const licensing = record['licensing'] as ModelLicensing | null | undefined;
   const downloads: WriteFormDownload[] = (
     record['config'] as GenericModelRecordConfig
   )?.download?.map((d: DownloadRecord) => ({
@@ -111,6 +142,17 @@ export function editFormFromRecord(
     homepage: (record['homepage'] as string) ?? '',
     min_bridge_version:
       record['min_bridge_version'] != null ? String(record['min_bridge_version']) : '',
+    license_expression: licensing?.license_expression ?? 'NOASSERTION',
+    license_ids: licensing?.license_ids?.join(', ') ?? '',
+    commercial_use: licensing?.commercial_use ?? 'unknown',
+    redistribution: licensing?.redistribution ?? 'unknown',
+    license_obligations: licensing?.obligations ?? [],
+    license_attribution: licensing?.attribution ?? '',
+    license_evidence_source: licensing?.evidence?.[0]?.source ?? '',
+    license_evidence_description: licensing?.evidence?.[0]?.description ?? '',
+    license_reviewed_by: licensing?.reviewed_by ?? '',
+    license_reviewed_at: licensing?.reviewed_at ?? '',
+    license_notes: licensing?.notes ?? '',
     download: downloads,
   };
 }
@@ -173,6 +215,37 @@ export function formToRecord(
         ...(d.known_slow_download ? { known_slow_download: true } : {}),
       })),
   };
+
+  const licenseExpression = form.license_expression.trim() || 'NOASSERTION';
+  const isUnknownConclusion = licenseExpression === 'NOASSERTION';
+  record['licensing'] = {
+    license_expression: licenseExpression,
+    license_ids: isUnknownConclusion
+      ? []
+      : form.license_ids
+          .split(',')
+          .map((licenseId) => licenseId.trim())
+          .filter(Boolean),
+    commercial_use: isUnknownConclusion ? 'unknown' : form.commercial_use,
+    redistribution: isUnknownConclusion ? 'unknown' : form.redistribution,
+    obligations: isUnknownConclusion ? [] : form.license_obligations,
+    ...(form.license_attribution.trim() ? { attribution: form.license_attribution.trim() } : {}),
+    ...(form.license_evidence_source.trim()
+      ? {
+          evidence: [
+            {
+              source: form.license_evidence_source.trim(),
+              ...(form.license_evidence_description.trim()
+                ? { description: form.license_evidence_description.trim() }
+                : {}),
+            },
+          ],
+        }
+      : {}),
+    ...(form.license_reviewed_by ? { reviewed_by: form.license_reviewed_by } : {}),
+    ...(form.license_reviewed_at ? { reviewed_at: form.license_reviewed_at } : {}),
+    ...(form.license_notes.trim() ? { notes: form.license_notes.trim() } : {}),
+  } satisfies ModelLicensing;
 
   return record;
 }

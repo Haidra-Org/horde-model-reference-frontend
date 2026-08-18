@@ -1,0 +1,552 @@
+<div class="licensing-page">
+  <div class="license-guidance" role="note">
+    <div>
+      <strong>Unknown does not mean permitted.</strong>
+      It means no reviewed conclusion is available. Check the linked source and license terms before
+      using an asset commercially or redistributing it.
+    </div>
+    <a class="link" [href]="apiDocsUrl()" target="_blank" rel="noopener"> Licensing API </a>
+  </div>
+
+  @if (loading()) {
+    <div class="glass-inflow licensing-state" aria-live="polite">Loading licensing data…</div>
+  } @else if (error()) {
+    <div class="alert alert--danger licensing-state" role="alert">{{ error() }}</div>
+  } @else {
+    @if (summary(); as totals) {
+      <section class="license-summary-grid" aria-label="Licensing coverage">
+        <div class="glass-inflow license-stat">
+          <span class="license-stat__label">Tracked assets</span>
+          <strong>{{ totals.total_assets }}</strong>
+          <span>Models and directly managed dependencies</span>
+        </div>
+        <div class="glass-inflow license-stat">
+          <span class="license-stat__label">Commercially reviewed</span>
+          <strong>{{ reviewedCommercialCount() }}</strong>
+          <span>{{ coveragePercent() }}% have an explicit conclusion</span>
+        </div>
+        <div class="glass-inflow license-stat license-stat--allowed">
+          <span class="license-stat__label">Commercial use allowed</span>
+          <strong>{{ totals.commercial_use[PermissionStatus.Allowed] }}</strong>
+          <span>Unconditional reviewed conclusions</span>
+        </div>
+        <div class="glass-inflow license-stat license-stat--conditional">
+          <span class="license-stat__label">Allowed with conditions</span>
+          <strong>{{ totals.commercial_use[PermissionStatus.AllowedWithConditions] }}</strong>
+          <span>Read obligations and restrictions first</span>
+        </div>
+      </section>
+    }
+
+    <nav class="licensing-tabs" aria-label="Licensing views">
+      <button
+        type="button"
+        [class.licensing-tab--active]="activeTab() === 'assets'"
+        [attr.aria-current]="activeTab() === 'assets' ? 'page' : null"
+        (click)="setTab('assets')"
+      >
+        Assets
+        <span class="badge badge-gray">{{ assetTotal() }}</span>
+      </button>
+      <button
+        type="button"
+        [class.licensing-tab--active]="activeTab() === 'definitions'"
+        [attr.aria-current]="activeTab() === 'definitions' ? 'page' : null"
+        (click)="setTab('definitions')"
+      >
+        License definitions
+        <span class="badge badge-gray">{{ definitions().length }}</span>
+      </button>
+    </nav>
+
+    @if (activeTab() === 'assets') {
+      <section aria-labelledby="licensed-assets-heading">
+        <div class="licensing-section-heading">
+          <div>
+            <h2 id="licensed-assets-heading" class="heading-section">Licensed assets</h2>
+            <p class="text-muted">
+              Filter by the activity you intend to perform. Results include model records and
+              separately managed software or custom-node dependencies.
+            </p>
+          </div>
+          @if (canManage()) {
+            <button type="button" class="btn btn-primary" (click)="openNewAsset()">
+              Add non-model asset
+            </button>
+          }
+        </div>
+
+        <form
+          class="glass-inflow license-filters"
+          [formGroup]="filterForm"
+          (ngSubmit)="applyFilters()"
+        >
+          <label>
+            <span>Search</span>
+            <input formControlName="query" class="input" type="search" placeholder="Asset name…" />
+          </label>
+          <label>
+            <span>Asset kind</span>
+            <select formControlName="assetKind" class="select">
+              <option value="">All kinds</option>
+              <option value="model">Models</option>
+              <option value="software_component">Software components</option>
+              <option value="custom_node">Custom nodes</option>
+              <option value="other">Other assets</option>
+            </select>
+          </label>
+          <label>
+            <span>License</span>
+            <select formControlName="licenseId" class="select">
+              <option value="">All licenses</option>
+              @for (definition of definitions(); track definition.license_id) {
+                <option [value]="definition.license_id">{{ definition.license_id }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>Commercial use</span>
+            <select formControlName="commercialUse" class="select">
+              <option value="">Any conclusion</option>
+              <option [value]="PermissionStatus.Allowed">Allowed</option>
+              <option [value]="PermissionStatus.AllowedWithConditions">With conditions</option>
+              <option [value]="PermissionStatus.Prohibited">Prohibited</option>
+              <option [value]="PermissionStatus.Unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            <span>Redistribution</span>
+            <select formControlName="redistribution" class="select">
+              <option value="">Any conclusion</option>
+              <option [value]="PermissionStatus.Allowed">Allowed</option>
+              <option [value]="PermissionStatus.AllowedWithConditions">With conditions</option>
+              <option [value]="PermissionStatus.Prohibited">Prohibited</option>
+              <option [value]="PermissionStatus.Unknown">Unknown</option>
+            </select>
+          </label>
+          <div class="license-filter-actions">
+            <button type="submit" class="btn btn-primary">Apply filters</button>
+            <button type="button" class="btn btn-ghost" (click)="clearFilters()">Clear</button>
+          </div>
+        </form>
+
+        @if (assetsLoading()) {
+          <div class="glass-inflow licensing-state" aria-live="polite">Refreshing assets…</div>
+        } @else if (assets().length === 0) {
+          <div class="glass-inflow licensing-state">
+            <strong>No assets match these filters.</strong>
+            <span>Clear one or more filters to broaden the result.</span>
+          </div>
+        } @else {
+          <div class="glass-inflow license-table-wrap">
+            <table class="license-table">
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>License</th>
+                  <th>Commercial use</th>
+                  <th>Redistribution</th>
+                  <th>Evidence / source</th>
+                  @if (canManage()) {
+                    <th><span class="sr-only">Actions</span></th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (asset of assets(); track trackAsset($index, asset)) {
+                  <tr>
+                    <td>
+                      @if (modelRoute(asset); as route) {
+                        <a class="license-asset-name link" [routerLink]="route">{{
+                          asset.display_name
+                        }}</a>
+                      } @else {
+                        <span class="license-asset-name">{{ asset.display_name }}</span>
+                      }
+                      <span class="license-asset-meta">
+                        {{ assetKindLabel(asset.asset_kind) }} · {{ categoryLabel(asset.category) }}
+                      </span>
+                    </td>
+                    <td>
+                      <code>{{ asset.licensing.license_expression }}</code>
+                      @if (asset.licensing.obligations?.length) {
+                        <span class="license-asset-meta">
+                          {{ asset.licensing.obligations!.length }} obligation{{
+                            asset.licensing.obligations!.length === 1 ? '' : 's'
+                          }}
+                        </span>
+                      }
+                    </td>
+                    <td>
+                      <span
+                        class="permission"
+                        [class]="permissionClass(asset.licensing.commercial_use)"
+                      >
+                        {{ permissionLabel(asset.licensing.commercial_use) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        class="permission"
+                        [class]="permissionClass(asset.licensing.redistribution)"
+                      >
+                        {{ permissionLabel(asset.licensing.redistribution) }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (asset.source_url) {
+                        <a class="link" [href]="asset.source_url" target="_blank" rel="noopener"
+                          >Source</a
+                        >
+                      } @else if (asset.licensing.evidence?.length) {
+                        <a
+                          class="link"
+                          [href]="asset.licensing.evidence![0].source"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          Evidence
+                        </a>
+                      } @else {
+                        <span class="text-muted">Not recorded</span>
+                      }
+                    </td>
+                    @if (canManage()) {
+                      <td class="license-row-actions">
+                        @if (asset.asset_kind !== 'model') {
+                          <button
+                            type="button"
+                            class="btn btn-ghost btn-sm"
+                            (click)="openAssetEditor(asset)"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-ghost btn-sm"
+                            (click)="deleteAsset(asset)"
+                          >
+                            Delete
+                          </button>
+                        } @else {
+                          <span
+                            class="text-muted"
+                            title="Model licensing is changed through the model workflow"
+                          >
+                            Model workflow
+                          </span>
+                        }
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="license-pagination" aria-label="Asset result pages">
+            <span
+              >Showing {{ firstAssetNumber() }}–{{ lastAssetNumber() }} of {{ assetTotal() }}</span
+            >
+            <div>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                [disabled]="!hasPreviousAssets()"
+                (click)="previousAssets()"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                [disabled]="!hasNextAssets()"
+                (click)="nextAssets()"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        }
+      </section>
+    } @else {
+      <section aria-labelledby="license-definitions-heading">
+        <div class="licensing-section-heading">
+          <div>
+            <h2 id="license-definitions-heading" class="heading-section">License definitions</h2>
+            <p class="text-muted">
+              Reusable records provide a canonical source and reviewed default permissions. An asset
+              may add narrower conditions or a compound SPDX expression.
+            </p>
+          </div>
+          @if (canManage()) {
+            <button type="button" class="btn btn-primary" (click)="openNewDefinition()">
+              Add definition
+            </button>
+          }
+        </div>
+
+        <div class="license-definition-grid">
+          @for (definition of definitions(); track definition.license_id) {
+            <article
+              class="glass-inflow license-definition-card"
+              [class.is-deprecated]="definition.deprecated"
+            >
+              <div class="license-definition-card__heading">
+                <div>
+                  <code>{{ definition.license_id }}</code>
+                  <h3>{{ definition.name }}</h3>
+                </div>
+                @if (definition.deprecated) {
+                  <span class="badge badge-warning">Deprecated</span>
+                }
+              </div>
+              <div class="license-definition-permissions">
+                <span>Commercial</span>
+                <strong class="permission" [class]="permissionClass(definition.commercial_use)">
+                  {{ permissionLabel(definition.commercial_use) }}
+                </strong>
+                <span>Redistribution</span>
+                <strong class="permission" [class]="permissionClass(definition.redistribution)">
+                  {{ permissionLabel(definition.redistribution) }}
+                </strong>
+              </div>
+              @if (definition.obligations?.length) {
+                <div class="license-obligations">
+                  @for (obligation of definition.obligations; track obligation) {
+                    <span class="badge badge-gray">{{ obligation }}</span>
+                  }
+                </div>
+              }
+              @if (definition.restrictions?.length) {
+                <ul>
+                  @for (restriction of definition.restrictions; track restriction) {
+                    <li>{{ restriction }}</li>
+                  }
+                </ul>
+              }
+              @if (definition.notes) {
+                <p>{{ definition.notes }}</p>
+              }
+              <div class="license-definition-card__footer">
+                <a class="link" [href]="definition.canonical_url" target="_blank" rel="noopener">
+                  Canonical terms
+                </a>
+                @if (canManage()) {
+                  <span>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm"
+                      (click)="openDefinitionEditor(definition)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm"
+                      (click)="deleteDefinition(definition)"
+                    >
+                      Delete
+                    </button>
+                  </span>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>
+
+@if (editorKind()) {
+  <div class="license-modal-backdrop">
+    <section
+      class="glass-inflow license-editor"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="
+        editorKind() === 'definition' ? 'definition-editor-title' : 'asset-editor-title'
+      "
+    >
+      @if (editorKind() === 'definition') {
+        <div class="license-editor__heading">
+          <div>
+            <span class="eyebrow">Direct licensing record</span>
+            <h2 id="definition-editor-title">
+              {{ editingDefinitionId() ? 'Edit license definition' : 'Add license definition' }}
+            </h2>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            aria-label="Close editor"
+            (click)="closeEditor()"
+          >
+            ×
+          </button>
+        </div>
+        <form
+          class="license-editor-form"
+          [formGroup]="definitionForm"
+          (ngSubmit)="saveDefinition()"
+        >
+          <label
+            ><span>License ID *</span><input class="input" formControlName="licenseId"
+          /></label>
+          <label><span>Name *</span><input class="input" formControlName="name" /></label>
+          <label
+            ><span>SPDX identifier</span><input class="input" formControlName="spdxIdentifier"
+          /></label>
+          <label class="span-2"
+            ><span>Canonical terms URL *</span
+            ><input class="input" type="url" formControlName="canonicalUrl"
+          /></label>
+          <label>
+            <span>Commercial use *</span>
+            <select class="select" formControlName="commercialUse">
+              <option [value]="PermissionStatus.Allowed">Allowed</option>
+              <option [value]="PermissionStatus.AllowedWithConditions">
+                Allowed with conditions
+              </option>
+              <option [value]="PermissionStatus.Prohibited">Prohibited</option>
+              <option [value]="PermissionStatus.Unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            <span>Redistribution *</span>
+            <select class="select" formControlName="redistribution">
+              <option [value]="PermissionStatus.Allowed">Allowed</option>
+              <option [value]="PermissionStatus.AllowedWithConditions">
+                Allowed with conditions
+              </option>
+              <option [value]="PermissionStatus.Prohibited">Prohibited</option>
+              <option [value]="PermissionStatus.Unknown">Unknown</option>
+            </select>
+          </label>
+          <label class="span-2">
+            <span>Obligations (comma-separated)</span>
+            <input
+              class="input"
+              formControlName="obligations"
+              placeholder="attribution, include_license"
+            />
+          </label>
+          <label class="span-2">
+            <span>Restrictions (one per line)</span>
+            <textarea class="textarea" formControlName="restrictions" rows="3"></textarea>
+          </label>
+          <label class="span-2"
+            ><span>Notes</span
+            ><textarea class="textarea" formControlName="notes" rows="3"></textarea>
+          </label>
+          <label class="license-checkbox"
+            ><input type="checkbox" formControlName="deprecated" /> Deprecated</label
+          >
+          <div class="license-editor-actions span-2">
+            <button type="button" class="btn btn-ghost" (click)="closeEditor()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              {{ saving() ? 'Saving…' : 'Save definition' }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="license-editor__heading">
+          <div>
+            <span class="eyebrow">Direct licensing record</span>
+            <h2 id="asset-editor-title">
+              {{ editingAssetKey() ? 'Edit licensed asset' : 'Add licensed asset' }}
+            </h2>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            aria-label="Close editor"
+            (click)="closeEditor()"
+          >
+            ×
+          </button>
+        </div>
+        <form class="license-editor-form" [formGroup]="assetForm" (ngSubmit)="saveAsset()">
+          <label>
+            <span>Asset kind *</span>
+            <select class="select" formControlName="assetKind">
+              <option value="software_component">Software component</option>
+              <option value="custom_node">Custom node</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label
+            ><span>Identifier *</span><input class="input" formControlName="assetIdentifier"
+          /></label>
+          <label class="span-2"
+            ><span>Display name *</span><input class="input" formControlName="displayName"
+          /></label>
+          <label class="span-2"
+            ><span>Source URL</span><input class="input" type="url" formControlName="sourceUrl"
+          /></label>
+          <label><span>Version</span><input class="input" formControlName="version" /></label>
+          <label
+            ><span>License expression *</span
+            ><input class="input" formControlName="licenseExpression"
+          /></label>
+          <label class="span-2"
+            ><span>License IDs (comma-separated)</span
+            ><input class="input" formControlName="licenseIds"
+          /></label>
+          <label>
+            <span>Commercial use *</span>
+            <select class="select" formControlName="commercialUse">
+              <option [value]="PermissionStatus.Allowed">Allowed</option>
+              <option [value]="PermissionStatus.AllowedWithConditions">
+                Allowed with conditions
+              </option>
+              <option [value]="PermissionStatus.Prohibited">Prohibited</option>
+              <option [value]="PermissionStatus.Unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            <span>Redistribution *</span>
+            <select class="select" formControlName="redistribution">
+              <option [value]="PermissionStatus.Allowed">Allowed</option>
+              <option [value]="PermissionStatus.AllowedWithConditions">
+                Allowed with conditions
+              </option>
+              <option [value]="PermissionStatus.Prohibited">Prohibited</option>
+              <option [value]="PermissionStatus.Unknown">Unknown</option>
+            </select>
+          </label>
+          <label class="span-2"
+            ><span>Obligations (comma-separated)</span
+            ><input class="input" formControlName="obligations"
+          /></label>
+          <label class="span-2"
+            ><span>Attribution</span><input class="input" formControlName="attribution"
+          /></label>
+          <label class="span-2"
+            ><span>Evidence URL</span
+            ><input class="input" type="url" formControlName="evidenceSource"
+          /></label>
+          <label
+            ><span>Locations (one per line)</span
+            ><textarea class="textarea" formControlName="locations" rows="3"></textarea>
+          </label>
+          <label
+            ><span>Related assets (one per line)</span
+            ><textarea class="textarea" formControlName="relatedAssets" rows="3"></textarea>
+          </label>
+          <label class="span-2"
+            ><span>Notes</span
+            ><textarea class="textarea" formControlName="notes" rows="3"></textarea>
+          </label>
+          <div class="license-editor-actions span-2">
+            <button type="button" class="btn btn-ghost" (click)="closeEditor()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              {{ saving() ? 'Saving…' : 'Save asset' }}
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+  </div>
+}

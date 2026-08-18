@@ -19,6 +19,7 @@ import {
   MODEL_REFERENCE_CATEGORY,
   ModelClassification,
   FineTuneSeriesInfo,
+  ModelLicensing,
 } from '../api-client';
 import { CommonFieldsData } from '../components/model-fields/common-fields/common-fields.component';
 import { StableDiffusionFieldsData } from '../components/model-fields/stable-diffusion-fields/stable-diffusion-fields.component';
@@ -74,6 +75,7 @@ export interface FormModelData {
   commonData: CommonFieldsData;
   categoryData: CategoryFormData;
   downloads: DownloadRecord[];
+  licensing: ModelLicensing | null;
 
   /** Legacy config.files array — only populated when loading from legacy API. */
   legacyFiles: LegacyConfigFile[];
@@ -95,6 +97,7 @@ export interface SharedV2Fields {
   config: GenericModelRecordConfig | undefined;
   model_classification: ModelClassification | undefined;
   finetune_series: FineTuneSeriesInfo | null | undefined;
+  licensing: ModelLicensing | null | undefined;
 }
 
 /**
@@ -369,6 +372,7 @@ export function legacyApiToForm(
     commonData,
     categoryData,
     downloads: simplified.download,
+    licensing: model.licensing ?? null,
     legacyFiles,
     v2Fields: null,
   };
@@ -388,6 +392,7 @@ export function formToLegacyApi(
     name: modelName,
     ...data.commonData,
     config,
+    licensing: data.licensing,
   };
 
   const cd = data.categoryData;
@@ -447,6 +452,7 @@ export function v2ApiToForm(
     commonData,
     categoryData,
     downloads,
+    licensing: model.licensing ?? null,
     legacyFiles: [],
     v2Fields: {
       recordType: recordType as MODEL_REFERENCE_CATEGORY,
@@ -476,6 +482,7 @@ export function formToV2Api(
     config,
     model_classification: data.v2Fields?.modelClassification,
     finetune_series: data.v2Fields?.finetuneSeries,
+    licensing: data.licensing,
   };
 
   const cd = data.categoryData;

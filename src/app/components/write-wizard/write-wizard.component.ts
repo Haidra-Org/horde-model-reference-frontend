@@ -11,10 +11,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
+import { ViewerCapabilitiesService } from '../../services/viewer-capabilities.service';
 import { NotificationService } from '../../services/notification.service';
 import { ModelValidationService } from '../../services/model-validation.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
-import { AuthService } from '../../services/auth.service';
 import { ShellContextService } from '../../services/shell-context.service';
 import { CopyButtonComponent } from '../common/copy-button/copy-button.component';
 import { EndpointBannerComponent } from './endpoint-banner.component';
@@ -23,6 +23,7 @@ import { WizardStepImageComponent } from './wizard-step-image.component';
 import { WizardStepModelComponent } from './wizard-step-model.component';
 import { WizardStepGenericComponent } from './wizard-step-generic.component';
 import { WizardStepFilesComponent } from './wizard-step-files.component';
+import { WizardStepLicensingComponent } from './wizard-step-licensing.component';
 import { WizardStepReviewComponent } from './wizard-step-review.component';
 import { WriteGatingComponent } from './write-gating.component';
 import {
@@ -34,8 +35,9 @@ import {
 } from '../../utils/write-record';
 import { computeDiff, type DiffEntry } from '../../utils/compute-diff';
 import type { MODEL_REFERENCE_CATEGORY } from '../../api-client';
+import type { LegacyRecordUnion } from '../../models/api.models';
 
-type WizardStep = 0 | 1 | 2 | 3;
+type WizardStep = 0 | 1 | 2 | 3 | 4;
 
 @Component({
   selector: 'app-write-wizard',
@@ -47,6 +49,7 @@ type WizardStep = 0 | 1 | 2 | 3;
     WizardStepModelComponent,
     WizardStepGenericComponent,
     WizardStepFilesComponent,
+    WizardStepLicensingComponent,
     WizardStepReviewComponent,
     WriteGatingComponent,
   ],
@@ -55,10 +58,10 @@ type WizardStep = 0 | 1 | 2 | 3;
 })
 export class WriteWizardComponent implements OnInit {
   private readonly api = inject(ModelReferenceApiService);
+  private readonly viewer = inject(ViewerCapabilitiesService);
   private readonly notifications = inject(NotificationService);
-  private readonly validationService = inject(ModelValidationService);
+  readonly validationService = inject(ModelValidationService);
   private readonly pendingQueue = inject(PendingQueueSummaryService);
-  private readonly auth = inject(AuthService);
   private readonly shell = inject(ShellContextService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -76,15 +79,17 @@ export class WriteWizardComponent implements OnInit {
   // -----------------------------------------------------------------------
   // Wizard state
   // -----------------------------------------------------------------------
-  readonly mode = signal<'wizard' | 'json'>('wizard');
   readonly currentStep = signal<WizardStep>(0);
   readonly form = signal<WriteFormState>(blankForm('image_generation'));
   readonly jsonText = signal('');
   readonly jsonError = signal<string | null>(null);
+  /** True while the JSON editor is focused — pauses form→JSON sync so the cursor doesn't jump. */
+  readonly jsonFocused = signal(false);
   readonly submitting = signal(false);
   readonly submitSuccess = signal(false);
   readonly submitResultMessage = signal('');
   readonly submitChangeId = signal<number | null>(null);
+  readonly showAdvancedJson = signal(false);
 
   // Store original record for diff computation (edit mode)
   private readonly originalRecord = signal<Record<string, unknown> | null>(null);
@@ -92,15 +97,19 @@ export class WriteWizardComponent implements OnInit {
   // -----------------------------------------------------------------------
   // Derived state
   // -----------------------------------------------------------------------
-  readonly canWrite = computed(
-    () => this.api.backendCapabilities().writable && this.auth.isRequestor(),
-  );
+  readonly canWrite = this.viewer.canPropose;
 
   readonly isImageGeneration = computed(() => this.category() === 'image_generation');
   readonly isTextGeneration = computed(() => this.category() === 'text_generation');
 
   readonly steps = computed<string[]>(() => {
-    return ['Identity', this.isTextGeneration() ? 'Model' : 'Image', 'Files', 'Review'];
+    return [
+      'Identity',
+      this.isTextGeneration() ? 'Model' : 'Image',
+      'Files',
+      'Licensing',
+      'Review',
+    ];
   });
 
   readonly endpointStr = computed(() => {
@@ -128,20 +137,16 @@ export class WriteWizardComponent implements OnInit {
     return computeDiff('update', this.originalRecord(), this.record());
   });
 
-  /** Preview KV pairs for JSON mode. */
-  readonly previewKv = computed<{ key: string; value: string }[]>(() => {
-    const rec = this.record();
-    const kvs: { key: string; value: string }[] = [];
-    for (const [key, value] of Object.entries(rec)) {
-      if (key === 'config') continue;
-      kvs.push({ key, value: typeof value === 'string' ? value : JSON.stringify(value) });
-    }
-    // Config files
-    const config = rec['config'] as { download?: { file_name?: string }[] } | undefined;
-    const fileCount = config?.download?.filter((d) => d.file_name).length ?? 0;
-    kvs.push({ key: 'config.download', value: `${fileCount} file(s)` });
-    return kvs;
-  });
+  readonly validationIssues = computed(() =>
+    this.validationService.validateRecord(
+      this.record() as LegacyRecordUnion,
+      this.api.backendCapabilities().canonicalFormat,
+    ),
+  );
+
+  readonly validationErrors = computed(() =>
+    this.validationIssues().filter((issue) => issue.severity === 'error'),
+  );
 
   /** Whether the current step's data is valid enough to advance. */
   readonly canAdvance = computed(() => {
@@ -149,7 +154,10 @@ export class WriteWizardComponent implements OnInit {
       return this.form().name.trim().length > 0;
     }
     if (this.currentStep() === 1 && this.isTextGeneration()) {
-      return !!this.form().parameters;
+      return Number(this.form().parameters) > 0;
+    }
+    if (this.currentStep() === 3) {
+      return this.licensingIsValid();
     }
     return true;
   });
@@ -158,16 +166,17 @@ export class WriteWizardComponent implements OnInit {
   readonly canSubmit = computed(() => {
     const f = this.form();
     if (!f.name.trim()) return false;
-    if (this.isTextGeneration() && !f.parameters) return false;
-    return true;
+    if (this.isTextGeneration() && Number(f.parameters) <= 0) return false;
+    if (this.jsonError() !== null || !this.licensingIsValid()) return false;
+    return this.validationErrors().length === 0;
   });
 
   constructor() {
-    // Two-way JSON sync: form → JSON
+    // Two-way JSON sync: form → JSON, except while the editor is focused (so user
+    // keystrokes aren't clobbered mid-type). On blur the effect re-runs and re-normalizes.
     effect(() => {
       const rec = this.record();
-      if (this.mode() === 'wizard') {
-        // In wizard mode, JSON preview follows the form
+      if (!this.jsonFocused()) {
         this.jsonText.set(JSON.stringify(rec, null, 2));
       }
     });
@@ -179,6 +188,7 @@ export class WriteWizardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const proposalPayload = this.readProposalPayload();
     this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const category = params['category'] as string;
       const editName = params['modelName'] as string | undefined;
@@ -188,12 +198,16 @@ export class WriteWizardComponent implements OnInit {
         this.isEditMode.set(true);
         this.modelName.set(editName);
         this.operation.set('update');
-        this.loadModelForEdit(category, editName);
+        this.loadModelForEdit(category, editName, proposalPayload);
       } else {
         this.isEditMode.set(false);
         this.modelName.set(null);
         this.operation.set('create');
-        this.form.set(blankForm(category as MODEL_REFERENCE_CATEGORY));
+        this.form.set(
+          proposalPayload
+            ? editFormFromRecord(category as MODEL_REFERENCE_CATEGORY, proposalPayload)
+            : blankForm(category as MODEL_REFERENCE_CATEGORY),
+        );
         this.loading.set(false);
         this.updateShellContext();
       }
@@ -232,6 +246,10 @@ export class WriteWizardComponent implements OnInit {
 
     try {
       const o = JSON.parse(txt) as Record<string, unknown>;
+      const licensing = o['licensing'] as Record<string, unknown> | undefined;
+      const evidence = Array.isArray(licensing?.['evidence'])
+        ? (licensing?.['evidence'][0] as Record<string, unknown> | undefined)
+        : undefined;
       this.jsonError.set(null);
 
       // Patch form from parsed JSON (two-way sync)
@@ -253,6 +271,31 @@ export class WriteWizardComponent implements OnInit {
         homepage: (o['homepage'] as string) ?? f.homepage,
         min_bridge_version:
           o['min_bridge_version'] != null ? String(o['min_bridge_version']) : f.min_bridge_version,
+        license_expression:
+          (licensing?.['license_expression'] as string | undefined) ?? f.license_expression,
+        license_ids: Array.isArray(licensing?.['license_ids'])
+          ? (licensing['license_ids'] as string[]).join(', ')
+          : f.license_ids,
+        commercial_use:
+          (licensing?.['commercial_use'] as WriteFormState['commercial_use'] | undefined) ??
+          f.commercial_use,
+        redistribution:
+          (licensing?.['redistribution'] as WriteFormState['redistribution'] | undefined) ??
+          f.redistribution,
+        license_obligations: Array.isArray(licensing?.['obligations'])
+          ? (licensing['obligations'] as WriteFormState['license_obligations'])
+          : f.license_obligations,
+        license_attribution:
+          (licensing?.['attribution'] as string | undefined) ?? f.license_attribution,
+        license_evidence_source:
+          (evidence?.['source'] as string | undefined) ?? f.license_evidence_source,
+        license_evidence_description:
+          (evidence?.['description'] as string | undefined) ?? f.license_evidence_description,
+        license_reviewed_by:
+          (licensing?.['reviewed_by'] as string | undefined) ?? f.license_reviewed_by,
+        license_reviewed_at:
+          (licensing?.['reviewed_at'] as string | undefined) ?? f.license_reviewed_at,
+        license_notes: (licensing?.['notes'] as string | undefined) ?? f.license_notes,
         download: this.extractDownloads(o as Record<string, unknown>, f.download),
       }));
     } catch (e) {
@@ -263,6 +306,7 @@ export class WriteWizardComponent implements OnInit {
   submit(): void {
     if (!this.canSubmit() || this.submitting()) return;
 
+    this.validationService.clearServerErrors();
     this.submitting.set(true);
     const record = this.record();
     const cat = this.category() as MODEL_REFERENCE_CATEGORY;
@@ -338,14 +382,21 @@ export class WriteWizardComponent implements OnInit {
   // Private methods
   // -----------------------------------------------------------------------
 
-  private loadModelForEdit(category: string, modelName: string): void {
+  private loadModelForEdit(
+    category: string,
+    modelName: string,
+    proposalPayload: Record<string, unknown> | null = null,
+  ): void {
     this.api.getFormModel(category, modelName).subscribe({
       next: (model) => {
         if (model) {
           // Convert FormModelData to WriteFormState
           const record = this.formModelDataToRecord(model);
           this.originalRecord.set(record);
-          const formState = editFormFromRecord(category as MODEL_REFERENCE_CATEGORY, record);
+          const formState = editFormFromRecord(
+            category as MODEL_REFERENCE_CATEGORY,
+            proposalPayload ?? record,
+          );
           this.form.set(formState);
           // Init JSON text to match
           this.jsonText.set(
@@ -366,6 +417,16 @@ export class WriteWizardComponent implements OnInit {
     });
   }
 
+  private readProposalPayload(): Record<string, unknown> | null {
+    const navigationState =
+      this.router.getCurrentNavigation()?.extras.state ?? window.history.state;
+    const payload = navigationState?.['proposalPayload'];
+    if (payload == null || typeof payload !== 'object' || Array.isArray(payload)) {
+      return null;
+    }
+    return payload as Record<string, unknown>;
+  }
+
   private formModelDataToRecord(
     model: import('../../adapters/model-format-adapter').FormModelData,
   ): Record<string, unknown> {
@@ -380,7 +441,24 @@ export class WriteWizardComponent implements OnInit {
     if (model.downloads.length > 0) {
       record['config'] = { download: model.downloads };
     }
+    if (model.licensing) {
+      record['licensing'] = model.licensing;
+    }
     return record;
+  }
+
+  private licensingIsValid(): boolean {
+    const form = this.form();
+    const expression = form.license_expression.trim();
+    if (!expression) return false;
+    if (expression.toUpperCase() === 'NOASSERTION') return true;
+    if (!form.license_ids.trim() || !form.license_evidence_source.trim()) return false;
+    try {
+      new URL(form.license_evidence_source);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   private updateShellContext(): void {
@@ -393,23 +471,7 @@ export class WriteWizardComponent implements OnInit {
       ],
       title: isEdit ? `Edit ${this.modelName() ?? ''}` : 'Propose a model',
       sub: `Routes to the ${this.api.backendCapabilities().canonicalFormat === 'legacy' ? 'v1 (legacy canonical)' : 'v2'} write API · enqueued for review`,
-      actions: [
-        {
-          id: 'mode-wizard',
-          label: 'Wizard',
-          action: () => this.mode.set('wizard'),
-        },
-        {
-          id: 'mode-json',
-          label: 'JSON',
-          action: () => {
-            // Sync JSON before switching
-            this.jsonText.set(JSON.stringify(this.record(), null, 2));
-            this.jsonError.set(null);
-            this.mode.set('json');
-          },
-        },
-      ],
+      actions: [],
     });
   }
 

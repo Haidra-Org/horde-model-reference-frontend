@@ -30,6 +30,7 @@ function createBackendCapabilities(overrides?: Partial<BackendCapabilities>): Ba
 function baseProviders(overrides?: {
   caps?: BackendCapabilities;
   isRequestor?: boolean;
+  submitProposal?: ReturnType<typeof vi.fn>;
 }): Parameters<typeof TestBed.configureTestingModule>[0]['providers'] {
   return [
     provideRouter([]),
@@ -42,7 +43,8 @@ function baseProviders(overrides?: {
         backendCapabilities: signal(overrides?.caps ?? createBackendCapabilities()),
         getFormModel: () => of(null),
         getCategories: () => of([]),
-        submitProposal: () => of({ change_id: 1 } as PendingChangeRecord),
+        submitProposal:
+          overrides?.submitProposal ?? (() => of({ change_id: 1 } as PendingChangeRecord)),
       },
     },
     {
@@ -70,19 +72,25 @@ function baseProviders(overrides?: {
     },
     {
       provide: ModelValidationService,
-      useValue: { validateRecord: () => [], serverErrors: signal([]) },
+      useValue: {
+        validateRecord: () => [],
+        serverErrors: signal([]),
+        clearServerErrors: vi.fn(),
+      },
     },
   ];
 }
 
 describe('WriteWizardComponent', () => {
-  async function createComponent(): Promise<{
+  async function createComponent(overrides?: {
+    submitProposal?: ReturnType<typeof vi.fn>;
+  }): Promise<{
     fixture: ComponentFixture<WriteWizardComponent>;
     component: WriteWizardComponent;
   }> {
     await TestBed.configureTestingModule({
       imports: [WriteWizardComponent],
-      providers: baseProviders(),
+      providers: baseProviders(overrides),
     }).compileComponents();
 
     const fixture = TestBed.createComponent(WriteWizardComponent);
@@ -103,11 +111,12 @@ describe('WriteWizardComponent', () => {
     fixture.detectChanges();
 
     const steps = component.steps();
-    expect(steps).toHaveLength(4);
+    expect(steps).toHaveLength(5);
     expect(steps[0]).toBe('Identity');
     expect(steps[1]).toBe('Image');
     expect(steps[2]).toBe('Files');
-    expect(steps[3]).toBe('Review');
+    expect(steps[3]).toBe('Licensing');
+    expect(steps[4]).toBe('Review');
   });
 
   it('shows step stepper labels for text generation', async () => {
@@ -201,5 +210,53 @@ describe('WriteWizardComponent', () => {
 
     expect(component.form().name).toBe('patched-model');
     expect(component.form().display_name).toBe('Patched');
+  });
+
+  it('submits an explicit fail-closed licensing conclusion and reports the queued change', async () => {
+    const submitProposal = vi.fn(() => of({ change_id: 73 } as PendingChangeRecord));
+    const { fixture, component } = await createComponent({ submitProposal });
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    component.form.set({ ...component.form(), name: 'licensed-model' });
+
+    component.submit();
+
+    expect(submitProposal).toHaveBeenCalledTimes(1);
+    expect(submitProposal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        operation: 'create',
+        payload: expect.objectContaining({
+          licensing: expect.objectContaining({
+            license_expression: 'NOASSERTION',
+            license_ids: [],
+            commercial_use: 'unknown',
+            redistribution: 'unknown',
+          }),
+        }),
+      }),
+    );
+    expect(component.submitChangeId()).toBe(73);
+    expect(component.submitSuccess()).toBe(true);
+  });
+
+  it('blocks a reviewed licensing conclusion without matching IDs and evidence', async () => {
+    const submitProposal = vi.fn(() => of({ change_id: 74 } as PendingChangeRecord));
+    const { fixture, component } = await createComponent({ submitProposal });
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    component.form.set({
+      ...component.form(),
+      name: 'incomplete-license',
+      license_expression: 'MIT',
+      license_ids: '',
+      license_evidence_source: '',
+    });
+
+    component.submit();
+
+    expect(component.canSubmit()).toBe(false);
+    expect(submitProposal).not.toHaveBeenCalled();
   });
 });

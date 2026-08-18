@@ -103,6 +103,7 @@ describe('write-record', () => {
 
   describe('formToRecord', () => {
     const baseForm: WriteFormState = {
+      ...blankForm(MODEL_REFERENCE_CATEGORY.ImageGeneration),
       name: 'my-model',
       display_name: '',
       description: '',

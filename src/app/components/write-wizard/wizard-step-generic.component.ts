@@ -12,8 +12,9 @@ import type { WriteFormState } from '../../utils/write-record';
   template: `
     <div class="write-step-fields">
       <p class="write-generic-hint">
-        This category uses the <strong>JSON editor</strong> for field definition. The fields below
-        cover common metadata; switch to JSON mode to add category-specific fields.
+        This category uses the <strong>request body</strong> for field definition. The fields below
+        cover common metadata; edit the live request body on the right to add category-specific
+        fields.
       </p>
 
       <label class="form-label">

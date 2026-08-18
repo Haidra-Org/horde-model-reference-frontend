@@ -448,6 +448,7 @@ export class ModelFormComponent implements OnInit {
       commonData,
       categoryData,
       downloads,
+      licensing: loaded?.licensing ?? null,
       legacyFiles,
       v2Fields: resolvedV2Fields,
     };

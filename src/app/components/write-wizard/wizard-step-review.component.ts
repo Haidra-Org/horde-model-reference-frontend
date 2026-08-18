@@ -37,6 +37,18 @@ import type { DiffEntry } from '../../utils/compute-diff';
           <span class="write-review-key">Files</span>
           <span class="write-review-value">{{ fileCount() }} configured</span>
         </div>
+        <div class="write-review-row write-review-row--critical">
+          <span class="write-review-key">License</span>
+          <span class="write-review-value mono">{{ form().license_expression }}</span>
+        </div>
+        <div class="write-review-row write-review-row--critical">
+          <span class="write-review-key">Commercial use</span>
+          <span class="write-review-value">{{ permissionLabel(form().commercial_use) }}</span>
+        </div>
+        <div class="write-review-row write-review-row--critical">
+          <span class="write-review-key">Redistribution</span>
+          <span class="write-review-value">{{ permissionLabel(form().redistribution) }}</span>
+        </div>
         <div class="write-review-row">
           <span class="write-review-key">Endpoint</span>
           <span class="write-review-value mono">{{ endpoint() }}</span>
@@ -82,4 +94,8 @@ export class WizardStepReviewComponent {
   readonly fileCount = computed(
     () => this.form().download.filter((d) => d.file_name || d.file_url).length,
   );
+
+  permissionLabel(permission: string): string {
+    return permission.replaceAll('_', ' ').replace(/^./, (first) => first.toUpperCase());
+  }
 }
