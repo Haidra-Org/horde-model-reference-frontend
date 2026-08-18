@@ -447,6 +447,18 @@
       box-shadow var(--transition-normal) ease;
   }
 
+  .browse-card-open,
+  .browse-gallery-open {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    cursor: pointer;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .browse-card:hover {
       transform: translateY(-3px);
@@ -458,7 +470,7 @@
     opacity: 0.92;
   }
 
-  .browse-card:focus-visible {
+  .browse-card:has(.browse-card-open:focus-visible) {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
   }
@@ -492,7 +504,7 @@
     }
   }
 
-  .browse-gallery-tile:focus-visible {
+  .browse-gallery-tile:has(.browse-gallery-open:focus-visible) {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
   }
@@ -618,6 +630,58 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+  }
+
+  .write-advanced-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.5rem 0;
+  }
+
+  .write-two-col--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .write-license-obligations {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border-default);
+    border-radius: 0.5rem;
+  }
+
+  .write-license-obligations legend {
+    padding: 0 0.25rem;
+    font-weight: 600;
+  }
+
+  .write-license-obligations label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .write-review-row--critical {
+    border-inline-start: 3px solid var(--color-warning-500);
+    padding-inline-start: 0.75rem;
+  }
+
+  .write-validation-summary {
+    margin-top: 1rem;
+  }
+
+  .queue-group-toggle {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    gap: 0.5rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
   }
 
   /* Wizard fields stack label → control → hint at full panel width;
@@ -1075,11 +1139,53 @@
   }
 
   /* ---- Propose Entry (category chooser) ---- */
+  .propose-entry-group {
+    padding: 0 26px;
+  }
+
+  .propose-entry-group:first-of-type {
+    padding-top: 16px;
+  }
+
+  .propose-entry-group:last-of-type {
+    padding-bottom: 48px;
+  }
+
+  .propose-entry-group-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-content-muted);
+    margin-bottom: 10px;
+  }
+
+  .propose-entry-group-label::before {
+    content: '';
+    width: 3px;
+    height: 0.875rem;
+    border-radius: 2px;
+    background: var(--group-accent, var(--color-primary-500));
+  }
+
+  .propose-entry-group--image {
+    --group-accent: var(--color-accent-image);
+  }
+  .propose-entry-group--text {
+    --group-accent: var(--color-accent-text);
+  }
+  .propose-entry-group--utility {
+    --group-accent: var(--color-accent-utility);
+  }
+
   .propose-entry-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
-    padding: 20px 26px 60px;
+    padding-bottom: 24px;
   }
 
   .propose-entry-card {

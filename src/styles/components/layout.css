@@ -5,15 +5,19 @@
      ================================================================= */
 
   .app-shell {
-    @apply flex min-h-screen;
+    /* Definite viewport height (not min-height) so the flex children below have a bounded
+       height to scroll against; min-h-screen lets content push the shell past app-root's
+       overflow:hidden, clipping tall pages instead of scrolling them. */
+    @apply flex h-dvh;
   }
 
   .app-main-col {
-    @apply flex flex-col flex-1 min-w-0;
+    /* min-h-0 lets this column shrink below its content so .app-content can own the scroll. */
+    @apply flex flex-col flex-1 min-w-0 min-h-0;
   }
 
   .app-content {
-    @apply flex-1 overflow-y-auto;
+    @apply flex-1 min-h-0 overflow-y-auto;
     /* main scrolls — use .glass-inflow (no blur) inside */
   }
 
@@ -831,6 +835,27 @@
   /* Page container with consistent spacing */
   .page-container {
     @apply p-4 space-y-4;
+  }
+
+  /* Not-found terminal page */
+  .not-found {
+    @apply max-w-xl mx-auto mt-12 rounded-xl p-8 text-center;
+  }
+
+  .not-found-code {
+    @apply text-sm font-semibold tracking-widest text-gray-400 dark:text-gray-500;
+  }
+
+  .not-found-title {
+    @apply mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .not-found-body {
+    @apply mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400;
+  }
+
+  .not-found-actions {
+    @apply mt-6 flex flex-wrap justify-center gap-3;
   }
 
   /* Card section with title and content spacing */
@@ -1696,40 +1721,26 @@
   }
 
   /* =================================================================
-     CATEGORY RAIL
-     Horizontal category selector for catalog views.
-     Domain-colored pills with model counts.
+     CATEGORY SELECTOR
+     Compact dropdown that replaces the always-visible category rail.
+     A single trigger opens a grouped popover (Generation / Utility),
+     reusing the rail's per-domain --chip-accent system.
      ================================================================= */
 
-  .category-rail {
-    display: flex;
-    /* Wrap instead of horizontal scroll — categories must never hide off-screen */
-    flex-wrap: wrap;
-    gap: --spacing(2);
-    padding-block: --spacing(3);
-    padding-inline: --spacing(3);
-    /* In-flow surface — no blur */
-    background: var(--color-glass-surface-subtle);
-    border: 1px solid var(--color-border-hairline);
-    border-radius: var(--radius-xl);
+  .category-selector {
+    display: inline-block;
   }
 
-  .dark .category-rail {
-    background: var(--color-glass-surface-dark-subtle);
-    border-color: var(--color-border-hairline-dark);
-  }
-
-  .category-rail__item {
+  .category-selector__trigger {
     display: inline-flex;
     align-items: center;
     gap: --spacing(2);
-    padding-inline: --spacing(4);
+    padding-inline: --spacing(3);
     padding-block: --spacing(2);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lg);
     font-size: var(--text-sm);
     line-height: var(--text-sm--line-height);
-    font-weight: 500;
-    white-space: nowrap;
+    font-weight: 600;
     cursor: pointer;
     user-select: none;
     transition:
@@ -1738,78 +1749,144 @@
       box-shadow var(--transition-fast) ease;
     background: var(--color-glass-surface-subtle);
     border: 1px solid var(--color-border-hairline);
-    color: var(--color-content-secondary);
+    color: var(--color-content-primary);
   }
 
-  .dark .category-rail__item {
-    background: var(--color-glass-surface-dark-subtle);
-    border-color: var(--color-border-hairline-dark);
-    color: var(--color-gray-400);
+  /* The trigger carries the active category's domain accent (icon tint + open ring) */
+  .category-selector__trigger--image {
+    --chip-accent: var(--color-accent-image);
+  }
+  .category-selector__trigger--text {
+    --chip-accent: var(--color-accent-text);
+  }
+  .category-selector__trigger--utility {
+    --chip-accent: var(--color-accent-utility);
   }
 
-  .category-rail__item:hover {
+  .category-selector__trigger app-icon {
+    color: var(--chip-accent, var(--color-content-muted));
+  }
+
+  .category-selector__trigger:hover {
     background: var(--color-glass-surface-panel);
     border-color: var(--color-border-hairline-strong);
-    color: var(--color-content-primary);
   }
 
-  .dark .category-rail__item:hover {
-    background: var(--color-glass-surface-dark);
-    border-color: var(--color-border-hairline-strong-dark);
-    color: rgb(229 231 235);
-  }
-
-  /* Active item uses domain accent via --chip-accent */
-  .category-rail__item[aria-current='page'],
-  .category-rail__item--active {
-    background: var(--color-glass-surface-panel);
+  .category-selector__trigger--open {
     border-color: var(--chip-accent, var(--color-primary-500));
-    color: var(--color-content-primary);
     box-shadow: 0 0 0 1px var(--chip-accent, var(--color-primary-500) / 0.3);
   }
 
-  .dark .category-rail__item[aria-current='page'],
-  .dark .category-rail__item--active {
-    background: var(--color-glass-surface-dark);
-    color: rgb(229 231 235);
-    box-shadow: 0 0 0 1px var(--chip-accent, var(--color-primary-400) / 0.35);
-  }
-
-  .category-rail__item:focus-visible {
+  .category-selector__trigger:focus-visible {
     outline: 2px solid var(--chip-accent, var(--color-primary-500));
     outline-offset: 2px;
   }
 
-  .category-rail__count {
-    display: inline-flex;
+  .category-selector__trigger-label {
+    white-space: nowrap;
+  }
+
+  .category-selector__trigger-count {
+    color: var(--color-content-muted);
+    font-weight: 500;
+  }
+
+  .category-selector__chevron {
+    color: var(--color-content-muted);
+    transition: transform var(--transition-fast) ease;
+  }
+
+  .category-selector__trigger--open .category-selector__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Popover surface: .glass-overlay (on the element) supplies fill, blur, border, shadow. */
+  .category-selector__popover {
+    min-width: 16rem;
+    max-height: min(70vh, 32rem);
+    overflow-y: auto;
+    padding: --spacing(2);
+    border-radius: var(--radius-xl);
+  }
+
+  .category-selector__group + .category-selector__group {
+    margin-top: --spacing(2);
+    padding-top: --spacing(2);
+    border-top: 1px solid var(--color-border-hairline);
+  }
+
+  .category-selector__group-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-content-muted);
+    padding-inline: --spacing(2);
+    padding-block: --spacing(1);
+  }
+
+  /* Each item carries its domain accent (icon tint + active ring) */
+  .category-selector__item--image {
+    --chip-accent: var(--color-accent-image);
+  }
+  .category-selector__item--text {
+    --chip-accent: var(--color-accent-text);
+  }
+  .category-selector__item--utility {
+    --chip-accent: var(--color-accent-utility);
+  }
+
+  .category-selector__item {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding-inline: --spacing(1);
-    border-radius: var(--radius-full);
-    font-size: var(--text-xs);
-    line-height: 1;
-    font-weight: 600;
-    background: var(--color-glass-surface-nested);
+    gap: --spacing(2);
+    padding-inline: --spacing(2);
+    padding-block: --spacing(2);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
     color: var(--color-content-secondary);
+    transition:
+      background-color var(--transition-fast) ease,
+      color var(--transition-fast) ease;
   }
 
-  .dark .category-rail__count {
-    background: var(--color-glass-surface-dark-nested);
-    color: var(--color-gray-400);
+  .category-selector__item app-icon {
+    color: var(--chip-accent, var(--color-content-muted));
   }
 
-  .category-rail__item[aria-current='page'] .category-rail__count,
-  .category-rail__item--active .category-rail__count {
-    background: var(--chip-accent, var(--color-primary-100));
-    color: var(--chip-accent, var(--color-primary-800));
+  .category-selector__item:hover {
+    background: var(--color-glass-surface-panel);
+    color: var(--color-content-primary);
   }
 
-  .dark .category-rail__item[aria-current='page'] .category-rail__count,
-  .dark .category-rail__item--active .category-rail__count {
-    background: var(--chip-accent, var(--color-primary-900) / 0.5);
-    color: var(--chip-accent, var(--color-primary-200));
+  .category-selector__item--active {
+    background: var(--color-glass-surface-panel);
+    color: var(--color-content-primary);
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--chip-accent, var(--color-primary-500) / 0.4);
+  }
+
+  .category-selector__item:focus-visible {
+    outline: 2px solid var(--chip-accent, var(--color-primary-500));
+    outline-offset: -2px;
+  }
+
+  .category-selector__item-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+
+  .category-selector__item-count {
+    flex: 0 0 auto;
+    min-width: 1.25rem;
+    text-align: right;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-content-muted);
   }
 
   /* =================================================================
