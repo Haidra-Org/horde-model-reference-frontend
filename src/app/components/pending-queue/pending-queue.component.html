@@ -51,7 +51,6 @@
   <header class="mb-6">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h1 class="heading-page tracking-tight">Pending Queue</h1>
         <p class="text-sm text-muted mt-0.5">
           {{ netSummary().total }} change{{ netSummary().total === 1 ? '' : 's' }}
           @if (netSummary().statusCounts.pending > 0) {
@@ -64,8 +63,8 @@
       </div>
       <div class="flex items-center gap-2 shrink-0">
         @if (auth.isApprover() && allPendingIds().length > 0) {
-          <horde-button variant="primary" (click)="approveAllPending()" [disabled]="loading()">
-            Approve All ({{ allPendingIds().length }})
+          <horde-button variant="secondary" (click)="approveAllPending()" [disabled]="loading()">
+            Bulk review {{ allPendingIds().length }}
           </horde-button>
         }
         <horde-button
@@ -91,6 +90,7 @@
               />
             }
           </svg>
+          <span>{{ sortOrder() === 'newest' ? 'Newest' : 'Oldest' }}</span>
         </horde-button>
         <horde-button
           variant="secondary"
@@ -113,6 +113,7 @@
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
+          <span>Refresh</span>
         </horde-button>
       </div>
     </div>
@@ -133,34 +134,9 @@
                       : 'workflow-step-circle--idle')
                 "
               >
-                @if (step.completed) {
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                } @else {
-                  {{ i + 1 }}
-                }
+                {{ step.count }}
               </div>
               <div class="workflow-step-label">{{ step.label }}</div>
-              @if (step.count > 0) {
-                <div
-                  class="workflow-step-count"
-                  [class]="
-                    step.active
-                      ? 'text-primary-600 dark:text-primary-400'
-                      : step.completed
-                        ? 'text-success-600 dark:text-success-400'
-                        : 'text-gray-400 dark:text-gray-500'
-                  "
-                >
-                  {{ step.count }}
-                </div>
-              }
               @if (step.rejectedCount && step.rejectedCount > 0) {
                 <div class="workflow-step-count text-danger-500 dark:text-danger-400">
                   {{ step.rejectedCount }} rejected
@@ -194,7 +170,7 @@
         [class.tab-active]="activeTab() === 'queue'"
         (click)="setTab('queue')"
       >
-        Queue
+        Review queue
         @if (netSummary().statusCounts.pending > 0) {
           <span
             class="ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300"
@@ -224,7 +200,7 @@
         [class.tab-active]="activeTab() === 'batches'"
         (click)="setTab('batches')"
       >
-        Batches
+        Ready to apply
       </button>
       <button
         type="button"
@@ -245,6 +221,7 @@
             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
           />
         </svg>
+        <span>Filters</span>
         @if (hasFilters()) {
           <span class="w-1.5 h-1.5 rounded-full bg-primary-500 absolute -top-0.5 -right-0.5"></span>
         }
@@ -370,7 +347,7 @@
 
     <!-- ══════════════════ QUEUE TAB ══════════════════ -->
     @if (activeTab() === 'queue') {
-      @if (!error() && !loading() && !records().length) {
+      @if (!error() && !loading() && !sortedRecords().length) {
         <div class="alert alert--info">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -384,33 +361,12 @@
         </div>
       }
 
-      @if (!error() && records().length) {
-        <!-- Summary Bar -->
-        <div class="queue-stat-grid grid-cols-5 mb-4">
-          <div class="queue-stat-cell">
-            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {{ netSummary().total }}
-            </div>
-            <div class="queue-section-label mt-1">Total</div>
-          </div>
-          @for (status of statusOptions; track status) {
-            <div class="queue-stat-cell">
-              <div
-                class="text-2xl font-bold"
-                [class.text-warning-600]="status === 'pending'"
-                [class.dark:text-warning-400]="status === 'pending'"
-                [class.text-success-600]="status === 'approved'"
-                [class.dark:text-success-400]="status === 'approved'"
-                [class.text-danger-600]="status === 'rejected'"
-                [class.dark:text-danger-400]="status === 'rejected'"
-                [class.text-info-600]="status === 'applied'"
-                [class.dark:text-info-400]="status === 'applied'"
-              >
-                {{ netSummary().statusCounts[status] }}
-              </div>
-              <div class="queue-section-label mt-1">{{ statusLabel(status) }}</div>
-            </div>
-          }
+      @if (!error() && sortedRecords().length) {
+        <div class="alert alert--info mb-4" role="status">
+          Showing {{ sortedRecords().length }} change{{
+            sortedRecords().length === 1 ? '' : 's'
+          }}
+          that need a decision. Approved changes move to <strong>Ready to apply</strong>.
         </div>
 
         <!-- Expandable Change Rows -->
@@ -418,6 +374,7 @@
           @for (change of sortedRecords(); track change.change_id) {
             <app-expandable-change-row
               [change]="change"
+              [initiallyExpanded]="focusedChangeId() === change.change_id"
               [showCategory]="true"
               [showRequestor]="true"
               (approveRequested)="approve($event)"
@@ -469,6 +426,7 @@
           @for (change of mySubmissions(); track change.change_id) {
             <app-expandable-change-row
               [change]="change"
+              [initiallyExpanded]="focusedChangeId() === change.change_id"
               [showCategory]="true"
               [showRequestor]="false"
               (approveRequested)="approve($event)"
@@ -483,7 +441,7 @@
 
     <!-- ══════════════════ BATCHES TAB ══════════════════ -->
     @if (activeTab() === 'batches') {
-      @if (!error() && !loading() && !records().length) {
+      @if (!error() && !loading() && !approvedBatches().length) {
         <div class="alert alert--info">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -493,26 +451,27 @@
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          No batches found.
+          No approved batches yet. Approve changes in the Review queue to stage a batch for
+          applying.
         </div>
       }
 
-      @if (!error() && records().length) {
+      @if (!error() && approvedBatches().length) {
         <div class="space-y-4">
-          @for (group of byBatch(); track group.key) {
+          @for (group of approvedBatches(); track group.key) {
             <div>
               <div
                 class="rounded-lg"
                 [class.border-l-4]="group.batchId === null"
                 [class.border-l-warning-400]="group.batchId === null"
               >
-                <button
-                  type="button"
-                  class="queue-group-header"
-                  (click)="toggleGroup(group.key)"
-                  [attr.aria-expanded]="!isGroupCollapsed(group.key)"
-                >
-                  <div class="flex items-center gap-2">
+                <div class="queue-group-header">
+                  <button
+                    type="button"
+                    class="queue-group-toggle"
+                    (click)="toggleGroup(group.key)"
+                    [attr.aria-expanded]="!isGroupCollapsed(group.key)"
+                  >
                     <svg
                       class="w-4 h-4 text-gray-400 transition-transform"
                       [class.rotate-90]="!isGroupCollapsed(group.key)"
@@ -530,6 +489,11 @@
                     <span class="font-semibold text-gray-900 dark:text-gray-100">{{
                       group.key
                     }}</span>
+                    @if (group.batchId !== null) {
+                      <span class="text-xs text-gray-400 dark:text-gray-500"
+                        >#{{ group.batchId }}</span
+                      >
+                    }
                     @if (group.batchId === null) {
                       <span
                         class="text-xs font-medium px-1.5 py-0.5 rounded text-warning-700 bg-warning-100 dark:text-warning-300 dark:bg-warning-900/30"
@@ -543,7 +507,7 @@
                         {{ group.approvedAt * 1000 | date: 'short' }}
                       </span>
                     }
-                  </div>
+                  </button>
                   <div class="flex items-center gap-2">
                     @if (auth.isApprover() && group.batchId !== null && hasApprovedChanges(group)) {
                       <horde-button
@@ -568,7 +532,7 @@
                       }
                     </div>
                   </div>
-                </button>
+                </div>
 
                 <!-- Batch Lifecycle & Progress -->
                 @if (group.batchId !== null) {
@@ -631,6 +595,7 @@
                   @for (change of group.items; track change.change_id) {
                     <app-expandable-change-row
                       [change]="change"
+                      [initiallyExpanded]="focusedChangeId() === change.change_id"
                       [showCategory]="true"
                       [showRequestor]="true"
                       (approveRequested)="approve($event)"

@@ -20,6 +20,7 @@ import { PendingQueueService } from '../../services/pending-queue.service';
 import { NotificationService } from '../../services/notification.service';
 import { ModelValidationService } from '../../services/model-validation.service';
 import { AuthService } from '../../services/auth.service';
+import { ShellContextService } from '../../services/shell-context.service';
 import { ConfirmationModalComponent } from '../common/confirmation-modal/confirmation-modal.component';
 import { DeltaDiffComponent } from '../common/delta-diff/delta-diff.component';
 import { ExpandableChangeRowComponent } from './expandable-change-row/expandable-change-row.component';
@@ -108,6 +109,7 @@ export class PendingQueueComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly shell = inject(ShellContextService);
   readonly auth = inject(AuthService);
 
   readonly loading = signal(false);
@@ -115,6 +117,7 @@ export class PendingQueueComponent {
   readonly records = signal<PendingChangeRecord[]>([]);
   readonly total = signal(0);
   readonly activeTab = signal<PendingQueueTab>('queue');
+  readonly focusedChangeId = signal<number | null>(null);
   readonly collapsedGroups = signal<Set<string>>(new Set());
   readonly rejectingChange = signal<PendingChangeRecord | null>(null);
   readonly rejectReason = signal('');
@@ -191,20 +194,20 @@ export class PendingQueueComponent {
 
     return [
       {
-        label: 'Submit',
+        label: 'Submitted records',
         count: summary.total,
         active: !hasSubmissions,
         completed: hasSubmissions,
       },
       {
-        label: 'Review',
+        label: 'Needs review',
         count: pending,
         active: needsReview,
         completed: !needsReview && hasSubmissions,
         rejectedCount: rejected,
       },
       {
-        label: 'Apply',
+        label: 'Ready to apply',
         count: approved,
         active: hasApproved && !needsReview,
         completed: hasApplied && !hasApproved,
@@ -288,8 +291,12 @@ export class PendingQueueComponent {
 
     for (const item of all) {
       statusCounts[item.status ?? 'pending'] = (statusCounts[item.status ?? 'pending'] ?? 0) + 1;
-      operationCounts[item.operation] = (operationCounts[item.operation] ?? 0) + 1;
-      categoryCounts[item.category] = (categoryCounts[item.category] ?? 0) + 1;
+      if (item.operation) {
+        operationCounts[item.operation] = (operationCounts[item.operation] ?? 0) + 1;
+      }
+      if (item.category) {
+        categoryCounts[item.category] = (categoryCounts[item.category] ?? 0) + 1;
+      }
       modelCounts[item.model_name] = (modelCounts[item.model_name] ?? 0) + 1;
       if (typeof item.updated_at === 'number') {
         lastUpdated =
@@ -313,7 +320,9 @@ export class PendingQueueComponent {
   });
 
   /** Records sorted for the queue tab */
-  readonly sortedRecords = computed(() => this.sortItems(this.records()));
+  readonly sortedRecords = computed(() =>
+    this.sortItems(this.records().filter((record) => record.status === 'pending')),
+  );
 
   /** Only rejected records */
   readonly rejectedRecords = computed(() =>
@@ -343,12 +352,12 @@ export class PendingQueueComponent {
       const approvedBy = firstItem?.approved_username ?? null;
       const approvedAt = firstItem?.approved_at ?? null;
 
-      // Create display key
+      // Lead with the human title; the numeric batch id is shown as a muted reference in the header.
       let displayKey: string;
       if (groupKey === 'pending-approval') {
-        displayKey = 'Inbox \u2014 Awaiting Review';
+        displayKey = 'Awaiting review';
       } else {
-        displayKey = batchTitle ? `Batch #${batchId} · ${batchTitle}` : `Batch #${batchId}`;
+        displayKey = batchTitle ?? `Batch #${batchId}`;
       }
 
       results.push({
@@ -372,11 +381,37 @@ export class PendingQueueComponent {
     });
   });
 
+  /**
+   * Real approved batches only. The "pending-approval" pseudo-group (batchId === null) is not a
+   * batch — those changes live in the review queue until an approver stages them — so the
+   * "Ready to apply" tab excludes it.
+   */
+  readonly approvedBatches = computed<GroupSummary[]>(() =>
+    this.byBatch().filter((g) => g.batchId !== null),
+  );
+
   constructor() {
+    // Populate the topbar breadcrumb/title; it is not auto-cleared between routes.
+    this.shell.setContext({
+      breadcrumb: [{ label: 'Contribute', route: ['/propose'] }, { label: 'Review queue' }],
+      title: 'Review queue',
+      sub: this.auth.isApprover()
+        ? 'Approve, reject & apply staged model changes'
+        : 'Track and review proposed model changes',
+      actions: [],
+    });
+    this.destroyRef.onDestroy(() => this.shell.clearContext());
+
     // Restore tab from query param if present
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
     if (tabParam && ['queue', 'my-submissions', 'batches', 'history'].includes(tabParam)) {
       this.activeTab.set(tabParam as PendingQueueTab);
+    }
+
+    const focusParam = Number(this.route.snapshot.queryParamMap.get('focus'));
+    if (Number.isInteger(focusParam) && focusParam > 0) {
+      this.focusedChangeId.set(focusParam);
+      this.activeTab.set('queue');
     }
 
     this.load();
@@ -442,6 +477,7 @@ export class PendingQueueComponent {
           this.records.set(items);
           this.total.set(page.total ?? items.length);
           this.loading.set(false);
+          this.scrollToFocusedChange();
         },
         error: (err: Error) => {
           this.error.set(err.message);
@@ -451,12 +487,11 @@ export class PendingQueueComponent {
   }
 
   loadMySubmissions(): void {
-    const username = this.auth.username();
-    if (!username) return;
+    if (!this.auth.isAuthenticated()) return;
 
     this.loadingMySubmissions.set(true);
     this.pendingQueue
-      .listChanges({ requestedBy: username, limit: 200 })
+      .listMyChanges({ limit: 200 })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (page) => {
@@ -467,6 +502,17 @@ export class PendingQueueComponent {
           this.loadingMySubmissions.set(false);
         },
       });
+  }
+
+  private scrollToFocusedChange(): void {
+    const changeId = this.focusedChangeId();
+    if (changeId == null || typeof requestAnimationFrame !== 'function') return;
+
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`pending-change-${changeId}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
   }
 
   resetFilters(): void {

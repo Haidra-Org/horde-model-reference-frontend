@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   input,
   output,
@@ -39,6 +40,8 @@ export class ExpandableChangeRowComponent {
   readonly showCategory = input(true);
   /** Whether to show the requestor column in collapsed view */
   readonly showRequestor = input(true);
+  /** Expand a deep-linked change as soon as its row is rendered. */
+  readonly initiallyExpanded = input(false);
 
   readonly approveRequested = output<PendingChangeRecord>();
   readonly rejectRequested = output<PendingChangeRecord>();
@@ -51,11 +54,24 @@ export class ExpandableChangeRowComponent {
   readonly diffError = signal<string | null>(null);
   private diffLoadedForId: number | null = null;
 
+  constructor() {
+    effect(() => {
+      if (this.initiallyExpanded() && !this.expanded()) {
+        this.expanded.set(true);
+        this.loadDiff();
+      }
+    });
+  }
+
   readonly isPending = computed(() => this.change().status === 'pending');
   readonly isApproved = computed(() => this.change().status === 'approved');
   readonly isRejected = computed(() => this.change().status === 'rejected');
   readonly isApplied = computed(() => this.change().status === 'applied');
   readonly hasBatch = computed(() => this.change().batch_id != null);
+  readonly isGuidance = computed(() => this.change().resource_kind === 'text_guidance');
+  readonly resourceLabel = computed(() =>
+    this.isGuidance() ? this.change().notes || 'Text usage guidance' : this.change().model_name,
+  );
 
   toggle(): void {
     const willExpand = !this.expanded();
@@ -93,13 +109,24 @@ export class ExpandableChangeRowComponent {
 
   viewInEditor(): void {
     const c = this.change();
+    if (c.resource_kind === 'text_guidance') {
+      this.router.navigate(['/text-guidance']);
+      return;
+    }
     if (c.operation === 'create' && c.status !== 'applied') {
       this.router.navigate(['/categories', c.category, 'create'], {
-        state: { prefill: c.payload, modelName: c.model_name },
+        state: { proposalPayload: c.payload, modelName: c.model_name },
       });
-    } else {
-      this.router.navigate(['/categories', c.category, 'edit', c.model_name]);
+      return;
     }
+
+    const navigationState =
+      c.operation === 'update' && c.status !== 'applied'
+        ? { proposalPayload: c.payload, modelName: c.model_name }
+        : undefined;
+    this.router.navigate(['/categories', c.category, 'edit', c.model_name], {
+      state: navigationState,
+    });
   }
 
   statusLabel(status: PendingChangeStatus | undefined): string {
@@ -110,6 +137,11 @@ export class ExpandableChangeRowComponent {
   operationLabel(operation: AuditOperation | undefined): string {
     if (!operation) return 'Unknown';
     return operation.charAt(0).toUpperCase() + operation.slice(1);
+  }
+
+  categoryLabel(category: string | null | undefined): string {
+    if (!category) return 'Unknown category';
+    return category.replaceAll('_', ' ').replace(/^./, (first) => first.toUpperCase());
   }
 
   operationBadgeClass(operation: AuditOperation | string | undefined): string {

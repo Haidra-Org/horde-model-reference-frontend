@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { BASE_PATH, HTTPValidationError } from '../api-client';
 import type {
   ApplyPendingChangesResponse,
+  ApplySingleChangeResponse,
   AuditOperation,
   MODEL_REFERENCE_CATEGORY,
   PendingBatchResult,
@@ -103,12 +104,25 @@ export class PendingQueueService {
     );
   }
 
+  listMyChanges(
+    options: Omit<PendingQueueListOptions, 'requestedBy'> = {},
+  ): Observable<PendingQueuePage> {
+    const params = this.buildListParams(options);
+    return this.http.get<PendingQueuePage>(`${this.queueBaseUrl}/my_changes`, { params }).pipe(
+      map((page) => ({
+        ...page,
+        items: (page.items ?? []).map((item) => this.normalizeChange(item)),
+      })),
+      catchError((error) => this.handleError(error, 'Unable to load your submissions.')),
+    );
+  }
+
   applyChange(changeId: number, jobId?: string | null): Observable<PendingChangeRecord> {
     const body = jobId ? { job_id: jobId } : {};
     return this.http
-      .post<PendingChangeRecord>(`${this.queueBaseUrl}/changes/${changeId}/apply`, body)
+      .post<ApplySingleChangeResponse>(`${this.queueBaseUrl}/changes/${changeId}/apply`, body)
       .pipe(
-        map((change) => this.normalizeChange(change)),
+        map((response) => this.normalizeChange(response.record)),
         catchError((error) => this.handleError(error, 'Unable to apply change.')),
       );
   }
@@ -188,7 +202,10 @@ export class PendingQueueService {
   }
 
   private normalizeStatus(status: PendingChangeStatus | null | undefined): PendingChangeStatus {
-    const normalized = (status ?? 'pending').toString().trim().toLowerCase();
+    if (status == null) {
+      throw new Error('Pending change response did not include a status.');
+    }
+    const normalized = status.toString().trim().toLowerCase();
     const allowed: PendingChangeStatus[] = [
       'pending',
       'approved',
@@ -196,20 +213,28 @@ export class PendingQueueService {
       'rejected',
       'applied',
     ];
-    return allowed.includes(normalized as PendingChangeStatus)
-      ? (normalized as PendingChangeStatus)
-      : 'pending';
+    if (!allowed.includes(normalized as PendingChangeStatus)) {
+      throw new Error(`Pending change response included unsupported status "${normalized}".`);
+    }
+    return normalized as PendingChangeStatus;
   }
 
   private normalizeOperation(operation: AuditOperation | null | undefined): AuditOperation {
-    const normalized = (operation ?? 'update').toString().trim().toLowerCase();
+    if (operation == null) {
+      throw new Error('Pending change response did not include an operation.');
+    }
+    const normalized = operation.toString().trim().toLowerCase();
     const allowed: AuditOperation[] = ['create', 'update', 'delete'];
-    return allowed.includes(normalized as AuditOperation)
-      ? (normalized as AuditOperation)
-      : 'update';
+    if (!allowed.includes(normalized as AuditOperation)) {
+      throw new Error(`Pending change response included unsupported operation "${normalized}".`);
+    }
+    return normalized as AuditOperation;
   }
 
-  private handleError(error: HttpErrorResponse, fallback: string): Observable<never> {
+  private handleError(error: HttpErrorResponse | Error, fallback: string): Observable<never> {
+    if (!(error instanceof HttpErrorResponse)) {
+      return throwError(() => error);
+    }
     if (error.status === 401) {
       // Session-level handling (logout + toast) is owned by the API-key interceptor.
       return throwError(() => new Error('Authentication required.'));

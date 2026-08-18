@@ -1,5 +1,6 @@
 <!-- Collapsed Row -->
 <div
+  [attr.id]="'pending-change-' + change().change_id"
   class="change-row cursor-pointer"
   [class.change-row--pending]="isPending()"
   [class.change-row--approved]="isApproved()"
@@ -37,13 +38,15 @@
       {{ statusLabel(change().status) }}
     </span>
     <span class="font-medium text-sm truncate">
-      {{ change().model_name }}
+      {{ resourceLabel() }}
     </span>
   </div>
 
   <div class="flex items-center gap-3 flex-shrink-0">
     @if (showCategory()) {
-      <span class="text-xs text-muted hidden sm:inline">{{ change().category }}</span>
+      <span class="text-xs text-muted hidden sm:inline">{{
+        categoryLabel(change().category)
+      }}</span>
     }
     @if (showRequestor()) {
       <span class="text-xs text-muted hidden md:inline">{{ change().requested_username }}</span>
@@ -52,65 +55,9 @@
       {{ change().requested_at ? (toDate(change().requested_at) | date: 'short') : '' }}
     </span>
 
-    <!-- Inline action buttons for approvers (stop propagation so clicks don't toggle expansion) -->
-    @if (auth.isApprover()) {
-      <div
-        class="change-row-actions"
-        role="presentation"
-        (click)="$event.stopPropagation()"
-        (keydown)="$event.stopPropagation()"
-      >
-        @if (isPending()) {
-          <button
-            type="button"
-            class="queue-action-btn queue-action-btn--approve"
-            (click)="approveRequested.emit(change())"
-            title="Approve"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="queue-action-btn queue-action-btn--reject"
-            (click)="rejectRequested.emit(change())"
-            title="Reject"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        }
-        @if (isApproved()) {
-          <button
-            type="button"
-            class="queue-action-btn queue-action-btn--apply"
-            (click)="applyRequested.emit(change())"
-            title="Apply"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-              />
-            </svg>
-          </button>
-        }
-      </div>
-    }
+    <span class="text-xs font-medium text-primary-600 dark:text-primary-400">
+      {{ expanded() ? 'Hide details' : isPending() ? 'Review change' : 'Inspect change' }}
+    </span>
   </div>
 </div>
 
@@ -130,8 +77,10 @@
         </div>
       </div>
       <div>
-        <div class="field-label">Category</div>
-        <div class="field-value">{{ change().category }}</div>
+        <div class="field-label">Resource</div>
+        <div class="field-value">
+          {{ isGuidance() ? 'Text guidance catalog' : categoryLabel(change().category) }}
+        </div>
       </div>
       @if (change().approved_username) {
         <div>
@@ -185,7 +134,11 @@
         <app-delta-diff [diff]="diff()" [showRawJson]="true" />
       } @else {
         <div class="text-sm text-muted py-2">
-          @if (change().operation === 'create') {
+          @if (isGuidance()) {
+            <span
+              >This coherent change set updates reusable profiles and exact-model assignments.</span
+            >
+          } @else if (change().operation === 'create') {
             <span>New model will be created with the submitted payload.</span>
           } @else if (change().operation === 'delete') {
             <span>This model will be deleted.</span>
@@ -211,7 +164,7 @@
             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
           />
         </svg>
-        View in Editor
+        {{ isGuidance() ? 'Open guidance catalog' : 'View in Editor' }}
       </horde-button>
       @if (auth.isApprover()) {
         @if (isPending()) {
