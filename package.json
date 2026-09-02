@@ -12,6 +12,8 @@
     "prebuild": "npm run verify:design-system",
     "build": "ng build",
     "build:ci": "npm run build -- --configuration=production",
+    "preview": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
     "prewatch": "npm run verify:design-system",
     "watch": "ng build --watch --configuration development",
     "pretest": "npm run verify:design-system",
@@ -90,7 +92,8 @@
     "typescript": "~5.9.2",
     "typescript-eslint": "8.57.2",
     "undici": "^7.24.6",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "wrangler": "^4.126.0"
   },
   "overrides": {
     "picomatch": "4.0.4"

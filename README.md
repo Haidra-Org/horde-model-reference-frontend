@@ -70,6 +70,25 @@ npm run build
 
 Build artifacts will be stored in the `dist/` directory.
 
+### Cloudflare Workers deployment
+
+This project can be deployed as a Cloudflare Workers static-assets application. The
+included Wrangler configuration deploys the Angular browser build and provides an SPA
+fallback, so directly visiting a client-side route (for example,
+`/categories/image/model/example`) serves the application instead of a 404.
+
+Authenticate Wrangler with `npx wrangler login`, then deploy with:
+
+```bash
+npm run deploy
+```
+
+To build and preview the production bundle locally through Wrangler, run:
+
+```bash
+npm run preview
+```
+
 ### End-to-End Tests
 
 We use Playwright for browser-level coverage. The test runner automatically starts `ng serve` on a random port unless you set `E2E_PORT`/`E2E_HOST`.
