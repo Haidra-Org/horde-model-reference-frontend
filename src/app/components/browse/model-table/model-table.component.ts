@@ -14,6 +14,7 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
 export interface BrowseTableColumn {
   label: string;
   alignment: 'left' | 'right';
+  width: string;
   sortKey?: SortKey;
 }
 
@@ -23,12 +24,13 @@ export interface BrowseTableColumn {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="glass-inflow browse-table-shell">
-      <cdk-virtual-scroll-viewport
-        [itemSize]="58"
-        class="browse-table-viewport"
-        aria-label="Model catalog results"
-      >
+      <div class="browse-table-header">
         <table class="browse-model-table">
+          <colgroup>
+            @for (col of columns(); track col.label) {
+              <col [style.width]="col.width" />
+            }
+          </colgroup>
           <thead>
             <tr>
               @for (col of columns(); track col.label) {
@@ -54,13 +56,30 @@ export interface BrowseTableColumn {
               }
             </tr>
           </thead>
+        </table>
+      </div>
+
+      <cdk-virtual-scroll-viewport
+        [itemSize]="58"
+        class="browse-table-viewport"
+        aria-label="Model catalog results"
+      >
+        <table class="browse-model-table">
+          <colgroup>
+            @for (col of columns(); track col.label) {
+              <col [style.width]="col.width" />
+            }
+          </colgroup>
           <tbody>
             <tr
               *cdkVirtualFor="let m of models(); trackBy: trackByName"
               class="browse-table-row"
               [class.row--pending]="!!m._pending && !m._ghost"
               [class.ghost-row]="!!m._ghost"
+              tabindex="0"
               (click)="modelOpen.emit(m)"
+              (keydown.enter)="modelOpen.emit(m)"
+              (keydown.space)="modelOpen.emit(m); $event.preventDefault()"
             >
               <!-- Model name + showcase -->
               <td style="padding:10px 16px">
@@ -142,18 +161,41 @@ export interface BrowseTableColumn {
               }
 
               <!-- Licensing -->
-              <td style="padding:10px 16px">
+              <td class="browse-table-license-cell">
                 @if (m._licensingMixed) {
-                  <span class="badge badge-warning" title="Variants have different conclusions">
-                    Multiple
+                  <span class="browse-table-license">
+                    <span class="browse-table-license__name">Multiple licenses</span>
+                    <span
+                      class="browse-table-license__commercial browse-table-license__commercial--conditional"
+                      title="Variants have different licensing conclusions"
+                    >
+                      Commercial terms vary
+                    </span>
                   </span>
                 } @else if (m.licensing?.license_expression === 'NOASSERTION' || !m.licensing) {
-                  <span class="badge badge-gray" title="Unknown does not mean permitted">
-                    Not reviewed
+                  <span class="browse-table-license" title="Unknown does not mean permitted">
+                    <span class="browse-table-license__name">Not reviewed</span>
+                    <span
+                      class="browse-table-license__commercial browse-table-license__commercial--unknown"
+                    >
+                      Commercial use unknown
+                    </span>
                   </span>
                 } @else {
-                  <span class="badge badge-gray" [title]="'Commercial use: ' + commercialLabel(m)">
-                    {{ m.licensing.license_expression }} · {{ commercialLabel(m) }}
+                  <span class="browse-table-license">
+                    <span class="browse-table-license__name">
+                      {{ m.licensing.license_expression }}
+                    </span>
+                    <span
+                      class="browse-table-license__commercial"
+                      [class]="
+                        'browse-table-license__commercial browse-table-license__commercial--' +
+                        commercialModifier(m)
+                      "
+                      [title]="'Commercial use: ' + commercialLabel(m)"
+                    >
+                      {{ commercialLabel(m) }}
+                    </span>
                   </span>
                 }
               </td>
@@ -289,6 +331,19 @@ export class ModelTableComponent {
         return 'commercial prohibited';
       default:
         return 'commercial unknown';
+    }
+  }
+
+  protected commercialModifier(model: BrowseModel): string {
+    switch (model.licensing?.commercial_use) {
+      case 'allowed':
+        return 'allowed';
+      case 'allowed_with_conditions':
+        return 'conditional';
+      case 'prohibited':
+        return 'prohibited';
+      default:
+        return 'unknown';
     }
   }
 

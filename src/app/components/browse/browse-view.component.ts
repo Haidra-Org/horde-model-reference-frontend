@@ -405,35 +405,35 @@ export class BrowseViewComponent implements OnInit {
   protected readonly tableColumns = computed<BrowseTableColumn[]>(() => {
     if (this.store.isTextDomain()) {
       return [
-        { label: 'Model', alignment: 'left', sortKey: 'name' },
-        { label: 'Group', alignment: 'left' },
-        { label: 'License', alignment: 'left' },
-        { label: 'Params', alignment: 'right', sortKey: 'params' },
-        { label: 'Workers', alignment: 'right', sortKey: 'workers' },
-        { label: 'Usage 30d', alignment: 'right', sortKey: 'usage' },
-        { label: 'Size', alignment: 'right', sortKey: 'size' },
-        { label: 'Status', alignment: 'left' },
+        { label: 'Model', alignment: 'left', width: '26%', sortKey: 'name' },
+        { label: 'Group', alignment: 'left', width: '15%' },
+        { label: 'License', alignment: 'left', width: '18%' },
+        { label: 'Params', alignment: 'right', width: '8%', sortKey: 'params' },
+        { label: 'Workers', alignment: 'right', width: '8%', sortKey: 'workers' },
+        { label: 'Usage 30d', alignment: 'right', width: '9%', sortKey: 'usage' },
+        { label: 'Size', alignment: 'right', width: '8%', sortKey: 'size' },
+        { label: 'Status', alignment: 'left', width: '8%' },
       ];
     }
     if (this.store.isImageDomain()) {
       return [
-        { label: 'Model', alignment: 'left', sortKey: 'name' },
-        { label: 'Baseline', alignment: 'left' },
-        { label: 'License', alignment: 'left' },
-        { label: 'Workers', alignment: 'right', sortKey: 'workers' },
-        { label: 'Usage 30d', alignment: 'right', sortKey: 'usage' },
-        { label: 'Size', alignment: 'right', sortKey: 'size' },
-        { label: 'Status', alignment: 'left' },
+        { label: 'Model', alignment: 'left', width: '31%', sortKey: 'name' },
+        { label: 'Baseline', alignment: 'left', width: '14%' },
+        { label: 'License', alignment: 'left', width: '20%' },
+        { label: 'Workers', alignment: 'right', width: '8%', sortKey: 'workers' },
+        { label: 'Usage 30d', alignment: 'right', width: '10%', sortKey: 'usage' },
+        { label: 'Size', alignment: 'right', width: '9%', sortKey: 'size' },
+        { label: 'Status', alignment: 'left', width: '8%' },
       ];
     }
     return [
-      { label: 'Model', alignment: 'left', sortKey: 'name' },
-      { label: 'Type', alignment: 'left' },
-      { label: 'License', alignment: 'left' },
-      { label: 'Workers', alignment: 'right', sortKey: 'workers' },
-      { label: 'Usage 30d', alignment: 'right', sortKey: 'usage' },
-      { label: 'Size', alignment: 'right', sortKey: 'size' },
-      { label: 'Status', alignment: 'left' },
+      { label: 'Model', alignment: 'left', width: '31%', sortKey: 'name' },
+      { label: 'Type', alignment: 'left', width: '14%' },
+      { label: 'License', alignment: 'left', width: '20%' },
+      { label: 'Workers', alignment: 'right', width: '8%', sortKey: 'workers' },
+      { label: 'Usage 30d', alignment: 'right', width: '10%', sortKey: 'usage' },
+      { label: 'Size', alignment: 'right', width: '9%', sortKey: 'size' },
+      { label: 'Status', alignment: 'left', width: '8%' },
     ];
   });
 

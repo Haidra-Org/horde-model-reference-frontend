@@ -2171,9 +2171,27 @@
      ================================================================= */
 
   .browse-layout {
-    padding: 20px 26px 60px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px 26px;
     max-width: 1320px;
     margin: 0 auto;
+  }
+
+  app-browse-view,
+  app-model-table {
+    display: block;
+    min-height: 0;
+  }
+
+  app-browse-view {
+    height: 100%;
+  }
+
+  app-model-table {
+    flex: 1 1 auto;
   }
 
   /* ---- Cards grid ---- */
