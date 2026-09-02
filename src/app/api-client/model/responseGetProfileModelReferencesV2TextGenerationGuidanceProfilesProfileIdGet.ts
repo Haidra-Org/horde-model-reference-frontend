@@ -24,5 +24,4 @@ import { TextInteractionMode } from './textInteractionMode';
  * @export
  */
 export type ResponseGetProfileModelReferencesV2TextGenerationGuidanceProfilesProfileIdGet =
-  | TextPromptContract
-  | TextUsageRecipe;
+  TextPromptContract | TextUsageRecipe;

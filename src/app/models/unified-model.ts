@@ -703,8 +703,7 @@ export function createGroupedTextModels(
 
       // Use server-provided group summary if available, else fall back to first variation
       const summary = legacyPrimary['text_model_group_summary'] as
-        | TextModelGroupSummary
-        | undefined;
+        TextModelGroupSummary | undefined;
 
       let description: string | undefined;
       let baseline: string | undefined;

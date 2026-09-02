@@ -244,9 +244,7 @@ export function validateV2Record(record: LegacyRecordUnion): ValidationIssue[] {
 
   // model_classification is required in v2
   const classification = rec['modelClassification'] as
-    | { domain?: string; purpose?: string }
-    | null
-    | undefined;
+    { domain?: string; purpose?: string } | null | undefined;
   if (!classification || !classification.domain) {
     issues.push({
       field: 'model_classification.domain',

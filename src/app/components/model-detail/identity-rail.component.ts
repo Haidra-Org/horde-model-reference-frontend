@@ -115,8 +115,7 @@ export class ModelIdentityRailComponent {
   protected readonly classification = computed(() => {
     const raw = this.model()._raw;
     const cls = (raw as Record<string, unknown>)?.['model_classification'] as
-      | { domain?: string; purpose?: string }
-      | undefined;
+      { domain?: string; purpose?: string } | undefined;
     const domain = cls?.domain ?? this.dmn().label;
     const purpose = cls?.purpose ?? '—';
     return `${domain} · ${purpose}`;
@@ -135,15 +134,13 @@ export class ModelIdentityRailComponent {
 
   protected readonly addedDate = computed(() => {
     const meta = (this.model()._raw as Record<string, unknown>)?.['metadata'] as
-      | { added?: string }
-      | undefined;
+      { added?: string } | undefined;
     return meta?.added ? this.fmtDate(meta.added) : '—';
   });
 
   protected readonly updatedDate = computed(() => {
     const meta = (this.model()._raw as Record<string, unknown>)?.['metadata'] as
-      | { updated?: string; author?: string }
-      | undefined;
+      { updated?: string; author?: string } | undefined;
     if (!meta?.updated) return '—';
     let result = this.fmtDate(meta.updated);
     if (meta.author) result += ` · ${meta.author}`;

@@ -135,10 +135,7 @@ export interface LegacyClipRecord extends LegacyGenericRecord {
 }
 
 export type LegacyRecordUnion =
-  | LegacyStableDiffusionRecord
-  | LegacyTextGenerationRecord
-  | LegacyClipRecord
-  | LegacyGenericRecord;
+  LegacyStableDiffusionRecord | LegacyTextGenerationRecord | LegacyClipRecord | LegacyGenericRecord;
 
 export type LegacyModelsResponse = Record<string, LegacyRecordUnion>;
 

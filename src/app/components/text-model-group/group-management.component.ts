@@ -20,11 +20,7 @@ import { GroupSummaryEntry, GroupsSummaryResponse } from '../../api-client';
 import { forkJoin } from 'rxjs';
 
 type SortField =
-  | 'group_name'
-  | 'canonical_count'
-  | 'family_name'
-  | 'health_issues'
-  | 'has_custom_schema';
+  'group_name' | 'canonical_count' | 'family_name' | 'health_issues' | 'has_custom_schema';
 type SortDirection = 'asc' | 'desc';
 type HealthFilter = 'all' | 'healthy' | 'issues';
 

@@ -14,9 +14,7 @@ import { ModelReferenceApiService } from '../../services/model-reference-api.ser
 import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
 
 export type CreateChoice =
-  | { kind: 'new-group' }
-  | { kind: 'add-to-group'; groupName: string }
-  | { kind: 'standalone' };
+  { kind: 'new-group' } | { kind: 'add-to-group'; groupName: string } | { kind: 'standalone' };
 
 @Component({
   selector: 'app-text-create-choice',
