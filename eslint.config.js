@@ -3,7 +3,7 @@ const eslint = require('@eslint/js');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 const unusedImports = require('eslint-plugin-unused-imports');
-const importPlugin = require('eslint-plugin-import');
+const importPlugin = require('eslint-plugin-import-x');
 
 module.exports = tseslint.config(
   {

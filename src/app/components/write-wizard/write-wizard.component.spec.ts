@@ -3,7 +3,7 @@
  */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { of } from 'rxjs';
@@ -34,7 +34,7 @@ function baseProviders(overrides?: {
 }): Parameters<typeof TestBed.configureTestingModule>[0]['providers'] {
   return [
     provideRouter([]),
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     provideHttpClientTesting(),
     provideZonelessChangeDetection(),
     {

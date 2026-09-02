@@ -23,10 +23,11 @@
           <p class="audit-panel-subtitle">
             Approved by {{ summary()?.approved_by || 'unknown' }}
             @if (summary()?.approved_at) {
-              · {{ toDate(summary()?.approved_at) | date: 'medium' }}
+              · {{ toDate($safeNavigationMigration(summary()?.approved_at)) | date: 'medium' }}
             }
             @if (summary()?.applied_at) {
-              · Applied {{ toDate(summary()?.applied_at) | date: 'medium' }}
+              · Applied
+              {{ toDate($safeNavigationMigration(summary()?.applied_at)) | date: 'medium' }}
             }
           </p>
         </div>

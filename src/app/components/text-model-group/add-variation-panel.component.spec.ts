@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
 import { AddVariationPanelComponent } from './add-variation-panel.component';
@@ -112,7 +112,7 @@ describe('AddVariationPanelComponent', () => {
       imports: [AddVariationPanelComponent],
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         { provide: ModelReferenceApiService, useValue: api },
         { provide: NotificationService, useValue: notification },

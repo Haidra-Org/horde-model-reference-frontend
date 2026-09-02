@@ -15,9 +15,8 @@
     "target": "ES2022",
     "module": "preserve",
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
-      "@haidra/design-system/*": ["src/shared/design-system/components/*"]
+      "@haidra/design-system/*": ["./src/shared/design-system/components/*"]
     }
   },
   "angularCompilerOptions": {

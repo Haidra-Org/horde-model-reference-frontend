@@ -8,7 +8,7 @@ import {
   HordeTextWorker,
   HordeTotalStatsResponse,
 } from '../models/horde-api.models';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { withDone } from '../../testing/with-done';
 
@@ -22,7 +22,7 @@ describe('HordeApiService', () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
       ],
     });

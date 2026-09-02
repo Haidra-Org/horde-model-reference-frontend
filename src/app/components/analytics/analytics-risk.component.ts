@@ -340,7 +340,7 @@ export class AnalyticsRiskComponent implements OnInit {
     const summary = resp.summary;
 
     return PRESETS.map((p) => {
-      let count = 0;
+      let count: number;
       switch (p.key) {
         case 'all':
           count = summary.total_models;

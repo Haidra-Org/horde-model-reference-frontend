@@ -100,7 +100,9 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
               </span>
               <span style="display:inline-flex;align-items:center;gap:5px">
                 <app-icon name="bolt" />{{
-                  m._ghost ? '—' : formatUsage(m._stats?.usage_stats?.month)
+                  m._ghost
+                    ? '—'
+                    : formatUsage($safeNavigationMigration(m._stats?.usage_stats?.month))
                 }}
               </span>
               <span style="display:inline-flex;align-items:center;gap:5px">

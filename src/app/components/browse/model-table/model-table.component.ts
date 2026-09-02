@@ -232,7 +232,7 @@ export interface BrowseTableColumn {
                 @if (m._ghost) {
                   <span>—</span>
                 } @else {
-                  {{ formatUsage(m._stats?.usage_stats?.month) }}
+                  {{ formatUsage($safeNavigationMigration(m._stats?.usage_stats?.month)) }}
                 }
               </td>
 

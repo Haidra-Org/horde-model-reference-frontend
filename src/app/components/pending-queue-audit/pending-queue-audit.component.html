@@ -27,13 +27,15 @@
         @if (hasStaleData()) {
           <div class="alert-banner alert-banner-warning alert-banner-inline">
             Snapshot is older than 5 minutes
-            @if (formatRelativeTime(currentSnapshot()?.generated_at)) {
-              · Last refresh {{ formatRelativeTime(currentSnapshot()?.generated_at) }}
+            @if (formatRelativeTime($safeNavigationMigration(currentSnapshot()?.generated_at))) {
+              · Last refresh
+              {{ formatRelativeTime($safeNavigationMigration(currentSnapshot()?.generated_at)) }}
             }
           </div>
         } @else if (currentSnapshot()?.generated_at) {
           <span class="audit-generated-at">
-            Last generated {{ formatRelativeTime(currentSnapshot()?.generated_at) }}
+            Last generated
+            {{ formatRelativeTime($safeNavigationMigration(currentSnapshot()?.generated_at)) }}
           </span>
         }
       </div>

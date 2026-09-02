@@ -5,7 +5,12 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withXhr,
+} from '@angular/common/http';
 
 import { Configuration, BASE_PATH } from './api-client';
 import { environment } from '../environments/environment';
@@ -19,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: ApiKeyHttpInterceptor, multi: true },
     { provide: BASE_PATH, useValue: environment.apiBaseUrl },
     {

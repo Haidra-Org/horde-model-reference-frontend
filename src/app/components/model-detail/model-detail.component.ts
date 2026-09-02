@@ -711,7 +711,7 @@ export class ModelDetailComponent implements OnInit {
 
   protected onTabKeydown(event: KeyboardEvent, currentIndex: number): void {
     const tabsForModel = this.tabList();
-    let nextIndex = currentIndex;
+    let nextIndex: number;
     if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabsForModel.length;
     else if (event.key === 'ArrowLeft')
       nextIndex = (currentIndex - 1 + tabsForModel.length) % tabsForModel.length;

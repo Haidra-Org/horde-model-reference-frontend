@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BASE_PATH } from '../../../api-client';
 import { ShowcaseComponent } from './showcase.component';
@@ -15,7 +15,7 @@ describe('ShowcaseComponent', () => {
       imports: [ShowcaseComponent],
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         { provide: BASE_PATH, useValue: 'http://localhost:19800/api' },
       ],

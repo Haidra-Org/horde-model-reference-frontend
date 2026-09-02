@@ -1,7 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, signal, provideZonelessChangeDetection } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import {
+  Component,
+  signal,
+  provideZonelessChangeDetection,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BASE_PATH } from '../../api-client';
 import { AnalyticsStatisticsComponent } from './analytics-statistics.component';
@@ -10,7 +15,7 @@ import { HordeApiService } from '../../services/horde-api.service';
 import { of } from 'rxjs';
 import { provideRouter, Router } from '@angular/router';
 
-@Component({ template: '' })
+@Component({ changeDetection: ChangeDetectionStrategy.OnPush, template: '' })
 class RouteTargetStubComponent {}
 
 function makeCategoryStatistics(overrides: Record<string, unknown> = {}) {
@@ -66,7 +71,7 @@ describe('AnalyticsStatisticsComponent', () => {
       imports: [AnalyticsStatisticsComponent],
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         provideRouter([{ path: 'categories/:category', component: RouteTargetStubComponent }]),
         { provide: BASE_PATH, useValue: 'http://localhost:19800/api' },

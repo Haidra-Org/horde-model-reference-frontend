@@ -3,7 +3,7 @@
  * /pending-queue (Queue / My Submissions / Batches / History).
  */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
@@ -54,7 +54,7 @@ describe('PendingQueueComponent', () => {
       imports: [PendingQueueComponent],
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         provideRouter([]),
         {
@@ -115,7 +115,7 @@ describe('PendingQueueComponent', () => {
       imports: [PendingQueueComponent],
       providers: [
         provideZonelessChangeDetection(),
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
         provideRouter([]),
         {
