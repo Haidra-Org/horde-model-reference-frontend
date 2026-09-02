@@ -36,6 +36,22 @@ type LicensingTab = 'assets' | 'definitions';
 type EditorKind = 'definition' | 'asset';
 
 const PAGE_SIZE = 50;
+const MODEL_FILE_EXTENSIONS = new Set([
+  'bin',
+  'ckpt',
+  'ggml',
+  'gguf',
+  'h5',
+  'keras',
+  'mlmodel',
+  'npz',
+  'onnx',
+  'pb',
+  'pt',
+  'pth',
+  'safetensors',
+  'tflite',
+]);
 
 @Component({
   selector: 'app-licensing',
@@ -54,6 +70,7 @@ export class LicensingComponent implements OnInit, OnDestroy {
   private readonly apiBasePath = inject(BASE_PATH);
 
   protected readonly PermissionStatus = PermissionStatus;
+  protected readonly modelCategories = Object.values(MODEL_REFERENCE_CATEGORY);
   protected readonly activeTab = signal<LicensingTab>('assets');
   protected readonly summary = signal<LicensingSummary | null>(null);
   protected readonly definitions = signal<LicenseDefinition[]>([]);
@@ -74,6 +91,7 @@ export class LicensingComponent implements OnInit, OnDestroy {
   protected readonly filterForm = this.formBuilder.nonNullable.group({
     query: [''],
     assetKind: [''],
+    category: [''],
     licenseId: [''],
     commercialUse: [''],
     redistribution: [''],
@@ -464,7 +482,27 @@ export class LicensingComponent implements OnInit, OnDestroy {
   }
 
   protected categoryLabel(category: MODEL_REFERENCE_CATEGORY | null | undefined): string {
-    return category ? (RECORD_DISPLAY_MAP[category] ?? category) : 'Non-model asset';
+    return category
+      ? (RECORD_DISPLAY_MAP[category] ?? this.assetKindLabel(category))
+      : 'Non-model asset';
+  }
+
+  protected sourceSite(url: string): string {
+    try {
+      return new URL(url).hostname.replace(/^www\./i, '');
+    } catch {
+      return 'external site';
+    }
+  }
+
+  protected isModelFileUrl(url: string): boolean {
+    try {
+      const pathname = decodeURIComponent(new URL(url).pathname);
+      const extension = pathname.split('.').pop()?.toLowerCase();
+      return extension ? MODEL_FILE_EXTENSIONS.has(extension) : false;
+    } catch {
+      return false;
+    }
   }
 
   protected assetKindLabel(kind: string): string {
@@ -519,6 +557,7 @@ export class LicensingComponent implements OnInit, OnDestroy {
       limit: PAGE_SIZE,
       ...(value.query.trim() ? { nameContains: value.query.trim() } : {}),
       ...(value.assetKind ? { assetKind: value.assetKind } : {}),
+      ...(value.category ? { category: value.category as MODEL_REFERENCE_CATEGORY } : {}),
       ...(value.licenseId ? { licenseId: value.licenseId } : {}),
       ...(value.commercialUse ? { commercialUse: value.commercialUse as PermissionStatus } : {}),
       ...(value.redistribution ? { redistribution: value.redistribution as PermissionStatus } : {}),

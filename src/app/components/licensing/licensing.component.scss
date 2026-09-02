@@ -1,20 +1,22 @@
 .licensing-page {
   display: grid;
-  gap: 22px;
+  gap: 18px;
   padding: 26px;
 }
 
 .license-guidance {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 14px 18px;
+  gap: 14px;
+  max-width: 560px;
+  padding: 9px 12px;
   border: 1px solid var(--color-warning-500, #d99b2b);
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-warning-500, #d99b2b) 9%, transparent);
   color: var(--color-content-secondary);
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .license-guidance strong {
@@ -29,14 +31,14 @@
 
 .license-stat {
   display: grid;
-  gap: 5px;
-  min-height: 122px;
-  padding: 18px;
+  gap: 3px;
+  min-height: 88px;
+  padding: 12px 14px;
 }
 
 .license-stat strong {
   color: var(--color-content-primary);
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
 }
 
@@ -96,10 +98,21 @@
 
 .licensing-section-heading {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: 18px;
   margin-bottom: 14px;
+}
+
+.licensing-section-heading__intro {
+  flex: 1 1 420px;
+}
+
+.licensing-section-heading__aside {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .licensing-section-heading p {
@@ -109,11 +122,17 @@
 
 .license-filters {
   display: grid;
-  grid-template-columns: minmax(180px, 1.5fr) repeat(4, minmax(145px, 1fr)) auto;
+  grid-template-columns: minmax(180px, 1.5fr) repeat(5, minmax(135px, 1fr)) auto;
   align-items: end;
   gap: 12px;
   margin-bottom: 14px;
   padding: 14px;
+}
+
+.license-results-summary {
+  margin: -4px 2px 8px;
+  color: var(--color-content-muted);
+  font-size: 12px;
 }
 
 .license-filters label,
@@ -190,6 +209,20 @@
   margin-top: 4px;
   color: var(--color-content-muted);
   font-size: 11px;
+}
+
+.license-terms-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+}
+
+.external-source-link {
+  white-space: nowrap;
+}
+
+.external-source-link--download {
+  font-weight: 650;
 }
 
 .permission {
@@ -371,6 +404,7 @@
 
   .license-guidance,
   .licensing-section-heading,
+  .licensing-section-heading__aside,
   .license-pagination {
     align-items: stretch;
     flex-direction: column;

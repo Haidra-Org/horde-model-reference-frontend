@@ -175,6 +175,61 @@ describe('LicensingComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Example Model');
   });
 
+  it('filters by model category and identifies external source destinations', () => {
+    apiSpy.listLicensedAssets.mockClear();
+    const category = fixture.nativeElement.querySelector(
+      'select[formControlName="category"]',
+    ) as HTMLSelectElement;
+
+    category.value = 'image_generation';
+    category.dispatchEvent(new Event('change'));
+    fixture.nativeElement.querySelector('form.license-filters').dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    expect(apiSpy.listLicensedAssets).toHaveBeenCalledWith({
+      category: 'image_generation',
+      offset: 0,
+      limit: 50,
+    });
+    expect(fixture.nativeElement.textContent).toContain('Source · example.test ↗');
+  });
+
+  it('links license identifiers to their canonical terms', () => {
+    const link = fixture.nativeElement.querySelector('.license-terms-links a') as HTMLAnchorElement;
+
+    expect(link.textContent).toContain('MIT terms ↗');
+    expect(link.href).toBe('https://spdx.org/licenses/MIT.html');
+  });
+
+  it('distinguishes direct AI model file downloads from source pages', () => {
+    apiSpy.listLicensedAssets.mockReturnValue(
+      of({
+        items: [
+          {
+            ...MODEL_ASSET,
+            source_url:
+              'https://huggingface.co/example/model/resolve/main/weights.SAFETENSORS?download=true',
+          },
+        ],
+        total: 1,
+        offset: 0,
+        limit: 50,
+        metadata: {},
+      }),
+    );
+
+    fixture.nativeElement.querySelector('form.license-filters').dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector(
+      '.external-source-link--download',
+    ) as HTMLAnchorElement;
+    expect(link.textContent).toContain('Model file · huggingface.co ↓ ↗');
+    expect(link.getAttribute('aria-label')).toBe(
+      'Download model file from huggingface.co (opens in a new tab)',
+    );
+  });
+
   it('does not expose direct management to a non-editor even on a writable backend', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Add non-model asset');
 

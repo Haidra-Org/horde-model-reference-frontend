@@ -8,6 +8,17 @@
 html {
   height: 100%;
   overflow: hidden;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark select option,
+html.dark select optgroup {
+  background-color: var(--color-surface-elevated, #1f2937);
+  color: var(--color-content-primary, #e5e7eb);
 }
 
 body {

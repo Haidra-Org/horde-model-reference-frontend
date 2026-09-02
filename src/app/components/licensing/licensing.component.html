@@ -1,13 +1,4 @@
 <div class="licensing-page">
-  <div class="license-guidance" role="note">
-    <div>
-      <strong>Unknown does not mean permitted.</strong>
-      It means no reviewed conclusion is available. Check the linked source and license terms before
-      using an asset commercially or redistributing it.
-    </div>
-    <a class="link" [href]="apiDocsUrl()" target="_blank" rel="noopener"> Licensing API </a>
-  </div>
-
   @if (loading()) {
     <div class="glass-inflow licensing-state" aria-live="polite">Loading licensing data…</div>
   } @else if (error()) {
@@ -62,18 +53,29 @@
     @if (activeTab() === 'assets') {
       <section aria-labelledby="licensed-assets-heading">
         <div class="licensing-section-heading">
-          <div>
+          <div class="licensing-section-heading__intro">
             <h2 id="licensed-assets-heading" class="heading-section">Licensed assets</h2>
             <p class="text-muted">
               Filter by the activity you intend to perform. Results include model records and
               separately managed software or custom-node dependencies.
             </p>
           </div>
-          @if (canManage()) {
-            <button type="button" class="btn btn-primary" (click)="openNewAsset()">
-              Add non-model asset
-            </button>
-          }
+          <div class="licensing-section-heading__aside">
+            <div class="license-guidance" role="note">
+              <div>
+                <strong>Unknown does not mean permitted.</strong>
+                No reviewed conclusion is available; check the source and terms before use.
+              </div>
+              <a class="link" [href]="apiDocsUrl()" target="_blank" rel="noopener">
+                Licensing API <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+            @if (canManage()) {
+              <button type="button" class="btn btn-primary" (click)="openNewAsset()">
+                Add non-model asset
+              </button>
+            }
+          </div>
         </div>
 
         <form
@@ -93,6 +95,15 @@
               <option value="software_component">Software components</option>
               <option value="custom_node">Custom nodes</option>
               <option value="other">Other assets</option>
+            </select>
+          </label>
+          <label>
+            <span>Model category</span>
+            <select formControlName="category" class="select">
+              <option value="">All categories</option>
+              @for (category of modelCategories; track category) {
+                <option [value]="category">{{ categoryLabel(category) }}</option>
+              }
             </select>
           </label>
           <label>
@@ -129,6 +140,10 @@
             <button type="button" class="btn btn-ghost" (click)="clearFilters()">Clear</button>
           </div>
         </form>
+
+        <div class="license-results-summary" aria-live="polite">
+          Showing {{ firstAssetNumber() }}–{{ lastAssetNumber() }} of {{ assetTotal() }}
+        </div>
 
         @if (assetsLoading()) {
           <div class="glass-inflow licensing-state" aria-live="polite">Refreshing assets…</div>
@@ -169,6 +184,27 @@
                     </td>
                     <td>
                       <code>{{ asset.licensing.license_expression }}</code>
+                      @if (asset.licensing.license_ids?.length) {
+                        <span class="license-asset-meta license-terms-links">
+                          @for (licenseId of asset.licensing.license_ids; track licenseId) {
+                            @if (asset.definition_urls?.[licenseId]; as definitionUrl) {
+                              <a
+                                class="link"
+                                [href]="definitionUrl"
+                                target="_blank"
+                                rel="noopener"
+                                [attr.aria-label]="
+                                  licenseId + ' license terms (opens in a new tab)'
+                                "
+                              >
+                                {{ licenseId }} terms <span aria-hidden="true">↗</span>
+                              </a>
+                            } @else {
+                              <span>{{ licenseId }}</span>
+                            }
+                          }
+                        </span>
+                      }
                       @if (asset.licensing.obligations?.length) {
                         <span class="license-asset-meta">
                           {{ asset.licensing.obligations!.length }} obligation{{
@@ -195,17 +231,47 @@
                     </td>
                     <td>
                       @if (asset.source_url) {
-                        <a class="link" [href]="asset.source_url" target="_blank" rel="noopener"
-                          >Source</a
-                        >
+                        @if (isModelFileUrl(asset.source_url)) {
+                          <a
+                            class="link external-source-link external-source-link--download"
+                            [href]="asset.source_url"
+                            target="_blank"
+                            rel="noopener"
+                            [attr.aria-label]="
+                              'Download model file from ' +
+                              sourceSite(asset.source_url) +
+                              ' (opens in a new tab)'
+                            "
+                            >Model file · {{ sourceSite(asset.source_url) }}
+                            <span aria-hidden="true">↓ ↗</span></a
+                          >
+                        } @else {
+                          <a
+                            class="link external-source-link"
+                            [href]="asset.source_url"
+                            target="_blank"
+                            rel="noopener"
+                            [attr.aria-label]="
+                              'Source on ' + sourceSite(asset.source_url) + ' (opens in a new tab)'
+                            "
+                            >Source · {{ sourceSite(asset.source_url) }}
+                            <span aria-hidden="true">↗</span></a
+                          >
+                        }
                       } @else if (asset.licensing.evidence?.length) {
                         <a
-                          class="link"
+                          class="link external-source-link"
                           [href]="asset.licensing.evidence![0].source"
                           target="_blank"
                           rel="noopener"
+                          [attr.aria-label]="
+                            'Evidence on ' +
+                            sourceSite(asset.licensing.evidence![0].source) +
+                            ' (opens in a new tab)'
+                          "
                         >
-                          Evidence
+                          Evidence · {{ sourceSite(asset.licensing.evidence![0].source) }}
+                          <span aria-hidden="true">↗</span>
                         </a>
                       } @else {
                         <span class="text-muted">Not recorded</span>
