@@ -27,7 +27,7 @@ import type { PendingChangeOverlay } from '../../../models/pending-change-overla
             (click)="modelOpen.emit(m)"
             [attr.aria-label]="'Open ' + (m.display_name ?? m.name)"
           ></button>
-          @if (m._pending && !m._ghost) {
+          @if (m._pending) {
             <div style="position:absolute;top:10px;left:10px;z-index:2">
               <button
                 type="button"

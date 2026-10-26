@@ -527,11 +527,7 @@ export class BrowseViewComponent implements OnInit {
   }
 
   protected openModel(model: BrowseModel): void {
-    if (model._ghost && model._pending) {
-      this.router.navigate(['/pending-queue'], {
-        queryParams: { focus: model._pending.pendingChangeId },
-      });
-    } else if (model._group) {
+    if (model._group && !model._ghost) {
       this.router.navigate(['/text-groups/group'], { queryParams: { name: model.name } });
     } else {
       this.router.navigate(['/categories', this.store.category(), 'model', model.name]);

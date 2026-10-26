@@ -4,7 +4,7 @@ import { signal, provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BASE_PATH } from '../../api-client';
+import { BASE_PATH, type PendingChangeRecord } from '../../api-client';
 import { ModelDetailComponent } from './model-detail.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { ShellContextService } from '../../services/shell-context.service';
@@ -78,12 +78,14 @@ describe('ModelDetailComponent', () => {
     isApprover: isApprover.asReadonly(),
   };
 
+  const pendingRecords = signal<PendingChangeRecord[]>([]);
   const pendingSummaryStub = {
-    records: signal([]).asReadonly(),
+    records: pendingRecords.asReadonly(),
     pendingCount: signal(0).asReadonly(),
   };
 
   beforeEach(async () => {
+    pendingRecords.set([]);
     isAuthenticated.set(false);
     isRequestor.set(false);
     isApprover.set(false);
@@ -136,6 +138,37 @@ describe('ModelDetailComponent', () => {
     fixture.detectChanges();
 
     expect(nativeEl.textContent).toContain('Model not found');
+  });
+
+  it('renders an unpublished pending model from its proposed payload', () => {
+    apiStub.getDisplayModelsAsArray.mockReturnValue(of([]));
+    paramMapSubject.next({ category: 'image_generation', modelName: 'new-model' });
+    fixture.detectChanges();
+    pendingRecords.set([
+      {
+        change_id: 302,
+        category: 'image_generation',
+        model_name: 'new-model',
+        operation: 'create',
+        status: 'pending',
+        payload: {
+          name: 'new-model',
+          description: 'The proposed model description',
+          baseline: 'anima',
+          size_on_disk_bytes: 123,
+          config: {
+            download: [{ file_name: 'vae.safetensors', file_url: 'https://example.com/vae' }],
+          },
+        },
+      } as PendingChangeRecord,
+    ]);
+    fixture.detectChanges();
+    expect(nativeEl.textContent).toContain('The proposed model description');
+    expect(nativeEl.textContent).toContain('pending addition');
+    expect(nativeEl.textContent).not.toContain('Model not found');
+    const review = nativeEl.querySelector('a[href="/pending-queue?focus=302"]');
+    expect(review).toBeTruthy();
+    expect(apiStub.getModelsWithStats).not.toHaveBeenCalled();
   });
 
   it('should render model details when loaded', () => {

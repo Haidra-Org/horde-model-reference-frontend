@@ -26,7 +26,7 @@ import { TextGuidanceTabComponent } from './text-guidance-tab.component';
 import { ConfirmationModalComponent } from '../common/confirmation-modal/confirmation-modal.component';
 import { RECORD_DISPLAY_MAP, BASELINE_SHORTHAND_MAP } from '../../models/maps';
 import { domainMeta } from '../../shared/domain';
-import { toBrowseModel } from '../../services/browse-models.service';
+import { ghostFromChange, toBrowseModel } from '../../services/browse-models.service';
 import type { BrowseModel } from '../../services/browse-models.service';
 import type { BackendCombinedModelStatistics } from '../../models/api.models';
 import type { ModelDeletionRiskInfo } from '../../api-client/model/modelDeletionRiskInfo';
@@ -333,7 +333,30 @@ export class ModelDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
-  protected readonly model = signal<BrowseModel | null>(null);
+  private readonly liveModel = signal<BrowseModel | null>(null);
+  protected readonly model = computed<BrowseModel | null>(() => {
+    const live = this.liveModel();
+    const name = this._modelName();
+    const change = this.pendingSummary
+      .records()
+      .find(
+        (record) =>
+          record.category === this._category() &&
+          (record.model_name === name ||
+            (record.payload as Record<string, unknown> | null)?.['name'] === name),
+      );
+    if (!live) return change?.operation === 'create' ? ghostFromChange(change) : null;
+    if (!change) return live;
+    return {
+      ...live,
+      _pending: {
+        pendingOperation: change.operation,
+        pendingChangeId: change.change_id,
+        isGhost: false,
+        pendingRecord: change,
+      },
+    };
+  });
   protected readonly stats = signal<BackendCombinedModelStatistics | null>(null);
   protected readonly statsLoading = signal(false);
   protected readonly riskData = signal<ModelDeletionRiskInfo | null>(null);
@@ -495,7 +518,7 @@ export class ModelDetailComponent implements OnInit {
 
   private loadModel(category: string, modelName: string): void {
     this.loading.set(true);
-    this.model.set(null);
+    this.liveModel.set(null);
     this.stats.set(null);
     this.riskData.set(null);
     this.textGroupData.set(null);
@@ -520,7 +543,7 @@ export class ModelDetailComponent implements OnInit {
         }
 
         const m = toBrowseModel(raw as Record<string, unknown>, category);
-        this.model.set(m);
+        this.liveModel.set(m);
         this.loading.set(false);
 
         if (category === 'text_generation' && m.text_model_group) {
@@ -547,7 +570,7 @@ export class ModelDetailComponent implements OnInit {
           this.textGroupData.set(group);
           const current = this.model();
           if (current) {
-            this.model.set({
+            this.liveModel.set({
               ...current,
               text_group_family: group.related_family?.family_name ?? null,
             });
@@ -600,7 +623,7 @@ export class ModelDetailComponent implements OnInit {
       breadcrumb: [{ label: catDisplay, route: ['/categories', category] }, { label: displayName }],
       title: displayName,
       actions: [
-        ...(this.canWrite()
+        ...(this.canWrite() && !model._ghost
           ? [
               {
                 id: 'edit',

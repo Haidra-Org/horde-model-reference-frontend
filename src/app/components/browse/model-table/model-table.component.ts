@@ -253,6 +253,8 @@ export interface BrowseTableColumn {
                     class="badge badge-warning badge-sm"
                     style="cursor:pointer;border:1px solid var(--color-pending-border)"
                     (click)="pendingOpen.emit(m._pending); $event.stopPropagation()"
+                    (keydown.enter)="$event.stopPropagation()"
+                    (keydown.space)="$event.stopPropagation()"
                   >
                     <app-icon name="clock" />{{ pendingLabel(m._pending) }}
                   </button>

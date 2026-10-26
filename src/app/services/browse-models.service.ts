@@ -152,19 +152,16 @@ export function toBrowseModel(record: Record<string, unknown>, category: string)
 }
 
 /** Convert a pending `create` change payload into a ghost BrowseModel. */
-function ghostFromChange(change: PendingChangeRecord): BrowseModel {
-  const p = (change.payload ?? {}) as Record<string, unknown>;
+export function ghostFromChange(change: PendingChangeRecord): BrowseModel {
+  const payload = (change.payload ?? {}) as Record<string, unknown>;
   return {
-    name: (p['name'] as string) || change.model_name,
-    display_name: (p['display_name'] as string) ?? ((p['name'] as string) || change.model_name),
-    description: (p['description'] as string) ?? '',
-    baseline: p['baseline'] as string | undefined,
-    nsfw: (p['nsfw'] as boolean) ?? false,
-    style: p['style'] as string | undefined,
-    tags: (p['tags'] as string[]) ?? [],
+    ...toBrowseModel(
+      { ...payload, name: payload['name'] || change.model_name },
+      change.category ?? '',
+    ),
     _ghost: true,
     _pending: {
-      pendingOperation: 'create' as const,
+      pendingOperation: 'create',
       pendingChangeId: change.change_id,
       isGhost: true,
       pendingRecord: change,
