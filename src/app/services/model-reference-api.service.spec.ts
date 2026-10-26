@@ -91,6 +91,92 @@ describe('ModelReferenceApiService', () => {
     }
   });
 
+  describe('JSON as-written proposals', () => {
+    for (const format of ['legacy', 'v2'] as const) {
+      for (const operation of ['create', 'update'] as const) {
+        it(`sends ${format} ${operation} JSON without changing any supplied field`, () => {
+          service.backendCapabilities.set({
+            writable: true,
+            mode: 'PRIMARY',
+            canonicalFormat: format,
+          });
+          const payload = {
+            name: 'raw',
+            custom_schema: { untouched: [1, 2] },
+            config: { download: [{ custom: true }] },
+          };
+          service
+            .submitProposal({
+              operation,
+              category: MODEL_REFERENCE_CATEGORY.ImageGeneration,
+              model_name: 'raw',
+              payload,
+              submitAsWritten: true,
+              diff: [],
+            })
+            .subscribe();
+          const req = httpMock.expectOne(
+            (request) => request.method === (operation === 'create' ? 'POST' : 'PUT'),
+          );
+          expect(req.request.body).toEqual(payload);
+          expect(req.request.url).toContain(
+            `/model_references/${format === 'legacy' ? 'v1' : 'v2'}/image_generation`,
+          );
+          req.flush({ change_id: 71, payload });
+        });
+      }
+    }
+    it('preserves the literal JSON body, including numbers beyond JavaScript integer precision', () => {
+      service.backendCapabilities.set({ writable: true, mode: 'PRIMARY', canonicalFormat: 'v2' });
+      const jsonBody = '{ "name": "raw", "future_integer": 9007199254740993 }';
+      service
+        .submitProposal({
+          operation: 'create',
+          category: MODEL_REFERENCE_CATEGORY.ImageGeneration,
+          model_name: 'raw',
+          payload: JSON.parse(jsonBody),
+          submitAsWritten: true,
+          jsonBody,
+          diff: [],
+        })
+        .subscribe();
+      const req = httpMock.expectOne((request) => request.method === 'POST');
+      expect(req.request.body).toBe(jsonBody);
+      expect(req.request.headers.get('Content-Type')).toBe('application/json');
+      req.flush({ change_id: 123 });
+    });
+
+    it('maps server extra-field validation paths on a raw request', () => {
+      service.backendCapabilities.set({ writable: true, mode: 'PRIMARY', canonicalFormat: 'v2' });
+      let message = '';
+      service
+        .submitProposal({
+          operation: 'create',
+          category: MODEL_REFERENCE_CATEGORY.ImageGeneration,
+          model_name: 'raw',
+          payload: { name: 'raw', future: true },
+          submitAsWritten: true,
+          diff: [],
+        })
+        .subscribe({ error: (error: Error) => (message = error.message) });
+      httpMock
+        .expectOne((request) => request.method === 'POST')
+        .flush(
+          {
+            detail: [
+              {
+                loc: ['body', 'future'],
+                msg: 'Extra inputs are not permitted',
+                type: 'extra_forbidden',
+              },
+            ],
+          },
+          { status: 422, statusText: 'Unprocessable Entity' },
+        );
+      expect(message).toContain('future: Extra inputs are not permitted');
+    });
+  });
+
   describe('getCategoryStatistics', () => {
     it(
       'should fetch category statistics successfully',

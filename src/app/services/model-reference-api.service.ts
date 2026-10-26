@@ -1,5 +1,5 @@
-import { simplifiedToLegacyConfig } from '../utils/config-converter';
-import { applyLegacyFixedFields } from '../utils/write-record';
+import { formatRequestError } from '../utils/request-error';
+import { prepareWriteRequest } from '../utils/write-request';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
@@ -87,6 +87,10 @@ export interface ProposalPayload {
   category: MODEL_REFERENCE_CATEGORY;
   model_name: string;
   payload: Record<string, unknown>;
+  /** Send an explicitly authored JSON body without normalization or fixed-field injection. */
+  submitAsWritten?: boolean;
+  /** Original JSON text, retained for exact numeric literals and whitespace. */
+  jsonBody?: string;
   diff: { field: string; before: string | null; after: string | null; kind: string }[];
 }
 
@@ -414,23 +418,36 @@ export class ModelReferenceApiService {
       return this.deleteModel(category, model_name);
     }
 
-    // Wizard records already carry schema fields; avoid the lossy curated-form adapter.
-    if (this.backendCapabilities().canonicalFormat === 'legacy') {
-      const config = payload['config'] as
-        import('../api-client').GenericModelRecordConfig | undefined;
-      const converted = simplifiedToLegacyConfig({ download: config?.download ?? [] });
-      const legacy = applyLegacyFixedFields(
-        { ...payload, config: { ...config, ...converted } },
-        category,
-      ) as LegacyRecordUnion;
-      return operation === 'create'
-        ? this.createViaV1Api(category, legacy)
-        : this.updateViaV1Api(category, legacy);
+    if (proposal.submitAsWritten) {
+      const version = this.backendCapabilities().canonicalFormat === 'legacy' ? 'v1' : 'v2';
+      const base = `${this.basePath}/model_references/${version}/${encodeURIComponent(category)}`;
+      const url =
+        operation === 'update' && version === 'v2'
+          ? `${base}/model/${encodeURIComponent(model_name)}`
+          : base;
+      return this.http
+        .request<PendingChangeRecord>(operation === 'create' ? 'POST' : 'PUT', url, {
+          body: proposal.jsonBody ?? payload,
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .pipe(
+          map((response) => this.requirePendingChange(response, 'JSON proposal')),
+          catchError(this.handleError),
+        );
     }
-    const native = { ...payload, record_type: category } as unknown as NewModelRecord;
+    const request = prepareWriteRequest(
+      payload,
+      category,
+      this.backendCapabilities().canonicalFormat,
+    );
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      return operation === 'create'
+        ? this.createViaV1Api(category, request as LegacyRecordUnion)
+        : this.updateViaV1Api(category, request as LegacyRecordUnion);
+    }
     return operation === 'create'
-      ? this.createViaV2Api(category, native)
-      : this.updateViaV2Api(category, model_name, native);
+      ? this.createViaV2Api(category, request as unknown as NewModelRecord)
+      : this.updateViaV2Api(category, model_name, request as unknown as NewModelRecord);
   }
 
   /**
@@ -638,18 +655,23 @@ export class ModelReferenceApiService {
     } else {
       switch (error.status) {
         case 400:
-          errorMessage = `Bad Request: ${error.error?.detail || 'Invalid request format'}`;
+          errorMessage = `Bad Request: ${error.error?.detail ? formatRequestError(error.error.detail) : 'Invalid request format'}`;
           break;
         case 404:
-          errorMessage = `Not Found: ${error.error?.detail || 'Resource not found'}`;
+          errorMessage = `Not Found: ${error.error?.detail ? formatRequestError(error.error.detail) : 'Resource not found'}`;
           break;
         case 409:
-          errorMessage = `Conflict: ${error.error?.detail || 'Resource already exists'}`;
+          errorMessage = `Conflict: ${error.error?.detail ? formatRequestError(error.error.detail) : 'Resource already exists'}`;
           break;
         case 422: {
           // Handle validation errors from FastAPI
           const validationError = error.error as HTTPValidationError;
-          if (validationError?.detail && Array.isArray(validationError.detail)) {
+          if (
+            Array.isArray(validationError?.detail) &&
+            validationError.detail.every(
+              (entry) => Array.isArray(entry.loc) && typeof entry.msg === 'string',
+            )
+          ) {
             // Map errors to fields and format for display
             this.validationService.mapServerErrors(validationError);
             errorMessage = `Validation Error: ${this.validationService.formatServerErrors(validationError)}`;
@@ -657,14 +679,14 @@ export class ModelReferenceApiService {
             this.notifications.error(errorMessage, { persistent: true });
             return throwError(() => new Error(errorMessage));
           }
-          errorMessage = `Validation Error: ${error.error?.detail || 'Invalid data'}`;
+          errorMessage = `Validation Error: ${error.error?.detail ? formatRequestError(error.error.detail) : 'Invalid data'}`;
           break;
         }
         case 503:
           errorMessage = `Service Unavailable: ${error.error?.detail || 'Backend does not support this operation'}`;
           break;
         default:
-          errorMessage = `Error ${error.status}: ${error.error?.detail || error.message}`;
+          errorMessage = `Error ${error.status}: ${error.error?.detail ? formatRequestError(error.error.detail) : error.message}`;
       }
     }
 

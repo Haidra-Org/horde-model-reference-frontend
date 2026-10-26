@@ -34,6 +34,9 @@
     />
 
     <div class="write-advanced-toggle">
+      @if (rawJsonOverride()) {
+        <span class="write-json-mode-indicator" role="status">Submitting JSON</span>
+      }
       <button
         type="button"
         class="btn btn-ghost btn-sm"
@@ -43,6 +46,93 @@
         {{ showAdvancedJson() ? 'Hide' : 'Show' }} advanced API payload
       </button>
     </div>
+
+    @if (jsonError() || jsonIssues().length > 0) {
+      <div
+        class="alert write-json-diagnostics"
+        [class.alert--danger]="!rawJsonOverride() || !!jsonError()"
+        [class.alert--warning]="rawJsonOverride() && !jsonError()"
+        role="alert"
+        data-testid="json-validation-summary"
+      >
+        <strong>{{
+          jsonError()
+            ? 'Check your JSON'
+            : rawJsonOverride()
+              ? 'Submit with API validation'
+              : 'Resolve the JSON issues before submitting'
+        }}</strong>
+        <p>
+          {{
+            jsonError()
+              ? 'Correct the JSON before submitting.'
+              : rawJsonOverride()
+                ? 'The API will validate your submission. Review the issues below before continuing.'
+                : 'Update the fields below or select “Submit JSON as written” to use API validation.'
+          }}
+        </p>
+        <ul>
+          @if (jsonError()) {
+            <li><code>JSON_SYNTAX_ERROR</code> · $: {{ jsonError() }}</li>
+          }
+          @for (issue of jsonIssues(); track issue.code + issue.path) {
+            <li>
+              <code>{{ issue.code }}</code> · <code>{{ issue.path }}</code
+              >: {{ issue.message }}
+            </li>
+          }
+        </ul>
+        @if (!showAdvancedJson()) {
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            (click)="showAdvancedJson.set(true)"
+          >
+            Edit JSON
+          </button>
+        }
+      </div>
+    }
+    @if (submissionError()) {
+      <div
+        class="alert alert--danger write-validation-summary"
+        role="alert"
+        data-validation-code="SERVER_REJECTED_REQUEST"
+      >
+        <strong>The server rejected the proposal.</strong>
+        <p>{{ submissionError() }}</p>
+      </div>
+    }
+    @if (validationService.serverErrors().length > 0) {
+      <div class="alert alert--danger write-validation-summary" role="alert">
+        <strong>The API rejected these fields:</strong>
+        <ul>
+          @for (error of validationService.serverErrors(); track error.path + error.message) {
+            <li>
+              <code>{{ error.path }}</code
+              >: {{ error.message }}
+            </li>
+          }
+        </ul>
+      </div>
+    }
+    @if (serverPayloadChanges().length > 0) {
+      <div
+        class="alert alert--warning write-validation-summary"
+        role="alert"
+        data-validation-code="SERVER_PAYLOAD_CHANGED"
+      >
+        <strong>The queued proposal differs from your submission.</strong>
+        <p>Review these fields before approving the proposal:</p>
+        <ul>
+          @for (path of serverPayloadChanges(); track path) {
+            <li>
+              <code>{{ path }}</code>
+            </li>
+          }
+        </ul>
+      </div>
+    }
 
     <!-- Two-column: wizard (left) + editable live request body (right) -->
     <div class="write-two-col" [class.write-two-col--single]="!showAdvancedJson()">
@@ -67,51 +157,61 @@
 
         <!-- Active step panel -->
         <div class="glass-inflow write-step-panel">
-          @switch (currentStep()) {
-            @case (0) {
-              <app-wizard-step-identity
-                [form]="form()"
-                [isEdit]="isEditMode()"
-                [isText]="isTextGeneration()"
-                (formChange)="patchForm($event)"
-              />
-            }
-            @case (1) {
-              @if (isImageGeneration()) {
-                <app-wizard-step-image [form]="form()" (formChange)="patchForm($event)" />
-              } @else if (isTextGeneration()) {
-                <app-wizard-step-model [form]="form()" (formChange)="patchForm($event)" />
+          <fieldset class="write-form-fields" [disabled]="structuredFormLocked()">
+            @switch (currentStep()) {
+              @case (0) {
+                <app-wizard-step-identity
+                  [form]="form()"
+                  [isEdit]="isEditMode()"
+                  [isText]="isTextGeneration()"
+                  (formChange)="patchForm($event)"
+                />
               }
-              <app-wizard-step-attributes
-                [form]="form()"
-                [category]="category()"
-                (formChange)="patchForm($event)"
-                (validChange)="attributesValid.set($event)"
-              />
+              @case (1) {
+                @if (isImageGeneration()) {
+                  <app-wizard-step-image [form]="form()" (formChange)="patchForm($event)" />
+                } @else if (isTextGeneration()) {
+                  <app-wizard-step-model [form]="form()" (formChange)="patchForm($event)" />
+                }
+                <app-wizard-step-attributes
+                  [form]="form()"
+                  [category]="category()"
+                  (formChange)="patchForm($event)"
+                  (validChange)="attributesValid.set($event)"
+                />
+              }
+              @case (2) {
+                <app-wizard-step-files
+                  [downloads]="form().download"
+                  [embeddedHashes]="form().embedded_component_hashes || {}"
+                  (embeddedHashesChange)="patchForm({ embedded_component_hashes: $event })"
+                  (downloadsChange)="patchForm({ download: $event })"
+                />
+              }
+              @case (3) {
+                <app-wizard-step-licensing [form]="form()" (formChange)="patchForm($event)" />
+              }
+              @case (4) {
+                @if (rawJsonOverride()) {
+                  <section class="write-raw-review">
+                    <h2>Review JSON request</h2>
+                    <p>This exact JSON object will be sent to {{ endpointStr() }}.</p>
+                    <pre>{{ jsonText() }}</pre>
+                  </section>
+                } @else {
+                  <app-wizard-step-review
+                    [form]="form()"
+                    [category]="category()"
+                    [isEdit]="isEditMode()"
+                    [endpoint]="endpointStr()"
+                    [diffEntries]="diffEntries()"
+                    [isImage]="isImageGeneration()"
+                    [isText]="isTextGeneration()"
+                  />
+                }
+              }
             }
-            @case (2) {
-              <app-wizard-step-files
-                [downloads]="form().download"
-                [embeddedHashes]="form().embedded_component_hashes || {}"
-                (embeddedHashesChange)="patchForm({ embedded_component_hashes: $event })"
-                (downloadsChange)="patchForm({ download: $event })"
-              />
-            }
-            @case (3) {
-              <app-wizard-step-licensing [form]="form()" (formChange)="patchForm($event)" />
-            }
-            @case (4) {
-              <app-wizard-step-review
-                [form]="form()"
-                [category]="category()"
-                [isEdit]="isEditMode()"
-                [endpoint]="endpointStr()"
-                [diffEntries]="diffEntries()"
-                [isImage]="isImageGeneration()"
-                [isText]="isTextGeneration()"
-              />
-            }
-          }
+          </fieldset>
         </div>
 
         <!-- Step navigation -->
@@ -177,16 +277,6 @@
             </ul>
           </div>
         }
-        @if (validationService.serverErrors().length > 0) {
-          <div class="alert alert--danger write-validation-summary" role="alert">
-            <strong>The API rejected these fields:</strong>
-            <ul>
-              @for (error of validationService.serverErrors(); track error.path + error.message) {
-                <li>{{ error.path }}: {{ error.message }}</li>
-              }
-            </ul>
-          </div>
-        }
       </div>
 
       <!-- RIGHT: editable live request body (two-way sync) -->
@@ -194,7 +284,7 @@
         <div class="write-right">
           <div class="glass-inflow write-json-panel">
             <div class="write-json-header">
-              <span class="write-json-header-text">Live request body · two-way sync</span>
+              <span class="write-json-header-text">Request body · JSON</span>
               <app-copy-button [text]="jsonText()" />
             </div>
             <textarea
@@ -203,7 +293,9 @@
               (input)="onJsonEdit($event)"
               (focus)="jsonFocused.set(true)"
               (blur)="jsonFocused.set(false)"
-              [class.write-json-editor--error]="jsonError() !== null"
+              [class.write-json-editor--error]="
+                jsonError() !== null || (!rawJsonOverride() && jsonIssues().length > 0)
+              "
               aria-label="Request body JSON editor"
               spellcheck="false"
             ></textarea>
@@ -225,7 +317,7 @@
                 {{ jsonError() }}
               </div>
             }
-            @if (!jsonError() && jsonText().trim()) {
+            @if (!jsonError() && jsonIssues().length === 0 && jsonText().trim()) {
               <div class="write-json-valid">
                 <svg
                   fill="none"
@@ -240,7 +332,52 @@
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                JSON syntax is valid · record validation is shown in Review
+                JSON syntax is valid · server validation still applies
+              </div>
+            }
+            <div class="write-json-mode">
+              <label class="write-toggle">
+                <input
+                  type="checkbox"
+                  class="form-checkbox"
+                  [checked]="rawJsonOverride()"
+                  (change)="setRawJsonOverride($any($event.target).checked)"
+                />
+                <span>Submit JSON as written</span>
+              </label>
+              <p class="form-hint">
+                Submit directly from the JSON editor. The API may reject or ignore fields it does
+                not recognize.
+              </p>
+            </div>
+            @if (jsonEdited()) {
+              <div class="write-json-discard">
+                <button
+                  type="button"
+                  class="btn btn-sm write-json-discard-button"
+                  aria-describedby="json-discard-description"
+                  (click)="discardJsonDraft()"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Discard JSON changes
+                </button>
+                <p id="json-discard-description" class="form-hint">
+                  Replaces the JSON with the current form values.
+                </p>
               </div>
             }
           </div>

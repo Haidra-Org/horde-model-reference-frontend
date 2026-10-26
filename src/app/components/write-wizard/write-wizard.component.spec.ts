@@ -6,7 +6,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, vi } from 'vitest';
 import { legacyApiToForm } from '../../adapters/model-format-adapter';
 import { MODEL_REFERENCE_CATEGORY } from '../../api-client';
@@ -303,6 +303,90 @@ describe('WriteWizardComponent', () => {
     expect(component.loading()).toBe(false);
   });
 
+  it('preserves unsupported JSON on blur/hide and blocks submission with a visible path', async () => {
+    const submitProposal = vi.fn();
+    const { fixture, component } = await createComponent({ submitProposal });
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    const txt = JSON.stringify({
+      ...component.requestPreview(),
+      name: 'new',
+      config: { download: [{ file_name: 'model', file_url: 'https://example.com', future: true }] },
+    });
+    component.onJsonEdit({ target: { value: txt } } as unknown as Event);
+    component.jsonFocused.set(false);
+    component.showAdvancedJson.set(false);
+    fixture.detectChanges();
+    expect(component.jsonText()).toBe(txt);
+    expect(component.jsonIssues()).toContainEqual(
+      expect.objectContaining({ code: 'JSON_UNKNOWN_FIELD', path: '$.config.download[0].future' }),
+    );
+    expect(component.canSubmit()).toBe(false);
+    component.submit();
+    expect(submitProposal).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('JSON_UNKNOWN_FIELD');
+    expect(fixture.nativeElement.textContent).toContain('$.config.download[0].future');
+  });
+
+  it('sends an explicit JSON override without normalization and shows server rejection persistently', async () => {
+    const submitProposal = vi.fn(() =>
+      throwError(() => new Error('config.future: Unsupported schema')),
+    );
+    const { fixture, component } = await createComponent({ submitProposal });
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    const payload = { name: 'raw', config: { future: { untouched: true } } };
+    component.onJsonEdit({ target: { value: JSON.stringify(payload) } } as unknown as Event);
+    component.setRawJsonOverride(true);
+    component.showAdvancedJson.set(false);
+    expect(component.canSubmit()).toBe(true);
+    component.submit();
+    fixture.detectChanges();
+    expect(submitProposal).toHaveBeenCalledWith(
+      expect.objectContaining({ submitAsWritten: true, payload }),
+    );
+    expect(fixture.nativeElement.textContent).toContain('config.future: Unsupported schema');
+    expect(
+      fixture.nativeElement.querySelector('[data-validation-code="SERVER_REJECTED_REQUEST"]'),
+    ).toBeTruthy();
+  });
+
+  it('warns when the server omits data from an accepted JSON override', async () => {
+    const submitProposal = vi.fn(() =>
+      of({ change_id: 123, payload: { name: 'raw' } } as PendingChangeRecord),
+    );
+    const { fixture, component } = await createComponent({ submitProposal });
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    component.onJsonEdit({
+      target: { value: JSON.stringify({ name: 'raw', future: true }) },
+    } as unknown as Event);
+    component.setRawJsonOverride(true);
+    component.submit();
+    fixture.detectChanges();
+    expect(component.serverPayloadChanges()).toEqual(['$.future']);
+    expect(
+      fixture.nativeElement.querySelector('[data-validation-code="SERVER_PAYLOAD_CHANGED"]'),
+    ).toBeTruthy();
+  });
+
+  it('refuses malformed JSON even with override enabled and allows explicitly discarding the draft', async () => {
+    const { fixture, component } = await createComponent();
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    component.patchForm({ name: 'before' });
+    component.onJsonEdit({ target: { value: '{broken' } } as unknown as Event);
+    component.setRawJsonOverride(true);
+    expect(component.canSubmit()).toBe(false);
+    component.discardJsonDraft();
+    expect(component.jsonError()).toBeNull();
+    expect(JSON.parse(component.jsonText()).name).toBe('before');
+  });
+
   it('keeps file metadata and additional attributes through JSON edits and allows removing every file', async () => {
     const { component } = await createComponent();
     component.category.set('image_generation');
@@ -322,7 +406,7 @@ describe('WriteWizardComponent', () => {
         ],
       },
       requirements: { samplers: ['er_sde'] },
-      finetune_series: { name: 'Anima' },
+      metadata: { created_by: 'author' },
     };
     component.onJsonEdit({ target: { value: JSON.stringify(record) } } as unknown as Event);
     expect(component.record()).toMatchObject(record);

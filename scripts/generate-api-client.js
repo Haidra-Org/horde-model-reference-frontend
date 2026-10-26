@@ -677,6 +677,7 @@ function runPrettier() {
  * Save schema to local file (if fetched from URL)
  */
 function saveSchemaLocally(schema) {
+  require('./write-model-input-schemas').writeModelInputSchemas(schema);
   if (!useLocal && schemaSource !== LOCAL_SCHEMA_PATH) {
     console.log(`\n💾 Saving schema to ${LOCAL_SCHEMA_PATH}...`);
     try {

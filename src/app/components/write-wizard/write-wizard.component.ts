@@ -1,3 +1,6 @@
+import { inspectJsonModel, changedJsonPaths } from '../../utils/json-model-validation';
+import { prepareWriteRequest } from '../../utils/write-request';
+import { formatRequestError } from '../../utils/request-error';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -87,6 +90,10 @@ export class WriteWizardComponent implements OnInit {
   readonly form = signal<WriteFormState>(blankForm('image_generation'));
   readonly jsonText = signal('');
   readonly jsonError = signal<string | null>(null);
+  readonly jsonEdited = signal(false);
+  readonly rawJsonOverride = signal(false);
+  readonly submissionError = signal<string | null>(null);
+  readonly serverPayloadChanges = signal<string[]>([]);
   /** True while the JSON editor is focused — pauses form→JSON sync so the cursor doesn't jump. */
   readonly jsonFocused = signal(false);
   readonly submitting = signal(false);
@@ -123,7 +130,7 @@ export class WriteWizardComponent implements OnInit {
     const name = this.form().name || '{name}';
     if (legacy) {
       return this.isEditMode()
-        ? `PUT /api/model_references/v1/${cat}/model/${name}`
+        ? `PUT /api/model_references/v1/${cat}`
         : `POST /api/model_references/v1/${cat}`;
     }
     return this.isEditMode()
@@ -134,6 +141,37 @@ export class WriteWizardComponent implements OnInit {
   /** The canonical record derived from the form (source of truth). */
   readonly record = computed(() =>
     formToRecord(this.form(), this.category() as MODEL_REFERENCE_CATEGORY),
+  );
+
+  readonly requestPreview = computed(() =>
+    prepareWriteRequest(
+      this.record(),
+      this.category() as MODEL_REFERENCE_CATEGORY,
+      this.api.backendCapabilities().canonicalFormat,
+    ),
+  );
+  readonly parsedJson = computed<Record<string, unknown> | null>(() => {
+    try {
+      const value: unknown = JSON.parse(this.jsonText());
+      return value !== null && typeof value === 'object' && !Array.isArray(value)
+        ? (value as Record<string, unknown>)
+        : null;
+    } catch {
+      return null;
+    }
+  });
+  readonly jsonIssues = computed(() => {
+    if (!this.jsonEdited() || !this.parsedJson() || !this.category()) return [];
+    return inspectJsonModel(
+      this.parsedJson()!,
+      this.category() as MODEL_REFERENCE_CATEGORY,
+      this.api.backendCapabilities().canonicalFormat,
+    );
+  });
+  readonly structuredFormLocked = computed(
+    () =>
+      this.rawJsonOverride() ||
+      (this.jsonEdited() && (!!this.jsonError() || this.jsonIssues().length > 0)),
   );
 
   /** Computed diff entries for edit mode review step. */
@@ -194,6 +232,8 @@ export class WriteWizardComponent implements OnInit {
 
   /** Whether the current step's data is valid enough to advance. */
   readonly canAdvance = computed(() => {
+    if (this.rawJsonOverride()) return this.parsedJson() !== null && !this.jsonError();
+    if (this.jsonEdited() && (this.jsonError() || this.jsonIssues().length)) return false;
     if (this.currentStep() === 0) {
       return this.form().name.trim().length > 0;
     }
@@ -214,6 +254,9 @@ export class WriteWizardComponent implements OnInit {
 
   /** Whether the form is valid enough to submit. */
   readonly canSubmit = computed(() => {
+    if (this.jsonError()) return false;
+    if (this.rawJsonOverride()) return this.parsedJson() !== null;
+    if (this.jsonIssues().length) return false;
     const f = this.form();
     if (!f.name.trim() || !this.attributesValid()) return false;
     if (this.isTextGeneration() && Number(f.parameters) <= 0) return false;
@@ -225,8 +268,8 @@ export class WriteWizardComponent implements OnInit {
     // Two-way JSON sync: form → JSON, except while the editor is focused (so user
     // keystrokes aren't clobbered mid-type). On blur the effect re-runs and re-normalizes.
     effect(() => {
-      const rec = this.record();
-      if (!this.jsonFocused()) {
+      const rec = this.requestPreview();
+      if (!this.jsonFocused() && !this.jsonEdited()) {
         this.jsonText.set(JSON.stringify(rec, null, 2));
       }
     });
@@ -287,8 +330,7 @@ export class WriteWizardComponent implements OnInit {
 
   hasUnsavedChanges(): boolean {
     if (this.submitting() || this.submitSuccess()) return false;
-    // Simple check: form has a name
-    return this.form().name.trim().length > 0;
+    return this.jsonEdited() || this.form().name.trim().length > 0;
   }
 
   setStep(step: number): void {
@@ -298,6 +340,9 @@ export class WriteWizardComponent implements OnInit {
   }
 
   patchForm(partial: Partial<WriteFormState>): void {
+    if (this.structuredFormLocked()) return;
+    this.jsonEdited.set(false);
+    this.submissionError.set(null);
     this.form.update((f) => ({ ...f, ...partial }));
   }
 
@@ -307,29 +352,50 @@ export class WriteWizardComponent implements OnInit {
   }
 
   onJsonEdit(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    const txt = textarea.value;
+    const txt = (event.target as HTMLTextAreaElement).value;
+    this.jsonEdited.set(true);
     this.jsonText.set(txt);
-
+    this.submissionError.set(null);
     try {
-      const o = JSON.parse(txt) as Record<string, unknown>;
-      if (!o || typeof o !== 'object' || Array.isArray(o))
-        throw new Error('Record must be an object');
+      const record: unknown = JSON.parse(txt);
+      if (!record || typeof record !== 'object' || Array.isArray(record))
+        throw new Error('Record must be a JSON object');
       this.jsonError.set(null);
-      this.form.set(editFormFromRecord(this.category(), o));
-    } catch (e) {
-      this.jsonError.set((e as Error).message);
+      // Never coerce unsupported JSON into form state, or rewrite it on blur/hide.
+      if (!this.rawJsonOverride() && this.jsonIssues().length === 0) {
+        this.form.set(editFormFromRecord(this.category(), record as Record<string, unknown>));
+      }
+    } catch (error) {
+      this.jsonError.set((error as Error).message);
     }
+  }
+  setRawJsonOverride(enabled: boolean): void {
+    this.rawJsonOverride.set(enabled);
+    this.jsonEdited.set(true);
+    if (enabled) this.showAdvancedJson.set(true);
+    else if (!this.jsonError() && this.parsedJson() && this.jsonIssues().length === 0) {
+      this.form.set(editFormFromRecord(this.category(), this.parsedJson()!));
+    }
+  }
+  discardJsonDraft(): void {
+    this.rawJsonOverride.set(false);
+    this.jsonEdited.set(false);
+    this.jsonError.set(null);
+    this.submissionError.set(null);
+    this.jsonText.set(JSON.stringify(this.requestPreview(), null, 2));
   }
 
   submit(): void {
     if (!this.canSubmit() || this.submitting()) return;
 
     this.validationService.clearServerErrors();
+    this.submissionError.set(null);
+    this.serverPayloadChanges.set([]);
     this.submitting.set(true);
-    const record = this.record();
+    const asWritten = this.rawJsonOverride() || this.jsonEdited();
+    const record = asWritten ? this.parsedJson()! : this.record();
     const cat = this.category() as MODEL_REFERENCE_CATEGORY;
-    const name = record['name'] as string;
+    const name = this.modelName() ?? (typeof record['name'] === 'string' ? record['name'] : '');
     const isEdit = this.isEditMode();
     const diffEntries = this.diffEntries();
 
@@ -339,6 +405,7 @@ export class WriteWizardComponent implements OnInit {
       category: cat,
       model_name: name,
       payload: record,
+      ...(asWritten ? { submitAsWritten: true, jsonBody: this.jsonText() } : {}),
       diff:
         diffEntries.length > 0
           ? diffEntries.map((d) => ({
@@ -372,6 +439,9 @@ export class WriteWizardComponent implements OnInit {
       next: (result) => {
         this.submitting.set(false);
         this.submitSuccess.set(true);
+        if (asWritten && result.payload && typeof result.payload === 'object') {
+          this.serverPayloadChanges.set(changedJsonPaths(record, result.payload));
+        }
         const changeId = result.change_id ?? 0;
         this.submitChangeId.set(changeId);
         this.submitResultMessage.set(`Change #${changeId} submitted for review`);
@@ -381,7 +451,8 @@ export class WriteWizardComponent implements OnInit {
       },
       error: (_err) => {
         this.submitting.set(false);
-        const detail = _err?.error?.detail ?? _err?.message ?? 'Unknown error';
+        const detail = formatRequestError(_err?.error?.detail ?? _err?.message ?? _err);
+        this.submissionError.set(detail);
         this.notifications.error(`Submission failed: ${detail}`);
         console.error('Submit proposal error:', _err);
       },

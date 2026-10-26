@@ -1,0 +1,3646 @@
+{
+  "roots": {
+    "v2": {
+      "audio_generation": {
+        "$ref": "#/components/schemas/AudioGenerationModelRecord"
+      },
+      "blip": {
+        "$ref": "#/components/schemas/BlipModelRecord"
+      },
+      "clip": {
+        "$ref": "#/components/schemas/ClipModelRecord"
+      },
+      "codeformer": {
+        "$ref": "#/components/schemas/CodeformerModelRecord"
+      },
+      "controlnet_annotator": {
+        "$ref": "#/components/schemas/ControlNetAnnotatorModelRecord"
+      },
+      "controlnet": {
+        "$ref": "#/components/schemas/ControlNetModelRecord"
+      },
+      "esrgan": {
+        "$ref": "#/components/schemas/EsrganModelRecord"
+      },
+      "gfpgan": {
+        "$ref": "#/components/schemas/GfpganModelRecord"
+      },
+      "image_generation": {
+        "$ref": "#/components/schemas/ImageGenerationModelRecord"
+      },
+      "lora": {
+        "$ref": "#/components/schemas/LoraModelRecord"
+      },
+      "miscellaneous": {
+        "$ref": "#/components/schemas/MiscellaneousModelRecord"
+      },
+      "safety_checker": {
+        "$ref": "#/components/schemas/SafetyCheckerModelRecord"
+      },
+      "text_generation": {
+        "$ref": "#/components/schemas/TextGenerationModelRecord"
+      },
+      "ti": {
+        "$ref": "#/components/schemas/TextualInversionModelRecord"
+      },
+      "video_generation": {
+        "$ref": "#/components/schemas/VideoGenerationModelRecord"
+      }
+    },
+    "legacy": {
+      "text_generation": {
+        "$ref": "#/components/schemas/LegacyTextGenerationRecord-Input"
+      },
+      "image_generation": {
+        "$ref": "#/components/schemas/LegacyStableDiffusionRecord-Input"
+      },
+      "clip": {
+        "$ref": "#/components/schemas/LegacyClipRecord-Input"
+      },
+      "blip": {
+        "$ref": "#/components/schemas/LegacyBlipRecord-Input"
+      },
+      "codeformer": {
+        "$ref": "#/components/schemas/LegacyCodeformerRecord-Input"
+      },
+      "controlnet": {
+        "$ref": "#/components/schemas/LegacyControlnetRecord-Input"
+      },
+      "esrgan": {
+        "$ref": "#/components/schemas/LegacyEsrganRecord-Input"
+      },
+      "gfpgan": {
+        "$ref": "#/components/schemas/LegacyGfpganRecord-Input"
+      },
+      "safety_checker": {
+        "$ref": "#/components/schemas/LegacySafetyCheckerRecord-Input"
+      },
+      "miscellaneous": {
+        "$ref": "#/components/schemas/LegacyMiscellaneousRecord-Input"
+      }
+    }
+  },
+  "components": {
+    "AudioGenerationModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "type": "boolean"
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "FineTuneSeriesInfo": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "homepage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "GenericModelRecordMetadata": {
+      "properties": {
+        "schema_version": {
+          "type": "string"
+        },
+        "created_at": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "GenericModelRecordConfig": {
+      "properties": {
+        "download": {
+          "items": {
+            "$ref": "#/components/schemas/DownloadRecord"
+          },
+          "type": "array"
+        },
+        "embedded_component_hashes": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "DownloadRecord": {
+      "properties": {
+        "file_name": {
+          "type": "string"
+        },
+        "file_url": {
+          "type": "string"
+        },
+        "sha256sum": {
+          "type": "string"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_purpose": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "known_slow_download": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "size_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["file_name", "file_url"]
+    },
+    "ModelClassification": {
+      "properties": {
+        "domain": {
+          "$ref": "#/components/schemas/MODEL_DOMAIN"
+        },
+        "purpose": {
+          "$ref": "#/components/schemas/MODEL_PURPOSE"
+        }
+      },
+      "type": "object",
+      "required": ["domain", "purpose"]
+    },
+    "MODEL_DOMAIN": {
+      "type": "string",
+      "enum": ["image", "text", "video", "audio", "rendered_3d"]
+    },
+    "MODEL_PURPOSE": {
+      "type": "string",
+      "enum": [
+        "generation",
+        "post_processing",
+        "auxiliary_or_patch",
+        "feature_extractor",
+        "safety_checker",
+        "miscellaneous"
+      ]
+    },
+    "ModelLicensing": {
+      "properties": {
+        "license_expression": {
+          "type": "string"
+        },
+        "license_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "commercial_use": {
+          "$ref": "#/components/schemas/PermissionStatus"
+        },
+        "redistribution": {
+          "$ref": "#/components/schemas/PermissionStatus"
+        },
+        "obligations": {
+          "items": {
+            "$ref": "#/components/schemas/LicenseObligation"
+          },
+          "type": "array"
+        },
+        "attribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/components/schemas/LicenseEvidence"
+          },
+          "type": "array"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "files": {
+          "additionalProperties": {
+            "$ref": "#/components/schemas/LicenseAssignment"
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["license_expression", "commercial_use", "redistribution"]
+    },
+    "PermissionStatus": {
+      "type": "string",
+      "enum": ["allowed", "allowed_with_conditions", "prohibited", "unknown"]
+    },
+    "LicenseObligation": {
+      "type": "string",
+      "enum": [
+        "attribution",
+        "include_license",
+        "share_alike",
+        "disclose_source",
+        "network_source_disclosure",
+        "responsible_use_restrictions",
+        "other"
+      ]
+    },
+    "LicenseEvidence": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["source"]
+    },
+    "LicenseAssignment": {
+      "properties": {
+        "license_expression": {
+          "type": "string"
+        },
+        "license_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "commercial_use": {
+          "$ref": "#/components/schemas/PermissionStatus"
+        },
+        "redistribution": {
+          "$ref": "#/components/schemas/PermissionStatus"
+        },
+        "obligations": {
+          "items": {
+            "$ref": "#/components/schemas/LicenseObligation"
+          },
+          "type": "array"
+        },
+        "attribution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/components/schemas/LicenseEvidence"
+          },
+          "type": "array"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["license_expression", "commercial_use", "redistribution"]
+    },
+    "BlipModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "ClipModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pretrained_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "CodeformerModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "ControlNetAnnotatorModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "control_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "preprocessors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "ControlNetModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "controlnet_style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "EsrganModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "GfpganModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "ImageGenerationModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inpainting": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "type": "string"
+        },
+        "optimization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "showcases": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_bridge_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "homepage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "type": "boolean"
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirements": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "integer"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name", "baseline", "nsfw"]
+    },
+    "LoraModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "type": "boolean"
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "homepage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "showcases": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "MiscellaneousModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "SafetyCheckerModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "TextGenerationModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parameters": {
+          "type": "integer"
+        },
+        "nsfw": {
+          "type": "boolean"
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "instruct_format": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settings": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "integer"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text_model_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name_schema_exception": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "context_window": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TextContextWindow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interaction_modes": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/SupportClaim"
+              },
+              "propertyNames": {
+                "$ref": "#/components/schemas/TextInteractionMode"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capabilities": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/SupportClaim"
+              },
+              "propertyNames": {
+                "$ref": "#/components/schemas/TextCapability"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "guidance": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TextGuidanceSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name", "parameters"]
+    },
+    "TextContextWindow": {
+      "properties": {
+        "maximum_tokens": {
+          "type": "integer"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/components/schemas/GuidanceSource"
+          },
+          "type": "array"
+        },
+        "qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["maximum_tokens"]
+    },
+    "GuidanceSource": {
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["url"]
+    },
+    "SupportClaim": {
+      "properties": {
+        "status": {
+          "$ref": "#/components/schemas/SupportStatus"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/components/schemas/GuidanceSource"
+          },
+          "type": "array"
+        },
+        "qualification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["status"]
+    },
+    "SupportStatus": {
+      "type": "string",
+      "enum": ["supported", "unsupported", "unknown"]
+    },
+    "TextInteractionMode": {
+      "type": "string",
+      "enum": ["completion", "instruction", "chat"]
+    },
+    "TextCapability": {
+      "type": "string",
+      "enum": ["tool_calling", "structured_output"]
+    },
+    "TextGuidanceSummary": {
+      "properties": {
+        "status": {
+          "$ref": "#/components/schemas/TextGuidanceStatus"
+        },
+        "primary_profile_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supplemental_profile_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": ["status"]
+    },
+    "TextGuidanceStatus": {
+      "type": "string",
+      "enum": ["published", "legacy_label", "undocumented"]
+    },
+    "TextualInversionModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "type": "boolean"
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "homepage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "showcases": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "VideoGenerationModelRecord": {
+      "properties": {
+        "record_type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finetune_series": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/FineTuneSeriesInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "$ref": "#/components/schemas/GenericModelRecordMetadata"
+        },
+        "config": {
+          "$ref": "#/components/schemas/GenericModelRecordConfig"
+        },
+        "model_classification": {
+          "$ref": "#/components/schemas/ModelClassification"
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "type": "boolean"
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyTextGenerationRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "model_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "baseline": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parameters": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "instruct_format": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "settings": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "integer"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "context_window": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TextContextWindow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interaction_modes": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/SupportClaim"
+              },
+              "propertyNames": {
+                "$ref": "#/components/schemas/TextInteractionMode"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capabilities": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/SupportClaim"
+              },
+              "propertyNames": {
+                "$ref": "#/components/schemas/TextCapability"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyConfig-Input": {
+      "properties": {
+        "files": {
+          "items": {
+            "$ref": "#/components/schemas/LegacyConfigFile-Input"
+          },
+          "type": "array"
+        },
+        "download": {
+          "items": {
+            "$ref": "#/components/schemas/LegacyConfigDownload-Input"
+          },
+          "type": "array"
+        },
+        "embedded_component_hashes": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "LegacyConfigFile-Input": {
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "md5sum": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sha256sum": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["path"]
+    },
+    "LegacyConfigDownload-Input": {
+      "properties": {
+        "file_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "LegacyStableDiffusionRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "ckpt"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inpainting": {
+          "type": "boolean"
+        },
+        "baseline": {
+          "type": "string"
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "showcases": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_bridge_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trigger": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "homepage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "size_on_disk_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "optimization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirements": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "integer"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name", "baseline"]
+    },
+    "LegacyClipRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["clip", "coca"]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pretrained_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyBlipRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "blip"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyCodeformerRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "CodeFormers"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyControlnetRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "control_canny",
+            "control_depth",
+            "control_hed",
+            "control_mlsd",
+            "control_normal",
+            "control_openpose",
+            "control_fakescribbles",
+            "control_scribble",
+            "control_seg",
+            "control_qr",
+            "control_qr_xl",
+            "control_lineart",
+            "control_lineart_anime",
+            "control_normal_bae",
+            "control_recolor",
+            "control_tile"
+          ]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name", "type"]
+    },
+    "LegacyEsrganRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "realesrgan"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyGfpganRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "gfpgan"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacySafetyCheckerRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "safety_checker"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    },
+    "LegacyMiscellaneousRecord-Input": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "layer_diffuse"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsfw": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_all": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "$ref": "#/components/schemas/LegacyConfig-Input"
+        },
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "features_not_supported": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "licensing": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/ModelLicensing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "type": "object",
+      "required": ["name"]
+    }
+  }
+}
