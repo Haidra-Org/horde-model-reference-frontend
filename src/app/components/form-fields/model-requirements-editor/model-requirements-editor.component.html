@@ -13,8 +13,18 @@
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           <!-- Steps -->
           @if (showMinSteps()) {
-            <div class="form-field min-w-0">
+            <div class="form-field min-w-0 write-clearable-requirement">
               <label class="form-label text-xs" for="min-steps">Min Steps</label>
+              @if (clearableFields() && minSteps() !== null) {
+                <button
+                  type="button"
+                  class="write-section-clear"
+                  aria-label="Clear Min Steps"
+                  (click)="updateMinSteps('')"
+                >
+                  Clear
+                </button>
+              }
               <input
                 id="min-steps"
                 type="number"
@@ -28,8 +38,18 @@
           }
 
           @if (showMaxSteps()) {
-            <div class="form-field min-w-0">
+            <div class="form-field min-w-0 write-clearable-requirement">
               <label class="form-label text-xs" for="max-steps">Max Steps</label>
+              @if (clearableFields() && maxSteps() !== null) {
+                <button
+                  type="button"
+                  class="write-section-clear"
+                  aria-label="Clear Max Steps"
+                  (click)="updateMaxSteps('')"
+                >
+                  Clear
+                </button>
+              }
               <input
                 id="max-steps"
                 type="number"
@@ -44,8 +64,18 @@
 
           <!-- CFG Scale (single value) -->
           @if (showCfgScale()) {
-            <div class="form-field min-w-0">
+            <div class="form-field min-w-0 write-clearable-requirement">
               <label class="form-label text-xs" for="cfg-scale">CFG Scale</label>
+              @if (clearableFields() && cfgScale() !== null) {
+                <button
+                  type="button"
+                  class="write-section-clear"
+                  aria-label="Clear CFG Scale"
+                  (click)="updateCfgScale('')"
+                >
+                  Clear
+                </button>
+              }
               <input
                 id="cfg-scale"
                 type="number"
@@ -60,8 +90,18 @@
           }
 
           <!-- CFG Scale Range -->
-          <div class="form-field min-w-0">
+          <div class="form-field min-w-0 write-clearable-requirement">
             <label class="form-label text-xs" for="min-cfg-scale">Min CFG</label>
+            @if (clearableFields() && minCfgScale() !== null) {
+              <button
+                type="button"
+                class="write-section-clear"
+                aria-label="Clear Min CFG"
+                (click)="updateMinCfgScale('')"
+              >
+                Clear
+              </button>
+            }
             <input
               id="min-cfg-scale"
               type="number"
@@ -74,8 +114,18 @@
             />
           </div>
 
-          <div class="form-field min-w-0">
+          <div class="form-field min-w-0 write-clearable-requirement">
             <label class="form-label text-xs" for="max-cfg-scale">Max CFG</label>
+            @if (clearableFields() && maxCfgScale() !== null) {
+              <button
+                type="button"
+                class="write-section-clear"
+                aria-label="Clear Max CFG"
+                (click)="updateMaxCfgScale('')"
+              >
+                Clear
+              </button>
+            }
             <input
               id="max-cfg-scale"
               type="number"
@@ -88,8 +138,18 @@
             />
           </div>
 
-          <div class="form-field min-w-0">
+          <div class="form-field min-w-0 write-clearable-requirement">
             <label class="form-label text-xs" for="clip-skip">CLIP Skip</label>
+            @if (clearableFields() && clipSkip() !== null) {
+              <button
+                type="button"
+                class="write-section-clear"
+                aria-label="Clear CLIP Skip"
+                (click)="updateClipSkip('')"
+              >
+                Clear
+              </button>
+            }
             <input
               id="clip-skip"
               type="number"
@@ -106,23 +166,47 @@
         <!-- Samplers and Schedulers side by side -->
         <div class="form-grid-2">
           @if (showSamplers()) {
-            <app-tag-input
-              [label]="'Samplers'"
-              [values]="samplers()"
-              [suggestions]="knownSamplers"
-              [placeholder]="'Add sampler...'"
-              (valuesChange)="updateSamplers($event)"
-            />
+            <div class="write-clearable-requirement">
+              <app-tag-input
+                [label]="'Samplers'"
+                [values]="samplers()"
+                [suggestions]="knownSamplers"
+                [placeholder]="'Add sampler...'"
+                (valuesChange)="updateSamplers($event)"
+              />
+              @if (clearableFields() && samplers().length) {
+                <button
+                  type="button"
+                  class="write-section-clear"
+                  aria-label="Clear samplers"
+                  (click)="updateSamplers([])"
+                >
+                  Clear samplers
+                </button>
+              }
+            </div>
           }
 
           @if (showSchedulers()) {
-            <app-tag-input
-              [label]="'Schedulers'"
-              [values]="schedulers()"
-              [suggestions]="knownSchedulers"
-              [placeholder]="'Add scheduler...'"
-              (valuesChange)="updateSchedulers($event)"
-            />
+            <div class="write-clearable-requirement">
+              <app-tag-input
+                [label]="'Schedulers'"
+                [values]="schedulers()"
+                [suggestions]="knownSchedulers"
+                [placeholder]="'Add scheduler...'"
+                (valuesChange)="updateSchedulers($event)"
+              />
+              @if (clearableFields() && schedulers().length) {
+                <button
+                  type="button"
+                  class="write-section-clear"
+                  aria-label="Clear schedulers"
+                  (click)="updateSchedulers([])"
+                >
+                  Clear schedulers
+                </button>
+              }
+            </div>
           }
         </div>
       </div>

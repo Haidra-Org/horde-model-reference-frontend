@@ -7,6 +7,7 @@ import {
   computed,
   ChangeDetectionStrategy,
   effect,
+  viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TagInputComponent } from '../tag-input/tag-input.component';
@@ -47,6 +48,7 @@ export interface ModelRequirementsConfig {
 })
 export class ModelRequirementsEditorComponent {
   readonly label = input<string>('Requirements');
+  readonly clearableFields = input(false);
   readonly values = input<Record<string, RequirementValue>>({});
   readonly config = input<ModelRequirementsConfig>({});
   readonly valuesChange = output<Record<string, RequirementValue>>();
@@ -84,6 +86,13 @@ export class ModelRequirementsEditorComponent {
       const vals = this.values();
       this.extractStructuredFields(vals);
     });
+  }
+
+  private readonly customEditor = viewChild(KeyValueEditorComponent);
+  clearAll(): void {
+    this.extractStructuredFields({});
+    this.customEditor()?.clearDraft();
+    this.valuesChange.emit({});
   }
 
   private extractStructuredFields(vals: Record<string, RequirementValue>): void {

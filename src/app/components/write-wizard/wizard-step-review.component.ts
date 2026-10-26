@@ -7,6 +7,7 @@ import type { DiffEntry } from '../../utils/compute-diff';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="write-review">
+      <header class="write-step-intro"><h2>Review your proposal</h2></header>
       <p class="write-review-summary-text">
         Review the proposed record. Submitting enqueues it as a
         <strong>pending</strong> change — it won't go live until an approver applies it.

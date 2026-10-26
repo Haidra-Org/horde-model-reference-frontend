@@ -40,6 +40,17 @@ export class KeyValueEditorComponent implements OnInit, OnChanges {
   readonly newValue = signal('');
   readonly newValueType = signal<'string' | 'number' | 'boolean' | 'array'>('string');
 
+  clearDraft(): void {
+    this.newKey.set('');
+    this.newValue.set('');
+    this.newValueType.set('string');
+  }
+  clearAll(): void {
+    this.clearDraft();
+    this.pairs.set([]);
+    this.valuesChange.emit({});
+  }
+
   ngOnInit(): void {
     this.updatePairsFromValues();
   }

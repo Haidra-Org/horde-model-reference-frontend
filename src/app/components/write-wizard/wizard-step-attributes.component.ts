@@ -1,3 +1,4 @@
+import { ClearableFieldComponent } from '../form-fields/clearable-field/clearable-field.component';
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { WriteFormState } from '../../utils/write-record';
 
@@ -9,47 +10,69 @@ interface Attribute {
 /** Less common schema attributes remain editable without replacing the complete request body. */
 @Component({
   selector: 'app-wizard-step-attributes',
+  imports: [ClearableFieldComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <details class="write-step-fields">
-      <summary>Additional model attributes</summary>
-      @for (field of fields(); track field.key) {
-        <label class="form-label" [for]="'attribute-' + field.key">
-          {{ field.label }}
-          @if (field.type === 'json') {
-            <textarea
-              [id]="'attribute-' + field.key"
-              class="form-textarea mono"
-              rows="4"
-              [value]="value(field)"
-              (input)="update(field, $event)"
-            ></textarea>
-            <span class="form-hint">JSON object; leave empty if unknown.</span>
-          } @else if (field.type === 'boolean') {
-            <input
-              [id]="'attribute-' + field.key"
-              type="checkbox"
-              class="form-checkbox"
-              [checked]="form().sourceRecord?.[field.key] === true"
-              (change)="update(field, $event)"
-            />
-          } @else {
-            <input
-              [id]="'attribute-' + field.key"
-              class="form-input"
-              [type]="field.type === 'number' ? 'number' : 'text'"
-              [value]="value(field)"
-              (input)="update(field, $event)"
-            />
-            @if (field.type === 'list') {
-              <span class="form-hint">Comma-separated</span>
-            }
-          }
-          @if (errors()[field.key]) {
-            <span class="form-error">{{ errors()[field.key] }}</span>
-          }
-        </label>
-      }
+    <details class="write-attributes-disclosure">
+      <summary>
+        Additional model attributes <span class="write-field-optional">Optional</span>
+      </summary>
+      <button
+        type="button"
+        class="write-section-clear"
+        (click)="clearAttributes()"
+        aria-label="Clear additional model attributes section"
+      >
+        Clear section
+      </button>
+      <div class="write-step-fields">
+        @for (field of fields(); track field.key) {
+          <app-clearable-field
+            [label]="field.label"
+            [filled]="!!value(field) || !!errors()[field.key]"
+            [width]="
+              field.type === 'json' ? 'wide' : field.type === 'number' ? 'short' : 'standard'
+            "
+            (cleared)="clearAttribute(field)"
+          >
+            <label class="form-label" [for]="'attribute-' + field.key">
+              {{ field.label }}
+              @if (field.type === 'json') {
+                <textarea
+                  [id]="'attribute-' + field.key"
+                  class="form-textarea mono"
+                  rows="4"
+                  [value]="value(field)"
+                  (input)="update(field, $event)"
+                ></textarea>
+                <span class="form-hint">JSON object; leave empty if unknown.</span>
+              } @else if (field.type === 'boolean') {
+                <input
+                  [id]="'attribute-' + field.key"
+                  type="checkbox"
+                  class="form-checkbox"
+                  [checked]="form().sourceRecord?.[field.key] === true"
+                  (change)="update(field, $event)"
+                />
+              } @else {
+                <input
+                  [id]="'attribute-' + field.key"
+                  class="form-input"
+                  [type]="field.type === 'number' ? 'number' : 'text'"
+                  [value]="value(field)"
+                  (input)="update(field, $event)"
+                />
+                @if (field.type === 'list') {
+                  <span class="form-hint">Comma-separated</span>
+                }
+              }
+              @if (errors()[field.key]) {
+                <span class="form-error">{{ errors()[field.key] }}</span>
+              }
+            </label></app-clearable-field
+          >
+        }
+      </div>
     </details>
   `,
 })
@@ -59,6 +82,7 @@ export class WizardStepAttributesComponent {
   readonly formChange = output<Partial<WriteFormState>>();
   readonly validChange = output<boolean>();
   readonly errors = signal<Record<string, string>>({});
+  private readonly invalidDrafts = signal<Record<string, string>>({});
   readonly fields = computed<Attribute[]>(() => {
     const fields: Attribute[] = [
       { key: 'finetune_series', label: 'Fine-tune series', type: 'json' },
@@ -108,7 +132,39 @@ export class WizardStepAttributesComponent {
       );
     return fields;
   });
+  private discardDraft(key: string): void {
+    const drafts = { ...this.invalidDrafts() };
+    delete drafts[key];
+    this.invalidDrafts.set(drafts);
+  }
+  clearAttribute(field: Attribute): void {
+    this.discardDraft(field.key);
+    const sourceRecord = { ...this.form().sourceRecord };
+    delete sourceRecord[field.key];
+    this.formChange.emit(
+      field.key === 'size_on_disk_bytes' ? { size_on_disk_bytes: '' } : { sourceRecord },
+    );
+    const errors = { ...this.errors() };
+    delete errors[field.key];
+    this.errors.set(errors);
+    this.validChange.emit(Object.keys(errors).length === 0);
+  }
+  clearAttributes(): void {
+    const sourceRecord = { ...this.form().sourceRecord };
+    for (const field of this.fields()) delete sourceRecord[field.key];
+    this.formChange.emit({
+      sourceRecord,
+      ...(this.fields().some((field) => field.key === 'size_on_disk_bytes')
+        ? { size_on_disk_bytes: '' }
+        : {}),
+    });
+    this.errors.set({});
+    this.invalidDrafts.set({});
+    this.validChange.emit(true);
+  }
   value(field: Attribute): string {
+    const draft = this.invalidDrafts()[field.key];
+    if (draft !== undefined) return draft;
     if (field.key === 'size_on_disk_bytes') return this.form().size_on_disk_bytes ?? '';
     const value = this.form().sourceRecord?.[field.key];
     return value == null
@@ -133,6 +189,7 @@ export class WizardStepAttributesComponent {
           .map((s) => s.trim())
           .filter(Boolean);
       else if (field.type === 'boolean') value = input.checked;
+      this.discardDraft(field.key);
       const errors = { ...this.errors() };
       delete errors[field.key];
       this.errors.set(errors);
@@ -141,6 +198,7 @@ export class WizardStepAttributesComponent {
       else
         this.formChange.emit({ sourceRecord: { ...this.form().sourceRecord, [field.key]: value } });
     } catch {
+      this.invalidDrafts.update((drafts) => ({ ...drafts, [field.key]: input.value }));
       this.errors.update((errors) => ({ ...errors, [field.key]: 'Enter a valid JSON object' }));
     }
     this.validChange.emit(Object.keys(this.errors()).length === 0);

@@ -202,6 +202,22 @@ describe('WriteWizardComponent', () => {
     expect(component.hasUnsavedChanges()).toBe(false);
   });
 
+  it('keeps a locked model identifier protected from clear controls', async () => {
+    const { fixture, component } = await createComponent();
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    component.isEditMode.set(true);
+    component.patchForm({ name: 'existing-model' });
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('[aria-label="Clear Model name (identifier)"]')).toBeNull();
+    const clearSection = host.querySelector<HTMLButtonElement>(
+      '[aria-label="Clear Model identifier section"]',
+    );
+    expect(clearSection?.disabled).toBe(true);
+  });
+
   it('patches form via partial update', async () => {
     const { fixture, component } = await createComponent();
     fixture.detectChanges();

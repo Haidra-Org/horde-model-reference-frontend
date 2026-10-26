@@ -79,18 +79,18 @@ for (const view of ['Table', 'Cards', 'Gallery']) {
       await page.screenshot({ path: '.cache/pending-topbar-desktop.png' });
     }
     await edit.click();
-    await expect(page.getByLabel('Model name (identifier)')).toHaveValue('Pending-Anima');
+    await expect(page.getByRole('textbox', { name: /^Model name/ })).toHaveValue('Pending-Anima');
     await page.reload();
-    await expect(page.getByLabel('Model name (identifier)')).toHaveValue('Pending-Anima');
+    await expect(page.getByRole('textbox', { name: /^Model name/ })).toHaveValue('Pending-Anima');
     await page.getByRole('button', { name: '3. Files' }).click();
     await expect(
       page.getByRole('combobox', { name: 'File type / purpose', exact: true }),
     ).toHaveValue('vae');
     await page.goto('/categories/image_generation/model/Pending-Anima');
     await template.click();
-    await expect(page.getByLabel('Model name (identifier)')).toHaveValue('');
+    await expect(page.getByRole('textbox', { name: /^Model name/ })).toHaveValue('');
     await page.reload();
-    await expect(page.getByLabel('Model name (identifier)')).toHaveValue('');
+    await expect(page.getByRole('textbox', { name: /^Model name/ })).toHaveValue('');
     await page.getByRole('button', { name: '3. Files' }).click();
     await expect(
       page.getByRole('combobox', { name: 'File type / purpose', exact: true }),

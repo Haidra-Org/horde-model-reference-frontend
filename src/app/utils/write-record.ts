@@ -346,3 +346,29 @@ export function templateFormFromRecord(
     delete source[key];
   return editFormFromRecord(category, source);
 }
+
+/** Clear only the requested authoring fields, retaining every other form value. */
+export function clearedWriteFormFields(
+  fields: readonly (keyof WriteFormState)[],
+): Partial<WriteFormState> {
+  const objects = new Set<keyof WriteFormState>(['requirements', 'embedded_component_hashes']);
+  const arrays = new Set<keyof WriteFormState>([
+    'download',
+    'license_obligations',
+    'license_additional_evidence',
+  ]);
+  return Object.fromEntries(
+    fields.map((field) => [
+      field,
+      objects.has(field)
+        ? {}
+        : arrays.has(field)
+          ? []
+          : field === 'nsfw' || field === 'inpainting'
+            ? false
+            : field === 'commercial_use' || field === 'redistribution'
+              ? 'unknown'
+              : '',
+    ]),
+  ) as Partial<WriteFormState>;
+}

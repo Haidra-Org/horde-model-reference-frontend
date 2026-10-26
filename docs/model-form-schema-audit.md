@@ -22,3 +22,38 @@ Legacy `min_bridge_version` retains the existing service compatibility treatment
 Record audit timestamps and read-only guidance enrichment do not need authoring controls.
 Deprecated placement fields (`directory` / nonempty `file_path`) are not offered: the current
 service uses the file purpose for component placement and requires legacy `file_path` to be empty.
+
+## Form hierarchy informed by production data
+
+A read-only sample of the v1 production catalogs on 2026-10-26 included 163 image
+records and 2,112 text records (including text variants).
+
+- Image description, version, baseline and style were populated on all 163 records;
+  homepage on 157 and total size on 162. These remain prominent.
+- Tags appeared on 28 image records, triggers on 24, showcases on 73, requirements
+  on 31 and optimization on one. Group these as supporting discovery, runtime and
+  compatibility details; optional does not mean invalid or unimportant.
+- Image download names had a median length of 23 characters and 95th percentile
+  of 38; URLs had median 93 and 95th percentile 114. Keep URLs and SHA256 wider.
+- Only eight legacy file entries declared a file type. Whole-file SHA256 remained
+  common; component content hashes and per-file sizes were not declared in this
+  legacy catalog. Keep all supported controls available but give technical extras
+  less visual weight. Pending split-file models still need visible file-role controls.
+- Text baseline values were populated on 228 records; their 95th percentile length
+  was 48 characters, commonly full repository names. Use a wider baseline input.
+  Parameter counts were populated throughout the text catalog and remain prominent.
+
+The visual changes use section legends, subdued descriptions, restrained required
+markers and a single lightly accented group per step. They do not change payloads,
+default values or validation requirements.
+
+## Scoped clearing
+
+Populated authoring controls have a clear button adjacent to the input. Each form
+group has a clear-section action limited to its fields, and each download entry
+has a clear-file action that retains other files. Required fields become empty
+and remain subject to validation. Locked model identifiers cannot be cleared.
+Permission fields clear to `unknown`; booleans clear to false; collection fields
+clear to empty collections. Requirement and embedded-component section clearing
+also discards unfinished custom-entry drafts. Additional attribute clearing resets
+invalid JSON drafts and their local validation state.
