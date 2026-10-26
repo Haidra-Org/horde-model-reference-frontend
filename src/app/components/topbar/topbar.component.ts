@@ -5,11 +5,12 @@ import { LoginModalComponent } from '../login-modal/login-modal.component';
 import { ShellContextService } from '../../services/shell-context.service';
 import { AuthService } from '../../services/auth.service';
 import { DarkModeService } from '../../services/dark-mode.service';
+import { IconComponent } from '../common/icon.component';
 import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-topbar',
-  imports: [RouterLink, LoginModalComponent],
+  imports: [RouterLink, LoginModalComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="topbar glass-overlay">
@@ -78,27 +79,13 @@ import { SidebarService } from '../../services/sidebar.service';
           @for (action of ctx.actions(); track action.id) {
             <button
               type="button"
-              class="btn"
+              class="btn btn-sm topbar-action-button"
               [class.btn-primary]="action.kind === 'primary'"
-              [class.btn-ghost]="action.kind !== 'primary'"
+              [class.btn-secondary]="action.kind !== 'primary'"
               (click)="action.action()"
             >
-              @if (action.kind === 'primary') {
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
+              @if (action.icon) {
+                <app-icon [name]="action.icon" />
               }
               {{ action.label }}
             </button>

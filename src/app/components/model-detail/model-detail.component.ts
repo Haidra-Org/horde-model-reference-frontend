@@ -623,13 +623,28 @@ export class ModelDetailComponent implements OnInit {
       breadcrumb: [{ label: catDisplay, route: ['/categories', category] }, { label: displayName }],
       title: displayName,
       actions: [
-        ...(this.canWrite() && !model._ghost
+        ...(this.canWrite()
           ? [
               {
                 id: 'edit',
                 label: 'Edit',
                 icon: 'pencil',
-                action: () => this.router.navigate(['/categories', category, 'edit', model.name]),
+                kind: 'primary' as const,
+                action: () =>
+                  this.router.navigate(
+                    [
+                      '/categories',
+                      category,
+                      model._ghost ? 'create' : 'edit',
+                      ...(model._ghost ? [] : [model.name]),
+                    ],
+                    {
+                      queryParams:
+                        model._pending && model._pending.pendingOperation !== 'delete'
+                          ? { sourceChange: model._pending.pendingChangeId }
+                          : undefined,
+                    },
+                  ),
               },
               {
                 id: 'template',
@@ -637,7 +652,12 @@ export class ModelDetailComponent implements OnInit {
                 icon: 'copy',
                 action: () =>
                   this.router.navigate(['/categories', category, 'create'], {
-                    queryParams: { template: model.name },
+                    queryParams: {
+                      template: model.name,
+                      ...(model._pending && model._pending.pendingOperation !== 'delete'
+                        ? { sourceChange: model._pending.pendingChangeId }
+                        : {}),
+                    },
                   }),
               },
             ]

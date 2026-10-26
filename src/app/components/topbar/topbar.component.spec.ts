@@ -161,6 +161,25 @@ describe('TopbarComponent', () => {
     expect(sub!.textContent).toContain('A subtitle');
   });
 
+  it('renders page actions with distinct button variants and the supplied icons', () => {
+    const edit = vi.fn();
+    shellContext.setContext({
+      breadcrumb: [],
+      title: 'Model',
+      actions: [
+        { id: 'edit', label: 'Edit', icon: 'pencil', kind: 'primary', action: edit },
+        { id: 'template', label: 'Use as template', icon: 'copy', action: vi.fn() },
+      ],
+    });
+    fixture.detectChanges();
+    const buttons = nativeEl.querySelectorAll<HTMLButtonElement>('.topbar-actions button');
+    expect(buttons[0].classList.contains('btn-primary')).toBe(true);
+    expect(buttons[1].classList.contains('btn-secondary')).toBe(true);
+    expect(buttons[0].querySelector('app-icon')).toBeTruthy();
+    buttons[0].click();
+    expect(edit).toHaveBeenCalledOnce();
+  });
+
   it('should render a theme toggle button', () => {
     const themeBtn = nativeEl.querySelector('.topbar-theme-btn');
     expect(themeBtn).toBeTruthy();

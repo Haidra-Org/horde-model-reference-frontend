@@ -19,6 +19,12 @@
         settings, and licensing before submitting.
       </div>
     }
+    @if (sourceChangeId() && !templateName()) {
+      <div class="alert alert--info" role="note">
+        Editing the proposed model from change #{{ sourceChangeId() }}. Submitting sends a new
+        proposal for review.
+      </div>
+    }
     <!-- Category + endpoint banner -->
     <app-endpoint-banner
       [category]="category()"

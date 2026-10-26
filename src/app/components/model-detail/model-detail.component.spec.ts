@@ -169,6 +169,18 @@ describe('ModelDetailComponent', () => {
     const review = nativeEl.querySelector('a[href="/pending-queue?focus=302"]');
     expect(review).toBeTruthy();
     expect(apiStub.getModelsWithStats).not.toHaveBeenCalled();
+    isRequestor.set(true);
+    fixture.detectChanges();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const actions = shellContext.context().actions;
+    actions.find((action) => action.id === 'edit')!.action();
+    expect(navigate).toHaveBeenLastCalledWith(['/categories', 'image_generation', 'create'], {
+      queryParams: { sourceChange: 302 },
+    });
+    actions.find((action) => action.id === 'template')!.action();
+    expect(navigate).toHaveBeenLastCalledWith(['/categories', 'image_generation', 'create'], {
+      queryParams: { template: 'new-model', sourceChange: 302 },
+    });
   });
 
   it('should render model details when loaded', () => {

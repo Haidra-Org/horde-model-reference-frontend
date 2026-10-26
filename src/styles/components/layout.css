@@ -1958,6 +1958,38 @@
 
   .topbar-actions {
     @apply flex items-center gap-2;
+    flex-wrap: wrap;
+  }
+
+  .topbar-action-button {
+    min-height: 36px;
+    white-space: nowrap;
+  }
+
+  .topbar-action-button.btn-secondary {
+    border: 1px solid var(--color-border-default);
+  }
+
+  @media (max-width: 1023px) {
+    .topbar-inner {
+      flex-wrap: wrap;
+    }
+    .topbar-title-area {
+      flex-basis: calc(100% - 8rem);
+    }
+    .topbar-actions {
+      order: 2;
+      flex-basis: 100%;
+    }
+    .topbar-identity {
+      order: 1;
+    }
+  }
+
+  .topbar-action-button app-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
   }
 
   .topbar-identity {

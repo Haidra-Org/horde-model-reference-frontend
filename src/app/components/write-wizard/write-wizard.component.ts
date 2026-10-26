@@ -15,6 +15,7 @@ import { ViewerCapabilitiesService } from '../../services/viewer-capabilities.se
 import { NotificationService } from '../../services/notification.service';
 import { ModelValidationService } from '../../services/model-validation.service';
 import { PendingQueueSummaryService } from '../../services/pending-queue-summary.service';
+import { PendingQueueService } from '../../services/pending-queue.service';
 import { ShellContextService } from '../../services/shell-context.service';
 import { CopyButtonComponent } from '../common/copy-button/copy-button.component';
 import { EndpointBannerComponent } from './endpoint-banner.component';
@@ -62,6 +63,7 @@ export class WriteWizardComponent implements OnInit {
   private readonly notifications = inject(NotificationService);
   readonly validationService = inject(ModelValidationService);
   private readonly pendingQueue = inject(PendingQueueSummaryService);
+  private readonly pendingApi = inject(PendingQueueService);
   private readonly shell = inject(ShellContextService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -72,6 +74,7 @@ export class WriteWizardComponent implements OnInit {
   // -----------------------------------------------------------------------
   readonly category = signal<string>('');
   readonly templateName = signal<string | null>(null);
+  readonly sourceChangeId = signal<number | null>(null);
   readonly modelName = signal<string | null>(null);
   readonly isEditMode = signal(false);
   readonly operation = signal<'create' | 'update' | 'delete'>('create');
@@ -241,6 +244,17 @@ export class WriteWizardComponent implements OnInit {
       const editName = params['modelName'] as string | undefined;
 
       this.category.set(category);
+      const sourceChange = Number(this.route.snapshot.queryParamMap.get('sourceChange'));
+      if (Number.isSafeInteger(sourceChange) && sourceChange > 0) {
+        this.sourceChangeId.set(sourceChange);
+        this.templateName.set(this.route.snapshot.queryParamMap.get('template'));
+        this.isEditMode.set(!!editName);
+        this.modelName.set(editName ?? null);
+        this.operation.set(editName ? 'update' : 'create');
+        this.loadPendingSource(category, sourceChange);
+        return;
+      }
+      this.sourceChangeId.set(null);
       if (editName) {
         this.isEditMode.set(true);
         this.modelName.set(editName);
@@ -387,6 +401,40 @@ export class WriteWizardComponent implements OnInit {
   // Private methods
   // -----------------------------------------------------------------------
 
+  private loadPendingSource(category: string, changeId: number): void {
+    this.pendingApi
+      .getChange(changeId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (change) => {
+          if (
+            change.category !== category ||
+            !change.payload ||
+            change.operation === 'delete' ||
+            (this.modelName() && change.model_name !== this.modelName())
+          ) {
+            this.notifications.error('This pending change cannot be used for this model');
+            this.loading.set(false);
+            return;
+          }
+          const payload = {
+            ...(change.payload as Record<string, unknown>),
+            name: change.model_name,
+          };
+          if (this.templateName()) this.form.set(templateFormFromRecord(category, payload));
+          else {
+            this.originalRecord.set(payload);
+            this.form.set(editFormFromRecord(category, payload));
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.notifications.error('Failed to load pending model');
+          this.loading.set(false);
+        },
+      });
+  }
+
   private loadTemplate(category: string, name: string): void {
     this.api
       .getFormModel(category, name)
@@ -493,14 +541,14 @@ export class WriteWizardComponent implements OnInit {
   }
 
   private updateShellContext(): void {
-    const isEdit = this.isEditMode();
+    const isEdit = this.isEditMode() || (!!this.sourceChangeId() && !this.templateName());
 
     this.shell.setContext({
       breadcrumb: [
         { label: 'Contribute', route: ['/propose'] },
         { label: isEdit ? 'Edit' : 'Propose' },
       ],
-      title: isEdit ? `Edit ${this.modelName() ?? ''}` : 'Propose a model',
+      title: isEdit ? `Edit ${this.modelName() ?? this.form().name}` : 'Propose a model',
       sub: `Routes to the ${this.api.backendCapabilities().canonicalFormat === 'legacy' ? 'v1 (legacy canonical)' : 'v2'} write API · enqueued for review`,
       actions: [],
     });
