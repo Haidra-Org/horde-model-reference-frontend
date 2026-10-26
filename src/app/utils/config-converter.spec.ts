@@ -265,3 +265,32 @@ describe('Config Converter', () => {
     });
   });
 });
+
+describe('component file metadata', () => {
+  it('writes the legacy file_type even without a SHA and round-trips canonical metadata', () => {
+    const canonical = {
+      download: [
+        {
+          file_name: 'vae.safetensors',
+          file_url: 'https://example.com/vae',
+          file_purpose: 'vae',
+          content_hash: 'tensor-hash',
+          size_bytes: 0,
+          known_slow_download: true,
+        },
+      ],
+    };
+    const legacy = simplifiedToLegacyConfig(canonical);
+    expect(legacy.files?.[0]).toMatchObject({
+      path: 'vae.safetensors',
+      file_type: 'vae',
+      content_hash: 'tensor-hash',
+    });
+    expect(legacy.download?.[0]).toMatchObject({
+      file_path: '',
+      size_bytes: 0,
+      known_slow_download: true,
+    });
+    expect(legacyConfigToSimplified(legacy)).toMatchObject(canonical);
+  });
+});

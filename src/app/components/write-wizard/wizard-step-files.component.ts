@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { AutocompleteInputComponent } from '../form-fields/autocomplete-input/autocomplete-input.component';
+import { KeyValueEditorComponent } from '../form-fields/key-value-editor/key-value-editor.component';
 import type { WriteFormDownload } from '../../utils/write-record';
 
 @Component({
   selector: 'app-wizard-step-files',
+  imports: [KeyValueEditorComponent, AutocompleteInputComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="write-step-fields">
@@ -37,24 +40,63 @@ import type { WriteFormDownload } from '../../utils/write-record';
             <input
               type="text"
               class="form-input"
+              aria-label="File name"
               placeholder="file_name.safetensors"
               [value]="d.file_name"
               (input)="onDlChange(i, 'file_name', $event)"
             />
             <input
-              type="text"
-              class="form-input"
+              type="url"
+              class="form-input write-input-url"
+              aria-label="File URL"
               placeholder="https://huggingface.co/…"
               [value]="d.file_url"
               (input)="onDlChange(i, 'file_url', $event)"
             />
             <input
               type="text"
-              class="form-input mono"
+              class="form-input mono write-input-hash"
+              aria-label="SHA256"
               placeholder="sha256sum"
               [value]="d.sha256sum"
               (input)="onDlChange(i, 'sha256sum', $event)"
             />
+            <div class="write-field-role">
+              <app-autocomplete-input
+                label="File type / purpose"
+                [value]="d.file_purpose || ''"
+                [suggestions]="filePurposes"
+                placeholder="Primary file (default)"
+                (valueChange)="updatePurpose(i, $event)"
+              />
+              <span class="form-hint"
+                >Leave empty for the primary file. Component roles determine placement.</span
+              >
+            </div>
+            <label class="form-label">
+              Component content hash
+              <input
+                class="form-input mono write-input-hash"
+                type="text"
+                [value]="d.content_hash || ''"
+                (input)="onDlChange(i, 'content_hash', $event)"
+              />
+              <span class="form-hint"
+                >Tensor content hash, distinct from the whole-file SHA256. Leave empty if
+                unknown.</span
+              >
+            </label>
+            <label class="form-label">
+              File size (bytes)
+              <input
+                class="form-input"
+                type="number"
+                min="0"
+                step="1"
+                [value]="d.size_bytes || ''"
+                (input)="onDlChange(i, 'size_bytes', $event)"
+              />
+            </label>
             <label class="write-toggle">
               <input
                 type="checkbox"
@@ -67,6 +109,14 @@ import type { WriteFormDownload } from '../../utils/write-record';
           </div>
         </div>
       }
+
+      <app-key-value-editor
+        label="Embedded component hashes (monolithic checkpoints only)"
+        addLabel="Add component hash"
+        keyPlaceholder="vae or text_encoders"
+        [values]="embeddedHashes()"
+        (valuesChange)="updateEmbeddedHashes($event)"
+      />
 
       <button type="button" class="btn btn-ghost" (click)="addFile()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px">
@@ -83,7 +133,22 @@ import type { WriteFormDownload } from '../../utils/write-record';
   `,
 })
 export class WizardStepFilesComponent {
+  readonly filePurposes = ['unet', 'vae', 'text_encoders'];
+  updatePurpose(index: number, value: string | null): void {
+    this.downloadsChange.emit(
+      this.downloads().map((download, i) =>
+        i === index ? { ...download, file_purpose: value ?? '' } : download,
+      ),
+    );
+  }
   readonly downloads = input.required<WriteFormDownload[]>();
+  readonly embeddedHashes = input<Record<string, string>>({});
+  readonly embeddedHashesChange = output<Record<string, string>>();
+  updateEmbeddedHashes(values: Record<string, unknown>): void {
+    this.embeddedHashesChange.emit(
+      Object.fromEntries(Object.entries(values).map(([key, value]) => [key, String(value)])),
+    );
+  }
   readonly downloadsChange = output<WriteFormDownload[]>();
 
   onDlChange(index: number, field: string, event: Event): void {

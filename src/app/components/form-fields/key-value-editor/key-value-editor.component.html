@@ -42,7 +42,7 @@
                 size="sm"
                 (click)="removePair(pair.key)"
                 [attr.aria-label]="'Remove ' + pair.key"
-                title="Remove this requirement"
+                title="Remove this entry"
               >
                 <span class="text-lg leading-none">×</span>
               </horde-button>
@@ -55,7 +55,7 @@
 
   <!-- Add New Pair Section -->
   <div class="key-value-item-card">
-    <div class="text-sm font-medium mb-2">Add Custom Requirement</div>
+    <div class="text-sm font-medium mb-2">{{ addLabel() }}</div>
 
     <!-- All inputs in a single row for compact layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-2">
@@ -68,7 +68,7 @@
           id="new-key"
           type="text"
           class="form-input text-sm"
-          placeholder="e.g., min_vram_gb"
+          [placeholder]="keyPlaceholder()"
           [(ngModel)]="newKey"
           (ngModelChange)="newKey.set($event)"
           (keydown.enter)="addPair()"

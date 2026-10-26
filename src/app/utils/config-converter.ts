@@ -32,6 +32,7 @@ export function legacyConfigToSimplified(
 
   // Build a lookup map of sha256sum from files array by path/filename
   // This handles the older legacy format where sha256sum was in a separate files array
+  const fileLookup = new Map((legacyConfig.files ?? []).map((file) => [file.path, file]));
   const sha256sumLookup = new Map<string, string>();
   if (legacyConfig.files) {
     for (const fileEntry of legacyConfig.files) {
@@ -63,6 +64,13 @@ export function legacyConfigToSimplified(
       record.sha256sum = sha256sum;
     }
 
+    const file = fileLookup.get(record.file_name);
+    record.file_purpose = (legacyDownload['file_purpose'] as string | null) ?? file?.file_type;
+    record.content_hash =
+      (legacyDownload['content_hash'] as string | null) ??
+      (file?.['content_hash'] as string | null);
+    record.known_slow_download = legacyDownload['known_slow_download'] as boolean | null;
+    record.size_bytes = legacyDownload['size_bytes'] as number | null;
     return record;
   });
 
@@ -102,15 +110,31 @@ export function simplifiedToLegacyConfig(
       file_url: simpleDownload.file_url || null,
     };
 
+    if (simpleDownload.known_slow_download != null)
+      legacyDownload['known_slow_download'] = simpleDownload.known_slow_download;
+    if (simpleDownload.size_bytes != null) legacyDownload['size_bytes'] = simpleDownload.size_bytes;
+
     // Propagate SHA256 into legacy files array (not downloads) for canonical legacy format
     const sha = simpleDownload.sha256sum;
     const path = simpleDownload.file_name;
 
-    if (sha && path) {
+    if (
+      path &&
+      (sha || simpleDownload.file_purpose || simpleDownload.content_hash || filesByPath.has(path))
+    ) {
       const existing = filesByPath.get(path);
 
       if (existing) {
-        const updated = { ...existing, sha256sum: sha };
+        const updated = {
+          ...existing,
+          sha256sum: sha || undefined,
+          ...(simpleDownload.file_purpose !== undefined
+            ? { file_type: simpleDownload.file_purpose || undefined }
+            : {}),
+          ...(simpleDownload.content_hash !== undefined
+            ? { content_hash: simpleDownload.content_hash || undefined }
+            : {}),
+        };
         filesByPath.set(path, updated);
         const idx = orderedFiles.findIndex((file) => file.path === path);
         if (idx >= 0) {
@@ -119,7 +143,9 @@ export function simplifiedToLegacyConfig(
       } else {
         const newFile: LegacyConfigFile = {
           path,
-          sha256sum: sha,
+          sha256sum: sha || undefined,
+          file_type: simpleDownload.file_purpose || undefined,
+          content_hash: simpleDownload.content_hash || undefined,
         };
         filesByPath.set(path, newFile);
         orderedFiles.push(newFile);

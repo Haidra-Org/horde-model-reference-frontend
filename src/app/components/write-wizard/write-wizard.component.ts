@@ -21,7 +21,7 @@ import { EndpointBannerComponent } from './endpoint-banner.component';
 import { WizardStepIdentityComponent } from './wizard-step-identity.component';
 import { WizardStepImageComponent } from './wizard-step-image.component';
 import { WizardStepModelComponent } from './wizard-step-model.component';
-import { WizardStepGenericComponent } from './wizard-step-generic.component';
+import { WizardStepAttributesComponent } from './wizard-step-attributes.component';
 import { WizardStepFilesComponent } from './wizard-step-files.component';
 import { WizardStepLicensingComponent } from './wizard-step-licensing.component';
 import { WizardStepReviewComponent } from './wizard-step-review.component';
@@ -29,9 +29,9 @@ import { WriteGatingComponent } from './write-gating.component';
 import {
   blankForm,
   editFormFromRecord,
+  templateFormFromRecord,
   formToRecord,
   type WriteFormState,
-  type WriteFormDownload,
 } from '../../utils/write-record';
 import { computeDiff, type DiffEntry } from '../../utils/compute-diff';
 import type { MODEL_REFERENCE_CATEGORY } from '../../api-client';
@@ -47,7 +47,7 @@ type WizardStep = 0 | 1 | 2 | 3 | 4;
     WizardStepIdentityComponent,
     WizardStepImageComponent,
     WizardStepModelComponent,
-    WizardStepGenericComponent,
+    WizardStepAttributesComponent,
     WizardStepFilesComponent,
     WizardStepLicensingComponent,
     WizardStepReviewComponent,
@@ -71,6 +71,7 @@ export class WriteWizardComponent implements OnInit {
   // Route state
   // -----------------------------------------------------------------------
   readonly category = signal<string>('');
+  readonly templateName = signal<string | null>(null);
   readonly modelName = signal<string | null>(null);
   readonly isEditMode = signal(false);
   readonly operation = signal<'create' | 'update' | 'delete'>('create');
@@ -90,6 +91,7 @@ export class WriteWizardComponent implements OnInit {
   readonly submitResultMessage = signal('');
   readonly submitChangeId = signal<number | null>(null);
   readonly showAdvancedJson = signal(false);
+  readonly attributesValid = signal(true);
 
   // Store original record for diff computation (edit mode)
   private readonly originalRecord = signal<Record<string, unknown> | null>(null);
@@ -137,12 +139,51 @@ export class WriteWizardComponent implements OnInit {
     return computeDiff('update', this.originalRecord(), this.record());
   });
 
-  readonly validationIssues = computed(() =>
-    this.validationService.validateRecord(
+  readonly validationIssues = computed(() => {
+    const form = this.form();
+    // Category-specific v2 records default classification on the service.
+    // Check common fields locally; the API validates optional v2 attribute objects.
+    const issues = this.validationService.validateRecord(
       this.record() as LegacyRecordUnion,
-      this.api.backendCapabilities().canonicalFormat,
-    ),
-  );
+      'legacy',
+    );
+    for (const [field, value] of [
+      ['size_on_disk_bytes', form.size_on_disk_bytes],
+      ...form.download.map((download, i) => [
+        `config.download[${i}].size_bytes`,
+        download.size_bytes,
+      ]),
+    ]) {
+      if (value && (!Number.isSafeInteger(Number(value)) || Number(value) < 0)) {
+        issues.push({
+          field,
+          message: 'Enter a non-negative whole number of bytes',
+          severity: 'error',
+        });
+      }
+    }
+    if (this.isImageGeneration() && !form.baseline.trim()) {
+      issues.push({ field: 'baseline', message: 'Baseline is required', severity: 'error' });
+    }
+    if (
+      this.isTextGeneration() &&
+      (!Number.isSafeInteger(Number(form.parameters)) || Number(form.parameters) <= 0)
+    ) {
+      issues.push({
+        field: 'parameters',
+        message: 'Enter a positive whole parameter count',
+        severity: 'error',
+      });
+    }
+    if (!this.attributesValid()) {
+      issues.push({
+        field: 'attributes',
+        message: 'Correct the invalid JSON in additional model attributes',
+        severity: 'error',
+      });
+    }
+    return issues;
+  });
 
   readonly validationErrors = computed(() =>
     this.validationIssues().filter((issue) => issue.severity === 'error'),
@@ -154,8 +195,14 @@ export class WriteWizardComponent implements OnInit {
       return this.form().name.trim().length > 0;
     }
     if (this.currentStep() === 1 && this.isTextGeneration()) {
-      return Number(this.form().parameters) > 0;
+      return (
+        Number.isSafeInteger(Number(this.form().parameters)) &&
+        Number(this.form().parameters) > 0 &&
+        this.attributesValid()
+      );
     }
+    if (this.currentStep() === 1)
+      return this.attributesValid() && (!this.isImageGeneration() || !!this.form().baseline.trim());
     if (this.currentStep() === 3) {
       return this.licensingIsValid();
     }
@@ -165,7 +212,7 @@ export class WriteWizardComponent implements OnInit {
   /** Whether the form is valid enough to submit. */
   readonly canSubmit = computed(() => {
     const f = this.form();
-    if (!f.name.trim()) return false;
+    if (!f.name.trim() || !this.attributesValid()) return false;
     if (this.isTextGeneration() && Number(f.parameters) <= 0) return false;
     if (this.jsonError() !== null || !this.licensingIsValid()) return false;
     return this.validationErrors().length === 0;
@@ -203,6 +250,12 @@ export class WriteWizardComponent implements OnInit {
         this.isEditMode.set(false);
         this.modelName.set(null);
         this.operation.set('create');
+        const templateName = this.route.snapshot.queryParamMap.get('template');
+        this.templateName.set(templateName);
+        if (templateName) {
+          this.loadTemplate(category, templateName);
+          return;
+        }
         this.form.set(
           proposalPayload
             ? editFormFromRecord(category as MODEL_REFERENCE_CATEGORY, proposalPayload)
@@ -246,58 +299,10 @@ export class WriteWizardComponent implements OnInit {
 
     try {
       const o = JSON.parse(txt) as Record<string, unknown>;
-      const licensing = o['licensing'] as Record<string, unknown> | undefined;
-      const evidence = Array.isArray(licensing?.['evidence'])
-        ? (licensing?.['evidence'][0] as Record<string, unknown> | undefined)
-        : undefined;
+      if (!o || typeof o !== 'object' || Array.isArray(o))
+        throw new Error('Record must be an object');
       this.jsonError.set(null);
-
-      // Patch form from parsed JSON (two-way sync)
-      this.form.update((f) => ({
-        ...f,
-        name: (o['name'] as string) ?? f.name,
-        display_name: (o['display_name'] as string) ?? '',
-        description: (o['description'] as string) ?? '',
-        version: (o['version'] as string) ?? '',
-        baseline: (o['baseline'] as string) ?? f.baseline,
-        nsfw: !!(o['nsfw'] as boolean | undefined),
-        style: (o['style'] as string) ?? f.style,
-        inpainting: !!(o['inpainting'] as boolean | undefined),
-        tags: Array.isArray(o['tags']) ? (o['tags'] as string[]).join(', ') : f.tags,
-        trigger: Array.isArray(o['trigger']) ? (o['trigger'] as string[]).join(', ') : f.trigger,
-        parameters: o['parameters'] != null ? String(o['parameters']) : f.parameters,
-        instruct_format: (o['instruct_format'] as string) ?? f.instruct_format,
-        text_model_group: (o['text_model_group'] as string) ?? f.text_model_group,
-        homepage: (o['homepage'] as string) ?? f.homepage,
-        min_bridge_version:
-          o['min_bridge_version'] != null ? String(o['min_bridge_version']) : f.min_bridge_version,
-        license_expression:
-          (licensing?.['license_expression'] as string | undefined) ?? f.license_expression,
-        license_ids: Array.isArray(licensing?.['license_ids'])
-          ? (licensing['license_ids'] as string[]).join(', ')
-          : f.license_ids,
-        commercial_use:
-          (licensing?.['commercial_use'] as WriteFormState['commercial_use'] | undefined) ??
-          f.commercial_use,
-        redistribution:
-          (licensing?.['redistribution'] as WriteFormState['redistribution'] | undefined) ??
-          f.redistribution,
-        license_obligations: Array.isArray(licensing?.['obligations'])
-          ? (licensing['obligations'] as WriteFormState['license_obligations'])
-          : f.license_obligations,
-        license_attribution:
-          (licensing?.['attribution'] as string | undefined) ?? f.license_attribution,
-        license_evidence_source:
-          (evidence?.['source'] as string | undefined) ?? f.license_evidence_source,
-        license_evidence_description:
-          (evidence?.['description'] as string | undefined) ?? f.license_evidence_description,
-        license_reviewed_by:
-          (licensing?.['reviewed_by'] as string | undefined) ?? f.license_reviewed_by,
-        license_reviewed_at:
-          (licensing?.['reviewed_at'] as string | undefined) ?? f.license_reviewed_at,
-        license_notes: (licensing?.['notes'] as string | undefined) ?? f.license_notes,
-        download: this.extractDownloads(o as Record<string, unknown>, f.download),
-      }));
+      this.form.set(editFormFromRecord(this.category(), o));
     } catch (e) {
       this.jsonError.set((e as Error).message);
     }
@@ -382,6 +387,28 @@ export class WriteWizardComponent implements OnInit {
   // Private methods
   // -----------------------------------------------------------------------
 
+  private loadTemplate(category: string, name: string): void {
+    this.api
+      .getFormModel(category, name)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (model) => {
+          if (!model) {
+            this.notifications.error('Template model not found');
+            this.router.navigate(['/categories', category]);
+            return;
+          }
+          const record = this.formModelDataToRecord(model);
+          this.form.set(templateFormFromRecord(category, record));
+          this.loading.set(false);
+        },
+        error: () => {
+          this.notifications.error('Failed to load template model');
+          this.loading.set(false);
+        },
+      });
+  }
+
   private loadModelForEdit(
     category: string,
     modelName: string,
@@ -430,7 +457,7 @@ export class WriteWizardComponent implements OnInit {
   private formModelDataToRecord(
     model: import('../../adapters/model-format-adapter').FormModelData,
   ): Record<string, unknown> {
-    const record: Record<string, unknown> = { name: '' };
+    const record: Record<string, unknown> = { ...model.sourceRecord, name: this.modelName() ?? '' };
     // Merge common data
     Object.assign(record, model.commonData);
     // Merge category data
@@ -439,7 +466,10 @@ export class WriteWizardComponent implements OnInit {
     }
     // Downloads
     if (model.downloads.length > 0) {
-      record['config'] = { download: model.downloads };
+      record['config'] = {
+        ...(model.sourceRecord?.['config'] as object),
+        download: model.downloads,
+      };
     }
     if (model.licensing) {
       record['licensing'] = model.licensing;
@@ -454,6 +484,7 @@ export class WriteWizardComponent implements OnInit {
     if (expression.toUpperCase() === 'NOASSERTION') return true;
     if (!form.license_ids.trim() || !form.license_evidence_source.trim()) return false;
     try {
+      for (const evidence of form.license_additional_evidence ?? []) new URL(evidence.source);
       new URL(form.license_evidence_source);
       return true;
     } catch {
@@ -473,28 +504,5 @@ export class WriteWizardComponent implements OnInit {
       sub: `Routes to the ${this.api.backendCapabilities().canonicalFormat === 'legacy' ? 'v1 (legacy canonical)' : 'v2'} write API · enqueued for review`,
       actions: [],
     });
-  }
-
-  /** Extract download records from parsed JSON object, falling back to current form downloads. */
-  private extractDownloads(
-    obj: Record<string, unknown>,
-    fallback: WriteFormDownload[],
-  ): WriteFormDownload[] {
-    const config = obj['config'] as Record<string, unknown> | undefined;
-    const configDownload = config?.['download'] as unknown[] | undefined;
-    if (!configDownload?.length) return fallback;
-    return (
-      configDownload as {
-        file_name?: string;
-        file_url?: string;
-        sha256sum?: string;
-        known_slow_download?: boolean;
-      }[]
-    ).map((d) => ({
-      file_name: d.file_name ?? '',
-      file_url: d.file_url ?? '',
-      sha256sum: d.sha256sum ?? '',
-      known_slow_download: !!d.known_slow_download,
-    }));
   }
 }

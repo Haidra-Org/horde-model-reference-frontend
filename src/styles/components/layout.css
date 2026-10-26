@@ -1630,6 +1630,7 @@
 
   /* Autocomplete dropdown — rendered inside CDK overlay portal */
   .autocomplete-dropdown {
+    width: 100%;
     @apply bg-white dark:bg-gray-800;
     @apply border border-gray-300 dark:border-gray-600;
     @apply rounded-lg shadow-lg;

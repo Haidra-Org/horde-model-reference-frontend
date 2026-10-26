@@ -122,6 +122,71 @@ import type { WriteFormState } from '../../utils/write-record';
         </label>
       }
 
+      <label class="form-label"
+        >Evidence checked date
+        <input
+          type="date"
+          class="form-input"
+          [value]="form().license_evidence_checked_at || ''"
+          (input)="onTextChange('license_evidence_checked_at', $event)"
+        />
+      </label>
+      @for (evidence of form().license_additional_evidence || []; track $index) {
+        <fieldset class="download-card">
+          <legend>Additional license evidence {{ $index + 2 }}</legend>
+          <label class="form-label"
+            >Evidence URL
+            <input
+              type="url"
+              class="form-input"
+              [value]="evidence.source"
+              (input)="updateEvidence($index, 'source', $event)"
+            />
+          </label>
+          <label class="form-label"
+            >Description
+            <input
+              class="form-input"
+              [value]="evidence.description || ''"
+              (input)="updateEvidence($index, 'description', $event)"
+            />
+          </label>
+          <label class="form-label"
+            >Checked date
+            <input
+              type="date"
+              class="form-input"
+              [value]="evidence.checked_at || ''"
+              (input)="updateEvidence($index, 'checked_at', $event)"
+            />
+          </label>
+          <button type="button" class="btn btn-ghost" (click)="removeEvidence($index)">
+            Remove evidence
+          </button>
+        </fieldset>
+      }
+      <button type="button" class="btn btn-ghost" (click)="addEvidence()">
+        Add license evidence
+      </button>
+      <div class="write-field-grid">
+        <label class="form-label"
+          >Reviewed by
+          <input
+            class="form-input"
+            [value]="form().license_reviewed_by"
+            (input)="onTextChange('license_reviewed_by', $event)"
+          />
+        </label>
+        <label class="form-label"
+          >Reviewed date
+          <input
+            type="date"
+            class="form-input"
+            [value]="form().license_reviewed_at"
+            (input)="onTextChange('license_reviewed_at', $event)"
+          />
+        </label>
+      </div>
       <label class="form-label">
         Licensing notes
         <textarea
@@ -151,6 +216,34 @@ export class WizardStepLicensingComponent {
     },
     { value: LicenseObligation.Other, label: 'Other obligations' },
   ] as const;
+
+  addEvidence(): void {
+    this.formChange.emit({
+      license_additional_evidence: [
+        ...(this.form().license_additional_evidence ?? []),
+        { source: '' },
+      ],
+    });
+  }
+  removeEvidence(index: number): void {
+    this.formChange.emit({
+      license_additional_evidence: (this.form().license_additional_evidence ?? []).filter(
+        (_, i) => i !== index,
+      ),
+    });
+  }
+  updateEvidence(
+    index: number,
+    field: 'source' | 'description' | 'checked_at',
+    event: Event,
+  ): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.formChange.emit({
+      license_additional_evidence: (this.form().license_additional_evidence ?? []).map(
+        (entry, i) => (i === index ? { ...entry, [field]: value || null } : entry),
+      ),
+    });
+  }
 
   hasReviewedConclusion(): boolean {
     return this.form().license_expression.trim().toUpperCase() !== 'NOASSERTION';

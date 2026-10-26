@@ -1,3 +1,5 @@
+import { simplifiedToLegacyConfig } from '../utils/config-converter';
+import { applyLegacyFixedFields } from '../utils/write-record';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
@@ -400,10 +402,10 @@ export class ModelReferenceApiService {
 
   /**
    * Submit a proposal from the Propose-a-Change wizard.
-   * Wraps the existing createModel / updateModel / deleteModel methods under a single seam.
+   * Dispatches schema-preserving records to the active write API.
    *
-   * The wizard produces a raw-record payload; this method converts it through the
-   * format adapter pipeline and dispatches to the correct API version.
+   * The wizard produces canonical downloads. Only the legacy API needs the
+   * files/download split; all other attributes pass through unchanged.
    */
   submitProposal(proposal: ProposalPayload): Observable<PendingChangeRecord> {
     const { operation, category, model_name, payload } = proposal;
@@ -412,14 +414,23 @@ export class ModelReferenceApiService {
       return this.deleteModel(category, model_name);
     }
 
-    // Convert the raw record to FormModelData for the adapter pipeline
-    const formData = legacyApiToForm(payload as LegacyRecordUnion, category);
-
-    if (operation === 'create') {
-      return this.createModel(category, model_name, formData);
+    // Wizard records already carry schema fields; avoid the lossy curated-form adapter.
+    if (this.backendCapabilities().canonicalFormat === 'legacy') {
+      const config = payload['config'] as
+        import('../api-client').GenericModelRecordConfig | undefined;
+      const converted = simplifiedToLegacyConfig({ download: config?.download ?? [] });
+      const legacy = applyLegacyFixedFields(
+        { ...payload, config: { ...config, ...converted } },
+        category,
+      ) as LegacyRecordUnion;
+      return operation === 'create'
+        ? this.createViaV1Api(category, legacy)
+        : this.updateViaV1Api(category, legacy);
     }
-
-    return this.updateModel(category, model_name, formData);
+    const native = { ...payload, record_type: category } as unknown as NewModelRecord;
+    return operation === 'create'
+      ? this.createViaV2Api(category, native)
+      : this.updateViaV2Api(category, model_name, native);
   }
 
   /**

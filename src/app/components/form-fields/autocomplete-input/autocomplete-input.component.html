@@ -3,8 +3,10 @@
     <label class="form-label" [attr.for]="inputId">{{ label() }}</label>
   }
 
-  <div class="relative" cdkOverlayOrigin #overlayOrigin="cdkOverlayOrigin">
+  <div class="relative">
     <input
+      cdkOverlayOrigin
+      #overlayOrigin="cdkOverlayOrigin"
       #inputElement
       type="text"
       [class]="inputClasses()"
@@ -14,6 +16,7 @@
       (ngModelChange)="inputValue.set($event)"
       (input)="handleInput()"
       (focus)="handleFocus()"
+      (click)="handleFocus()"
       (keydown)="handleKeyDown($event)"
       (blur)="handleBlur()"
       [attr.aria-controls]="suggestionsId"

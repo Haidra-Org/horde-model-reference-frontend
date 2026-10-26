@@ -72,6 +72,7 @@ export interface V2FormFields {
  * Components consume this shape exclusively — they never see raw API types.
  */
 export interface FormModelData {
+  sourceRecord?: Record<string, unknown>;
   commonData: CommonFieldsData;
   categoryData: CategoryFormData;
   downloads: DownloadRecord[];
@@ -369,6 +370,7 @@ export function legacyApiToForm(
     : { kind: 'generic', data: null };
 
   return {
+    sourceRecord: model as unknown as Record<string, unknown>,
     commonData,
     categoryData,
     downloads: simplified.download,
@@ -449,6 +451,7 @@ export function v2ApiToForm(
     : { kind: 'generic', data: null };
 
   return {
+    sourceRecord: model as unknown as Record<string, unknown>,
     commonData,
     categoryData,
     downloads,

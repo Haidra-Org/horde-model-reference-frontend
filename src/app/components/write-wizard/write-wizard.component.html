@@ -13,6 +13,12 @@
 
   <!-- Write workspace -->
   @if (!loading() && canWrite()) {
+    @if (templateName()) {
+      <div class="alert alert--info" role="note">
+        Using {{ templateName() }} as a template. Enter a new model name and review the files,
+        settings, and licensing before submitting.
+      </div>
+    }
     <!-- Category + endpoint banner -->
     <app-endpoint-banner
       [category]="category()"
@@ -69,17 +75,19 @@
                 <app-wizard-step-image [form]="form()" (formChange)="patchForm($event)" />
               } @else if (isTextGeneration()) {
                 <app-wizard-step-model [form]="form()" (formChange)="patchForm($event)" />
-              } @else {
-                <app-wizard-step-generic
-                  [form]="form()"
-                  [category]="category()"
-                  (formChange)="patchForm($event)"
-                />
               }
+              <app-wizard-step-attributes
+                [form]="form()"
+                [category]="category()"
+                (formChange)="patchForm($event)"
+                (validChange)="attributesValid.set($event)"
+              />
             }
             @case (2) {
               <app-wizard-step-files
                 [downloads]="form().download"
+                [embeddedHashes]="form().embedded_component_hashes || {}"
+                (embeddedHashesChange)="patchForm({ embedded_component_hashes: $event })"
                 (downloadsChange)="patchForm({ download: $event })"
               />
             }

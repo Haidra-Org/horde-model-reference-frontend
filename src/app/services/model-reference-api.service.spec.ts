@@ -32,6 +32,65 @@ describe('ModelReferenceApiService', () => {
     httpMock.verify();
   });
 
+  describe('wizard proposal schema fields', () => {
+    const payload = {
+      name: 'split-model',
+      baseline: 'anima',
+      nsfw: false,
+      config: {
+        download: [
+          {
+            file_name: 'vae.safetensors',
+            file_url: 'https://example.com/vae',
+            file_purpose: 'vae',
+            content_hash: 'tensor-hash',
+            size_bytes: 123,
+          },
+        ],
+        embedded_component_hashes: { text_encoders: 'embedded-hash' },
+      },
+      requirements: { samplers: ['er_sde'], schedulers: ['simple'] },
+    };
+    for (const format of ['legacy', 'v2'] as const) {
+      it(`preserves wizard attributes in ${format} requests`, () => {
+        service.backendCapabilities.set({
+          writable: true,
+          mode: 'PRIMARY',
+          canonicalFormat: format,
+        });
+        service
+          .submitProposal({
+            operation: 'create',
+            diff: [],
+            category: MODEL_REFERENCE_CATEGORY.ImageGeneration,
+            model_name: payload.name,
+            payload,
+          })
+          .subscribe();
+        const req = httpMock.expectOne((request) => request.method === 'POST');
+        expect(req.request.body.requirements).toEqual(payload.requirements);
+        expect(req.request.body.config.embedded_component_hashes).toEqual(
+          payload.config.embedded_component_hashes,
+        );
+        if (format === 'legacy') {
+          expect(req.request.body.config.files[0]).toMatchObject({
+            path: 'vae.safetensors',
+            file_type: 'vae',
+            content_hash: 'tensor-hash',
+          });
+          expect(req.request.body.config.download[0]).toMatchObject({
+            file_path: '',
+            size_bytes: 123,
+          });
+        } else {
+          expect(req.request.body.config.download).toEqual(payload.config.download);
+          expect(req.request.body.record_type).toBe('image_generation');
+        }
+        req.flush({ change_id: 123 });
+      });
+    }
+  });
+
   describe('getCategoryStatistics', () => {
     it(
       'should fetch category statistics successfully',

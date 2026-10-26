@@ -1,8 +1,13 @@
 /**
- * Tests for write-record utility — blankForm, editFormFromRecord, formToRecord.
+ * Tests for write-record utility — blankForm, editFormFromRecord, formToRecord, templateFormFromRecord.
  */
 import { describe, it, expect } from 'vitest';
-import { blankForm, editFormFromRecord, formToRecord } from './write-record';
+import {
+  blankForm,
+  editFormFromRecord,
+  formToRecord,
+  templateFormFromRecord,
+} from './write-record';
 import type { WriteFormState } from './write-record';
 import { MODEL_REFERENCE_CATEGORY } from '../api-client';
 
@@ -226,5 +231,103 @@ describe('write-record', () => {
       const record = formToRecord(form, 'image_generation');
       expect(record['tags']).toBeUndefined();
     });
+  });
+});
+
+describe('schema-compatible proposals', () => {
+  const source = {
+    name: 'Anima',
+    baseline: 'anima',
+    nsfw: false,
+    inpainting: true,
+    requirements: { min_steps: 8, max_cfg_scale: 1, samplers: ['er_sde'], schedulers: ['simple'] },
+    size_on_disk_bytes: 5628171998,
+    metadata: { created_by: 'original' },
+    config: {
+      files: [
+        { path: 'main.safetensors', sha256sum: 'main-sha', file_type: 'unet' },
+        {
+          path: 'vae.safetensors',
+          sha256sum: 'vae-sha',
+          file_type: 'vae',
+          content_hash: 'tensor-hash',
+        },
+      ],
+      download: [
+        { file_name: 'main.safetensors', file_url: 'https://example.com/main', file_path: '' },
+        {
+          file_name: 'vae.safetensors',
+          file_url: 'https://example.com/vae',
+          file_path: '',
+          size_bytes: 123,
+        },
+      ],
+      embedded_component_hashes: { text_encoders: 'embedded-hash' },
+    },
+    licensing: {
+      license_expression: 'MIT',
+      license_ids: ['MIT'],
+      commercial_use: 'allowed',
+      redistribution: 'allowed',
+      obligations: [],
+      evidence: [
+        { source: 'https://example.com/license', checked_at: '2026-08-28' },
+        { source: 'https://example.com/permission', checked_at: '2026-08-29' },
+      ],
+      files: { 'vae.safetensors': { license_expression: 'Apache-2.0' } },
+    },
+  };
+  it('retains pending legacy file roles, hashes, requirements, sizes and all licensing evidence', () => {
+    const result = formToRecord(editFormFromRecord('image_generation', source), 'image_generation');
+    expect(result['config']).toMatchObject({
+      download: [
+        { file_name: 'main.safetensors', file_purpose: 'unet', sha256sum: 'main-sha' },
+        {
+          file_name: 'vae.safetensors',
+          file_purpose: 'vae',
+          sha256sum: 'vae-sha',
+          content_hash: 'tensor-hash',
+          size_bytes: 123,
+        },
+      ],
+      embedded_component_hashes: source.config.embedded_component_hashes,
+    });
+    expect(result['requirements']).toEqual(source.requirements);
+    expect(result['licensing']).toMatchObject({
+      evidence: source.licensing.evidence,
+      files: source.licensing.files,
+    });
+    expect(result['size_on_disk_bytes']).toBe(5628171998);
+  });
+  it('clears files and optional values through JSON and form edits', () => {
+    const form = editFormFromRecord('image_generation', { ...source, config: { download: [] } });
+    form.inpainting = false;
+    form.requirements = {};
+    form.license_evidence_source = '';
+    form.license_additional_evidence = [];
+    const result = formToRecord(form, 'image_generation');
+    expect(result['config']).toMatchObject({ download: [] });
+    expect(result['inpainting']).toBeUndefined();
+    expect(result['licensing']).not.toHaveProperty('evidence');
+  });
+  it('preserves category attributes not covered by common controls', () => {
+    const record = {
+      name: 'pose',
+      control_types: ['pose'],
+      preprocessors: ['OpenposePreprocessor'],
+    };
+    expect(
+      formToRecord(editFormFromRecord('controlnet_annotator', record), 'controlnet_annotator'),
+    ).toMatchObject(record);
+  });
+  it('templates reuse independent file/settings copies and require a new identity and licensing review', () => {
+    const form = templateFormFromRecord('image_generation', source);
+    const result = formToRecord(form, 'image_generation');
+    expect(form.name).toBe('');
+    expect(result).not.toHaveProperty('metadata');
+    expect(result['licensing']).toMatchObject({ license_expression: 'NOASSERTION' });
+    expect(form.download[1].file_purpose).toBe('vae');
+    form.requirements!['min_steps'] = 12;
+    expect(source.requirements.min_steps).toBe(8);
   });
 });

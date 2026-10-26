@@ -252,7 +252,7 @@ export class PendingQueueComponent {
   );
 
   readonly filters = signal<PendingQueueFilters>({
-    statuses: [],
+    statuses: ['pending'],
     category: '',
     modelName: '',
     batchId: null,
@@ -406,11 +406,14 @@ export class PendingQueueComponent {
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
     if (tabParam && ['queue', 'my-submissions', 'batches', 'history'].includes(tabParam)) {
       this.activeTab.set(tabParam as PendingQueueTab);
+      if (tabParam !== 'queue') this.filters.update((filters) => ({ ...filters, statuses: [] }));
     }
 
     const focusParam = Number(this.route.snapshot.queryParamMap.get('focus'));
     if (Number.isInteger(focusParam) && focusParam > 0) {
       this.focusedChangeId.set(focusParam);
+      // A direct link may point to an approved or applied change.
+      this.filters.update((filters) => ({ ...filters, statuses: [] }));
       this.activeTab.set('queue');
     }
 
@@ -421,7 +424,18 @@ export class PendingQueueComponent {
   }
 
   setTab(tab: PendingQueueTab): void {
+    const previousTab = this.activeTab();
     this.activeTab.set(tab);
+    if (previousTab !== tab) {
+      const statuses = this.filters().statuses;
+      if (previousTab === 'queue' && statuses.length === 1 && statuses[0] === 'pending') {
+        this.filters.update((filters) => ({ ...filters, statuses: [] }));
+        this.load();
+      } else if (tab === 'queue' && statuses.length === 0) {
+        this.filters.update((filters) => ({ ...filters, statuses: ['pending'] }));
+        this.load();
+      }
+    }
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab },
@@ -516,7 +530,12 @@ export class PendingQueueComponent {
   }
 
   resetFilters(): void {
-    this.filters.set({ statuses: [], category: '', modelName: '', batchId: null });
+    this.filters.set({
+      statuses: this.activeTab() === 'queue' ? ['pending'] : [],
+      category: '',
+      modelName: '',
+      batchId: null,
+    });
     this.load();
   }
 

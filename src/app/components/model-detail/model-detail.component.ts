@@ -608,6 +608,15 @@ export class ModelDetailComponent implements OnInit {
                 icon: 'pencil',
                 action: () => this.router.navigate(['/categories', category, 'edit', model.name]),
               },
+              {
+                id: 'template',
+                label: 'Use as template',
+                icon: 'copy',
+                action: () =>
+                  this.router.navigate(['/categories', category, 'create'], {
+                    queryParams: { template: model.name },
+                  }),
+              },
             ]
           : []),
         ...(this.canProposeDeletion()

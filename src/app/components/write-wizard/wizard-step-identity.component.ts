@@ -44,7 +44,7 @@ import type { WriteFormState } from '../../utils/write-record';
         Version
         <input
           type="text"
-          class="form-input"
+          class="form-input write-input-short"
           [value]="form().version"
           placeholder="1.0"
           (input)="onFieldChange('version', $event)"

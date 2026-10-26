@@ -20,7 +20,7 @@ const INSTRUCT_FORMAT_OPTIONS = [
         Baseline architecture
         <input
           type="text"
-          class="form-input"
+          class="form-input write-input-short"
           [value]="form().baseline"
           placeholder="llama"
           (input)="onFieldChange('baseline', $event)"
@@ -41,15 +41,18 @@ const INSTRUCT_FORMAT_OPTIONS = [
         </label>
         <label class="form-label">
           Instruct format
-          <select
-            class="form-select"
+          <input
+            type="text"
+            class="form-input write-input-short"
+            list="instruct-formats"
             [value]="form().instruct_format"
-            (change)="onSelectChange('instruct_format', $event)"
-          >
+            (input)="onFieldChange('instruct_format', $event)"
+          />
+          <datalist id="instruct-formats">
             @for (fmt of instructFormats; track fmt) {
-              <option [value]="fmt">{{ fmt }}</option>
+              <option [value]="fmt"></option>
             }
-          </select>
+          </datalist>
         </label>
       </div>
 

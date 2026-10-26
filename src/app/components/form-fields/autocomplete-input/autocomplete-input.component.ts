@@ -1,5 +1,7 @@
 import {
   Component,
+  afterNextRender,
+  DestroyRef,
   input,
   output,
   signal,
@@ -110,6 +112,17 @@ export class AutocompleteInputComponent {
   readonly shouldTruncateSuggestions = computed(() => this.suggestionTextMode() === 'truncate');
 
   constructor() {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const input = this.inputElement()?.nativeElement;
+      if (!input || typeof ResizeObserver === 'undefined') return;
+      // Font loading, responsive layouts and compact field widths can resize an
+      // already-open trigger. Keep its portal sized to the actual input.
+      const observer = new ResizeObserver(() => this.updateTriggerWidth());
+      observer.observe(input);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+
     // Sync input value with external value signal
     effect(() => {
       const externalValue = this.value();

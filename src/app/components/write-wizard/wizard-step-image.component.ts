@@ -1,50 +1,53 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { KNOWN_IMAGE_GENERATION_BASELINE } from '../../api-client';
+import { ModelRequirementsEditorComponent } from '../form-fields/model-requirements-editor/model-requirements-editor.component';
 import type { WriteFormState } from '../../utils/write-record';
 
-const BASELINE_OPTIONS: { value: string; label: string }[] = [
-  { value: 'stable_diffusion_1', label: 'Stable Diffusion 1.x' },
-  { value: 'stable_diffusion_2_1', label: 'Stable Diffusion 2.1' },
-  { value: 'stable_diffusion_xl', label: 'Stable Diffusion XL' },
-  { value: 'stable_diffusion_3', label: 'Stable Diffusion 3' },
-  { value: 'flux_1', label: 'Flux.1' },
-  { value: 'kandinsky', label: 'Kandinsky' },
-  { value: 'wurstchen', label: 'Würstchen' },
-  { value: 'pixart', label: 'PixArt' },
-  { value: 'playground', label: 'Playground' },
-  { value: 'other', label: 'Other' },
+// Schema suggestions remain editable so newly registered baselines are usable immediately.
+const BASELINE_OPTIONS = [
+  ...Object.values(KNOWN_IMAGE_GENERATION_BASELINE),
+  'krea2_turbo',
+  'anima',
 ];
 
 const STYLE_OPTIONS = ['generalist', 'anime', 'artistic', 'realistic', 'furry', 'other'];
 
 @Component({
   selector: 'app-wizard-step-image',
+  imports: [ModelRequirementsEditorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="write-step-fields">
       <label class="form-label">
         Baseline
-        <select
-          class="form-select"
+        <input
+          class="form-input write-input-short"
+          type="text"
+          list="image-baseline-options"
           [value]="form().baseline"
-          (change)="onSelectChange('baseline', $event)"
-        >
-          @for (opt of baselineOpts; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
+          (input)="onFieldChange('baseline', $event)"
+        />
+        <datalist id="image-baseline-options">
+          @for (opt of baselineOpts; track opt) {
+            <option [value]="opt"></option>
           }
-        </select>
+        </datalist>
       </label>
 
       <label class="form-label">
         Style
-        <select
-          class="form-select"
+        <input
+          class="form-input write-input-short"
+          type="text"
+          list="image-style-options"
           [value]="form().style"
-          (change)="onSelectChange('style', $event)"
-        >
+          (input)="onFieldChange('style', $event)"
+        />
+        <datalist id="image-style-options">
           @for (s of styleOpts; track s) {
-            <option [value]="s">{{ s }}</option>
+            <option [value]="s"></option>
           }
-        </select>
+        </datalist>
       </label>
 
       <div class="write-toggle-row">
@@ -92,6 +95,39 @@ const STYLE_OPTIONS = ['generalist', 'anime', 'artistic', 'realistic', 'furry', 
         <span class="form-hint">comma-separated</span>
       </label>
 
+      <label class="form-label"
+        >Optimization
+        <input
+          class="form-input"
+          [value]="form().optimization || ''"
+          (input)="onFieldChange('optimization', $event)"
+        />
+      </label>
+      <label class="form-label"
+        >Total size on disk (bytes)
+        <input
+          class="form-input"
+          type="number"
+          min="0"
+          step="1"
+          [value]="form().size_on_disk_bytes || ''"
+          (input)="onFieldChange('size_on_disk_bytes', $event)"
+        />
+      </label>
+      <label class="form-label"
+        >Showcase URLs
+        <textarea
+          class="form-textarea"
+          rows="3"
+          [value]="form().showcases || ''"
+          (input)="onFieldChange('showcases', $event)"
+        ></textarea>
+        <span class="form-hint">One URL per line</span>
+      </label>
+      <app-model-requirements-editor
+        [values]="form().requirements || {}"
+        (valuesChange)="formChange.emit({ requirements: $event })"
+      />
       <div class="write-field-grid">
         <label class="form-label">
           Homepage

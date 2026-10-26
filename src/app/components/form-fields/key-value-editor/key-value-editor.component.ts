@@ -28,6 +28,8 @@ interface KeyValuePair {
 })
 export class KeyValueEditorComponent implements OnInit, OnChanges {
   readonly label = input<string>('');
+  readonly addLabel = input('Add Custom Requirement');
+  readonly keyPlaceholder = input('e.g., min_vram_gb');
   readonly values = input<Record<string, ValueType>>({});
   readonly valuesChange = output<Record<string, ValueType>>();
 

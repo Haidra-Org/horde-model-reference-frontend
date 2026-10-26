@@ -2,12 +2,14 @@
  * Tests for WriteWizardComponent — the Propose-a-Change wizard.
  */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { describe, it, expect, vi } from 'vitest';
+import { legacyApiToForm } from '../../adapters/model-format-adapter';
+import { MODEL_REFERENCE_CATEGORY } from '../../api-client';
 import { WriteWizardComponent } from './write-wizard.component';
 import { ModelReferenceApiService } from '../../services/model-reference-api.service';
 import { AuthService } from '../../services/auth.service';
@@ -238,6 +240,96 @@ describe('WriteWizardComponent', () => {
     );
     expect(component.submitChangeId()).toBe(73);
     expect(component.submitSuccess()).toBe(true);
+  });
+
+  it('loads an existing model from the template route as a new proposal', async () => {
+    const template = legacyApiToForm(
+      {
+        name: 'source',
+        baseline: 'anima',
+        inpainting: false,
+        config: {
+          files: [{ path: 'vae.safetensors', file_type: 'vae', sha256sum: 'original-sha' }],
+          download: [{ file_name: 'vae.safetensors', file_url: 'https://example.com/vae' }],
+        },
+      },
+      MODEL_REFERENCE_CATEGORY.ImageGeneration,
+    );
+    const getFormModel = vi.fn(() => of(template));
+    await TestBed.configureTestingModule({
+      imports: [WriteWizardComponent],
+      providers: [
+        ...baseProviders()!,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({ category: 'image_generation' }),
+            snapshot: { queryParamMap: convertToParamMap({ template: 'source' }) },
+          },
+        },
+        {
+          provide: ModelReferenceApiService,
+          useValue: { backendCapabilities: signal(createBackendCapabilities()), getFormModel },
+        },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(WriteWizardComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    expect(getFormModel).toHaveBeenCalledWith('image_generation', 'source');
+    expect(component.isEditMode()).toBe(false);
+    expect(component.form().name).toBe('');
+    expect(component.form().download[0]).toMatchObject({
+      file_purpose: 'vae',
+      sha256sum: 'original-sha',
+    });
+    expect(component.templateName()).toBe('source');
+    expect(component.loading()).toBe(false);
+  });
+
+  it('keeps file metadata and additional attributes through JSON edits and allows removing every file', async () => {
+    const { component } = await createComponent();
+    component.category.set('image_generation');
+    const record = {
+      name: 'split',
+      baseline: 'anima',
+      nsfw: false,
+      config: {
+        download: [
+          {
+            file_name: 'vae.safetensors',
+            file_url: 'https://example.com/vae',
+            file_purpose: 'vae',
+            content_hash: 'tensor-hash',
+            size_bytes: 123,
+          },
+        ],
+      },
+      requirements: { samplers: ['er_sde'] },
+      finetune_series: { name: 'Anima' },
+    };
+    component.onJsonEdit({ target: { value: JSON.stringify(record) } } as unknown as Event);
+    expect(component.record()).toMatchObject(record);
+    component.onJsonEdit({
+      target: { value: JSON.stringify({ ...record, config: { download: [] } }) },
+    } as unknown as Event);
+    expect(component.record()['config']).toMatchObject({ download: [] });
+  });
+
+  it('exposes file roles in the Files step and includes changes in the proposal', async () => {
+    const { fixture, component } = await createComponent();
+    fixture.detectChanges();
+    component.category.set('image_generation');
+    component.loading.set(false);
+    component.setStep(2);
+    fixture.detectChanges();
+    const input = (fixture.nativeElement as HTMLElement).querySelector(
+      'app-autocomplete-input input',
+    ) as HTMLInputElement;
+    expect(input).toBeTruthy();
+    input.value = 'text_encoders';
+    input.dispatchEvent(new Event('input'));
+    expect(component.form().download[0].file_purpose).toBe('text_encoders');
   });
 
   it('blocks a reviewed licensing conclusion without matching IDs and evidence', async () => {

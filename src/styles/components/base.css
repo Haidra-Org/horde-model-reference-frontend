@@ -684,14 +684,47 @@
     cursor: pointer;
   }
 
-  /* Wizard fields stack label → control → hint at full panel width;
-     the shared .form-input is inline-sized by default. */
+  /* Use content-sized limits that remain fluid on narrow screens. */
   .write-step-fields .form-input,
   .write-step-fields .form-textarea,
   .write-step-fields .form-select {
     display: block;
     width: 100%;
+    max-width: 64ch;
+    min-width: 0;
     margin-top: 6px;
+  }
+
+  .write-step-fields .form-input[type='number'],
+  .write-step-fields .form-input[type='date'] {
+    max-width: 22ch;
+  }
+
+  .write-step-fields .form-select {
+    max-width: 30ch;
+  }
+
+  .write-step-fields .form-input[type='url'],
+  .write-step-fields .form-textarea,
+  .write-step-fields .write-input-hash {
+    max-width: 80ch;
+  }
+
+  .write-step-fields .write-input-short {
+    max-width: 24ch;
+  }
+
+  .write-step-fields .write-input-url {
+    max-width: 88ch;
+  }
+
+  .write-step-fields .write-field-role {
+    width: 100%;
+    max-width: 30ch;
+  }
+
+  .write-field-role app-autocomplete-input {
+    display: block;
   }
 
   .write-step-fields .form-hint {
@@ -726,7 +759,7 @@
   /* Two-column field grid */
   .write-field-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22ch), 28ch));
     gap: 12px;
   }
 

@@ -87,6 +87,14 @@ export class ModelRequirementsEditorComponent {
   }
 
   private extractStructuredFields(vals: Record<string, RequirementValue>): void {
+    this.minSteps.set(null);
+    this.maxSteps.set(null);
+    this.cfgScale.set(null);
+    this.minCfgScale.set(null);
+    this.maxCfgScale.set(null);
+    this.clipSkip.set(null);
+    this.samplers.set([]);
+    this.schedulers.set([]);
     const custom: Record<string, RequirementValue> = {};
 
     // Extract structured fields

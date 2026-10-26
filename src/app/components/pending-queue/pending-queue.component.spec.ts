@@ -172,6 +172,25 @@ describe('PendingQueueComponent', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('model-alpha');
   });
 
+  it('defaults review to pending without hiding approved batches or direct links', async () => {
+    const { component, fixture } = await createComponent();
+    const queue = TestBed.inject(PendingQueueService);
+    const list = vi.spyOn(queue, 'listChanges');
+    expect(component.filters().statuses).toEqual(['pending']);
+    component.load();
+    expect(list).toHaveBeenCalledWith(expect.objectContaining({ statuses: ['pending'] }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Filters: Pending');
+    component.setTab('batches');
+    expect(component.filters().statuses).toEqual([]);
+    component.setTab('queue');
+    expect(component.filters().statuses).toEqual(['pending']);
+    component.toggleStatus('pending');
+    expect(component.filters().statuses).toEqual([]);
+    component.resetFilters();
+    expect(component.filters().statuses).toEqual(['pending']);
+  });
+
   it('switching tab updates activeTab and syncs the URL', async () => {
     const { component } = await createComponent({ records: [makeChange()] });
     const router = TestBed.inject(Router);
@@ -199,6 +218,7 @@ describe('PendingQueueComponent', () => {
     fixture.detectChanges();
 
     expect(component.focusedChangeId()).toBe(42);
+    expect(component.filters().statuses).toEqual([]);
     expect(component.activeTab()).toBe('queue');
     const row = fixture.nativeElement.querySelector('#pending-change-42') as HTMLElement;
     expect(row?.getAttribute('aria-expanded')).toBe('true');

@@ -167,6 +167,13 @@ describe('ModelDetailComponent', () => {
     const editAction = ctx.actions.find((a) => a.id === 'edit');
     expect(editAction).toBeTruthy();
     expect(editAction!.label).toBe('Edit');
+    const templateAction = ctx.actions.find((a) => a.id === 'template');
+    expect(templateAction?.label).toBe('Use as template');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    templateAction!.action();
+    expect(navigate).toHaveBeenCalledWith(expect.arrayContaining(['create']), {
+      queryParams: { template: expect.any(String) },
+    });
   });
 
   it('requires the exact model name before submitting a removal proposal', () => {

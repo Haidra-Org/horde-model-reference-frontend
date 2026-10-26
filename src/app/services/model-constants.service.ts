@@ -76,6 +76,7 @@ export class ModelConstantsService {
    * These are the most commonly used sampling methods.
    */
   readonly KNOWN_SAMPLERS = [
+    'er_sde',
     'k_dpm_2',
     'k_lms',
     'lcm',
@@ -95,7 +96,7 @@ export class ModelConstantsService {
   /**
    * Known schedulers for stable diffusion models.
    */
-  readonly KNOWN_SCHEDULERS = ['karras'] as const;
+  readonly KNOWN_SCHEDULERS = ['karras', 'simple'] as const;
 
   /**
    * Get all known tags as a readonly array.

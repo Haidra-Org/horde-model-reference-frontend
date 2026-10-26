@@ -221,7 +221,11 @@
             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
           />
         </svg>
-        <span>Filters</span>
+        <span
+          >Filters{{
+            filters().statuses.length === 1 ? ': ' + statusLabel(filters().statuses[0]) : ''
+          }}</span
+        >
         @if (hasFilters()) {
           <span class="w-1.5 h-1.5 rounded-full bg-primary-500 absolute -top-0.5 -right-0.5"></span>
         }
@@ -241,6 +245,7 @@
                 ? 'badge badge-' + status + ' cursor-pointer hover:opacity-80 transition-opacity'
                 : 'badge badge-secondary cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'
             "
+            [attr.aria-pressed]="filters().statuses.includes(status)"
             (click)="toggleStatus(status)"
           >
             {{ statusLabel(status) }}
