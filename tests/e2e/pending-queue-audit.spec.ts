@@ -4,7 +4,7 @@ import type { Page, Route } from '@playwright/test';
 /**
  * The standalone "Audit Trail" page was unified into the pending-queue view, so
  * `/pending-queue/audit` is now a redirect into `/pending-queue` (the review
- * queue), guarded by `authenticatedGuard`. These mocked tests pin that current
+ * queue), guarded by `approverGuard`. These mocked tests pin that current
  * contract: legacy audit links keep working, and unauthenticated visitors are
  * bounced out by the guard.
  */
@@ -58,7 +58,9 @@ test('redirects unauthenticated visitors away from the (legacy) audit route', as
   // The guard rejects the anonymous user and routes back to the app root, which
   // in turn lands on the default browse page — never the guarded queue.
   await expect(page).toHaveURL(/\/categories\//, { timeout: 15000 });
-  await expect(page.getByText('Please log in to access this page.')).toBeVisible();
+  await expect(
+    page.getByText('This page is available to curators. Your key does not currently have access.'),
+  ).toBeVisible();
 });
 
 test('authenticated visitors land on the unified pending queue from the legacy audit route', async ({

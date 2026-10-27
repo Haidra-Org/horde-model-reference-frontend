@@ -193,14 +193,10 @@ export const SCHEMA_NAMES = {
   VALIDATION_ERROR: 'ValidationError',
 
   // Model records
-  IMAGE_GENERATION_INPUT: 'ImageGenerationModelRecord-Input',
-  IMAGE_GENERATION_OUTPUT: 'ImageGenerationModelRecord-Output',
-  TEXT_GENERATION_INPUT: 'TextGenerationModelRecord-Input',
-  TEXT_GENERATION_OUTPUT: 'TextGenerationModelRecord-Output',
-  CONTROLNET_INPUT: 'ControlNetModelRecord-Input',
-  CONTROLNET_OUTPUT: 'ControlNetModelRecord-Output',
-  GENERIC_INPUT: 'GenericModelRecord-Input',
-  GENERIC_OUTPUT: 'GenericModelRecord-Output',
+  IMAGE_GENERATION: 'ImageGenerationModelRecord',
+  TEXT_GENERATION: 'TextGenerationModelRecord',
+  CONTROLNET: 'ControlNetModelRecord',
+  GENERIC: 'GenericModelRecord',
 
   // Metadata
   GENERIC_METADATA: 'GenericModelRecordMetadata',

@@ -222,7 +222,7 @@ test('text browsing distinguishes exact records from the grouped comparison', as
     '/text-groups?families=Atlas%20family',
   );
 
-  const nameHeader = table.getByRole('button', { name: /Model/ });
+  const nameHeader = page.getByRole('columnheader', { name: /Model/ }).getByRole('button');
   await nameHeader.click();
   await expect(nameHeader.locator('xpath=..')).toHaveAttribute('aria-sort', 'ascending');
   await nameHeader.click();
@@ -233,7 +233,7 @@ test('text browsing distinguishes exact records from the grouped comparison', as
   await expect(page.getByRole('rowheader', { name: /Atlas/ })).toBeVisible();
   await expect(page.getByRole('button', { name: 'atlas-7b' })).toBeVisible();
   await expect(page.getByText('Usage guide')).toBeVisible();
-  await expect(page.getByText('Guidance needed')).toBeVisible();
+  await expect(page.getByText('Guidance needed')).toHaveCount(0);
 });
 
 test('guidance changes audience without losing the reusable contract context', async ({ page }) => {

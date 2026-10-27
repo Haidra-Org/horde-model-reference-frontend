@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
+import { mockContributorSession } from './helpers/contributor-session';
 
 async function mockCapabilities(page: Page): Promise<void> {
   await page.route('**/replicate_mode', (route: Route) =>
@@ -13,6 +14,7 @@ test('group explorer separates topology context from actionable catalog quality'
   page,
 }) => {
   let healthEndpointRequests = 0;
+  await mockContributorSession(page);
   await mockCapabilities(page);
   await page.route('**/model_references/v2/text_generation/groups/health', (route: Route) => {
     healthEndpointRequests += 1;

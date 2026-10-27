@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
+import { mockContributorSession } from './helpers/contributor-session';
 
 const summary = {
   total_assets: 10,
@@ -103,6 +104,7 @@ test('licensing explains uncertainty and applies activity filters to API results
 test('family detection remains useful when no family metadata has been persisted', async ({
   page,
 }) => {
+  await mockContributorSession(page);
   await mockCapabilities(page);
   await page.route('**/model_references/v2/text_generation/families/detect', (route: Route) =>
     route.fulfill({

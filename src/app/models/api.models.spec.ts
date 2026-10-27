@@ -1,4 +1,5 @@
 import { testEnvironment } from '../../environments/environment.test';
+import localSchema from '../../assets/openapi-schema.json';
 import { ContainsMessage, ErrorResponse } from '../api-client';
 import {
   BackendCapabilities,
@@ -40,15 +41,6 @@ const TEST_CONFIG = testEnvironment;
 
 describe('API Models - OpenAPI Schema Validation', () => {
   let openApiSchema: OpenApiSchema;
-  let schemaFetchError: Error | null = null;
-  const skipIfSchemaUnavailable = (message: string) => {
-    if (schemaFetchError) {
-      console.warn(message);
-      return true;
-    }
-    return false;
-  };
-
   beforeAll(async () => {
     // Log which schema source we're testing against
     const schemaSource = TEST_CONFIG.useRemoteSchema ? 'remote service' : 'local file';
@@ -57,38 +49,22 @@ describe('API Models - OpenAPI Schema Validation', () => {
       : TEST_CONFIG.localApiUrl;
     console.log(`\n📋 Testing against ${schemaSource}: ${schemaUrl}`);
 
-    // Fetch the OpenAPI schema from the service using helper
-    try {
-      openApiSchema = await fetchOpenApiSchema(schemaUrl, TEST_CONFIG.timeout);
-    } catch (error) {
-      schemaFetchError = error instanceof Error ? error : new Error(String(error));
-      console.error('Failed to fetch OpenAPI schema:', schemaFetchError);
-    }
+    openApiSchema = TEST_CONFIG.useRemoteSchema
+      ? await fetchOpenApiSchema(schemaUrl, TEST_CONFIG.timeout)
+      : (localSchema as unknown as OpenApiSchema);
   });
 
   describe('Schema Availability', () => {
     it('should successfully fetch the OpenAPI schema from the service', () => {
-      if (skipIfSchemaUnavailable(`OpenAPI schema not available: ${schemaFetchError?.message}`)) {
-        return;
-      }
-
       expect(openApiSchema).toBeDefined();
     });
 
     it('should have a valid OpenAPI version', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       expect(openApiSchema.openapi).toBeDefined();
       expect(openApiSchema.openapi).toMatch(/^3\.\d+\.\d+$/);
     });
 
     it('should have component schemas defined', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schemaNames = getAllSchemaNames(openApiSchema);
       expect(schemaNames.length).toBeGreaterThan(0);
     });
@@ -96,10 +72,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Response Models', () => {
     it('ContainsMessage should match schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.CONTAINS_MESSAGE);
       expect(schema).toBeDefined();
 
@@ -118,10 +90,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('BackendCapabilities should have correct mode values', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const replicateModeSchema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.REPLICATE_MODE);
       expect(replicateModeSchema).toBeDefined();
 
@@ -142,10 +110,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('ErrorResponse should match schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.ERROR_RESPONSE);
       expect(schema).toBeDefined();
 
@@ -158,10 +122,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('ModelReferenceCategory should match MODEL_REFERENCE_CATEGORY enum', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(openApiSchema, 'MODEL_REFERENCE_CATEGORY');
       expect(schema).toBeDefined();
 
@@ -182,10 +142,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Legacy Model Records', () => {
     it('LegacyConfigFile should have correct properties', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockConfigFile: LegacyConfigFile = {
         path: '/path/to/file',
         md5sum: 'abc123',
@@ -204,10 +160,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyConfigDownload should have correct properties', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockDownload: LegacyConfigDownload = {
         file_name: TEST_FILE_NAMES.SAFETENSORS,
         file_path: '/path/to/model.safetensors',
@@ -226,10 +178,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyGenericRecord should have required fields', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockRecord: LegacyGenericRecord = {
         name: TEST_MODEL_NAMES.DEFAULT,
         type: 'model',
@@ -245,11 +193,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyStableDiffusionRecord should match ImageGenerationModelRecord schema properties', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
-      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION_OUTPUT);
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION);
       expect(schema).toBeDefined();
 
       const mockRecord: LegacyStableDiffusionRecord = {
@@ -280,11 +224,7 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyTextGenerationRecord should match TextGenerationModelRecord schema properties', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
-      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION_OUTPUT);
+      const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION);
       expect(schema).toBeDefined();
 
       const mockRecord: LegacyTextGenerationRecord = {
@@ -305,10 +245,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyClipRecord should have correct structure', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockRecord: LegacyClipRecord = {
         name: TEST_MODEL_NAMES.CLIP,
         pretrained_name: TEST_PRETRAINED_NAMES.CLIP_VIT_LARGE,
@@ -323,10 +259,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('requirements field should support various value types', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockRecord: LegacyStableDiffusionRecord = {
         name: TEST_MODEL_NAMES.DEFAULT,
         inpainting: false,
@@ -350,10 +282,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Request/Response Types', () => {
     it('CategoryModelsResponse should be a record of model names to records', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockResponse: Record<string, Partial<ModelRecord>> = {
         'model-1': {
           name: 'model-1',
@@ -375,10 +303,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('LegacyModelsResponse should be a record of model names to legacy records', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const mockResponse: LegacyModelsResponse = {
         [TEST_MODEL_NAMES.IMAGE]: {
           name: TEST_MODEL_NAMES.IMAGE,
@@ -403,10 +327,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Schema Enum Validation', () => {
     it('MODEL_REFERENCE_CATEGORY enum should match OpenAPI schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.MODEL_REFERENCE_CATEGORY);
       expect(schema).toBeDefined();
 
@@ -423,10 +343,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('KNOWN_IMAGE_GENERATION_BASELINE enum should match OpenAPI schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(
         openApiSchema,
         SCHEMA_NAMES.KNOWN_IMAGE_GENERATION_BASELINE,
@@ -446,10 +362,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('MODEL_STYLE enum should match OpenAPI schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.MODEL_STYLE);
       expect(schema).toBeDefined();
 
@@ -466,10 +378,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('CONTROLNET_STYLE enum should match OpenAPI schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       const schema = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.CONTROLNET_STYLE);
       expect(schema).toBeDefined();
 
@@ -487,30 +395,22 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('API Endpoint Validation', () => {
     it('should have expected v1 endpoints in schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       // Check for key v1 endpoints
       expect(hasEndpoint(openApiSchema, '/model_references/v1/info')).toBe(true);
       expect(hasEndpoint(openApiSchema, '/model_references/v1/model_categories')).toBe(true);
       expect(hasEndpoint(openApiSchema, '/model_references/v1/{model_category_name}')).toBe(true);
       expect(
-        hasEndpoint(openApiSchema, '/model_references/v1/{model_category_name}/{model_name}'),
+        hasEndpoint(openApiSchema, '/model_references/v1/{model_category_name}/model/{model_name}'),
       ).toBe(true);
     });
 
     it('should have expected v2 endpoints in schema', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       // Check for key v2 endpoints
       expect(hasEndpoint(openApiSchema, '/model_references/v2/info')).toBe(true);
       expect(hasEndpoint(openApiSchema, '/model_references/v2/model_categories')).toBe(true);
       expect(hasEndpoint(openApiSchema, '/model_references/v2/{model_category_name}')).toBe(true);
       expect(
-        hasEndpoint(openApiSchema, '/model_references/v2/{model_category_name}/{model_name}'),
+        hasEndpoint(openApiSchema, '/model_references/v2/{model_category_name}/model/{model_name}'),
       ).toBe(true);
       expect(hasEndpoint(openApiSchema, '/model_references/v2/{model_category_name}/add')).toBe(
         true,
@@ -518,10 +418,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have heartbeat and status endpoints', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       expect(hasEndpoint(openApiSchema, '/')).toBe(true);
       expect(hasEndpoint(openApiSchema, '/heartbeat')).toBe(true);
       expect(hasEndpoint(openApiSchema, '/replicate_mode')).toBe(true);
@@ -530,37 +426,32 @@ describe('API Models - OpenAPI Schema Validation', () => {
 
   describe('Schema Component Completeness', () => {
     it('should have all expected model record schemas', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       // Check for key model record schemas
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION_INPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION_OUTPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION_INPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION_OUTPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTROLNET_INPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTROLNET_OUTPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_INPUT)).toBe(true);
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_OUTPUT)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.IMAGE_GENERATION)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.TEXT_GENERATION)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTROLNET)).toBe(true);
+      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC)).toBe(true);
     });
 
     it('should have all expected metadata schemas', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
-      expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_METADATA)).toBe(true);
+      // FastAPI qualifies component names when two Python modules define the same
+      // class name. Follow the record's reference rather than its generated name.
+      const record = getSchemaDefinition(openApiSchema, SCHEMA_NAMES.GENERIC);
+      const metadataRef = record?.properties?.['metadata']?.['$ref'];
+      expect(typeof metadataRef).toBe('string');
+      const metadata = getSchemaDefinition(
+        openApiSchema,
+        (metadataRef as string).split('/').pop()!,
+      );
+      expect(metadata?.properties).toHaveProperty('schema_version');
+      expect(metadata?.properties).toHaveProperty('created_at');
+      expect(metadata?.properties).toHaveProperty('updated_at');
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.GENERIC_CONFIG)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_CLASSIFICATION)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.DOWNLOAD_RECORD)).toBe(true);
     });
 
     it('should have all expected enum schemas', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_REFERENCE_CATEGORY)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_DOMAIN)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.MODEL_PURPOSE)).toBe(true);
@@ -571,10 +462,6 @@ describe('API Models - OpenAPI Schema Validation', () => {
     });
 
     it('should have all expected response schemas', () => {
-      if (skipIfSchemaUnavailable('OpenAPI schema not available')) {
-        return;
-      }
-
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.CONTAINS_MESSAGE)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.ERROR_RESPONSE)).toBe(true);
       expect(hasSchema(openApiSchema, SCHEMA_NAMES.ERROR_DETAIL)).toBe(true);
